@@ -1,6 +1,0 @@
-{
-  "name": "MinLab - 프로젝트 아카이브",
-  "description": "MinLab 프로젝트 포트폴리오 및 위험성평가서·작업계획서 자동화 도구 개발 기록 관리",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

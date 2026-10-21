@@ -110,8 +110,13 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
       }
     };
 
-    return { success: true, projects: cleaned };
+    return { success: true, projects: parsed };
   } catch (err) {
-    return { success: false, error: 'JSON 파싱 오류: 올바른 JSON 파일인지 확인해주세요.' };
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error('JSON 가져오기 오류:', err);
+    return {
+      success: false,
+      error: `JSON 처리 오류: ${detail}`,
+    };
   }
 };

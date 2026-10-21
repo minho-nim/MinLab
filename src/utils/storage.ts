@@ -31,15 +31,7 @@ export const loadProjects = (): Project[] => {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      // ChoicePilot 프로젝트 제외 처리 유지
-      const filtered = parsed
-        .filter(
-          (p: Project) =>
-            !p.name?.toLowerCase().includes('choicepilot') &&
-            !p.englishName?.toLowerCase().includes('choicepilot') &&
-            p.id !== 'choicepilot'
-        )
-        .map((p: Project) => {
+      const filtered = parsed.map((p: Project) => {
           // 필드 정규화 및 마이그레이션
           const isSample = p.isSample !== undefined 
             ? p.isSample 
@@ -116,15 +108,7 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
       if (!Array.isArray(item.changelog)) {
         item.changelog = [];
       }
-    }
-
-    // ChoicePilot 제외
-    const cleaned = parsed.filter(
-      (p: Project) =>
-        !p.name?.toLowerCase().includes('choicepilot') &&
-        !p.englishName?.toLowerCase().includes('choicepilot') &&
-        p.id !== 'choicepilot'
-    );
+    };
 
     return { success: true, projects: cleaned };
   } catch (err) {

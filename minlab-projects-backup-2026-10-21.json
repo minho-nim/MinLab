@@ -1,0 +1,108 @@
+[
+  {
+    "id": "proj-1792485558773",
+    "name": "MinLab GitHub 연동 및 버전 관리 설정",
+    "englishName": "MinLab GitHub - Web",
+    "status": "개발 중",
+    "category": "프로젝트",
+    "description": "GitHub 연동 및 이력을 관리하고, PC 문제에 대비한 원격 백업과 다른 PC에서의 개발 환경 이전 기반을 마련하기 위함.",
+    "thumbnailUrl": "",
+    "isSample": false,
+    "archived": false,
+    "keyFeatures": [
+      {
+        "id": "feat-1792542669610",
+        "name": "GitHub 연동 및 배포",
+        "description": "최종 로컬 프로젝트와 GitHub 저장소 및 GitHub Pages 배포 사이트의 코드 일치 여부를 확인한다. 개발 서버를 실행해 로컬 프로젝트의 정상 동작을 검증한다.",
+        "status": "진행 중"
+      }
+    ],
+    "techStack": [
+      "Python"
+    ],
+    "liveUrl": "http://localhost:3000/",
+    "githubUrl": "https://github.com/minho-nim/MinLab?utm_source=chatgpt.com",
+    "workLogs": [
+      {
+        "id": "wl-1792542365684",
+        "projectId": "proj-1792485558773",
+        "projectName": "MinLab GitHub 연동 및 버전 관리 설정",
+        "date": "2026-10-21",
+        "version": "0.0.2",
+        "title": "개발 2차",
+        "content": "최종 작업 폴더를 minlab---프로젝트-아카이브로 확정\n기존 GitHub 저장소 minho-nim/MinLab을 기준 저장소로 설정\nGit 원격 저장소 연결 및 main 브랜치 연동 상태 확인\n로컬 프로젝트 실행을 위한 개발 서버 구동 준비\n로컬 최종본과 GitHub 저장소 및 배포 사이트 간 코드 일치 여부 확인 작업 진행",
+        "reason": "",
+        "testResult": "기존 로컬 프로젝트와 GitHub 저장소의 연결 및 코드 업로드를 완료한 상태. 최종 작업 폴더와 배포에 사용할 저장소를 명확히 구분했으며, 로컬 개발 서버를 실행해 최종 코드의 동작을 확인할 준비를 완료함.\n단, 로컬 최종본과 실제 배포 사이트의 화면 및 기능이 일치하는지는 추가 확인이 필요함.",
+        "nextSteps": "로컬 개발 서버 실행 및 주요 기능 정상 동작 확인\nGitHub 저장소의 최신 코드와 로컬 최종본 비교\nGitHub Pages 배포 사이트의 최신 반영 여부 확인\n프로젝트 데이터 백업·복원 방식 정리\n이후 수정 사항을 기능 단위로 기록하고 버전 관리",
+        "task": "최종 작업 폴더를 minlab---프로젝트-아카이브로 확정\n기존 GitHub 저장소 minho-nim/MinLab을 기준 저장소로 설정\nGit 원격 저장소 연결 및 main 브랜치 연동 상태 확인\n로컬 프로젝트 실행을 위한 개발 서버 구동 준비\n로컬 최종본과 GitHub 저장소 및 배포 사이트 간 코드 일치 여부 확인 작업 진행",
+        "issues": "",
+        "solution": "",
+        "createdAt": "2026-10-21T00:26:05.684Z"
+      },
+      {
+        "id": "wl-1792485652183",
+        "projectId": "proj-1792485558773",
+        "projectName": "MinLab GitHub 연동 및 버전 관리 설정",
+        "date": "2026-10-20",
+        "version": "0.0.1",
+        "title": "개발 1차",
+        "content": "- Git 설치 및 로컬 프로젝트 Git 저장소 초기화\n- 초기 커밋 생성으로 현재 코드 버전 기록\n- GitHub 원격 저장소 연결 및 코드 업로드\n- main 브랜치 설정 및 원격 저장소 연동 완료",
+        "reason": "",
+        "testResult": "로컬 프로젝트와 GitHub 저장소 연결 완료. 코드 수정 후 커밋과 푸시를 통해 변경 사항을 기록할 수 있는 상태.",
+        "nextSteps": "다른 PC에서 프로젝트 실행 및 개발 환경 구성 확인\n프로젝트 데이터 백업·복원 방식 정리\n이후 수정 사항을 기능 단위로 기록",
+        "task": "- Git 설치 및 로컬 프로젝트 Git 저장소 초기화\n- 초기 커밋 생성으로 현재 코드 버전 기록\n- GitHub 원격 저장소 연결 및 코드 업로드\n- main 브랜치 설정 및 원격 저장소 연동 완료",
+        "issues": "",
+        "solution": "",
+        "createdAt": "2026-10-20T08:40:52.183Z"
+      }
+    ],
+    "changelog": [],
+    "createdAt": "2026-10-20T08:39:18.773Z",
+    "updatedAt": "2026-10-21T00:31:09.610Z"
+  },
+  {
+    "id": "risk-assessment-workplan-automation",
+    "name": "위험성평가서 / 작업계획서 자동화 도구",
+    "englishName": "Risk Assessment & Work Plan Automation",
+    "status": "구상 중",
+    "category": "업무 자동화",
+    "description": "위험성평가서 및 작업계획서 관련 업무를 효율화하기 위한 자동화 도구",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    "isSample": true,
+    "archived": false,
+    "keyFeatures": [],
+    "techStack": [
+      "Python"
+    ],
+    "liveUrl": "",
+    "githubUrl": "https://github.com/minho-nim/MinLab",
+    "workLogs": [
+      {
+        "id": "wl-init-1",
+        "projectId": "risk-assessment-workplan-automation",
+        "projectName": "위험성평가서 / 작업계획서 자동화 도구",
+        "date": "2026-10-15",
+        "version": "v0.1.0",
+        "title": "현행 서식 및 업무 프로세스 분석",
+        "content": "위험성평가서 및 작업계획서 기존 서식 및 데이터 입력 구조 분석",
+        "reason": "작업 현장 및 공종별로 필수 서식이 상이하여 공통 데이터 모델 및 표준 템플릿 정립 필요",
+        "testResult": "기본 분류 체계 및 데이터 필드 정의서 초안 정리 완료",
+        "nextSteps": "Python 기반 자동화 스크립트 핵심 모듈 구조 설계 및 입출력 양식 연동 검토",
+        "task": "위험성평가서 및 작업계획서 기존 서식 및 업무 흐름 분석",
+        "issues": "작업 현장 및 공종별로 서식과 필수 입력 항목이 상이하여 통일된 데이터 구조 정립 필요",
+        "solution": "공통 필수 위험요인(추락, 낙하, 협착 등)과 표준 작업 절차를 모듈형 데이터 구조로 분리 설계",
+        "createdAt": "2026-10-15T09:30:00.000Z"
+      }
+    ],
+    "changelog": [
+      {
+        "id": "cl-init-1",
+        "version": "v0.1.0",
+        "date": "2026-10-15",
+        "description": "프로젝트 기획 및 요구사항 분석 시작"
+      }
+    ],
+    "createdAt": "2026-10-15T09:00:00.000Z",
+    "updatedAt": "2026-10-20T08:17:44.375Z"
+  }
+]

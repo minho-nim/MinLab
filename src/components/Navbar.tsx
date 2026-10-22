@@ -1,13 +1,6 @@
 import React from 'react';
 import { NavigationTab } from '../types';
-import {
-  Download,
-  Plus,
-  Search,
-  Terminal,
-  FolderGit2,
-  FileCode2,
-} from 'lucide-react';
+import { ArrowUpRight, Download, Plus, Search, X } from 'lucide-react';
 
 interface NavbarProps {
   currentTab: NavigationTab;
@@ -22,157 +15,93 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  currentTab,
-  onSelectTab,
-  searchQuery,
-  onSearchChange,
-  onOpenNewProjectModal,
-  onOpenBackupModal,
-  onNavigateHome,
-  totalProjectsCount = 0,
-  totalLogsCount = 0,
+  currentTab, onSelectTab, searchQuery, onSearchChange,
+  onOpenNewProjectModal, onOpenBackupModal, onNavigateHome,
+  totalProjectsCount = 0, totalLogsCount = 0,
 }) => {
-  const navItems: { id: NavigationTab; label: string; icon: React.ReactNode; count?: number }[] = [
-    {
-      id: 'projects',
-      label: 'Projects',
-      icon: <FolderGit2 className="w-3.5 h-3.5" />,
-      count: totalProjectsCount,
-    },
-    {
-      id: 'development-log',
-      label: 'Development Log',
-      icon: <FileCode2 className="w-3.5 h-3.5" />,
-      count: totalLogsCount,
-    },
+  const items: { id: NavigationTab; label: string; count: number }[] = [
+    { id: 'projects', label: '프로젝트', count: totalProjectsCount },
+    { id: 'development-log', label: '개발일지', count: totalLogsCount },
   ];
 
+  const search = (mobile: boolean) => (
+    <div className={mobile ? 'relative w-full md:hidden' : 'relative ml-auto hidden w-56 md:block lg:w-64'}>
+      <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted" />
+      <input
+        type="search"
+        value={searchQuery}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="프로젝트, 기술 검색"
+        aria-label="프로젝트와 기술 검색"
+        className="h-9 w-full rounded-lg border border-line bg-canvas pl-9 pr-9 text-xs text-ink placeholder:text-muted transition focus:border-accent focus:bg-surface focus:outline-none"
+      />
+      {searchQuery && (
+        <button type="button" onClick={() => onSearchChange('')} aria-label="검색 지우기" className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted hover:text-ink">
+          <X className="h-3 w-3" />
+        </button>
+      )}
+    </div>
+  );
+
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-[#0B0F17]/95 border-b border-[#21262D]">
-      {/* Top Bar */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
-        {/* Brand */}
-        <div
-          onClick={() => {
-            onNavigateHome();
-            onSelectTab('projects');
-          }}
-          className="flex items-center gap-2.5 cursor-pointer group shrink-0"
+    <header className="sticky top-0 z-40 border-b border-line bg-surface/95 backdrop-blur-md">
+      <div className="mx-auto flex h-[72px] max-w-6xl items-center gap-6 px-4 sm:px-6 lg:gap-10 lg:px-8">
+        <button
+          type="button"
+          aria-label="MinLab 홈으로 이동"
+          onClick={() => { onNavigateHome(); onSelectTab('projects'); }}
+          className="group flex shrink-0 items-center gap-2.5"
         >
-          <div className="w-7 h-7 rounded-md bg-[#161B22] border border-[#30363D] group-hover:border-purple-500/60 flex items-center justify-center transition-colors">
-            <Terminal className="w-3.5 h-3.5 text-purple-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-sm font-semibold tracking-tight text-[#F0F6FC]">
-              MinLab
-            </span>
-            <span className="text-xs text-[#8B949E] font-normal hidden sm:inline">
-              연구·개발 아카이브
-            </span>
-          </div>
-        </div>
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-white transition group-hover:bg-accent-hover">
+            <ArrowUpRight className="h-5 w-5" strokeWidth={2.5} />
+          </span>
+          <span className="text-xl font-bold tracking-[-0.055em] text-ink">MinLab<span className="text-accent">.</span></span>
+        </button>
 
-        {/* Global Search Bar */}
-        <div className="hidden md:flex items-center flex-1 max-w-sm mx-4">
-          <div className="relative w-full">
-            <Search className="w-3.5 h-3.5 text-[#6E7681] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="프로젝트, 기술, 개발 기록 검색..."
-              className="w-full pl-9 pr-3 py-1.5 bg-[#161B22] border border-[#30363D] hover:border-[#484F58] focus:border-purple-500 rounded-md text-xs text-[#E6EDF3] placeholder-[#6E7681] focus:outline-none transition-colors"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => onSearchChange('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-[#8B949E] hover:text-[#F0F6FC]"
-              >
-                지우기
-              </button>
-            )}
-          </div>
-        </div>
+        <nav aria-label="메인 메뉴" className="hidden h-full shrink-0 gap-6 md:flex">
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-current={currentTab === item.id ? 'page' : undefined}
+              onClick={() => { onNavigateHome(); onSelectTab(item.id); }}
+              className={'flex items-center gap-2 border-b-2 px-0.5 pt-0.5 text-sm font-medium transition ' + (currentTab === item.id ? 'border-accent text-ink' : 'border-transparent text-muted hover:text-ink')}
+            >
+              {item.label}
+              <span className="text-[10px] tabular-nums text-muted">{item.count}</span>
+            </button>
+          ))}
+        </nav>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onOpenBackupModal}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] hover:border-[#484F58] transition-colors"
-            title="JSON 백업 및 복원 (LocalStorage 데이터 관리)"
-          >
-            <Download className="w-3.5 h-3.5 text-[#8B949E]" />
-            <span className="hidden sm:inline">백업·복원</span>
+        {search(false)}
+
+        <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0">
+          <button type="button" onClick={onOpenBackupModal} title="JSON 백업·복원" className="flex h-9 items-center gap-1.5 rounded-lg border border-line px-2.5 text-xs font-medium text-ink-secondary transition hover:border-line-strong hover:bg-canvas">
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden lg:inline">백업·복원</span>
           </button>
-
-          <button
-            onClick={onOpenNewProjectModal}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 transition-colors shadow-xs"
-          >
-            <Plus className="w-3.5 h-3.5" />
+          <button type="button" onClick={onOpenNewProjectModal} className="flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-white transition hover:bg-accent-hover">
+            <Plus className="h-3.5 w-3.5" />
             <span>새 프로젝트</span>
           </button>
         </div>
       </div>
 
-      {/* Main Navigation Menu Bar: Projects & Development Log */}
-      <div className="border-t border-[#1C2128] bg-[#0E121A]/80">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between overflow-x-auto scrollbar-none">
-          <nav className="flex items-center gap-1 py-1.5 min-w-max">
-            {navItems.map((item) => {
-              const isActive = currentTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onNavigateHome();
-                    onSelectTab(item.id);
-                  }}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    isActive
-                      ? 'text-[#F0F6FC] bg-[#1C2128] border border-[#30363D] shadow-xs'
-                      : 'text-[#8B949E] hover:text-[#C9D1D9] hover:bg-[#161B22]/60 border border-transparent'
-                  }`}
-                >
-                  <span className={isActive ? 'text-purple-400' : 'text-[#6E7681]'}>
-                    {item.icon}
-                  </span>
-                  <span>{item.label}</span>
-                  {item.count !== undefined && (
-                    <span
-                      className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                        isActive
-                          ? 'bg-purple-950/70 text-purple-300 border border-purple-800/50'
-                          : 'bg-[#21262D] text-[#8B949E]'
-                      }`}
-                    >
-                      {item.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Quick Notice Pill for Storage */}
-          <div className="hidden lg:flex items-center text-[11px] text-[#6E7681] font-mono pr-2">
-            <span>로컬 저장소 보존 중 (JSON 백업 지원)</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Search */}
-      <div className="md:hidden px-4 py-2 border-t border-[#1C2128]">
-        <div className="relative w-full">
-          <Search className="w-3.5 h-3.5 text-[#6E7681] absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="프로젝트, 기록 검색..."
-            className="w-full pl-9 pr-3 py-1.5 bg-[#161B22] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] placeholder-[#6E7681] focus:outline-none focus:border-purple-500"
-          />
-        </div>
+      <div className="space-y-3 border-t border-line px-4 pb-3 md:hidden">
+        <nav aria-label="모바일 메뉴" className="flex gap-5">
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-current={currentTab === item.id ? 'page' : undefined}
+              onClick={() => { onNavigateHome(); onSelectTab(item.id); }}
+              className={'flex items-center gap-2 border-b-2 py-3 text-xs font-medium ' + (currentTab === item.id ? 'border-accent text-ink' : 'border-transparent text-muted')}
+            >
+              {item.label}<span className="text-[10px] text-muted">{item.count}</span>
+            </button>
+          ))}
+        </nav>
+        {search(true)}
       </div>
     </header>
   );

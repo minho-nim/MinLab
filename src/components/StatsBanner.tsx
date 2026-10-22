@@ -1,5 +1,6 @@
 import React from 'react';
 import { Project } from '../types';
+import { normalizeProjectStatus } from '../utils/storage';
 
 interface StatsBannerProps {
   projects: Project[];
@@ -8,121 +9,66 @@ interface StatsBannerProps {
   categories: string[];
 }
 
-export const StatsBanner: React.FC<StatsBannerProps> = ({
-  projects,
-  activeFilter,
-  onSelectFilter,
-  categories,
-}) => {
-  const totalProjects = projects.length;
-  const conceptualCount = projects.filter((p) => p.status === '구상 중').length;
-  const inDevCount = projects.filter((p) => p.status === '개발 중').length;
-  const completedCount = projects.filter((p) => p.status === '완성' || p.status === '완료').length;
-  const pausedCount = projects.filter((p) => p.status === '보류').length;
-  const totalLogs = projects.reduce((acc, p) => acc + (p.workLogs?.length || 0), 0);
+export const StatsBanner: React.FC<StatsBannerProps> = ({ projects, activeFilter, onSelectFilter, categories }) => {
+  const totalLogs = projects.reduce((count, project) => count + (project.workLogs?.length || 0), 0);
+  const filters = ['전체', '개발 중', '완성', '구상 중', '보류'].map((name) => ({
+    name,
+    count: name === '전체' ? projects.length : projects.filter((project) => normalizeProjectStatus(project.status) === name).length,
+  }));
 
   return (
-    <div className="space-y-6 pt-2 pb-2">
-      {/* Editorial Header */}
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#F0F6FC]">
-          프로젝트 아카이브
-        </h1>
-        <p className="text-sm text-[#8B949E] leading-relaxed max-w-2xl">
-          실무 자동화와 엔지니어링 프로젝트의 기획, 구현, 문제 해결 과정을 기록하고 보관하는 개발 아카이브입니다.
-        </p>
-      </div>
-
-      {/* Filter and Stats Bar with Thin Divider */}
-      <div className="pt-4 border-t border-[#21262D] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Filter Tabs: 상태 및 분야 태그 */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {/* 1. 전체 */}
-          <button
-            onClick={() => onSelectFilter('전체')}
-            className={`px-2.5 py-1 rounded-md text-xs transition-colors whitespace-nowrap ${
-              activeFilter === '전체'
-                ? 'bg-[#21262D] text-[#F0F6FC] font-medium border border-[#30363D]'
-                : 'text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#161B22]'
-            }`}
-          >
-            전체 <span className="text-[#6E7681] ml-0.5">{totalProjects}</span>
-          </button>
-
-          {/* 2. 상태 구분: 구상 중 */}
-          <button
-            onClick={() => onSelectFilter('구상 중')}
-            className={`px-2.5 py-1 rounded-md text-xs transition-colors whitespace-nowrap ${
-              activeFilter === '구상 중'
-                ? 'bg-[#21262D] text-[#F0F6FC] font-medium border border-[#30363D]'
-                : 'text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#161B22]'
-            }`}
-          >
-            구상 중 <span className="text-[#6E7681] ml-0.5">{conceptualCount}</span>
-          </button>
-
-          {/* 3. 상태 구분: 개발 중 */}
-          <button
-            onClick={() => onSelectFilter('개발 중')}
-            className={`px-2.5 py-1 rounded-md text-xs transition-colors whitespace-nowrap ${
-              activeFilter === '개발 중'
-                ? 'bg-[#21262D] text-[#F0F6FC] font-medium border border-[#30363D]'
-                : 'text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#161B22]'
-            }`}
-          >
-            개발 중 <span className="text-[#6E7681] ml-0.5">{inDevCount}</span>
-          </button>
-
-          {/* 3. 상태 구분: 완성 */}
-          <button
-            onClick={() => onSelectFilter('완성')}
-            className={`px-2.5 py-1 rounded-md text-xs transition-colors whitespace-nowrap ${
-              activeFilter === '완성'
-                ? 'bg-[#21262D] text-[#F0F6FC] font-medium border border-[#30363D]'
-                : 'text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#161B22]'
-            }`}
-          >
-            완성 <span className="text-[#6E7681] ml-0.5">{completedCount}</span>
-          </button>
-
-          {/* 4. 상태 구분: 보류 (보류 항목이 있을 때 표시) */}
-          {pausedCount > 0 && (
-            <button
-              onClick={() => onSelectFilter('보류')}
-              className={`px-2.5 py-1 rounded-md text-xs transition-colors whitespace-nowrap ${
-                activeFilter === '보류'
-                  ? 'bg-[#21262D] text-[#F0F6FC] font-medium border border-[#30363D]'
-                  : 'text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#161B22]'
-              }`}
-            >
-              보류 <span className="text-[#6E7681] ml-0.5">{pausedCount}</span>
-            </button>
-          )}
-
-          {/* 구분선 */}
-          {categories.length > 0 && <span className="text-[#30363D] mx-1">|</span>}
-
-          {/* 5. 분야 및 분류 태그 */}
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => onSelectFilter(cat)}
-              className={`px-2.5 py-1 rounded-md text-xs transition-colors whitespace-nowrap ${
-                activeFilter === cat
-                  ? 'bg-[#21262D] text-[#F0F6FC] font-medium border border-[#30363D]'
-                  : 'text-[#8B949E] hover:text-[#F0F6FC] hover:bg-[#161B22]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Small Meta Count */}
-        <div className="text-xs text-[#8B949E] font-mono shrink-0 hidden sm:block">
-          {totalProjects}개 프로젝트 · {totalLogs}건의 개발 기록
+    <section className="space-y-7">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-surface px-6 py-8 sm:px-9 sm:py-10">
+        <div aria-hidden="true" className="archive-hero absolute inset-y-0 right-0 w-1/3 opacity-60 [mask-image:linear-gradient(to_right,transparent,black)]" />
+        <div className="relative">
+          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">MinLab / Personal archive</p>
+          <h1 className="text-[30px] font-bold leading-tight tracking-[-0.055em] text-ink sm:text-[42px]">
+            <span className="text-accent">AI 활용</span><span className="text-line-strong">,</span> 개발일지.
+          </h1>
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted">
+            <span>프로젝트 <strong className="ml-1 font-semibold tabular-nums text-ink">{projects.length}</strong></span>
+            <span>개발 기록 <strong className="ml-1 font-semibold tabular-nums text-ink">{totalLogs}</strong></span>
+            <span>프롬프트 <strong className="ml-1 font-semibold tabular-nums text-ink">{projects.reduce((count, project) => count + (project.promptHistory?.length || 0), 0)}</strong></span>
+          </div>
         </div>
       </div>
-    </div>
+
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold tracking-tight text-ink">프로젝트 <span className="ml-1.5 text-xs font-normal text-muted">{projects.length}</span></h2>
+          <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-lg border border-line bg-surface p-1 scrollbar-none" aria-label="프로젝트 상태">
+            {filters.map(({ name, count }) => (
+              <button
+                key={name}
+                type="button"
+                aria-pressed={activeFilter === name}
+                onClick={() => onSelectFilter(name)}
+                className={'shrink-0 rounded-md px-3 py-1.5 text-xs transition ' + (activeFilter === name ? 'bg-accent-soft font-semibold text-accent' : 'text-muted hover:bg-canvas hover:text-ink')}
+              >
+                {name}<span className="ml-1.5 text-[10px] font-normal tabular-nums opacity-75">{count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        {categories.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2" aria-label="프로젝트 분야">
+            <button type="button" aria-pressed={activeFilter === '전체'} onClick={() => onSelectFilter('전체')} className={'rounded-full border px-3 py-1.5 text-[11px] transition ' + (activeFilter === '전체' ? 'border-ink bg-ink text-white' : 'border-line bg-surface text-muted hover:border-line-strong')}>
+              모든 분야
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                aria-pressed={activeFilter === category}
+                onClick={() => onSelectFilter(category)}
+                className={'rounded-full border px-3 py-1.5 text-[11px] transition ' + (activeFilter === category ? 'border-accent-line bg-accent-soft text-accent' : 'border-line bg-surface text-muted hover:border-line-strong hover:text-ink')}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };

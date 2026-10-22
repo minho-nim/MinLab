@@ -23,17 +23,17 @@ export const Toast: React.FC<ToastProps> = ({ toasts, onDismiss }) => {
         return (
           <div
             key={toast.id}
-            className="pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg border border-[#30363D] bg-[#161B22]/95 backdrop-blur-md shadow-xl text-xs text-[#E6EDF3]"
+            className="pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg border border-line-strong bg-surface/95 backdrop-blur-md shadow-xl text-xs text-ink"
           >
             <div className="flex items-center gap-2">
-              {isSuccess && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
-              {isError && <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />}
-              {!isSuccess && !isError && <Info className="w-3.5 h-3.5 text-purple-400 shrink-0" />}
+              {isSuccess && <Check className="w-3.5 h-3.5 text-emerald-700 shrink-0" />}
+              {isError && <AlertCircle className="w-3.5 h-3.5 text-rose-700 shrink-0" />}
+              {!isSuccess && !isError && <Info className="w-3.5 h-3.5 text-accent shrink-0" />}
               <span className="leading-snug">{toast.text}</span>
             </div>
             <button
               onClick={() => onDismiss(toast.id)}
-              className="text-[#6E7681] hover:text-[#C9D1D9] transition-colors p-0.5"
+              className="text-muted hover:text-ink-secondary transition-colors p-0.5"
             >
               <X className="w-3.5 h-3.5" />
             </button>

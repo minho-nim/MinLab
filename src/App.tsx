@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Project, WorkLog, NavigationTab } from './types';
 import { loadProjects, saveProjects } from './utils/storage';
 import { Navbar } from './components/Navbar';
@@ -17,6 +17,10 @@ export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState<NavigationTab>('projects');
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [selectedProjectId, currentTab]);
 
   // Search & Filter (for Projects Tab)
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,9 +65,13 @@ export default function App() {
   };
 
   // Sync to localStorage
-  const updateProjectsState = (newProjects: Project[]) => {
+  const updateProjectsState = (newProjects: Project[]): boolean => {
+    if (!saveProjects(newProjects)) {
+      showToast('브라우저 저장 공간에 기록하지 못했습니다. JSON 백업 후 저장 공간을 확인해 주세요.', 'error');
+      return false;
+    }
     setProjects(newProjects);
-    saveProjects(newProjects);
+    return true;
   };
 
   // Currently selected project for Detail view
@@ -118,19 +126,23 @@ export default function App() {
   }, [projects, activeCategoryFilter, searchQuery]);
 
   // Handlers for Project Add / Edit
-  const handleSaveProject = (projectToSave: Project) => {
+  const handleSaveProject = (projectToSave: Project): boolean => {
     const exists = projects.some((p) => p.id === projectToSave.id);
     let updatedList: Project[];
 
     if (exists) {
       updatedList = projects.map((p) => (p.id === projectToSave.id ? projectToSave : p));
-      showToast(`'${projectToSave.name}' 프로젝트가 수정되었습니다.`, 'success');
     } else {
       updatedList = [projectToSave, ...projects];
-      showToast(`새 프로젝트 '${projectToSave.name}'이(가) 등록되었습니다.`, 'success');
     }
 
-    updateProjectsState(updatedList);
+    if (updateProjectsState(updatedList)) {
+      showToast(exists
+        ? `'${projectToSave.name}' 프로젝트가 수정되었습니다.`
+        : `새 프로젝트 '${projectToSave.name}'이(가) 등록되었습니다.`, 'success');
+      return true;
+    }
+    return false;
   };
 
   const handleUpdateProject = (updated: Project) => {
@@ -147,7 +159,7 @@ export default function App() {
     if (!projectToDelete) return;
     const deletedName = projectToDelete.name;
     const updatedList = projects.filter((p) => p.id !== projectToDelete.id);
-    updateProjectsState(updatedList);
+    if (!updateProjectsState(updatedList)) return;
     if (selectedProjectId === projectToDelete.id) {
       setSelectedProjectId(null);
     }
@@ -165,11 +177,11 @@ export default function App() {
     setIsWorkLogModalOpen(true);
   };
 
-  const handleSaveWorkLog = (logToSave: WorkLog, targetProjectId: string) => {
+  const handleSaveWorkLog = (logToSave: WorkLog, targetProjectId: string): boolean => {
     const targetProject = projects.find((p) => p.id === targetProjectId);
     if (!targetProject) {
       showToast('대상 프로젝트를 찾을 수 없습니다.', 'error');
-      return;
+      return false;
     }
 
     const currentLogs = targetProject.workLogs || [];
@@ -178,10 +190,8 @@ export default function App() {
     let updatedLogs: WorkLog[];
     if (logExists) {
       updatedLogs = currentLogs.map((l) => (l.id === logToSave.id ? logToSave : l));
-      showToast('개발 기록이 수정되었습니다.', 'success');
     } else {
       updatedLogs = [logToSave, ...currentLogs];
-      showToast('새 개발 기록이 등록되었습니다.', 'success');
     }
 
     const updatedProject: Project = {
@@ -190,7 +200,12 @@ export default function App() {
       updatedAt: new Date().toISOString(),
     };
 
-    handleUpdateProject(updatedProject);
+    const updatedList = projects.map((p) => p.id === updatedProject.id ? updatedProject : p);
+    if (updateProjectsState(updatedList)) {
+      showToast(logExists ? '개발 기록이 수정되었습니다.' : '새 개발 기록이 등록되었습니다.', 'success');
+      return true;
+    }
+    return false;
   };
 
   const handleRequestDeleteLog = (log: WorkLog, targetProjectId: string) => {
@@ -208,8 +223,10 @@ export default function App() {
         workLogs: updatedLogs,
         updatedAt: new Date().toISOString(),
       };
-      handleUpdateProject(updatedProj);
-      showToast(`'${log.title || log.task || '개발 기록'}'이 삭제되었습니다.`, 'info');
+      const updatedList = projects.map((p) => p.id === updatedProj.id ? updatedProj : p);
+      if (updateProjectsState(updatedList)) {
+        showToast(`'${log.title || log.task || '개발 기록'}'이 삭제되었습니다.`, 'info');
+      }
     }
     setLogToDeleteInfo(null);
   };
@@ -223,11 +240,15 @@ export default function App() {
 
   const handleDismissNotice = () => {
     setShowStorageNotice(false);
-    localStorage.setItem('minlab_hide_storage_notice', 'true');
+    try {
+      localStorage.setItem('minlab_hide_storage_notice', 'true');
+    } catch (err) {
+      console.warn('Could not save storage notice preference:', err);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F17] text-[#E6EDF3] flex flex-col font-sans selection:bg-purple-600 selection:text-white">
+    <div className="min-h-screen bg-transparent text-ink flex flex-col font-sans selection:bg-accent selection:text-white">
       {/* Toast Notifications */}
       <Toast toasts={toasts} onDismiss={handleDismissToast} />
 
@@ -255,27 +276,25 @@ export default function App() {
 
       {/* Storage & Data Preservation Notice Banner */}
       {showStorageNotice && (
-        <aside aria-label="저장 방식 안내" className="bg-[#111726] border-b border-[#21262D] px-4 py-2.5 text-xs">
-          <div className="max-w-6xl mx-auto flex items-start sm:items-center justify-between gap-3 text-[#C9D1D9]">
+        <aside aria-label="저장 방식 안내" className="bg-surface-alt border-b border-line px-4 py-2.5 text-xs">
+          <div className="max-w-6xl mx-auto flex items-start sm:items-center justify-between gap-3 text-ink-secondary">
             <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-purple-400 shrink-0" />
+              <Info className="w-4 h-4 text-accent shrink-0" />
               <p className="leading-snug">
-                <strong className="text-purple-300 font-medium">데이터 저장 및 보존 안내:</strong>{' '}
-                모든 프로젝트와 개발 기록은 별도 서버 없이 브라우저 로컬 스토리지(LocalStorage)에 안전하게 저장됩니다.
-                브라우저 캐시 삭제 시 데이터가 유실될 수 있으므로, 상단{' '}
+                기록은 이 브라우저에 저장됩니다. 보관하려면{' '}
                 <button
                   onClick={() => setIsBackupModalOpen(true)}
-                  className="text-purple-400 underline font-medium hover:text-purple-300 inline-flex items-center gap-0.5"
+                  className="text-accent underline font-medium hover:text-accent inline-flex items-center gap-0.5"
                 >
                   <Download className="w-3 h-3 inline" />
-                  [백업·복원]
+                  백업·복원
                 </button>
-                을 통해 주기적으로 JSON 백업 파일을 다운로드해 보관하세요.
+                에서 JSON 파일을 내려받으세요.
               </p>
             </div>
             <button
               onClick={handleDismissNotice}
-              className="text-[#8B949E] hover:text-[#F0F6FC] p-1 rounded hover:bg-[#161B22] shrink-0"
+              className="text-muted hover:text-ink p-1 rounded hover:bg-surface shrink-0"
               title="안내 닫기"
             >
               <X className="w-3.5 h-3.5" />
@@ -285,7 +304,7 @@ export default function App() {
       )}
 
       {/* Main View Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
         {selectedProject ? (
           /* Project Detail Page */
           <ProjectDetail
@@ -312,7 +331,7 @@ export default function App() {
             />
 
             {filteredProjects.length === 0 ? (
-              <div className="py-16 text-center text-xs text-[#8B949E] space-y-3 border border-dashed border-[#21262D] rounded-xl">
+              <div className="py-16 text-center text-xs text-muted space-y-3 border border-dashed border-line rounded-xl">
                 <p>일치하는 프로젝트가 없습니다.</p>
                 <div className="flex justify-center gap-2">
                   <button
@@ -320,7 +339,7 @@ export default function App() {
                       setSearchQuery('');
                       setActiveCategoryFilter('전체');
                     }}
-                    className="px-2.5 py-1 rounded-md text-xs text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D]"
+                    className="px-2.5 py-1 rounded-md text-xs text-ink-secondary bg-surface hover:bg-surface-alt border border-line-strong"
                   >
                     필터 초기화
                   </button>
@@ -329,14 +348,14 @@ export default function App() {
                       setEditingProject(null);
                       setIsProjectModalOpen(true);
                     }}
-                    className="px-3 py-1 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500"
+                    className="px-3 py-1 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover"
                   >
                     + 새 프로젝트
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {filteredProjects.map((project) => (
                   <ProjectCard
                     key={project.id}
@@ -367,29 +386,29 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-[#21262D] py-6 text-xs text-[#8B949E] bg-[#0A0D14]">
+      <footer className="mt-auto border-t border-line py-6 text-xs text-muted bg-canvas">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[#F0F6FC]">MinLab</span>
+            <span className="font-semibold text-ink">MinLab</span>
             <span>·</span>
-            <span>개인 연구·개발 포트폴리오 & 아카이브</span>
+            <span>AI 활용 · 프로젝트 · 개발일지</span>
           </div>
 
-          <div className="flex items-center gap-3 text-[11px] text-[#6E7681]">
+          <div className="flex items-center gap-3 text-[11px] text-muted">
             <button
               onClick={() => setIsBackupModalOpen(true)}
-              className="hover:text-purple-400 transition-colors"
+              className="hover:text-accent transition-colors"
             >
               JSON 데이터 백업·복원
             </button>
             <span>·</span>
-            <span>브라우저 LocalStorage 보존</span>
+            <span>브라우저에 저장</span>
             <span>·</span>
             <a
               href="https://github.com/minho-nim/MinLab"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-[#F0F6FC] transition-colors"
+              className="hover:text-ink transition-colors"
             >
               GitHub 저장소
             </a>
@@ -416,7 +435,7 @@ export default function App() {
         itemName={projectToDelete ? projectToDelete.name : ''}
         warningText={
           projectToDelete
-            ? `주의: 삭제 시 데이터가 영구적으로 제거됩니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 변경 내역이 함께 삭제됩니다.`
+            ? `주의: 삭제 시 데이터가 영구적으로 제거됩니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
             : '주의: 삭제 시 데이터가 영구적으로 제거됩니다.'
         }
         confirmText="삭제"
@@ -456,10 +475,11 @@ export default function App() {
         onClose={() => setIsBackupModalOpen(false)}
         projects={projects}
         onRestore={(restoredProjects) => {
-          updateProjectsState(restoredProjects);
-          if (selectedProjectId && !restoredProjects.some((p) => p.id === selectedProjectId)) {
+          const saved = updateProjectsState(restoredProjects);
+          if (saved && selectedProjectId && !restoredProjects.some((p) => p.id === selectedProjectId)) {
             setSelectedProjectId(null);
           }
+          return saved;
         }}
         showToast={showToast}
       />

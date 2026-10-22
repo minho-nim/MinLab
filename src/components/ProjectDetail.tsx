@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Project, WorkLog, ChangelogItem, ProjectStatus, ProjectFeature, FeatureStatus } from '../types';
+import { Project, WorkLog, PromptHistoryItem, ProjectStatus, ProjectFeature, FeatureStatus } from '../types';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { ProjectPreview } from './ProjectPreview';
 import { normalizeProjectStatus } from '../utils/storage';
 import {
   ArrowLeft,
@@ -85,11 +86,12 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
   const [isAddingTech, setIsAddingTech] = useState(false);
   const [newTechText, setNewTechText] = useState('');
 
-  // Changelog state
-  const [isAddingChangelog, setIsAddingChangelog] = useState(false);
-  const [newVersion, setNewVersion] = useState('');
-  const [newChangelogDate, setNewChangelogDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newChangelogDesc, setNewChangelogDesc] = useState('');
+  // Project-specific prompt history
+  const [isAddingPrompt, setIsAddingPrompt] = useState(false);
+  const [newPromptTitle, setNewPromptTitle] = useState('');
+  const [newPromptText, setNewPromptText] = useState('');
+  const [newPromptOutcome, setNewPromptOutcome] = useState('');
+  const [newPromptDate, setNewPromptDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Work log expanded state
   const [expandedLogIds, setExpandedLogIds] = useState<Record<string, boolean>>(() => {
@@ -226,40 +228,42 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
     showToast(`상태가 '${newStatus}'(으)로 변경되었습니다.`, 'success');
   };
 
-  // 4. Changelog Handlers
-  const handleAddChangelog = () => {
-    if (!newVersion.trim() || !newChangelogDesc.trim()) {
-      showToast('버전과 변경 내용을 입력해 주세요.', 'error');
+  // 4. Prompt History Handlers
+  const handleAddPrompt = () => {
+    if (!newPromptTitle.trim() || !newPromptText.trim()) {
+      showToast('작업 제목과 프롬프트를 입력해 주세요.', 'error');
       return;
     }
-    const newItem: ChangelogItem = {
-      id: `cl-${Date.now()}`,
-      version: newVersion.trim(),
-      date: newChangelogDate || new Date().toISOString().split('T')[0],
-      description: newChangelogDesc.trim(),
+    const newItem: PromptHistoryItem = {
+      id: `prompt-${Date.now()}`,
+      title: newPromptTitle.trim(),
+      date: newPromptDate || new Date().toISOString().split('T')[0],
+      prompt: newPromptText.trim(),
+      outcome: newPromptOutcome.trim(),
     };
-    const updatedChangelog = [newItem, ...(project.changelog || [])];
     const updated: Project = {
       ...project,
-      changelog: updatedChangelog,
+      promptHistory: [newItem, ...(project.promptHistory || [])],
       updatedAt: new Date().toISOString(),
     };
     onUpdateProject(updated);
-    setNewVersion('');
-    setNewChangelogDesc('');
-    setIsAddingChangelog(false);
-    showToast('변경 내역이 추가되었습니다.', 'success');
+    setNewPromptTitle('');
+    setNewPromptText('');
+    setNewPromptOutcome('');
+    setNewPromptDate(new Date().toISOString().split('T')[0]);
+    setIsAddingPrompt(false);
+    showToast('프롬프트 기록을 저장했습니다.', 'success');
   };
 
-  const handleDeleteChangelog = (id: string) => {
-    const updatedChangelog = (project.changelog || []).filter((item) => item.id !== id);
+  const handleDeletePrompt = (id: string) => {
+    const updatedPromptHistory = (project.promptHistory || []).filter((item) => item.id !== id);
     const updated: Project = {
       ...project,
-      changelog: updatedChangelog,
+      promptHistory: updatedPromptHistory,
       updatedAt: new Date().toISOString(),
     };
     onUpdateProject(updated);
-    showToast('변경 내역이 삭제되었습니다.', 'info');
+    showToast('프롬프트 기록을 삭제했습니다.', 'info');
   };
 
   // 5. Work Log Delete Handler with Confirmation Modal
@@ -321,7 +325,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-1.5 text-xs text-[#8B949E] hover:text-[#F0F6FC] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-ink transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>프로젝트 목록으로 돌아가기</span>
@@ -334,7 +338,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                 href={project.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 transition-colors flex items-center gap-1 shadow-xs"
+                className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover transition-colors flex items-center gap-1 shadow-xs"
               >
                 <span>프로젝트 실행</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -346,17 +350,17 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                 href={project.githubUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-2.5 py-1.5 rounded-md text-xs font-medium text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors flex items-center gap-1"
+                className="px-2.5 py-1.5 rounded-md text-xs font-medium text-ink-secondary bg-surface hover:bg-surface-alt border border-line-strong transition-colors flex items-center gap-1"
               >
-                <GitBranch className="w-3.5 h-3.5 text-[#8B949E]" />
+                <GitBranch className="w-3.5 h-3.5 text-muted" />
                 <span>GitHub 저장소</span>
-                <ExternalLink className="w-3 h-3 text-[#6E7681]" />
+                <ExternalLink className="w-3 h-3 text-muted" />
               </a>
             )}
 
             <button
               onClick={() => onOpenEditProjectModal(project)}
-              className="px-2.5 py-1.5 rounded-md text-xs font-medium text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors flex items-center gap-1"
+              className="px-2.5 py-1.5 rounded-md text-xs font-medium text-ink-secondary bg-surface hover:bg-surface-alt border border-line-strong transition-colors flex items-center gap-1"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>프로젝트 수정</span>
@@ -364,7 +368,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
             <button
               onClick={onRequestDelete}
-              className="px-2.5 py-1.5 rounded-md text-xs font-medium text-[#8B949E] hover:text-rose-400 bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors"
+              className="px-2.5 py-1.5 rounded-md text-xs font-medium text-muted hover:text-rose-700 bg-surface hover:bg-surface-alt border border-line-strong transition-colors"
               title="프로젝트 삭제"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -378,12 +382,12 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
           <span
             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-medium border text-xs ${
               isCompleted
-                ? 'bg-emerald-950/70 text-emerald-300 border-emerald-800/50'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                 : isConceptual
-                ? 'bg-sky-950/70 text-sky-300 border-sky-800/50'
+                ? 'bg-sky-50 text-sky-700 border-sky-200'
                 : isPaused
-                ? 'bg-amber-950/70 text-amber-300 border-amber-800/50'
-                : 'bg-purple-950/70 text-purple-300 border-purple-800/50'
+                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                : 'bg-accent-soft text-accent border-accent-line'
             }`}
           >
             <span
@@ -394,7 +398,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                   ? 'bg-sky-400'
                   : isPaused
                   ? 'bg-amber-400'
-                  : 'bg-purple-400 animate-pulse'
+                  : 'bg-accent '
               }`}
             />
             {normalizedStatus}
@@ -402,7 +406,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
           {/* 분야 태그 */}
           {project.category && (
-            <span className="px-2.5 py-1 rounded-md text-xs font-medium text-[#C9D1D9] bg-[#161B22] border border-[#30363D]">
+            <span className="px-2.5 py-1 rounded-md text-xs font-medium text-ink-secondary bg-surface border border-line-strong">
               {project.category}
             </span>
           )}
@@ -411,7 +415,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
           {project.techStack?.map((tech) => (
             <span
               key={tech}
-              className="px-2 py-0.5 rounded text-xs font-mono text-[#8B949E] bg-[#0E121A] border border-[#21262D]"
+              className="px-2 py-0.5 rounded text-xs font-mono text-muted bg-surface-alt border border-line"
             >
               {tech}
             </span>
@@ -419,11 +423,11 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
           {/* 샘플 데이터 뱃지 */}
           {project.isSample ? (
-            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/60 text-amber-300 border border-amber-800/40">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
               샘플 데이터
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#161B22] text-[#8B949E] border border-[#21262D]">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-surface text-muted border border-line">
               사용자 프로젝트
             </span>
           )}
@@ -431,11 +435,11 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
         {/* 1-2. 프로젝트명 & 영문명 */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#F0F6FC]">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink">
             {project.name}
           </h1>
           {project.englishName && (
-            <p className="text-xs sm:text-sm font-mono text-[#8B949E] mt-1">
+            <p className="text-xs sm:text-sm font-mono text-muted mt-1">
               {project.englishName}
             </p>
           )}
@@ -443,18 +447,18 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
         {/* 1-3. 프로젝트 설명 (간결한 소개) */}
         {project.description ? (
-          <p className="text-sm text-[#C9D1D9] leading-relaxed max-w-3xl">
+          <p className="text-sm text-ink-secondary leading-relaxed max-w-3xl">
             {project.description}
           </p>
         ) : (
-          <p className="text-xs text-[#8B949E] italic">
+          <p className="text-xs text-muted italic">
             등록된 프로젝트 소개가 없습니다. (상단 '프로젝트 수정'을 통해 소개를 작성할 수 있습니다)
           </p>
         )}
 
         {/* 대표 이미지 배너 (등록되어 있을 때 표시) */}
         {project.thumbnailUrl && (
-          <div className="relative w-full h-44 sm:h-56 rounded-xl overflow-hidden border border-[#21262D] bg-[#0D1117]">
+          <div className="relative w-full h-44 sm:h-56 rounded-xl overflow-hidden border border-line bg-surface-alt">
             <img
               src={project.thumbnailUrl}
               alt={project.name}
@@ -470,17 +474,20 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
       {/* ============================================================== */}
       {/* 2. 프로젝트 실행 영역 (The Execution Area - First major block)      */}
       {/* ============================================================== */}
-      <section className="bg-[#111622] border border-[#21262D] rounded-xl p-5 sm:p-6 space-y-4 shadow-sm">
-        <div className="flex items-center justify-between pb-3 border-b border-[#21262D]">
+      {project.previewUrl && (
+        <ProjectPreview key={`${project.id}-${project.previewUrl}`} name={project.name} url={project.previewUrl} />
+      )}
+      <section className="bg-surface border border-line rounded-xl p-5 sm:p-6 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between pb-3 border-b border-line">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-purple-950/60 border border-purple-800/50 flex items-center justify-center text-purple-400">
+            <div className="w-7 h-7 rounded-md bg-accent-soft border border-accent-line flex items-center justify-center text-accent">
               <Play className="w-3.5 h-3.5 fill-current" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-[#F0F6FC]">
+              <h2 className="text-sm font-semibold text-ink">
                 프로젝트 실행 영역
               </h2>
-              <p className="text-xs text-[#8B949E]">
+              <p className="text-xs text-muted">
                 {hasLiveUrl
                   ? '웹 브라우저에서 즉시 실행 가능한 프로젝트입니다.'
                   : isPythonOrDesktop
@@ -492,7 +499,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
           <button
             onClick={scrollToDevLogs}
-            className="text-xs text-purple-400 hover:text-purple-300 font-medium inline-flex items-center gap-1 transition-colors"
+            className="text-xs text-accent hover:text-accent font-medium inline-flex items-center gap-1 transition-colors"
           >
             <span>개발 기록 보기</span>
             <ArrowDown className="w-3 h-3" />
@@ -503,15 +510,15 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
         {hasLiveUrl ? (
           /* Case 1: 실제 실행 URL이 있는 프로젝트 (웹 애플리케이션 등) */
           <div className="space-y-3.5 pt-1">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[#0D1117] border border-[#30363D] rounded-lg">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-surface-alt border border-line-strong rounded-lg">
               <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-semibold text-[#F0F6FC]">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 " />
+                  <span className="text-xs font-semibold text-ink">
                     웹 애플리케이션 실행 가능
                   </span>
                 </div>
-                <p className="text-xs text-[#8B949E] font-mono truncate max-w-md">
+                <p className="text-xs text-muted font-mono truncate max-w-md">
                   {project.liveUrl}
                 </p>
               </div>
@@ -521,7 +528,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                   href={project.liveUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-4 py-2 rounded-md text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 transition-colors inline-flex items-center gap-1.5 shadow-md"
+                  className="px-4 py-2 rounded-md text-xs font-semibold text-white bg-accent hover:bg-accent-hover transition-colors inline-flex items-center gap-1.5 shadow-md"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
                   <span>프로젝트 실행</span>
@@ -533,31 +540,31 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     href={project.githubUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-2 rounded-md text-xs font-medium text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors inline-flex items-center gap-1"
+                    className="px-3 py-2 rounded-md text-xs font-medium text-ink-secondary bg-surface hover:bg-surface-alt border border-line-strong transition-colors inline-flex items-center gap-1"
                   >
-                    <GitBranch className="w-3.5 h-3.5 text-[#8B949E]" />
+                    <GitBranch className="w-3.5 h-3.5 text-muted" />
                     <span>저장소</span>
                   </a>
                 )}
               </div>
             </div>
-            <p className="text-[11px] text-[#6E7681]">
+            <p className="text-[11px] text-muted">
               * 브라우저 새 탭에서 서비스가 실행됩니다. 배포 주소 및 연결 정보 수정은 상단 '프로젝트 수정'을 이용하세요.
             </p>
           </div>
         ) : isPythonOrDesktop ? (
           /* Case 2: Python / 데스크톱 자동화 도구 (실제 liveUrl이 없는 경우) */
           <div className="space-y-4 pt-1">
-            <div className="p-4 bg-[#0D1117] border border-[#30363D] rounded-lg space-y-3">
+            <div className="p-4 bg-surface-alt border border-line-strong rounded-lg space-y-3">
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-purple-400" />
-                    <span className="text-xs font-semibold text-[#F0F6FC]">
+                    <span className="w-2 h-2 rounded-full bg-accent" />
+                    <span className="text-xs font-semibold text-ink">
                       Python 데스크톱 / 업무 자동화 도구
                     </span>
                   </div>
-                  <p className="text-xs text-[#C9D1D9] leading-relaxed">
+                  <p className="text-xs text-ink-secondary leading-relaxed">
                     본 프로그램은 실무 위험성평가서·작업계획서 문서 처리를 위한 <strong>Python 기반 자동화 도구</strong>입니다. 웹 브라우저 대신 로컬 환경 실행 또는 독립 실행 파일(.exe) 배포 형태로 개발되고 있습니다.
                   </p>
                 </div>
@@ -567,54 +574,54 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     href={project.githubUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 rounded-md text-xs font-medium text-[#E6EDF3] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors inline-flex items-center gap-1.5 shrink-0"
+                    className="px-3 py-1.5 rounded-md text-xs font-medium text-ink bg-surface hover:bg-surface-alt border border-line-strong transition-colors inline-flex items-center gap-1.5 shrink-0"
                   >
-                    <GitBranch className="w-3.5 h-3.5 text-purple-400" />
+                    <GitBranch className="w-3.5 h-3.5 text-accent" />
                     <span>GitHub 소스코드 보기</span>
-                    <ExternalLink className="w-3 h-3 text-[#8B949E]" />
+                    <ExternalLink className="w-3 h-3 text-muted" />
                   </a>
                 )}
               </div>
 
               {/* 실행 준비 상태 및 안내 문구 */}
-              <div className="text-xs text-[#8B949E] space-y-1.5 border-t border-[#21262D] pt-3">
-                <div className="flex items-center gap-1.5 text-purple-300 font-medium">
+              <div className="text-xs text-muted space-y-1.5 border-t border-line pt-3">
+                <div className="flex items-center gap-1.5 text-accent font-medium">
                   <Terminal className="w-3.5 h-3.5" />
                   <span>로컬 실행 및 개발 환경 안내:</span>
                 </div>
-                <div className="p-2.5 bg-[#161B22] border border-[#21262D] rounded font-mono text-[11px] text-[#C9D1D9] space-y-1">
+                <div className="p-2.5 bg-surface border border-line rounded font-mono text-[11px] text-ink-secondary space-y-1">
                   <div># 저장소 클론 및 가상환경 활성화</div>
-                  <div className="text-purple-300">python -m venv venv && source venv/bin/activate  # (Windows: venv\Scripts\activate)</div>
+                  <div className="text-accent">python -m venv venv && source venv/bin/activate  # (Windows: venv\Scripts\activate)</div>
                   <div>pip install -r requirements.txt</div>
                   <div>python main.py</div>
                 </div>
-                <p className="text-[11px] text-[#6E7681]">
+                <p className="text-[11px] text-muted">
                   * 현재 핵심 데이터 파싱 및 표준 서식 연동 모듈 개발 단계에 있으며, 독립 실행 파일(.exe) 패키징은 테스트 검증 완료 후 배포될 예정입니다.
                 </p>
               </div>
             </div>
 
-            <div className="text-xs text-[#8B949E] pt-1">
+            <div className="text-xs text-muted pt-1">
               구현 과정과 최근 수정 내역은 하단의 개발 기록을 통해 확인하실 수 있습니다.
             </div>
           </div>
         ) : (
           /* Case 3: 아직 실행할 수 없는 프로젝트 (준비 중 안내) */
-          <div className="p-4 bg-[#0D1117] border border-[#30363D] rounded-lg space-y-3">
+          <div className="p-4 bg-surface-alt border border-line-strong rounded-lg space-y-3">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs font-semibold text-[#F0F6FC]">
+                <Clock className="w-3.5 h-3.5 text-amber-700" />
+                <span className="text-xs font-semibold text-ink">
                   실행 준비 중인 프로젝트입니다
                 </span>
               </div>
-              <p className="text-xs text-[#8B949E] leading-relaxed">
+              <p className="text-xs text-muted leading-relaxed">
                 현재 요구사항 분석 및 초기 기능 구현 단계로, 아직 공개된 실행 URL 또는 실행 파일이 등록되지 않았습니다. 임의의 가상 링크를 제공하지 않으며, 테스트 검증 완료 후 배포 링크가 제공될 예정입니다.
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-[#21262D] flex-wrap gap-2 text-xs">
-              <span className="text-[11px] text-[#6E7681]">
+            <div className="flex items-center justify-between pt-2 border-t border-line flex-wrap gap-2 text-xs">
+              <span className="text-[11px] text-muted">
                 진행 상황과 구현 상세는 하단의 개발 기록을 확인해 주세요.
               </span>
               {hasGithubUrl && (
@@ -623,7 +630,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     href={project.githubUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-2.5 py-1 rounded text-xs text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] inline-flex items-center gap-1"
+                    className="px-2.5 py-1 rounded text-xs text-ink-secondary bg-surface hover:bg-surface-alt border border-line-strong inline-flex items-center gap-1"
                   >
                     <GitBranch className="w-3 h-3" />
                     <span>저장소 확인</span>
@@ -641,13 +648,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
       {/* ※ URL 등록/미등록 상태 표시는 제거됨!                            */}
       {/* ============================================================== */}
       <section className="space-y-8">
-        <div className="flex items-center justify-between pb-2 border-b border-[#21262D]">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
+        <div className="flex items-center justify-between pb-2 border-b border-line">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
             프로젝트 정보
           </h2>
           <button
             onClick={() => onOpenEditProjectModal(project)}
-            className="text-xs text-purple-400 hover:text-purple-300 font-medium inline-flex items-center gap-1 transition-colors"
+            className="text-xs text-accent hover:text-accent font-medium inline-flex items-center gap-1 transition-colors"
           >
             <Edit2 className="w-3 h-3" />
             <span>정보 수정</span>
@@ -659,19 +666,19 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
           <div className="lg:col-span-8 space-y-8">
             {/* 3-1. 프로젝트 소개 상세 */}
             <div className="space-y-2">
-              <h3 className="text-xs font-medium text-[#8B949E]">
+              <h3 className="text-xs font-medium text-muted">
                 프로젝트 소개
               </h3>
               {project.description && project.description.trim() ? (
-                <div className="p-4 bg-[#111620] border border-[#21262D] rounded-lg text-xs sm:text-sm text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                <div className="p-4 bg-surface border border-line rounded-lg text-xs sm:text-sm text-ink-secondary leading-relaxed whitespace-pre-wrap">
                   {project.description}
                 </div>
               ) : (
-                <div className="p-4 bg-[#111620] border border-dashed border-[#21262D] rounded-lg text-xs text-[#8B949E] flex items-center justify-between">
+                <div className="p-4 bg-surface border border-dashed border-line rounded-lg text-xs text-muted flex items-center justify-between">
                   <span>등록된 상세 소개가 없습니다.</span>
                   <button
                     onClick={() => onOpenEditProjectModal(project)}
-                    className="text-xs text-purple-400 hover:text-purple-300 font-medium"
+                    className="text-xs text-accent hover:text-accent font-medium"
                   >
                     + 소개 작성
                   </button>
@@ -683,10 +690,10 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline gap-2">
-                  <h3 className="text-xs font-medium text-[#8B949E]">
+                  <h3 className="text-xs font-medium text-muted">
                     주요 기능
                   </h3>
-                  <span className="text-xs font-mono text-[#6E7681]">
+                  <span className="text-xs font-mono text-muted">
                     ({normalizedFeatures.length}개)
                   </span>
                 </div>
@@ -699,7 +706,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                       setNewFeatureDesc('');
                       setNewFeatureStatus('진행 중');
                     }}
-                    className="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                    className="text-xs text-accent hover:text-accent font-medium transition-colors"
                   >
                     + 기능 추가
                   </button>
@@ -708,12 +715,12 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
               {/* 기능 추가 폼 */}
               {isAddingFeature && (
-                <div className="p-3.5 bg-[#161B22] border border-[#30363D] rounded-lg space-y-2.5">
-                  <div className="flex items-center justify-between text-xs text-[#F0F6FC] font-medium">
+                <div className="p-3.5 bg-surface border border-line-strong rounded-lg space-y-2.5">
+                  <div className="flex items-center justify-between text-xs text-ink font-medium">
                     <span>새 기능 등록</span>
                     <button
                       onClick={() => setIsAddingFeature(false)}
-                      className="text-[#8B949E] hover:text-[#F0F6FC]"
+                      className="text-muted hover:text-ink"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -723,7 +730,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     value={newFeatureName}
                     onChange={(e) => setNewFeatureName(e.target.value)}
                     placeholder="기능명 (예: 서식 데이터 파싱 및 매핑 모듈)"
-                    className="w-full px-2.5 py-1.5 bg-[#0D1117] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none focus:border-purple-500"
+                    className="w-full px-2.5 py-1.5 bg-surface-alt border border-line-strong rounded-md text-xs text-ink focus:outline-none focus:border-accent"
                     autoFocus
                   />
                   <textarea
@@ -731,13 +738,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     value={newFeatureDesc}
                     onChange={(e) => setNewFeatureDesc(e.target.value)}
                     placeholder="기능 설명 (선택 사항)"
-                    className="w-full px-2.5 py-1.5 bg-[#0D1117] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none focus:border-purple-500"
+                    className="w-full px-2.5 py-1.5 bg-surface-alt border border-line-strong rounded-md text-xs text-ink focus:outline-none focus:border-accent"
                   />
                   <div className="flex items-center justify-between pt-1">
                     <select
                       value={newFeatureStatus}
                       onChange={(e) => setNewFeatureStatus(e.target.value as FeatureStatus)}
-                      className="px-2 py-1 bg-[#0D1117] border border-[#30363D] rounded text-xs text-[#C9D1D9] focus:outline-none"
+                      className="px-2 py-1 bg-surface-alt border border-line-strong rounded text-xs text-ink-secondary focus:outline-none"
                     >
                       <option value="진행 중">진행 중</option>
                       <option value="대기">대기</option>
@@ -747,13 +754,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     <div className="flex gap-2 text-xs">
                       <button
                         onClick={() => setIsAddingFeature(false)}
-                        className="px-2.5 py-1 text-[#8B949E] hover:text-[#F0F6FC]"
+                        className="px-2.5 py-1 text-muted hover:text-ink"
                       >
                         취소
                       </button>
                       <button
                         onClick={handleAddFeature}
-                        className="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded font-medium"
+                        className="px-3 py-1 bg-accent hover:bg-accent-hover text-white rounded font-medium"
                       >
                         저장
                       </button>
@@ -764,8 +771,8 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
               {/* 기능 목록 */}
               {normalizedFeatures.length === 0 && !isAddingFeature ? (
-                <div className="p-4 bg-[#111620] border border-dashed border-[#21262D] rounded-lg text-xs text-center space-y-2">
-                  <p className="text-[#8B949E]">등록된 주요 기능이 없습니다.</p>
+                <div className="p-4 bg-surface border border-dashed border-line rounded-lg text-xs text-center space-y-2">
+                  <p className="text-muted">등록된 주요 기능이 없습니다.</p>
                   <button
                     onClick={() => {
                       setIsAddingFeature(true);
@@ -773,7 +780,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                       setNewFeatureDesc('');
                       setNewFeatureStatus('진행 중');
                     }}
-                    className="px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded text-xs font-medium inline-block"
+                    className="px-2.5 py-1 bg-accent hover:bg-accent-hover text-white rounded text-xs font-medium inline-block"
                   >
                     + 첫 기능 추가
                   </button>
@@ -784,24 +791,24 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     const isEditing = editingFeatureIndex === idx;
                     if (isEditing) {
                       return (
-                        <div key={feat.id || idx} className="p-3 bg-[#161B22] border border-purple-500/50 rounded-lg space-y-2 text-xs">
+                        <div key={feat.id || idx} className="p-3 bg-surface border border-accent-line rounded-lg space-y-2 text-xs">
                           <input
                             type="text"
                             value={editFeatureName}
                             onChange={(e) => setEditFeatureName(e.target.value)}
-                            className="w-full px-2.5 py-1 bg-[#0D1117] border border-[#30363D] rounded text-[#E6EDF3] focus:outline-none"
+                            className="w-full px-2.5 py-1 bg-surface-alt border border-line-strong rounded text-ink focus:outline-none"
                           />
                           <textarea
                             rows={2}
                             value={editFeatureDesc}
                             onChange={(e) => setEditFeatureDesc(e.target.value)}
-                            className="w-full px-2.5 py-1 bg-[#0D1117] border border-[#30363D] rounded text-[#E6EDF3] focus:outline-none"
+                            className="w-full px-2.5 py-1 bg-surface-alt border border-line-strong rounded text-ink focus:outline-none"
                           />
                           <div className="flex items-center justify-between pt-1">
                             <select
                               value={editFeatureStatus}
                               onChange={(e) => setEditFeatureStatus(e.target.value as FeatureStatus)}
-                              className="px-2 py-0.5 bg-[#0D1117] border border-[#30363D] rounded text-[#C9D1D9]"
+                              className="px-2 py-0.5 bg-surface-alt border border-line-strong rounded text-ink-secondary"
                             >
                               <option value="진행 중">진행 중</option>
                               <option value="대기">대기</option>
@@ -810,13 +817,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                             <div className="flex gap-2">
                               <button
                                 onClick={() => setEditingFeatureIndex(null)}
-                                className="px-2 py-0.5 text-[#8B949E] hover:text-[#F0F6FC]"
+                                className="px-2 py-0.5 text-muted hover:text-ink"
                               >
                                 취소
                               </button>
                               <button
                                 onClick={() => handleSaveFeatureEdit(idx)}
-                                className="px-2.5 py-0.5 bg-purple-600 hover:bg-purple-500 text-white rounded font-medium"
+                                className="px-2.5 py-0.5 bg-accent hover:bg-accent-hover text-white rounded font-medium"
                               >
                                 저장
                               </button>
@@ -829,7 +836,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     return (
                       <div
                         key={feat.id || idx}
-                        className="group flex items-start justify-between gap-3 p-3 bg-[#111620] hover:bg-[#141A26] border border-[#21262D] rounded-lg transition-colors text-xs"
+                        className="group flex items-start justify-between gap-3 p-3 bg-surface hover:bg-surface-alt border border-line rounded-lg transition-colors text-xs"
                       >
                         <div className="space-y-1 min-w-0">
                           <div className="flex items-center gap-2">
@@ -839,18 +846,18 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                                   ? 'bg-emerald-400'
                                   : feat.status === '대기'
                                   ? 'bg-slate-400'
-                                  : 'bg-purple-400'
+                                  : 'bg-accent'
                               }`}
                             />
-                            <span className="font-medium text-[#F0F6FC]">
+                            <span className="font-medium text-ink">
                               {feat.name}
                             </span>
-                            <span className="px-1.5 py-0.2 rounded text-[10px] text-[#8B949E] bg-[#161B22] border border-[#21262D]">
+                            <span className="px-1.5 py-0.2 rounded text-[10px] text-muted bg-surface border border-line">
                               {feat.status || '진행 중'}
                             </span>
                           </div>
                           {feat.description && (
-                            <p className="text-[#8B949E] leading-relaxed pl-3.5">
+                            <p className="text-muted leading-relaxed pl-3.5">
                               {feat.description}
                             </p>
                           )}
@@ -859,14 +866,14 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           <button
                             onClick={() => startEditingFeature(idx, feat)}
-                            className="p-1 text-[#6E7681] hover:text-[#C9D1D9]"
+                            className="p-1 text-muted hover:text-ink-secondary"
                             title="수정"
                           >
                             <Edit2 className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => setFeatureToDelete({ index: idx, name: feat.name })}
-                            className="p-1 text-[#6E7681] hover:text-rose-400"
+                            className="p-1 text-muted hover:text-rose-700"
                             title="삭제"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -884,17 +891,17 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
           <div className="lg:col-span-4 space-y-6">
             {/* 3-3. 진행 상태 변경 드롭다운 */}
             <div className="space-y-2">
-              <h3 className="text-xs font-medium text-[#8B949E]">
+              <h3 className="text-xs font-medium text-muted">
                 진행 상태
               </h3>
-              <div className="p-3 bg-[#111620] border border-[#21262D] rounded-lg">
+              <div className="p-3 bg-surface border border-line rounded-lg">
                 <select
                   value={normalizedStatus}
                   onChange={(e) => handleStatusChange(e.target.value as '구상 중' | '개발 중' | '완성' | '보류')}
-                  className="w-full bg-[#161B22] border border-[#30363D] rounded-md px-2.5 py-1.5 text-xs text-[#E6EDF3] focus:outline-none focus:border-purple-500"
+                  className="w-full bg-surface border border-line-strong rounded-md px-2.5 py-1.5 text-xs text-ink focus:outline-none focus:border-accent"
                 >
                   {STATUS_OPTIONS.map((st) => (
-                    <option key={st} value={st} className="bg-[#161B22]">
+                    <option key={st} value={st} className="bg-surface">
                       {st}
                     </option>
                   ))}
@@ -905,34 +912,34 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
             {/* 3-4. 사용 기술 관리 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-medium text-[#8B949E]">
+                <h3 className="text-xs font-medium text-muted">
                   사용 기술
                 </h3>
                 {!isAddingTech && (
                   <button
                     onClick={() => setIsAddingTech(true)}
-                    className="text-xs text-purple-400 hover:text-purple-300"
+                    className="text-xs text-accent hover:text-accent"
                   >
                     + 추가
                   </button>
                 )}
               </div>
 
-              <div className="p-3 bg-[#111620] border border-[#21262D] rounded-lg space-y-2.5">
+              <div className="p-3 bg-surface border border-line rounded-lg space-y-2.5">
                 {isAddingTech && (
-                  <div className="flex items-center gap-1.5 pb-2 border-b border-[#21262D]">
+                  <div className="flex items-center gap-1.5 pb-2 border-b border-line">
                     <input
                       type="text"
                       value={newTechText}
                       onChange={(e) => setNewTechText(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddTech()}
                       placeholder="기술명 입력"
-                      className="flex-1 px-2 py-1 bg-[#161B22] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none"
+                      className="flex-1 px-2 py-1 bg-surface border border-line-strong rounded-md text-xs text-ink focus:outline-none"
                       autoFocus
                     />
                     <button
                       onClick={handleAddTech}
-                      className="px-2 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded text-xs"
+                      className="px-2 py-1 bg-accent hover:bg-accent-hover text-white rounded text-xs"
                     >
                       추가
                     </button>
@@ -941,7 +948,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                         setIsAddingTech(false);
                         setNewTechText('');
                       }}
-                      className="p-1 text-[#8B949E] hover:text-[#F0F6FC]"
+                      className="p-1 text-muted hover:text-ink"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -953,12 +960,12 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     project.techStack.map((tech) => (
                       <span
                         key={tech}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono text-[#C9D1D9] bg-[#161B22] border border-[#30363D]"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono text-ink-secondary bg-surface border border-line-strong"
                       >
                         <span>{tech}</span>
                         <button
                           onClick={() => handleDeleteTech(tech)}
-                          className="text-[#6E7681] hover:text-rose-400 transition-colors"
+                          className="text-muted hover:text-rose-700 transition-colors"
                           title="삭제"
                         >
                           <X className="w-2.5 h-2.5" />
@@ -966,7 +973,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                       </span>
                     ))
                   ) : (
-                    <span className="text-xs text-[#6E7681]">미지정</span>
+                    <span className="text-xs text-muted">미지정</span>
                   )}
                 </div>
               </div>
@@ -974,35 +981,35 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
             {/* 3-5. 메타 정보 (카테고리, 등록일, 수정일) */}
             <div className="space-y-2">
-              <h3 className="text-xs font-medium text-[#8B949E]">
+              <h3 className="text-xs font-medium text-muted">
                 기본 메타 정보
               </h3>
-              <div className="p-3 bg-[#111620] border border-[#21262D] rounded-lg divide-y divide-[#21262D] text-xs">
+              <div className="p-3 bg-surface border border-line rounded-lg divide-y divide-[#21262D] text-xs">
                 <div className="py-1.5 flex justify-between">
-                  <span className="text-[#8B949E]">분야 (카테고리)</span>
-                  <span className="text-[#C9D1D9]">{project.category || '미지정'}</span>
+                  <span className="text-muted">분야 (카테고리)</span>
+                  <span className="text-ink-secondary">{project.category || '미지정'}</span>
                 </div>
                 <div className="py-1.5 flex justify-between">
-                  <span className="text-[#8B949E]">등록일</span>
-                  <span className="font-mono text-[#C9D1D9]">
+                  <span className="text-muted">등록일</span>
+                  <span className="font-mono text-ink-secondary">
                     {project.createdAt ? project.createdAt.split('T')[0] : '2026-10-15'}
                   </span>
                 </div>
                 <div className="py-1.5 flex justify-between">
-                  <span className="text-[#8B949E]">최종 수정일</span>
-                  <span className="font-mono text-[#C9D1D9]">
+                  <span className="text-muted">최종 수정일</span>
+                  <span className="font-mono text-ink-secondary">
                     {project.updatedAt ? project.updatedAt.split('T')[0] : '2026-10-19'}
                   </span>
                 </div>
                 {/* 만약 URL이 등록된 경우에만 링크 항목을 메타 정보에 단정하게 표시 */}
                 {hasLiveUrl && (
                   <div className="py-1.5 flex justify-between items-center gap-2">
-                    <span className="text-[#8B949E]">실행 URL</span>
+                    <span className="text-muted">실행 URL</span>
                     <a
                       href={project.liveUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-purple-400 hover:text-purple-300 font-mono text-[11px] truncate max-w-[160px] inline-flex items-center gap-0.5"
+                      className="text-accent hover:text-accent font-mono text-[11px] truncate max-w-[160px] inline-flex items-center gap-0.5"
                     >
                       <span>{project.liveUrl}</span>
                       <ExternalLink className="w-2.5 h-2.5 shrink-0" />
@@ -1011,12 +1018,12 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                 )}
                 {hasGithubUrl && (
                   <div className="py-1.5 flex justify-between items-center gap-2">
-                    <span className="text-[#8B949E]">저장소</span>
+                    <span className="text-muted">저장소</span>
                     <a
                       href={project.githubUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[#C9D1D9] hover:text-[#F0F6FC] font-mono text-[11px] truncate max-w-[160px] inline-flex items-center gap-0.5"
+                      className="text-ink-secondary hover:text-ink font-mono text-[11px] truncate max-w-[160px] inline-flex items-center gap-0.5"
                     >
                       <span>GitHub</span>
                       <ExternalLink className="w-2.5 h-2.5 shrink-0" />
@@ -1032,13 +1039,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
       {/* ============================================================== */}
       {/* 4. 개발 기록 요약 및 전체 개발 로그로 이동 링크                     */}
       {/* ============================================================== */}
-      <section id="work-logs-section" className="space-y-4 pt-4 border-t border-[#21262D]">
-        <div className="flex items-center justify-between pb-2 border-b border-[#21262D] flex-wrap gap-2">
+      <section id="work-logs-section" className="space-y-4 pt-4 border-t border-line">
+        <div className="flex items-center justify-between pb-2 border-b border-line flex-wrap gap-2">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
               개발 기록
             </h2>
-            <span className="text-xs font-mono text-[#6E7681]">
+            <span className="text-xs font-mono text-muted">
               ({sortedLogs.length}건)
             </span>
           </div>
@@ -1048,18 +1055,18 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
             {onNavigateToDevLog && (
               <button
                 onClick={() => onNavigateToDevLog(project.id)}
-                className="px-2.5 py-1.5 rounded-md text-xs font-medium text-[#C9D1D9] bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors inline-flex items-center gap-1.5"
+                className="px-2.5 py-1.5 rounded-md text-xs font-medium text-ink-secondary bg-surface hover:bg-surface-alt border border-line-strong transition-colors inline-flex items-center gap-1.5"
                 title="모든 프로젝트의 개발 기록 페이지에서 이 프로젝트 필터링 조회"
               >
-                <FileCode2 className="w-3.5 h-3.5 text-purple-400" />
+                <FileCode2 className="w-3.5 h-3.5 text-accent" />
                 <span>전체 개발 로그에서 보기</span>
-                <ArrowUpRight className="w-3 h-3 text-[#8B949E]" />
+                <ArrowUpRight className="w-3 h-3 text-muted" />
               </button>
             )}
 
             <button
               onClick={() => onOpenAddWorkLogModal(project, null)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 transition-colors shadow-xs"
+              className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover transition-colors shadow-xs"
             >
               + 기록 추가
             </button>
@@ -1068,19 +1075,19 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
         {/* Logs List */}
         {sortedLogs.length === 0 ? (
-          <div className="py-10 text-center border border-dashed border-[#21262D] rounded-xl space-y-2">
-            <p className="text-xs text-[#8B949E]">
+          <div className="py-10 text-center border border-dashed border-line rounded-xl space-y-2">
+            <p className="text-xs text-muted">
               아직 등록된 개발 기록이 없습니다.
             </p>
             <button
               onClick={() => onOpenAddWorkLogModal(project, null)}
-              className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 inline-block"
+              className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover inline-block"
             >
               + 첫 기록 추가
             </button>
           </div>
         ) : (
-          <div className="relative pl-6 space-y-7 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-[#21262D]">
+          <div className="relative pl-6 space-y-7 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-surface-alt">
             {sortedLogs.map((log) => {
               const isExpanded = !!expandedLogIds[log.id];
               const logTitle = log.title || log.task || '작업 기록';
@@ -1091,32 +1098,32 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
               return (
                 <article key={log.id} className="relative group space-y-2.5">
                   {/* Timeline Dot */}
-                  <span className="absolute -left-[27px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#30363D] group-hover:bg-purple-400 border-2 border-[#0B0F17] transition-colors" />
+                  <span className="absolute -left-[27px] top-1.5 w-2.5 h-2.5 rounded-full bg-line-strong group-hover:bg-accent border-2 border-line transition-colors" />
 
                   {/* Log Header: Date, Version, Actions */}
                   <div className="flex items-center justify-between text-xs flex-wrap gap-2">
                     <div className="flex items-center gap-2">
-                      <time className="font-mono text-[#8B949E] text-xs">
+                      <time className="font-mono text-muted text-xs">
                         {log.date}
                       </time>
                       {log.version && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium text-purple-300 bg-purple-950/50 border border-purple-800/40">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium text-accent bg-accent-soft border border-accent-line">
                           {log.version}
                         </span>
                       )}
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-xs text-[#6E7681]">
+                    <div className="flex items-center gap-1.5 text-xs text-muted">
                       <button
                         onClick={() => onOpenAddWorkLogModal(project, log)}
-                        className="hover:text-[#C9D1D9] transition-colors"
+                        className="hover:text-ink-secondary transition-colors"
                       >
                         수정
                       </button>
                       <span>·</span>
                       <button
                         onClick={() => setLogToDelete(log)}
-                        className="hover:text-rose-400 transition-colors"
+                        className="hover:text-rose-700 transition-colors"
                       >
                         삭제
                       </button>
@@ -1124,13 +1131,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                   </div>
 
                   {/* 제목 */}
-                  <h4 className="text-sm font-semibold text-[#F0F6FC] leading-snug">
+                  <h4 className="text-sm font-semibold text-ink leading-snug">
                     {logTitle}
                   </h4>
 
                   {/* 내용 */}
                   {logContent && logContent !== logTitle && (
-                    <p className="text-xs text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                    <p className="text-xs text-ink-secondary leading-relaxed whitespace-pre-wrap">
                       {logContent}
                     </p>
                   )}
@@ -1140,7 +1147,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                     <div>
                       <button
                         onClick={() => toggleLogExpansion(log.id)}
-                        className="inline-flex items-center gap-1 text-[11px] text-[#8B949E] hover:text-[#C9D1D9] transition-colors py-0.5"
+                        className="inline-flex items-center gap-1 text-[11px] text-muted hover:text-ink-secondary transition-colors py-0.5"
                       >
                         {isExpanded ? (
                           <>
@@ -1156,13 +1163,13 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
                       </button>
 
                       {isExpanded && (
-                        <div className="mt-3 space-y-2.5 pl-3 border-l-2 border-[#21262D] text-xs">
+                        <div className="mt-3 space-y-2.5 pl-3 border-l-2 border-line text-xs">
                           {logReason && (
                             <div className="space-y-0.5">
-                              <div className="text-[11px] font-medium text-[#8B949E]">
+                              <div className="text-[11px] font-medium text-muted">
                                 수정 이유
                               </div>
-                              <p className="text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                              <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                                 {logReason}
                               </p>
                             </div>
@@ -1170,10 +1177,10 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
                           {log.testResult && (
                             <div className="space-y-0.5">
-                              <div className="text-[11px] font-medium text-[#8B949E]">
+                              <div className="text-[11px] font-medium text-muted">
                                 테스트 결과
                               </div>
-                              <p className="text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                              <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                                 {log.testResult}
                               </p>
                             </div>
@@ -1181,10 +1188,10 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
 
                           {log.nextSteps && (
                             <div className="space-y-0.5">
-                              <div className="text-[11px] font-medium text-purple-400">
+                              <div className="text-[11px] font-medium text-accent">
                                 다음 작업 (Next Steps)
                               </div>
-                              <p className="text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                              <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                                 {log.nextSteps}
                               </p>
                             </div>
@@ -1200,99 +1207,110 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
         )}
       </section>
 
-      {/* ============================================================== */}
-      {/* 5. 변경 내역 (Changelog)                                         */}
-      {/* ============================================================== */}
-      <section className="space-y-4 pt-4 border-t border-[#21262D]">
-        <div className="flex items-center justify-between pb-2 border-b border-[#21262D]">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
-            변경 내역 (Changelog)
-          </h2>
-
-          {!isAddingChangelog && (
+      <section className="space-y-5 border-t border-line pt-7" id="prompt-history">
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
+          <div>
+            <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted">WORKING NOTES</p>
+            <h2 className="text-lg font-semibold tracking-tight text-ink">프롬프트 기록</h2>
+            <p className="mt-1 text-xs text-muted">이 프로젝트에서 사용한 프롬프트와 결과를 모아둡니다.</p>
+          </div>
+          {!isAddingPrompt && (
             <button
-              onClick={() => setIsAddingChangelog(true)}
-              className="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors"
+              type="button"
+              onClick={() => setIsAddingPrompt(true)}
+              className="rounded-md border border-line-strong px-3 py-2 text-xs font-medium text-ink-secondary transition hover:border-line-strong hover:text-ink"
             >
-              + 내역 추가
+              + 프롬프트 기록
             </button>
           )}
         </div>
 
-        {/* Add Changelog Form */}
-        {isAddingChangelog && (
-          <div className="p-3 bg-[#161B22] border border-[#30363D] rounded-lg space-y-2.5">
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="text"
-                value={newVersion}
-                onChange={(e) => setNewVersion(e.target.value)}
-                placeholder="버전 (예: v0.2.0)"
-                className="px-2.5 py-1 bg-[#0D1117] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] font-mono focus:outline-none"
-              />
-              <input
-                type="date"
-                value={newChangelogDate}
-                onChange={(e) => setNewChangelogDate(e.target.value)}
-                className="px-2.5 py-1 bg-[#0D1117] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none"
-              />
+        {isAddingPrompt && (
+          <div className="space-y-3 rounded-lg border border-line-strong bg-surface p-4">
+            <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+              <label className="space-y-1.5 text-xs text-muted">
+                <span>작업 제목</span>
+                <input
+                  type="text"
+                  value={newPromptTitle}
+                  onChange={(e) => setNewPromptTitle(e.target.value)}
+                  placeholder="예: CSV 업로드 오류 수정"
+                  className="w-full rounded-md border border-line-strong bg-surface-alt px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-line-strong focus:outline-none"
+                />
+              </label>
+              <label className="space-y-1.5 text-xs text-muted">
+                <span>날짜</span>
+                <input
+                  type="date"
+                  value={newPromptDate}
+                  onChange={(e) => setNewPromptDate(e.target.value)}
+                  className="w-full rounded-md border border-line-strong bg-surface-alt px-3 py-2 text-sm text-ink focus:border-line-strong focus:outline-none"
+                />
+              </label>
             </div>
-            <textarea
-              rows={2}
-              value={newChangelogDesc}
-              onChange={(e) => setNewChangelogDesc(e.target.value)}
-              placeholder="변경 내용 작성"
-              className="w-full px-2.5 py-1.5 bg-[#0D1117] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none"
-            />
-            <div className="flex justify-end gap-2 text-xs">
-              <button
-                onClick={() => setIsAddingChangelog(false)}
-                className="px-2.5 py-1 text-[#8B949E] hover:text-[#F0F6FC]"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleAddChangelog}
-                className="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-md font-medium"
-              >
-                추가
-              </button>
+            <label className="block space-y-1.5 text-xs text-muted">
+              <span>사용한 프롬프트</span>
+              <textarea
+                rows={5}
+                value={newPromptText}
+                onChange={(e) => setNewPromptText(e.target.value)}
+                placeholder="실제 입력한 프롬프트를 기록하세요."
+                className="w-full resize-y rounded-md border border-line-strong bg-surface-alt px-3 py-2.5 font-mono text-xs leading-6 text-ink placeholder:font-sans placeholder:text-muted focus:border-line-strong focus:outline-none"
+              />
+            </label>
+            <label className="block space-y-1.5 text-xs text-muted">
+              <span>결과와 메모 <span className="text-muted">(선택)</span></span>
+              <textarea
+                rows={2}
+                value={newPromptOutcome}
+                onChange={(e) => setNewPromptOutcome(e.target.value)}
+                placeholder="결과, 수정한 내용, 다음에 참고할 점"
+                className="w-full resize-y rounded-md border border-line-strong bg-surface-alt px-3 py-2.5 text-sm leading-6 text-ink placeholder:text-muted focus:border-line-strong focus:outline-none"
+              />
+            </label>
+            <div className="flex justify-end gap-2 pt-1 text-xs">
+              <button type="button" onClick={() => setIsAddingPrompt(false)} className="rounded-md px-3 py-2 text-muted hover:text-ink">취소</button>
+              <button type="button" onClick={handleAddPrompt} className="rounded-md bg-accent px-3.5 py-2 font-medium text-white transition hover:bg-accent-hover">저장</button>
             </div>
           </div>
         )}
 
-        {/* Changelog List */}
-        {!project.changelog || project.changelog.length === 0 ? (
-          <p className="text-xs text-[#8B949E] py-2">등록된 변경 내역이 없습니다.</p>
+        {!project.promptHistory?.length ? (
+          <div className="rounded-lg border border-dashed border-line-strong px-5 py-8 text-center">
+            <p className="text-sm text-ink-secondary">아직 프롬프트 기록이 없습니다.</p>
+            <p className="mt-1 text-xs text-muted">작업에 도움이 된 프롬프트를 남겨두면 다음에 다시 활용할 수 있어요.</p>
+          </div>
         ) : (
           <div className="space-y-3">
-            {project.changelog.map((cl) => (
-              <div
-                key={cl.id}
-                className="flex items-start justify-between gap-4 text-xs group"
-              >
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-medium text-[#F0F6FC]">
-                      {cl.version}
-                    </span>
-                    <span className="text-[#6E7681] font-mono text-[11px]">
-                      {cl.date}
-                    </span>
+            {project.promptHistory.map((item) => (
+              <article key={item.id} className="group rounded-lg border border-line-strong bg-surface p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
+                      <time dateTime={item.date} className="font-mono">{item.date}</time>
+                      <span aria-hidden="true">·</span>
+                      <span>Prompt</span>
+                    </div>
+                    <h3 className="mt-1 text-sm font-semibold text-ink">{item.title}</h3>
                   </div>
-                  <p className="text-[#8B949E] leading-relaxed">
-                    {cl.description}
-                  </p>
+                  <button
+                    type="button"
+                    onClick={() => handleDeletePrompt(item.id)}
+                    className="rounded p-1.5 text-muted opacity-70 transition hover:bg-surface-alt hover:text-rose-700 sm:opacity-0 sm:group-hover:opacity-100"
+                    aria-label={`${item.title} 프롬프트 기록 삭제`}
+                    title="기록 삭제"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => handleDeleteChangelog(cl.id)}
-                  className="opacity-0 group-hover:opacity-100 text-[#6E7681] hover:text-rose-400 transition-opacity p-1"
-                  title="삭제"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </div>
+                <pre className="mt-4 whitespace-pre-wrap break-words rounded-md border-l-2 border-accent bg-surface-alt px-4 py-3 font-mono text-xs leading-6 text-ink-secondary">{item.prompt}</pre>
+                {item.outcome && (
+                  <div className="mt-4 border-t border-line pt-3">
+                    <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-muted">결과와 메모</p>
+                    <p className="whitespace-pre-wrap text-xs leading-6 text-ink-secondary">{item.outcome}</p>
+                  </div>
+                )}
+              </article>
             ))}
           </div>
         )}

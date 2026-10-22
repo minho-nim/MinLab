@@ -101,42 +101,42 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#21262D]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F0F6FC]">
-              Development Log
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-ink">
+              개발일지
             </h1>
-            <span className="px-2 py-0.5 rounded text-[11px] font-mono text-purple-300 bg-purple-950/60 border border-purple-800/40">
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono text-accent bg-accent-soft border border-accent-line">
               총 {filteredLogs.length}건
             </span>
           </div>
-          <p className="text-xs text-[#8B949E] mt-1">
-            프로젝트별 날짜, 버전, 변경 사항, 수정 이유, 테스트 결과, 다음 작업을 통합 관리합니다.
+          <p className="text-xs text-muted mt-1">
+            프로젝트별 작업과 문제 해결 기록
           </p>
         </div>
 
         <button
           onClick={() => onOpenAddLogModal(selectedProjectIdFilter || (projects[0]?.id ?? null), null)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 transition-colors shadow-xs shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover transition-colors shadow-xs shrink-0"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>+ 새 개발 기록 등록</span>
+          <span>새 개발 기록</span>
         </button>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-3.5 bg-[#111620] border border-[#21262D] rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="p-3.5 bg-surface border border-line rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Project Selector Filter */}
         <div className="flex items-center gap-2 flex-1 max-w-md">
-          <Filter className="w-3.5 h-3.5 text-[#8B949E] shrink-0" />
-          <span className="text-xs text-[#8B949E] shrink-0">프로젝트:</span>
+          <Filter className="w-3.5 h-3.5 text-muted shrink-0" />
+          <span className="text-xs text-muted shrink-0">프로젝트:</span>
           <select
             value={selectedProjectIdFilter || 'ALL'}
             onChange={(e) =>
               onSelectProjectIdFilter(e.target.value === 'ALL' ? null : e.target.value)
             }
-            className="w-full px-2.5 py-1 bg-[#161B22] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none focus:border-purple-500 font-medium truncate"
+            className="w-full px-2.5 py-1 bg-surface border border-line-strong rounded-md text-xs text-ink focus:outline-none focus:border-accent font-medium truncate"
           >
             <option value="ALL">전체 프로젝트 ({projects.length}개)</option>
             {projects.map((p) => (
@@ -151,20 +151,20 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
         <div className="flex items-center gap-2">
           {/* Keyword Search */}
           <div className="relative w-full sm:w-60">
-            <Search className="w-3 h-3 text-[#6E7681] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-3 h-3 text-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="내용, 이유, 버전 검색..."
-              className="w-full pl-8 pr-3 py-1 bg-[#161B22] border border-[#30363D] rounded-md text-xs text-[#E6EDF3] focus:outline-none focus:border-purple-500"
+              className="w-full pl-8 pr-3 py-1 bg-surface border border-line-strong rounded-md text-xs text-ink focus:outline-none focus:border-accent"
             />
           </div>
 
           {/* Sort order toggle */}
           <button
             onClick={() => setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))}
-            className="px-2.5 py-1 rounded-md text-xs font-mono text-[#8B949E] hover:text-[#F0F6FC] bg-[#161B22] border border-[#30363D] transition-colors shrink-0"
+            className="px-2.5 py-1 rounded-md text-xs font-mono text-muted hover:text-ink bg-surface border border-line-strong transition-colors shrink-0"
             title="정렬 변경"
           >
             {sortOrder === 'desc' ? '최신순 ↓' : '과거순 ↑'}
@@ -174,14 +174,14 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
 
       {/* Logs Timeline / List */}
       {filteredLogs.length === 0 ? (
-        <div className="py-16 text-center text-xs text-[#8B949E] border border-dashed border-[#21262D] rounded-xl space-y-3">
-          <FileCode2 className="w-8 h-8 mx-auto text-[#6E7681]" />
+        <div className="py-16 text-center text-xs text-muted border border-dashed border-line rounded-xl space-y-3">
+          <FileCode2 className="w-8 h-8 mx-auto text-muted" />
           <p>등록된 개발 기록이 없거나 검색 결과가 없습니다.</p>
           <button
             onClick={() =>
               onOpenAddLogModal(selectedProjectIdFilter || (projects[0]?.id ?? null), null)
             }
-            className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-purple-600 hover:bg-purple-500"
+            className="px-3 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover"
           >
             + 첫 개발 기록 등록
           </button>
@@ -199,48 +199,48 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
             return (
               <article
                 key={log.id}
-                className="p-4 sm:p-5 bg-[#111620] hover:bg-[#141A26] border border-[#21262D] hover:border-[#384152] rounded-xl transition-all space-y-3 shadow-xs"
+                className="p-4 sm:p-5 bg-surface hover:bg-surface-alt border border-line hover:border-line-strong rounded-xl transition-all space-y-3 shadow-xs"
               >
                 {/* Header row: Project badge, Date, Version, Actions */}
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#1C2128]">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-line">
                   <div className="flex items-center gap-2 flex-wrap">
                     {/* Project link badge */}
                     <button
                       onClick={() => onNavigateToProject(log.projectId || '')}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-purple-300 bg-purple-950/60 hover:bg-purple-900/60 border border-purple-800/40 transition-colors"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-accent bg-accent-soft hover:bg-accent-soft border border-accent-line transition-colors"
                       title="해당 프로젝트 상세 페이지로 이동"
                     >
                       <span>{log.projectName || '프로젝트'}</span>
-                      <ArrowUpRight className="w-3 h-3 text-purple-400" />
+                      <ArrowUpRight className="w-3 h-3 text-accent" />
                     </button>
 
                     {/* Date */}
-                    <span className="inline-flex items-center gap-1 font-mono text-xs text-[#8B949E]">
-                      <Calendar className="w-3 h-3 text-[#6E7681]" />
+                    <span className="inline-flex items-center gap-1 font-mono text-xs text-muted">
+                      <Calendar className="w-3 h-3 text-muted" />
                       {log.date}
                     </span>
 
                     {/* Version */}
                     {log.version && (
-                      <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium text-[#C9D1D9] bg-[#161B22] border border-[#30363D]">
+                      <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium text-ink-secondary bg-surface border border-line-strong">
                         {log.version}
                       </span>
                     )}
                   </div>
 
                   {/* Actions: Edit, Delete */}
-                  <div className="flex items-center gap-1.5 text-xs text-[#8B949E]">
+                  <div className="flex items-center gap-1.5 text-xs text-muted">
                     <button
                       onClick={() => onOpenAddLogModal(log.projectId, log)}
-                      className="px-2 py-0.5 rounded hover:bg-[#1C2128] hover:text-[#F0F6FC] transition-colors flex items-center gap-1"
+                      className="px-2 py-0.5 rounded hover:bg-surface-alt hover:text-ink transition-colors flex items-center gap-1"
                     >
-                      <Edit2 className="w-3 h-3 text-[#6E7681]" />
+                      <Edit2 className="w-3 h-3 text-muted" />
                       <span>수정</span>
                     </button>
                     <span>·</span>
                     <button
                       onClick={() => onRequestDeleteLog(log, log.projectId || '')}
-                      className="px-2 py-0.5 rounded hover:bg-rose-950/40 hover:text-rose-400 transition-colors flex items-center gap-1"
+                      className="px-2 py-0.5 rounded hover:bg-rose-50 hover:text-rose-700 transition-colors flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" />
                       <span>삭제</span>
@@ -250,7 +250,7 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
 
                 {/* Title */}
                 <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-[#F0F6FC]">
+                  <h3 className="text-sm sm:text-base font-semibold text-ink">
                     {logTitle}
                   </h3>
                 </div>
@@ -258,8 +258,8 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                 {/* Content / 변경 사항 */}
                 {logContent && (
                   <div className="space-y-1">
-                    <div className="text-[11px] font-medium text-[#8B949E]">변경 사항 / 수정 내용</div>
-                    <p className="text-xs text-[#C9D1D9] leading-relaxed whitespace-pre-wrap bg-[#0D1117]/60 p-2.5 rounded-md border border-[#21262D]/60 font-sans">
+                    <div className="text-[11px] font-medium text-muted">변경 사항 / 수정 내용</div>
+                    <p className="text-xs text-ink-secondary leading-relaxed whitespace-pre-wrap bg-surface-alt/60 p-2.5 rounded-md border border-line/60 font-sans">
                       {logContent}
                     </p>
                   </div>
@@ -270,7 +270,7 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                   <div>
                     <button
                       onClick={() => toggleExpand(log.id)}
-                      className="inline-flex items-center gap-1 text-[11px] text-[#8B949E] hover:text-[#C9D1D9] py-0.5"
+                      className="inline-flex items-center gap-1 text-[11px] text-muted hover:text-ink-secondary py-0.5"
                     >
                       {isExpanded ? (
                         <>
@@ -286,14 +286,14 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                     </button>
 
                     {isExpanded && (
-                      <div className="mt-2.5 space-y-2.5 pl-3 border-l-2 border-[#21262D] text-xs">
+                      <div className="mt-2.5 space-y-2.5 pl-3 border-l-2 border-line text-xs">
                         {/* 수정 이유 */}
                         {logReason && (
                           <div className="space-y-0.5">
-                            <div className="text-[11px] font-medium text-amber-400/90">
+                            <div className="text-[11px] font-medium text-amber-700/90">
                               수정 이유
                             </div>
-                            <p className="text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                            <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                               {logReason}
                             </p>
                           </div>
@@ -302,10 +302,10 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                         {/* 테스트 결과 */}
                         {testResult && (
                           <div className="space-y-0.5">
-                            <div className="text-[11px] font-medium text-emerald-400/90">
+                            <div className="text-[11px] font-medium text-emerald-700/90">
                               테스트 결과
                             </div>
-                            <p className="text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                            <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                               {testResult}
                             </p>
                           </div>
@@ -314,10 +314,10 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                         {/* 다음 작업 */}
                         {nextSteps && (
                           <div className="space-y-0.5">
-                            <div className="text-[11px] font-medium text-purple-400/90">
+                            <div className="text-[11px] font-medium text-accent/90">
                               다음 작업 (Next Steps)
                             </div>
-                            <p className="text-[#C9D1D9] leading-relaxed whitespace-pre-wrap">
+                            <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                               {nextSteps}
                             </p>
                           </div>

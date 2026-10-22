@@ -37,6 +37,14 @@ export interface ChangelogItem {
   description: string;
 }
 
+export interface PromptHistoryItem {
+  id: string;
+  date: string;
+  title: string;
+  prompt: string;
+  outcome?: string;
+}
+
 export interface Project {
   id: string;
   name: string; // e.g. 위험성평가서 / 작업계획서 자동화 도구
@@ -50,9 +58,11 @@ export interface Project {
   keyFeatures: (ProjectFeature | string)[]; // 주요 기능 목록
   techStack: string[]; // 기술 스택 (e.g. ['Python'])
   liveUrl: string; // 프로그램 실행 URL (실제 URL이 있을 때만 유효)
+  previewUrl?: string; // MinLab 내 미리보기 앱 주소 (실행 URL과 별도 관리)
   githubUrl?: string; // GitHub 저장소 URL (실제 URL이 있을 때만 유효)
   workLogs: WorkLog[]; // 개발 기록
-  changelog: ChangelogItem[]; // 변경 이력
+  changelog: ChangelogItem[]; // 이전 버전 호환을 위한 변경 이력
+  promptHistory?: PromptHistoryItem[]; // 프로젝트별 프롬프트 아카이브
   createdAt: string;
   updatedAt: string;
 }

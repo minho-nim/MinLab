@@ -1,6 +1,7 @@
 import { Project } from '../types';
 import { INITIAL_PROJECTS } from '../data/initialData';
 import { migrateChangelogToPrompts } from './promptHistory';
+import { connectChoicePilotOnce } from './projectLinkMigration';
 
 const STORAGE_KEY = 'minlab_projects_data_v2';
 
@@ -32,7 +33,7 @@ export const loadProjects = (): Project[] => {
     }
     const result = parseImportJson(raw);
     if (result.success && result.projects?.length) {
-      return result.projects.map((project) => ({
+      const normalizedProjects = result.projects.map((project) => ({
         ...project,
         isSample: project.isSample || project.id === 'risk-assessment-workplan-automation',
         archived: Boolean(project.archived),
@@ -43,6 +44,7 @@ export const loadProjects = (): Project[] => {
           projectName: log.projectName || project.name,
         })),
       }));
+      return connectChoicePilotOnce(normalizedProjects, localStorage, STORAGE_KEY);
     }
     return INITIAL_PROJECTS;
   } catch (err) {

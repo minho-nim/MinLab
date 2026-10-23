@@ -2,42 +2,6 @@
   "version": 1,
   "records": [
     {
-      "id": "2026-10-23-choicepilot-reflection-flow",
-      "projectId": "proj-1792563333333",
-      "recordedAt": "2026-10-23T14:12:56+09:00",
-      "version": "b63c81a",
-      "title": "ChoicePilot 고민 정리 흐름과 사용자 수정 반영 개선",
-      "summary": "첫 화면을 고민 한 개 입력으로 단순화하고, 필요한 후속 질문과 사용자 확인을 거쳐 네 가지 핵심 카드로 정리하도록 개선했다.",
-      "changes": [
-        "선택 입력과 상세 결과를 접고, 후속 질문은 답한 내용을 재사용하며 최대 세 번만 제시한다.",
-        "사용자가 수정한 상황·감정·걱정·목표를 결과와 실행계획에 반영하고 화면 이동 후에도 유지한다.",
-        "직접 말한 내용과 외부 검증 사실을 구분하고, 선택지 조건은 요청한 경우에만 비교한다.",
-        "목표 유형·하루 가용 시간·명시적인 마감에 맞춘 7일 행동 초안과 완료 기준을 제공한다.",
-        "중복 분석을 방지하고 기존 복사·완료 체크·전체 초기화 기능을 유지하며 프로덕션 미리보기 경로 오류를 수정했다."
-      ],
-      "reason": "사용자는 선택 추천보다 감정과 핵심 고민을 정리해 스스로 판단하는 방향을 원했고, API 키 없이 MinLab에서 연결하는 앱의 개선 작업을 이어가도록 요청했다.",
-      "testResult": "npm run lint, npm run test:local(14개), npm run build 성공. 감정 직접 표현·사실 위주·감정과 목표가 명확한 세 유형과 수정 반영을 확인했다. 브라우저에서 조건 비교, 수정 유지, 텍스트 복사 후 붙여넣기, 이미지 복사 성공 표시, 완료 체크, 전체 초기화를 확인했다. 로컬 정리 연산은 샘플 기준 약 0.35~2.7ms였으며 입력·화면 읽기 시간은 제외한다.",
-      "nextSteps": "로컬 규칙과 템플릿 방식이므로 복잡한 한국어 맥락과 감정의 뉘앙스는 놓칠 수 있다. GitHub Actions 및 공개 앱 화면에서 배포 성공을 확인했다. MinLab 중앙 기록은 별도 반영한다.",
-      "urls": [
-        "https://github.com/minho-nim/ChoicePilot/commit/b63c81a",
-        "https://minho-nim.github.io/ChoicePilot/"
-      ],
-      "prompts": [
-        {
-          "id": "request-1",
-          "title": "개선 방향 실행",
-          "prompt": "ㄱㄱ 그렇게 해보자",
-          "outcome": "간결한 입력·적응형 질문·확인·요약 카드·선택 실행계획 흐름 구현"
-        },
-        {
-          "id": "request-2",
-          "title": "작업 이어가기",
-          "prompt": "하던작업 계속 해줘",
-          "outcome": "남은 선택지 비교 확인과 GitHub 배포 진행"
-        }
-      ]
-    },
-    {
       "id": "2026-10-23-schedule-public-preview",
       "projectId": "risk-assessment-workplan-automation",
       "recordedAt": "2026-10-23T14:10:11+09:00",
@@ -55,12 +19,14 @@
       "testResult": "MinLab·일정 웹앱 빌드 성공, TypeScript 검사 통과, 주소 전환·기록 보존·사용자 링크 유지 테스트 1건 통과. GitHub Pages 배포 성공 후 공개 앱 직접 실행과 MinLab iframe 미리보기에서 로그인 없이 문서 분석 화면·일정표가 표시됨을 브라우저로 확인했다. 실제 업무 DOCX 파일 파싱은 미실행이다.",
       "nextSteps": "실제 업무 DOCX 파일의 작업자 정보 파싱과 회사 업로드 계정 입력·엑셀 내보내기 결과를 확인한다.",
       "urls": [],
-      "prompts": [{
-        "id": "request-1",
-        "title": "로그인 없는 앱 미리보기 요청",
-        "prompt": "앱 미리보기 화면에서 안되네 로그인 해야된대 로그인 없이도 할 수 있게 해줘",
-        "outcome": "AI Studio 로그인 화면 대신 MinLab에서 직접 실행하는 공개 일정 앱으로 연결"
-      }]
+      "prompts": [
+        {
+          "id": "request-1",
+          "title": "로그인 없는 앱 미리보기 요청",
+          "prompt": "앱 미리보기 화면에서 안되네 로그인 해야된대 로그인 없이도 할 수 있게 해줘",
+          "outcome": "AI Studio 로그인 화면 대신 MinLab에서 직접 실행하는 공개 일정 앱으로 연결"
+        }
+      ]
     },
     {
       "id": "2026-10-23-risk-assessment-web-link-and-schedule-roster",

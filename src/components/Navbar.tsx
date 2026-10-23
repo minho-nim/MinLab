@@ -20,7 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   totalProjectsCount = 0, totalLogsCount = 0,
 }) => {
   const items: { id: NavigationTab; label: string; count: number }[] = [
-    { id: 'projects', label: '프로젝트', count: totalProjectsCount },
+    { id: 'projects', label: '아카이브', count: totalProjectsCount },
     { id: 'development-log', label: '개발일지', count: totalLogsCount },
   ];
 
@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               key={item.id}
               type="button"
               aria-current={currentTab === item.id ? 'page' : undefined}
-              onClick={() => { onNavigateHome(); onSelectTab(item.id); }}
+              onClick={() => onSelectTab(item.id)}
               className={'flex items-center gap-2 border-b-2 px-0.5 pt-0.5 text-sm font-medium transition ' + (currentTab === item.id ? 'border-accent text-ink' : 'border-transparent text-muted hover:text-ink')}
             >
               {item.label}
@@ -94,7 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               key={item.id}
               type="button"
               aria-current={currentTab === item.id ? 'page' : undefined}
-              onClick={() => { onNavigateHome(); onSelectTab(item.id); }}
+              onClick={() => onSelectTab(item.id)}
               className={'flex items-center gap-2 border-b-2 py-3 text-xs font-medium ' + (currentTab === item.id ? 'border-accent text-ink' : 'border-transparent text-muted')}
             >
               {item.label}<span className="text-[10px] text-muted">{item.count}</span>

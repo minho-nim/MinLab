@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "id": "proj-1792485558773",
+      "repository": "minho-nim/MinLab",
+      "name": "MinLab",
+      "description": "AI 활용 프로젝트와 개발일지, 프롬프트를 모아두는 아카이브",
+      "category": "프로젝트 아카이브",
+      "appUrl": "",
+      "techStack": ["React", "TypeScript", "GitHub Actions"],
+      "syncRecords": true
+    },
+    {
+      "id": "proj-1792563333333",
+      "repository": "minho-nim/ChoicePilot",
+      "name": "ChoicePilot",
+      "description": "고민과 선택지를 정리하고 판단 기준과 다음 행동을 구체화하는 의사결정 도우미",
+      "category": "라이프스타일",
+      "appUrl": "https://minho-nim.github.io/ChoicePilot/",
+      "techStack": ["React", "TypeScript"],
+      "syncRecords": true
+    },
+    {
+      "id": "nutrifit",
+      "repository": "minho-nim/NutriFit",
+      "name": "NutriFit",
+      "description": "식사와 영양 목표를 기록하고 밥친구를 키우는 개인 식단 관리 앱",
+      "category": "건강 관리",
+      "appUrl": "https://nutrifit-minho.smokyaphid66.chatgpt.site",
+      "techStack": ["React", "TypeScript", "LocalStorage"],
+      "syncRecords": false
+    }
+  ]
+}

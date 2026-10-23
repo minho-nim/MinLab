@@ -1,0 +1,55 @@
+name: Collect GitHub record drafts
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'archive.config.json'
+      - 'scripts/sync-records.mjs'
+      - '.github/workflows/sync-records.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: minlab-record-sync
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Collect commits, merged PRs and saved prompts
+        run: node scripts/sync-records.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.8-flash' }}
+      - name: Save generated drafts and rebuild Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add public/data/github-drafts.json
+          if git diff --cached --quiet; then
+            echo 'No new drafts.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: sync GitHub record drafts'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run deploy.yml --ref main

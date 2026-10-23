@@ -1,7 +1,10 @@
 import { Project } from '../types';
 import { INITIAL_PROJECTS } from '../data/initialData';
 import { migrateChangelogToPrompts } from './promptHistory';
+import { parseRecordSource } from './recordSources';
 import { connectChoicePilotOnce } from './projectLinkMigration';
+import { connectNutriFitOnce } from '../data/nutriFitProject';
+import { connectCatalogOnce } from '../data/projectCatalog';
 
 const STORAGE_KEY = 'minlab_projects_data_v2';
 
@@ -29,7 +32,7 @@ export const loadProjects = (): Project[] => {
         status: normalizeProjectStatus(p.status),
       }));
       saveProjects(normalizedInitial);
-      return normalizedInitial;
+      return connectCatalogOnce(connectNutriFitOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     const result = parseImportJson(raw);
     if (result.success && result.projects?.length) {
@@ -44,7 +47,7 @@ export const loadProjects = (): Project[] => {
           projectName: log.projectName || project.name,
         })),
       }));
-      return connectChoicePilotOnce(normalizedProjects, localStorage, STORAGE_KEY);
+      return connectCatalogOnce(connectNutriFitOnce(connectChoicePilotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     return INITIAL_PROJECTS;
   } catch (err) {
@@ -137,6 +140,7 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
         githubUrl: safeUrl(value.githubUrl),
         workLogs: workLogs.map((entry, index) => ({
           id: text(entry.id, `log-${index}`),
+          source: parseRecordSource(entry.source),
           projectId: text(entry.projectId, text(value.id)),
           projectName: text(entry.projectName, text(value.name)),
           date: text(entry.date),
@@ -160,6 +164,7 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
           description: text(entry.description),
         })), promptHistory.map((entry, index) => ({
           id: text(entry.id, `prompt-${index}`),
+          source: parseRecordSource(entry.source),
           date: text(entry.date),
           title: text(entry.title, '제목 없는 프롬프트'),
           prompt: text(entry.prompt),

@@ -1,63 +1,48 @@
-MinLab
+# MinLab
 
-프로젝트별 주요 기능, 개발 이력 및 변경 사항을 관리하는 웹 애플리케이션입니다.
+AI 활용 프로젝트를 소개하고 개발일지·프롬프트를 보관하는 개인 아카이브입니다.
 
-주요 기능
+- 메인: 프로젝트별 카드, 짧은 설명, 미리보기, 개별 GitHub 저장소
+- 프로젝트 페이지: 독립 앱 실행, 아카이브 복귀, 해당 프로젝트 개발일지 링크
+- 기록 화면: 개발일지·실제 사용한 프롬프트·GitHub 기록 초안
+- 자동 수집: 공개 저장소 커밋·병합 PR → GitHub Actions → Gemini 초안 → 검토 후 저장
+- JSON 백업·복원과 기존 변경 내역의 프롬프트 기록 변환
 
-프로젝트 및 주요 기능 관리
+## 저장소 구조
 
-개발 기록과 버전 이력 관리
+MinLab은 아카이브와 기록만 맡습니다. ChoicePilot·NutriFit 등 앱의 소스와 배포는 각 저장소에서 관리합니다. 프로젝트 목록·앱 주소·수집 대상은 [archive.config.json](./archive.config.json)에 등록합니다.
 
-JSON 데이터 백업 및 복원
+[전체 설정 안내](./docs/archive-setup.md) · [프롬프트 기록 형식](./docs/prompt-log.example.json)
 
-브라우저 LocalStorage 기반 데이터 보존
+## 실행
 
-GitHub 연동 및 GitHub Pages 배포
-
-개발 환경
-
-Node.js
-
-React
-
-Vite
-
-TypeScript
-
-로컬 실행
-
-프로젝트 의존성 설치
-
+```sh
 npm install
-
-개발 서버 실행
-
 npm run dev
+```
 
-터미널에 표시되는 로컬 주소로 접속
+```sh
+npm run typecheck
+npm run test:links
+node --test scripts/sync-records.test.mjs
+node --import tsx --test src/utils/archive.test.ts
+npm run build
+```
 
-데이터 관리
+## 자동 입력 설정
 
-프로젝트 데이터는 브라우저 LocalStorage에 저장됩니다. 다른 브라우저나 PC에서 데이터를 이전할 때는 JSON 백업 파일을 생성한 뒤 복원 기능을 사용합니다.
+MinLab 저장소의 Actions Secret에 `GEMINI_API_KEY`를 등록하고 **Collect GitHub record drafts** 워크플로를 실행합니다. 이후 6시간마다 최근 30일의 기록을 수집합니다. 키가 없어도 GitHub 원문 초안은 수집되지만 AI 요약으로 표시하지 않습니다.
 
-GitHub 저장소에는 소스 코드가 저장되며, 브라우저에 저장된 프로젝트 데이터가 자동으로 업로드되지는 않습니다.
+실제로 사용한 프롬프트는 각 공개 프로젝트의 `.minlab/prompts.json` 파일에서 원문을 가져옵니다. 커밋 내용으로 프롬프트를 추측하지 않습니다. 비공개 저장소의 기록은 공개 초안으로 수집하지 않습니다.
 
-배포
+## 데이터 보관
 
-GitHub 저장소: https://github.com/minho-nim/MinLab
+프로젝트별 개인 기록은 현재 브라우저의 LocalStorage에 저장됩니다. 공개 GitHub 초안을 확인·수정해 저장할 수 있으며, 이렇게 저장한 개인 데이터가 GitHub로 자동 업로드되지는 않습니다. PC나 브라우저를 바꿀 때는 JSON 백업·복원을 사용하세요.
 
-배포 사이트: https://minho-nim.github.io/MinLab/
+GitHub에는 소스와 공개용 초안 파일만 배포합니다. API 키는 Secret에 보관하며 프런트엔드에 포함하지 않습니다.
 
-프로젝트별 저장소와 미리보기 연결
+## 사이트
 
-각 프로젝트를 별도 GitHub 저장소로 관리하고 개별 배포한 뒤, MinLab의 프로젝트 수정 화면에서 다음 주소를 등록합니다.
-
-- GitHub 저장소 URL: 해당 프로젝트의 소스 저장소
-- 미리보기 앱 URL: MinLab 상세 화면 안에서 실행할 배포 주소
-- 프로그램 실행 URL: 새 탭으로 열 서비스 주소 (미리보기와 같거나 별도 주소)
-
-미리보기는 시작 버튼을 누르면 로드되며 모바일 너비 전환, 새로고침, 새 탭 열기를 지원합니다. 연결된 사이트가 프레임 표시를 막으면 새 탭으로 열어 사용합니다.
-
-GitHub 저장소 주소만 등록하면 앱이 배포되지는 않습니다. NutriFit처럼 Express API를 사용하는 프로젝트는 서버 실행을 지원하는 환경에 별도로 배포한 주소를 연결해야 전체 기능을 사용할 수 있습니다.
-
-연결 주소도 프로젝트 데이터의 일부이므로 JSON 백업 및 복원에 포함됩니다. 브라우저에서 수정한 연결 정보는 기존 프로젝트 데이터와 같이 LocalStorage에 저장됩니다.
+- 저장소: https://github.com/minho-nim/MinLab
+- 아카이브: https://minho-nim.github.io/MinLab/
+- 개발일지: https://minho-nim.github.io/MinLab/#/development-log

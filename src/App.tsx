@@ -1,10 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Project, WorkLog, NavigationTab } from './types';
+import { Project, WorkLog, NavigationTab, PromptHistoryItem } from './types';
 import { loadProjects, saveProjects } from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { StatsBanner } from './components/StatsBanner';
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectDetail } from './components/ProjectDetail';
+import { ProjectPage } from './components/ProjectPage';
+import { ProjectPreview } from './components/ProjectPreview';
+import { GitHubDraftInbox } from './components/GitHubDraftInbox';
+import { PromptHistoryView } from './components/PromptHistoryView';
+import { parseRoute, routeHash, type ArchiveRoute } from './utils/navigation';
 import { ProjectModal } from './components/ProjectModal';
 import { WorkLogModal } from './components/WorkLogModal';
 import { DevelopmentLogView } from './components/DevelopmentLogView';
@@ -15,8 +20,23 @@ import { Info, X, Download } from 'lucide-react';
 
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [currentTab, setCurrentTab] = useState<NavigationTab>('projects');
+  const [route, setRoute] = useState<ArchiveRoute>(() => parseRoute(window.location.hash));
+  const selectedProjectId = route.view === 'project' || route.view === 'manage' ? route.projectId : null;
+  const currentTab: NavigationTab = route.view === 'records' ? 'development-log' : 'projects';
+  const devLogProjectIdFilter = route.view === 'records' ? route.projectId || null : null;
+  const navigate = (next: ArchiveRoute) => {
+    const hash = routeHash(next);
+    if (window.location.hash === hash) window.scrollTo({ top: 0, behavior: 'instant' });
+    else window.location.hash = hash;
+  };
+  const setSelectedProjectId = (id: string | null) => navigate(id ? { view: 'project', projectId: id } : { view: 'archive' });
+  const [previewProject, setPreviewProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    const update = () => setRoute(parseRoute(window.location.hash));
+    window.addEventListener('hashchange', update);
+    return () => window.removeEventListener('hashchange', update);
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -27,7 +47,6 @@ export default function App() {
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('전체');
 
   // Development Log specific project filter
-  const [devLogProjectIdFilter, setDevLogProjectIdFilter] = useState<string | null>(null);
 
   // Storage notice banner visibility
   const [showStorageNotice, setShowStorageNotice] = useState<boolean>(() => {
@@ -145,9 +164,9 @@ export default function App() {
     return false;
   };
 
-  const handleUpdateProject = (updated: Project) => {
+  const handleUpdateProject = (updated: Project): boolean => {
     const updatedList = projects.map((p) => (p.id === updated.id ? updated : p));
-    updateProjectsState(updatedList);
+    return updateProjectsState(updatedList);
   };
 
   // Handlers for Project Deletion
@@ -233,9 +252,17 @@ export default function App() {
 
   // Navigate to Development Log for a specific project
   const handleViewLogsForProject = (projectId: string) => {
-    setSelectedProjectId(null);
-    setDevLogProjectIdFilter(projectId);
-    setCurrentTab('development-log');
+    navigate({ view: 'records', projectId });
+  };
+
+  const handleSavePrompt = (prompt: PromptHistoryItem, projectId: string): boolean => {
+    const project = projects.find(item => item.id === projectId);
+    if (!project) return false;
+    const current = project.promptHistory || [];
+    const updated = current.some(item => item.id === prompt.id) ? current.map(item => item.id === prompt.id ? prompt : item) : [prompt, ...current];
+    if (!handleUpdateProject({ ...project, promptHistory: updated, updatedAt: new Date().toISOString() })) return false;
+    showToast('프롬프트 원문을 저장했습니다.', 'success');
+    return true;
   };
 
   const handleDismissNotice = () => {
@@ -256,8 +283,7 @@ export default function App() {
       <Navbar
         currentTab={selectedProject ? 'projects' : currentTab}
         onSelectTab={(tab) => {
-          setSelectedProjectId(null);
-          setCurrentTab(tab);
+          navigate(tab === 'development-log' ? { view: 'records' } : { view: 'archive' });
         }}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -266,10 +292,7 @@ export default function App() {
           setIsProjectModalOpen(true);
         }}
         onOpenBackupModal={() => setIsBackupModalOpen(true)}
-        onNavigateHome={() => {
-          setSelectedProjectId(null);
-          setCurrentTab('projects');
-        }}
+        onNavigateHome={() => navigate({ view: 'archive' })}
         totalProjectsCount={projects.length}
         totalLogsCount={totalLogsCount}
       />
@@ -305,11 +328,11 @@ export default function App() {
 
       {/* Main View Container */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
-        {selectedProject ? (
+        {selectedProject && route.view === 'project' ? <ProjectPage project={selectedProject} /> : selectedProject ? (
           /* Project Detail Page */
           <ProjectDetail
             project={selectedProject}
-            onBack={() => setSelectedProjectId(null)}
+            onBack={() => navigate({ view: 'project', projectId: selectedProject.id })}
             onUpdateProject={handleUpdateProject}
             onOpenEditProjectModal={(p) => {
               setEditingProject(p);
@@ -320,6 +343,8 @@ export default function App() {
             onNavigateToDevLog={(projectId) => handleViewLogsForProject(projectId)}
             showToast={showToast}
           />
+        ) : selectedProjectId ? (
+          <div className="py-16 text-center text-sm text-muted"><p>프로젝트를 찾을 수 없습니다. 이 브라우저에 데이터가 없다면 JSON 백업을 가져오세요.</p><a href="#/" className="mt-4 inline-block text-accent">아카이브로 돌아가기</a></div>
         ) : currentTab === 'projects' ? (
           /* 1. Projects View: 전체 프로젝트 목록, 태그 필터, 프로젝트 카드 */
           <div className="space-y-8">
@@ -360,13 +385,12 @@ export default function App() {
                   <ProjectCard
                     key={project.id}
                     project={project}
-                    onSelect={(p) => setSelectedProjectId(p.id)}
                     onEdit={(p) => {
                       setEditingProject(p);
                       setIsProjectModalOpen(true);
                     }}
                     onDelete={handleRequestDelete}
-                    onViewLogs={handleViewLogsForProject}
+                    onPreview={setPreviewProject}
                   />
                 ))}
               </div>
@@ -374,14 +398,24 @@ export default function App() {
           </div>
         ) : currentTab === 'development-log' ? (
           /* 2. Development Log View: 날짜별 개발 기록과 수정 이력 조회 및 프로젝트별 필터링 */
-          <DevelopmentLogView
+          <div className="space-y-6">
+          <GitHubDraftInbox projects={projects} projectId={devLogProjectIdFilter} kind={route.view === 'records' && route.tab === 'prompts' ? 'prompt' : 'log'} onReview={(log, id) => handleOpenWorkLogModal(id, log)} onSavePrompt={handleSavePrompt} />
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface p-3">
+            <nav aria-label="기록 종류" className="flex gap-2 text-xs">
+              <a href={routeHash({ view: 'records', projectId: devLogProjectIdFilter || undefined })} className={'rounded-md px-3 py-2 ' + (route.view === 'records' && route.tab === 'prompts' ? 'text-muted' : 'bg-accent-soft font-semibold text-accent')}>개발일지</a>
+              <a href={routeHash({ view: 'records', projectId: devLogProjectIdFilter || undefined, tab: 'prompts' })} className={'rounded-md px-3 py-2 ' + (route.view === 'records' && route.tab === 'prompts' ? 'bg-accent-soft font-semibold text-accent' : 'text-muted')}>사용한 프롬프트</a>
+            </nav>
+            {route.view === 'records' && route.tab === 'prompts' && <select aria-label="기록 대상 프로젝트" value={devLogProjectIdFilter || ''} onChange={event => navigate({ view: 'records', projectId: event.target.value || undefined, tab: 'prompts' })} className="max-w-full rounded-md border border-line bg-canvas px-2 py-2 text-xs text-ink"><option value="">전체 프로젝트</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select>}
+          </div>
+          {route.view === 'records' && route.tab === 'prompts' ? <PromptHistoryView projects={projects} projectId={devLogProjectIdFilter} onUpdateProject={handleUpdateProject} /> : <DevelopmentLogView
             projects={projects}
             selectedProjectIdFilter={devLogProjectIdFilter}
-            onSelectProjectIdFilter={setDevLogProjectIdFilter}
+            onSelectProjectIdFilter={(id) => navigate({ view: 'records', projectId: id || undefined })}
             onOpenAddLogModal={(defId, existing) => handleOpenWorkLogModal(defId, existing)}
             onRequestDeleteLog={(log, pId) => handleRequestDeleteLog(log, pId)}
             onNavigateToProject={(pId) => setSelectedProjectId(pId)}
-          />
+          />}
+          </div>
         ) : null}
       </main>
 
@@ -417,6 +451,7 @@ export default function App() {
       </footer>
 
       {/* Modals */}
+      {previewProject && <div className="fixed inset-0 z-50 overflow-y-auto bg-ink/40 p-4 backdrop-blur-xs" role="dialog" aria-modal="true" aria-label={previewProject.name + ' 미리보기'} onKeyDown={event => { if (event.key === 'Escape') setPreviewProject(null); }}><div className="mx-auto my-6 max-w-5xl rounded-2xl bg-canvas p-4 sm:p-6"><div className="mb-4 flex items-center justify-between gap-3"><h2 className="text-sm font-semibold text-ink">{previewProject.name}</h2><button type="button" autoFocus aria-label="미리보기 창 닫기" onClick={() => setPreviewProject(null)} className="rounded-md border border-line bg-surface p-2 text-muted"><X className="h-4 w-4" /></button></div><ProjectPreview key={previewProject.id} name={previewProject.name} url={previewProject.previewUrl || previewProject.liveUrl} autoOpen /><div className="mt-4 text-right"><a href={routeHash({ view: 'project', projectId: previewProject.id })} onClick={() => setPreviewProject(null)} className="text-xs text-accent">프로젝트 페이지로 이동 →</a></div></div></div>}
       {/* 1. Project Add / Edit Modal */}
       <ProjectModal
         isOpen={isProjectModalOpen}

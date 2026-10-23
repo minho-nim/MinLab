@@ -4,6 +4,14 @@ export type FeatureStatus = '대기' | '진행 중' | '완료';
 
 export type NavigationTab = 'projects' | 'development-log';
 
+export interface RecordSource {
+  fingerprint: string;
+  repository: string;
+  urls: string[];
+  engine: 'gemini' | 'github';
+  generatedAt: string;
+}
+
 export interface ProjectFeature {
   id: string;
   name: string; // 기능명
@@ -13,6 +21,7 @@ export interface ProjectFeature {
 
 export interface WorkLog {
   id: string;
+  source?: RecordSource;
   projectId?: string; // 소속 프로젝트 ID
   projectName?: string; // 소속 프로젝트명 (캐싱/표시용)
   date: string; // 수정 날짜 (YYYY-MM-DD)
@@ -39,6 +48,7 @@ export interface ChangelogItem {
 
 export interface PromptHistoryItem {
   id: string;
+  source?: RecordSource;
   date: string;
   title: string;
   prompt: string;

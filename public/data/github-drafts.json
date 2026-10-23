@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-23T00:07:39.261Z",
+  "drafts": [
+    {
+      "kind": "log",
+      "projectId": "proj-1792563333333",
+      "record": {
+        "id": "github:minho-nim/ChoicePilot:2026-10-22",
+        "date": "2026-10-22",
+        "title": "ChoicePilot 개발 기록 (2026-10-22)",
+        "content": "커밋: Prepare ChoicePilot for standalone Pages deployment\n커밋: Include cross-platform build dependencies in npm lockfile",
+        "reason": "",
+        "testResult": "커밋·PR에서 확인할 수 있는 테스트 결과가 없습니다.",
+        "nextSteps": "",
+        "version": "",
+        "createdAt": "2026-10-23T00:07:39.261Z",
+        "source": {
+          "repository": "minho-nim/ChoicePilot",
+          "fingerprint": "79b6620d6852abd4645679f07b3bc69f7b70369e06e52e37d940b540e693d4b0",
+          "urls": [
+            "https://github.com/minho-nim/ChoicePilot/commit/1a0416600ee48a9fd19d23216498a530177db8b7",
+            "https://github.com/minho-nim/ChoicePilot/commit/98d6142771196f5c81353cbb03bbe787adc48ef1"
+          ],
+          "engine": "github",
+          "generatedAt": "2026-10-23T00:07:39.261Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "github:minho-nim/MinLab:2026-10-22",
+        "date": "2026-10-22",
+        "title": "MinLab 개발 기록 (2026-10-22)",
+        "content": "커밋: Connect ChoicePilot preview and repository links in MinLab\n커밋: feat: refresh MinLab UI and migrate prompt history",
+        "reason": "",
+        "testResult": "커밋·PR에서 확인할 수 있는 테스트 결과가 없습니다.",
+        "nextSteps": "",
+        "version": "",
+        "createdAt": "2026-10-23T00:07:39.261Z",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "9e226205be6b40added9711937257b6d9d897475abf924e36a3e7e478d525047",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/commit/02aa17deb416b246ff7b7fc0c7ab3d6274260a76",
+            "https://github.com/minho-nim/MinLab/commit/58572b8c6a891c0575ca1c288859de2054f27407"
+          ],
+          "engine": "github",
+          "generatedAt": "2026-10-23T00:07:39.261Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "github:minho-nim/MinLab:2026-10-21",
+        "date": "2026-10-21",
+        "title": "MinLab 개발 기록 (2026-10-21)",
+        "content": "커밋: docs: update MinLab README\n커밋: fix: remove stale cleaned reference in JSON import\n커밋: fix: include ChoicePilot in project import\n커밋: chore: simplify GitHub Pages deployment\n커밋: backup: add MinLab project data",
+        "reason": "",
+        "testResult": "커밋·PR에서 확인할 수 있는 테스트 결과가 없습니다.",
+        "nextSteps": "",
+        "version": "",
+        "createdAt": "2026-10-23T00:07:39.261Z",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "b2b3b5fb6e4104af1d2458fe58d8402a659016de315303b00ebe7b8a29699fe9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/commit/0695aa9ef633cd22d2606c60cc016a723571188b",
+            "https://github.com/minho-nim/MinLab/commit/10cbf860557f6addbe545457ffff1c653879e6d4",
+            "https://github.com/minho-nim/MinLab/commit/1747cbcc322f860fb506ecc4677be9e1cfb6b9f5",
+            "https://github.com/minho-nim/MinLab/commit/3245f7961b828c18ade580a29200f805019e4d24",
+            "https://github.com/minho-nim/MinLab/commit/6b27ce0bc33995b6b486ac385e9cae3adad3ea58"
+          ],
+          "engine": "github",
+          "generatedAt": "2026-10-23T00:07:39.261Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "github:minho-nim/MinLab:2026-10-20",
+        "date": "2026-10-20",
+        "title": "MinLab 개발 기록 (2026-10-20)",
+        "content": "커밋: Add files via upload\n커밋: Delete minlab---프로젝트-아카이브 directory\n커밋: Add MinLab application source code\n커밋: Update main.yml\n커밋: Initial commit: MinLab project\n커밋: Merge existing GitHub history\n커밋: Delete tsconfig.json\n커밋: Delete package.json\n커밋: Delete src directory\n커밋: Update package.json\n커밋: Add MinLab application source code\n커밋: Initial commit\n커밋: Create main.yml\n커밋: Delete vite.config.ts\n커밋: Delete index.html\n커밋: Delete metadata.json\n커밋: Update main.yml",
+        "reason": "",
+        "testResult": "커밋·PR에서 확인할 수 있는 테스트 결과가 없습니다.",
+        "nextSteps": "",
+        "version": "",
+        "createdAt": "2026-10-23T00:07:39.261Z",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "331c5ab3f84da38e20dd621df20a8c34c9fe07977a919802fac933f62931664f",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/commit/1158d1e9dd37b6383330ef7d96d7afbe6095657b",
+            "https://github.com/minho-nim/MinLab/commit/19e04d77729bb033b0f09eac1d61e4a3c9007089",
+            "https://github.com/minho-nim/MinLab/commit/1d6ab8baf444fea4312e8f2f165bc6b5d02a3624",
+            "https://github.com/minho-nim/MinLab/commit/2bac27e63fdc1b21abdcbb8bfe1c7b99ee08af70",
+            "https://github.com/minho-nim/MinLab/commit/3e4094187560cf13244c606fab8ebd0a38f57950",
+            "https://github.com/minho-nim/MinLab/commit/4d958420b26f076f98c788c3cd1a51ea5c884dc7",
+            "https://github.com/minho-nim/MinLab/commit/59f43e9d8450aa97723983cf4412ef45d23b6889",
+            "https://github.com/minho-nim/MinLab/commit/63fbb10340b8c298cb36f5c5af82bdf9ef6faa29",
+            "https://github.com/minho-nim/MinLab/commit/8d7c0616efe6c7f56af85b60b237c1c9e5322ef3",
+            "https://github.com/minho-nim/MinLab/commit/8dbe5b6c948ba83691bc7265fd568b2c763c3c94",
+            "https://github.com/minho-nim/MinLab/commit/a51f505a9ef03f607be4590b43f6871fb6c80274",
+            "https://github.com/minho-nim/MinLab/commit/acf64c749611f0149fc92a494800626f20676895",
+            "https://github.com/minho-nim/MinLab/commit/b6497d381463fbf6ee9fc83e0119d33279f4d1e2",
+            "https://github.com/minho-nim/MinLab/commit/b74fa770cd3f37e0b9f802d434b6d74411ff93e3",
+            "https://github.com/minho-nim/MinLab/commit/bea851e1280df9427e7da084867a71518c9b9cf5",
+            "https://github.com/minho-nim/MinLab/commit/e01db1abeb2e762282682decf1093ad59cf57991",
+            "https://github.com/minho-nim/MinLab/commit/f216a4fb8b9d93ed2d8903246d12d1348aa47d5a"
+          ],
+          "engine": "github",
+          "generatedAt": "2026-10-23T00:07:39.261Z"
+        }
+      }
+    }
+  ],
+  "notices": [
+    "Gemini가 연결되지 않아 GitHub 원문 초안으로 수집했습니다. AI 요약은 저장소 Secret GEMINI_API_KEY를 등록한 뒤 실행하세요."
+  ]
+}

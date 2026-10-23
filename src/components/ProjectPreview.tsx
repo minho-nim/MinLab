@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ExternalLink, Monitor, Play, RotateCcw, Smartphone, X } from 'lucide-react';
 
-export function ProjectPreview({ name, url }: { name: string; url: string }) {
-  const [isOpen, setIsOpen] = useState(false);
+export function ProjectPreview({ name, url, autoOpen = false }: { name: string; url: string; autoOpen?: boolean }) {
+  const [isOpen, setIsOpen] = useState(autoOpen);
   const [mobile, setMobile] = useState(false);
   const [revision, setRevision] = useState(0);
 
@@ -35,7 +35,7 @@ export function ProjectPreview({ name, url }: { name: string; url: string }) {
             key={revision}
             src={url}
             title={`${name} 앱 미리보기`}
-            sandbox="allow-scripts allow-forms allow-downloads allow-modals allow-popups"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-modals allow-popups allow-popups-to-escape-sandbox"
             referrerPolicy="no-referrer"
             className={`mx-auto h-[640px] w-full rounded-md border border-line bg-white ${mobile ? 'max-w-[390px]' : ''}`}
           />

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-10-23T14:10:11+09:00",
+  "generatedAt": "2026-10-23T14:38:40+09:00",
   "drafts": [
     {
       "kind": "log",
@@ -108,6 +108,70 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-10-23T13:56:23+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "risk-assessment-workplan-automation",
+      "record": {
+        "id": "codex:risk-assessment-workplan-automation:2026-10-23-schedule-docx-fields-preview",
+        "date": "2026-10-23",
+        "title": "DOCX 작업명·연락처 표 추출 및 원본 미리보기",
+        "version": "",
+        "content": "요약\n일정내용을 DOCX 첫 표의 작업명으로 채우고, 연락처 표의 열 제목을 기준으로 작업자를 읽도록 수정했다. 캘린더명 저장과 원본 문서 미리보기를 추가했다.\n\n주요 변경\n- 일정내용(C열)을 첫 표의 작업명 값으로 설정하고 기존 목적 필드는 별도로 유지한다.\n- 회사명·R&R·이름·연락처 열을 찾아 같은 행의 값을 읽고 병합 셀을 확장해 정렬한다.\n- 캘린더명을 브라우저 로컬에 자동 저장하며 입력칸에서 수정할 수 있다.\n- 매칭 목록·일정표의 상세 창에서 업로드한 원본 DOCX를 재다운로드 없이 텍스트·표·이미지로 미리볼 수 있다. 원본 파일은 현재 세션 메모리에서 보관한다.",
+        "reason": "사용자가 회사 업로드 C열의 작업명, 캘린더명 저장, DOCX 표 기준 작업자 추출과 원본 미리보기를 요청했다.",
+        "testResult": "작업명과 목적 분리·작업자 열 순서 및 빈 값·무관한 연락처 제외 테스트 3건 통과. TypeScript 검사와 MinLab·일정 앱 빌드 성공. 제공 양식의 첫 작업명 행과 연락처 표 제목을 로컬에서 확인했다.",
+        "nextSteps": "실제 업무 문서의 다양한 병합 셀과 원본 미리보기 페이지 배치 차이를 확인한다.",
+        "createdAt": "2026-10-23T14:38:40+09:00",
+        "source": {
+          "repository": "",
+          "fingerprint": "e78999c42f04869f1838840b0c2da1318eab27312aa84ac18bca1faec41e0bc6",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T14:38:40+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "risk-assessment-workplan-automation",
+      "record": {
+        "id": "codex:risk-assessment-workplan-automation:2026-10-23-schedule-docx-fields-preview:prompt:request-1",
+        "date": "2026-10-23",
+        "title": "일정내용·캘린더명·작업자·원본 문서 개선",
+        "prompt": "1. 일정내용(contents) 이거 (C행) .docx에서 첫칸에 쓰는 작업명 이 들어가야할 듯&#x20;\n2. 양식 다운로드의 캘린더명은 한버 쓰면 로컬로 저장되게 하면 좋을거같고... 클릭으로 수정 가능하게.\n3. 작업자부분에서는 .Docx 에서 회사명 아래에, R&R 아래에,이름 아래에, 연락처 아래에 있는거를 맞춰서 쓰면 돼\n4. 매칭리스트랑 통합 공사 일정표 들에서 등록된 내용 누르면 작업 내용 뜨는데 띄우고 작업 절차서 .docx 파일 열리는 버튼 추가 해주면 좋을 듯?",
+        "outcome": "요청한 DOCX 필드 추출과 캘린더명 저장 및 상세 원본 미리보기 구현",
+        "source": {
+          "repository": "",
+          "fingerprint": "15e1e2691f45bdac05d86df962113745f264f054b6a6fb7be3fc5fd3d926e151",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T14:38:40+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "risk-assessment-workplan-automation",
+      "record": {
+        "id": "codex:risk-assessment-workplan-automation:2026-10-23-schedule-docx-fields-preview:prompt:request-2",
+        "date": "2026-10-23",
+        "title": "다운로드 없이 원본 미리보기",
+        "prompt": "이거 다시 다운은 필요없고 원본 바로 열기로 미리보기만 ㄱㄱ",
+        "outcome": "다운로드 버튼을 제거하고 상세 창 내부 DOCX 미리보기로 변경",
+        "source": {
+          "repository": "",
+          "fingerprint": "58df93e5463248a2b60bfe431a3974a9ad9dd5ae275b5a174c5e07f68c907d94",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T14:38:40+09:00"
         }
       }
     },

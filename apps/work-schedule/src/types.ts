@@ -15,6 +15,7 @@ export interface ParsedWorkPlan {
   작업명: string;
   위치: string;
   rawText?: string;
+  documentTitle?: string; // DOCX 첫 표의 작업명 값
   workers?: WorkerInfo[]; // 현장 작업자/비상연락망 목록
 }
 
@@ -24,6 +25,7 @@ export interface ExcelContractRow {
 }
 
 export interface ProcessedItem {
+  sourceFile?: File; // 업로드한 원본 파일: 현재 브라우저 메모리에서만 보관
   id: string;
   파일명: string;
   파일절대경로?: string;

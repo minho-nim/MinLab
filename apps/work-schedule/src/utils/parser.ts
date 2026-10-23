@@ -1,4 +1,5 @@
 import mammoth from 'mammoth';
+import { extractDocumentFields, readDocumentTables } from './docxTables';
 import * as XLSX from 'xlsx';
 import {
   ParsedWorkPlan,
@@ -298,16 +299,7 @@ export function processSinglePlan(
     schTitle = schTitle.substring(0, 47) + '…';
   }
 
-  let workerSummary = '';
-  if (wordData.workers && wordData.workers.length > 0) {
-    const pw = wordData.workers[0];
-    workerSummary = ` / [${pw.rr}] ${pw.name}(${pw.phone})`;
-  }
-
-  let contents = `[${wordData.작업번호}] ${optimizedContractNameVal}${workerSummary}`;
-  if (contents.length > 64) {
-    contents = `[${wordData.작업번호}] ${optimizedContractNameVal.substring(0, 25)}…${workerSummary}`;
-  }
+  const contents = wordData.documentTitle || wordData.작업명;
 
   return {
     id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -332,9 +324,15 @@ export function processSinglePlan(
 
 export async function parseDocxFile(file: File): Promise<ParsedWorkPlan> {
   const arrayBuffer = await file.arrayBuffer();
-  const res = await mammoth.extractRawText({ arrayBuffer });
+  const [res, html] = await Promise.all([
+    mammoth.extractRawText({ arrayBuffer }),
+    mammoth.convertToHtml({ arrayBuffer }),
+  ]);
   const text = res.value || '';
-  return parseWorkPlanText(text);
+  const parsed = parseWorkPlanText(text);
+  const document = new DOMParser().parseFromString(html.value, 'text/html');
+  const fields = extractDocumentFields(readDocumentTables(document));
+  return { ...parsed, ...fields };
 }
 
 export async function parseExcelFile(file: File): Promise<ExcelContractRow[]> {

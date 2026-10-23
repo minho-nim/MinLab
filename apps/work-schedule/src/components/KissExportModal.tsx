@@ -39,7 +39,14 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
   onConfirmExport,
 }) => {
   // 1. 캘린더(ID).캘린더명 (기본값: (작업일정(TEST)))
-  const [calTitle, setCalTitle] = useState('(작업일정(TEST))');
+  const [calTitle, setCalTitle] = useState(() => {
+    try { return localStorage.getItem('kiss_calendar_title') || '(작업일정(TEST))'; }
+    catch { return '(작업일정(TEST))'; }
+  });
+  useEffect(() => {
+    if (!calTitle.trim()) return;
+    try { localStorage.setItem('kiss_calendar_title', calTitle); } catch {}
+  }, [calTitle]);
 
   // 2. 등록자(ID) (기본값: demo1 - 예시 등록자)
   const [createId, setCreateId] = useState('demo1');
@@ -243,7 +250,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                   className="w-full text-xs font-semibold px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="mt-1 text-[10px] text-slate-500">
-                  다운로드 시 시스템 제공 명칭과 완벽히 동일해야 정상 등록됩니다. (기본: <code>(작업일정(TEST))</code>)
+                  입력한 캘린더명은 이 브라우저에 자동 저장됩니다. 입력칸을 클릭하면 수정할 수 있습니다. 회사 시스템의 캘린더명과 띄어쓰기까지 맞춰 주세요.
                 </p>
               </div>
 

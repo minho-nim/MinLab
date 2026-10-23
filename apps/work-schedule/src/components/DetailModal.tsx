@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import mammoth from 'mammoth';
 import { ProcessedItem, WorkerInfo } from '../types';
 import { formatToKissTime, formatTitleForKiss } from '../utils/parser';
 import {
@@ -35,6 +36,16 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
   const [workers, setWorkers] = useState<WorkerInfo[]>([]);
   const [isSaved, setIsSaved] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
+  const [documentPreview, setDocumentPreview] = useState('');
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState('');
+  const previewRequest = React.useRef(0);
+  useEffect(() => {
+    previewRequest.current++;
+    setDocumentPreview('');
+    setPreviewError('');
+    setPreviewLoading(false);
+  }, [item?.sourceFile]);
 
   // New worker form inputs
   const [newRr, setNewRr] = useState('작업원');
@@ -57,6 +68,37 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
   }, [item]);
 
   if (!item) return null;
+
+  const showDocument = async () => {
+    if (!item.sourceFile) return;
+    if (documentPreview) { setDocumentPreview(''); return; }
+    const request = ++previewRequest.current;
+    setPreviewLoading(true);
+    setPreviewError('');
+    try {
+      const result = await mammoth.convertToHtml({ arrayBuffer: await item.sourceFile.arrayBuffer() });
+      const parsed = new DOMParser().parseFromString(result.value, 'text/html');
+      // Preview document content without active links, scripts or remote resources.
+      const allowed = new Set(['P', 'BR', 'TABLE', 'THEAD', 'TBODY', 'TFOOT', 'TR', 'TH', 'TD', 'STRONG', 'EM', 'B', 'I', 'U', 'S', 'SPAN', 'DIV', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4', 'SUP', 'SUB', 'BLOCKQUOTE']);
+      for (const node of Array.from(parsed.body.querySelectorAll('*')).reverse()) {
+        if (node.tagName === 'IMG') {
+          const src = node.getAttribute('src') || '';
+          if (!/^data:image\/(png|jpe?g|gif|webp|bmp);base64,/i.test(src)) { node.remove(); continue; }
+          for (const attribute of Array.from(node.attributes)) if (!['src', 'alt'].includes(attribute.name)) node.removeAttribute(attribute.name);
+          continue;
+        }
+        if (['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'META'].includes(node.tagName)) { node.remove(); continue; }
+        if (!allowed.has(node.tagName)) { node.replaceWith(...Array.from(node.childNodes)); continue; }
+        for (const attribute of Array.from(node.attributes)) if (!['colspan', 'rowspan'].includes(attribute.name)) node.removeAttribute(attribute.name);
+      }
+      const html = `<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:"><style>body{font:14px/1.7 sans-serif;padding:20px;color:#1e293b;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;margin:12px 0}td,th{border:1px solid #cbd5e1;padding:8px;white-space:pre-wrap}p{margin:6px 0}img{max-width:100%;height:auto}</style></head><body>${parsed.body.innerHTML}</body></html>`;
+      if (previewRequest.current === request) setDocumentPreview(html);
+    } catch {
+      if (previewRequest.current === request) setPreviewError('문서를 미리보기로 변환하지 못했습니다. 정상 DOCX 파일인지 확인해 주세요.');
+    } finally {
+      if (previewRequest.current === request) setPreviewLoading(false);
+    }
+  };
 
   const handleCopyPhone = (phone: string) => {
     navigator.clipboard.writeText(phone);
@@ -145,6 +187,11 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
 
         {/* Modal Content */}
         <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+            {item.sourceFile ? <button type="button" onClick={showDocument} disabled={previewLoading} className="inline-flex items-center gap-2 font-bold text-blue-700 disabled:opacity-50"><FileText className="h-4 w-4" />{previewLoading ? '문서 불러오는 중…' : documentPreview ? '원본 DOCX 미리보기 닫기' : '원본 DOCX 미리보기'}</button> : <span className="text-slate-500">원본 DOCX를 업로드한 일정에서 작업절차서를 미리볼 수 있습니다.</span>}
+            {previewError && <p role="alert" className="mt-2 text-red-700">{previewError}</p>}
+            {documentPreview && <iframe title="업로드한 원본 DOCX 미리보기" sandbox="" srcDoc={documentPreview} className="mt-3 h-[520px] w-full rounded-lg border border-slate-200 bg-white" />}
+          </div>
           {/* Contracts Info */}
           <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
             <div>

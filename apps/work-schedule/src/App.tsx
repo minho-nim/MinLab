@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ExcelContractRow, ProcessedItem, KissExcelOptions, EmployeeInfo } from './types';
-import { SAMPLE_EXCEL_CONTRACTS, INITIAL_PROCESSED_RESULTS } from './data/sampleData';
+import { SAMPLE_EXCEL_CONTRACTS, INITIAL_PROCESSED_RESULTS as SAMPLE_RESULTS } from './data/sampleData';
 import {
   parseExcelFile,
   parseDocxFile,
@@ -15,6 +15,8 @@ import { ScheduleHubView } from './components/ScheduleHubView';
 import { DetailModal } from './components/DetailModal';
 import { KissExportModal } from './components/KissExportModal';
 import { CheckCircle2, Download, FolderOpen } from 'lucide-react';
+
+const INITIAL_PROCESSED_RESULTS = SAMPLE_RESULTS.map(item => ({ ...item, contents: item.작업명 }));
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'analysis' | 'matching' | 'schedule'>('analysis');
@@ -148,6 +150,7 @@ export default function App() {
           const file = selectedDocxFiles[i];
           const wordData = await parseDocxFile(file);
           const item = processSinglePlan(wordData, file.name, excelContracts);
+          item.sourceFile = file;
           results.push(item);
 
           addLog(

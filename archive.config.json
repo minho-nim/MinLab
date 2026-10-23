@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "projects": [
     {
       "id": "proj-1792485558773",
@@ -22,7 +22,7 @@
       "syncRecords": true
     },
     {
-      "id": "nutrifit",
+      "id": "proj-1792558759961",
       "repository": "minho-nim/NutriFit",
       "name": "NutriFit",
       "description": "식사와 영양 목표를 기록하고 밥친구를 키우는 개인 식단 관리 앱",

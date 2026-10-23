@@ -8,7 +8,7 @@ const REPO_URL = 'https://github.com/minho-nim/NutriFit';
 export function connectNutriFitOnce(projects: Project[], storage: Pick<Storage, 'getItem' | 'setItem'>, projectsKey: string): Project[] {
   try {
     if (storage.getItem(CONNECTION_KEY) === 'true') return projects;
-    const existing = projects.find((project) => project.id === 'nutrifit' || /nutrifit/i.test(project.name));
+    const existing = projects.find((project) => project.id === 'nutrifit' || project.id === 'proj-1792558759961' || /nutrifit/i.test(project.name + ' ' + project.englishName) || project.githubUrl?.replace(/\/$/, '') === REPO_URL);
     const now = new Date().toISOString();
     const connected: Project[] = existing
       ? projects.map((project) => project.id !== existing.id ? project : {

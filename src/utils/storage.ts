@@ -5,6 +5,7 @@ import { parseRecordSource } from './recordSources';
 import { connectChoicePilotOnce } from './projectLinkMigration';
 import { connectNutriFitOnce } from '../data/nutriFitProject';
 import { connectCatalogOnce } from '../data/projectCatalog';
+import { connectBackupSnapshotOnce } from './backupSnapshot';
 
 const STORAGE_KEY = 'minlab_projects_data_v2';
 
@@ -32,7 +33,7 @@ export const loadProjects = (): Project[] => {
         status: normalizeProjectStatus(p.status),
       }));
       saveProjects(normalizedInitial);
-      return connectCatalogOnce(connectNutriFitOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
+      return connectCatalogOnce(connectNutriFitOnce(connectBackupSnapshotOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     const result = parseImportJson(raw);
     if (result.success && result.projects?.length) {
@@ -40,14 +41,14 @@ export const loadProjects = (): Project[] => {
         ...project,
         isSample: project.isSample || project.id === 'risk-assessment-workplan-automation',
         archived: Boolean(project.archived),
-        thumbnailUrl: project.thumbnailUrl || (project.id === 'risk-assessment-workplan-automation' ? INITIAL_PROJECTS[0].thumbnailUrl : ''),
+        thumbnailUrl: project.thumbnailUrl || (project.id === 'risk-assessment-workplan-automation' ? INITIAL_PROJECTS.find(item => item.id === project.id)?.thumbnailUrl : ''),
         workLogs: project.workLogs.map((log) => ({
           ...log,
           projectId: log.projectId || project.id,
           projectName: log.projectName || project.name,
         })),
       }));
-      return connectCatalogOnce(connectNutriFitOnce(connectChoicePilotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
+      return connectCatalogOnce(connectNutriFitOnce(connectChoicePilotOnce(connectBackupSnapshotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     return INITIAL_PROJECTS;
   } catch (err) {

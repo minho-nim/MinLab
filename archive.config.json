@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "recordsSince": "2026-10-23T00:37:00.000Z",
   "recordsRepository": "minho-nim/MinLab",
   "projects": [
@@ -36,7 +36,7 @@
       "name": "위험성평가서 / 작업계획서 자동화 도구",
       "description": "위험성평가서·작업계획서 자동화 도구와 DOCX 기반 공사 일정 관리 웹앱",
       "category": "업무 자동화",
-      "appUrl": "https://ai.studio/apps/3d121488-0340-4b6f-a347-2ce687eb28dd",
+      "appUrl": "https://minho-nim.github.io/MinLab/apps/work-schedule/",
       "techStack": ["Python", "React", "TypeScript", "Vite"]
     }
   ]

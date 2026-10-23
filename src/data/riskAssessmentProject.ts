@@ -1,8 +1,8 @@
 import type { Project } from '../types';
 
-const CONNECTION_KEY = 'minlab_risk_assessment_web_connection_v1';
+const CONNECTION_KEY = 'minlab_risk_assessment_web_connection_v2';
 const PROJECT_ID = 'risk-assessment-workplan-automation';
-const APP_URL = 'https://ai.studio/apps/3d121488-0340-4b6f-a347-2ce687eb28dd';
+const APP_URL = 'https://minho-nim.github.io/MinLab/apps/work-schedule/';
 const OLD_REPOSITORY_URL = 'https://github.com/minho-nim/MinLab';
 const DESCRIPTION = '위험성평가서·작업계획서 자동화 도구와 DOCX 기반 공사 일정 관리 웹앱';
 const FEATURES = [
@@ -30,8 +30,8 @@ export function connectRiskAssessmentProjectOnce(
         : project.description,
       keyFeatures: [...new Set([...(project.keyFeatures || []), ...FEATURES])],
       techStack: [...new Set([...(project.techStack || []), 'React', 'TypeScript', 'Vite'])],
-      liveUrl: !project.liveUrl?.trim() ? APP_URL : project.liveUrl,
-      previewUrl: project.previewUrl?.trim() ? project.previewUrl : APP_URL,
+      liveUrl: !project.liveUrl?.trim() || project.liveUrl.includes('ai.studio/apps/') ? APP_URL : project.liveUrl,
+      previewUrl: !project.previewUrl?.trim() || project.previewUrl.includes('ai.studio/apps/') ? APP_URL : project.previewUrl,
       githubUrl: project.githubUrl?.replace(/\/$/, '') === OLD_REPOSITORY_URL ? '' : project.githubUrl,
       isSample: false,
       archived: false,

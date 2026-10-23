@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Project } from '../types';
 import { connectChoicePilotOnce } from './projectLinkMigration';
+import { connectNutriFitOnce } from '../data/nutriFitProject';
 
 const DATA_KEY = 'test-projects';
 const makeStorage = () => {
@@ -65,4 +66,29 @@ test('does not discard project data when migration storage is unavailable', () =
     setItem: () => { throw new Error('Storage unavailable'); },
   };
   assert.strictEqual(connectChoicePilotOnce(projects, unavailable, DATA_KEY), projects);
+});
+
+test('replaces retired NutriFit login links in existing browser data without duplicating the project', () => {
+  const storage = makeStorage();
+  storage.setItem('minlab_nutrifit_connection_v1', 'true');
+  const old = { ...choicePilot, id: 'proj-1792558759961', name: '개인 식단 관리', englishName: 'NutriFit', githubUrl: 'https://github.com/minho-nim/NutriFit', liveUrl: 'https://nutrifit-minho.smokyaphid66.chatgpt.site', previewUrl: 'https://nutrifit-minho.smokyaphid66.chatgpt.site/' };
+  const connected = connectNutriFitOnce([old], storage, DATA_KEY);
+  assert.equal(connected.length, 1);
+  assert.equal(connected[0].liveUrl, 'https://minho-nim.github.io/NutriFit-web/');
+  assert.equal(connected[0].previewUrl, 'https://minho-nim.github.io/NutriFit-web/');
+  assert.deepEqual(connected[0].promptHistory, old.promptHistory);
+  assert.equal(connected[0].id, old.id);
+  assert.equal(storage.getItem('minlab_nutrifit_connection_v2'), 'true');
+  // A later import of the retired link must also be repaired.
+  assert.equal(connectNutriFitOnce([old], storage, DATA_KEY)[0].liveUrl, connected[0].liveUrl);
+});
+
+test('NutriFit repair preserves custom links and subsequent intentional edits', () => {
+  const storage = makeStorage();
+  const custom = { ...choicePilot, id: 'nutrifit', name: 'NutriFit', liveUrl: 'https://custom.example/app', previewUrl: 'https://preview.example/app' };
+  const connected = connectNutriFitOnce([custom], storage, DATA_KEY);
+  assert.equal(connected[0].liveUrl, custom.liveUrl);
+  assert.equal(connected[0].previewUrl, custom.previewUrl);
+  const cleared = [{ ...connected[0], liveUrl: '', previewUrl: '' }];
+  assert.strictEqual(connectNutriFitOnce(cleared, storage, DATA_KEY), cleared);
 });

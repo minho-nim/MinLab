@@ -1,7 +1,7 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-10-23T09:47:27+09:00",
+  "generatedAt": "2026-10-23T13:56:23+09:00",
   "drafts": [
     {
       "kind": "log",
@@ -44,6 +44,70 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-10-23T09:47:27+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "risk-assessment-workplan-automation",
+      "record": {
+        "id": "codex:risk-assessment-workplan-automation:2026-10-23-risk-assessment-web-link-and-schedule-roster",
+        "date": "2026-10-23",
+        "title": "자동화 도구 카드에 DOCX 일정 웹앱 연결",
+        "version": "",
+        "content": "요약\nMinLab의 기존 위험성평가서·작업계획서 프로젝트 카드에 AI Studio 앱을 연결하고, 로컬 일정 웹앱에서 원본 시각과 DOCX 작업자 명단을 사용하도록 정리했다.\n\n주요 변경\n- 기존 MinLab 샘플 카드를 같은 프로젝트 ID로 유지하면서 AI Studio 앱 링크와 웹앱 기능 설명을 추가했다.\n- MinLab 사용자의 기존 작업일지와 프롬프트를 보존하며 프로젝트 링크를 갱신하도록 일회성 마이그레이션을 추가했다.\n- 일정 내보내기에서 시간 라운딩 단위 설정을 제거하고 DOCX에서 추출한 원본 시각을 유지하도록 했다.\n- 일정 목록과 달력 상세에서 DOCX 작업자의 R&R·회사명·이름·연락처를 표시하고 작업자 정보로 일정 검색을 지원했다.\n- 등록자·참여자 ID와 사원 목록이 실제 현장 작업자 명단이 아니라 회사 업로드 양식용임을 UI에 구분해 표시했다.",
+        "reason": "사용자는 기존 MinLab 자동화 도구 항목에 일정 웹앱을 연결하고, 작업자 일정은 DOCX의 연락처·회사명·R&R·이름을 기준으로 보며 등록자와 참여자는 회사 업로드 양식용으로만 사용하길 요청했다.",
+        "testResult": "MinLab npm run build 성공. 별도 기능 테스트는 실행하지 않았으며, 일정 웹앱 빌드와 실제 DOCX 파일 파싱은 미실행이다.",
+        "nextSteps": "로컬 웹앱 변경 사항을 AI Studio 앱에 동기화해 실제 서비스에 반영하고, 실제 DOCX 파일로 작업자 정보 파싱 결과를 확인한다.",
+        "createdAt": "2026-10-23T13:56:23+09:00",
+        "source": {
+          "repository": "",
+          "fingerprint": "b95c44156888ddd2ff5f47c69d7b8f6e741205351fcb57181b11697101340a54",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T13:56:23+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "risk-assessment-workplan-automation",
+      "record": {
+        "id": "codex:risk-assessment-workplan-automation:2026-10-23-risk-assessment-web-link-and-schedule-roster:prompt:request-1",
+        "date": "2026-10-23",
+        "title": "기존 자동화 도구에 일정 웹앱 연결 요청",
+        "prompt": "C:\\Users\\USER\\Documents\\Codex\\개발\\위험성평가서 작업계획서 자동화 도구\\공사-일정-통합-관리-시스템-(modern-schedule-web) 이거도 다른것 처럼 MinLab 에 올리고 싶어 이미 올라가 있는 위험성평가서 / 작업계획서 자동화 도구 이거야",
+        "outcome": "기존 MinLab 프로젝트 카드에 같은 프로젝트 ID로 웹앱을 연결하고 작업 기록을 추가",
+        "source": {
+          "repository": "",
+          "fingerprint": "1114a38e0df493eb4c8289bf1a6a12b142b935dc9d7b0b33eb39aae635f7ec5c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T13:56:23+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "risk-assessment-workplan-automation",
+      "record": {
+        "id": "codex:risk-assessment-workplan-automation:2026-10-23-risk-assessment-web-link-and-schedule-roster:prompt:request-2",
+        "date": "2026-10-23",
+        "title": "작업자 명단과 업로드용 참여자 구분 요청",
+        "prompt": "시간 라운딩 단위 필요 없음\n보내주는 docx 파일에서 연락처 회사명 R&R 이름 연락처 있는데 작업자 일정은 이걸 봐야돼 등록자 참여자는 회사 업로드 양식에 올리기 위한것일 뿐이야.",
+        "outcome": "원본 DOCX 시각을 유지하고 작업자 일정 UI는 DOCX 현장 작업자 명단을 사용하도록 수정; 등록자·참여자 ID는 회사 업로드용으로 구분",
+        "source": {
+          "repository": "",
+          "fingerprint": "b401bf91bd5d072ad9932daa3781ce0989f59714d49991cb5ffbd6dec1fb5eb6",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T13:56:23+09:00"
         }
       }
     }

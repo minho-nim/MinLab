@@ -5,6 +5,7 @@ import { parseRecordSource } from './recordSources';
 import { connectChoicePilotOnce } from './projectLinkMigration';
 import { connectNutriFitOnce } from '../data/nutriFitProject';
 import { connectCatalogOnce } from '../data/projectCatalog';
+import { connectRiskAssessmentProjectOnce } from '../data/riskAssessmentProject';
 import { connectBackupSnapshotOnce } from './backupSnapshot';
 
 const STORAGE_KEY = 'minlab_projects_data_v2';
@@ -33,13 +34,13 @@ export const loadProjects = (): Project[] => {
         status: normalizeProjectStatus(p.status),
       }));
       saveProjects(normalizedInitial);
-      return connectCatalogOnce(connectNutriFitOnce(connectBackupSnapshotOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
+      return connectCatalogOnce(connectRiskAssessmentProjectOnce(connectNutriFitOnce(connectBackupSnapshotOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     const result = parseImportJson(raw);
     if (result.success && result.projects?.length) {
       const normalizedProjects = result.projects.map((project) => ({
         ...project,
-        isSample: project.isSample || project.id === 'risk-assessment-workplan-automation',
+        isSample: project.isSample,
         archived: Boolean(project.archived),
         thumbnailUrl: project.thumbnailUrl || (project.id === 'risk-assessment-workplan-automation' ? INITIAL_PROJECTS.find(item => item.id === project.id)?.thumbnailUrl : ''),
         workLogs: project.workLogs.map((log) => ({
@@ -48,7 +49,7 @@ export const loadProjects = (): Project[] => {
           projectName: log.projectName || project.name,
         })),
       }));
-      return connectCatalogOnce(connectNutriFitOnce(connectChoicePilotOnce(connectBackupSnapshotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
+      return connectCatalogOnce(connectRiskAssessmentProjectOnce(connectNutriFitOnce(connectChoicePilotOnce(connectBackupSnapshotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     return INITIAL_PROJECTS;
   } catch (err) {

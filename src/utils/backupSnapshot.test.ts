@@ -50,3 +50,15 @@ test('storage failure leaves the existing in-memory projects unchanged', () => {
   const result = connectBackupSnapshotOnce(local, { getItem: () => null, setItem: () => { throw new Error('Storage full'); } }, 'projects');
   assert.equal(result, local);
 });
+
+test('same GitHub project with another local ID merges once without losing either history', () => {
+  const storage = storageFixture();
+  const original = INITIAL_PROJECTS.find(project => project.name === 'ChoicePilot')!;
+  const duplicate = { ...original, id: 'separately-created-choicepilot', githubUrl: original.githubUrl + '?from=local', updatedAt: '2026-10-23T09:00:00Z', workLogs: [{ id: 'new-local-log', date: '2026-10-23', title: '추가 기록', content: '새 브라우저 기록' }] };
+  const result = connectBackupSnapshotOnce([duplicate, ...INITIAL_PROJECTS], storage, 'projects');
+  assert.equal(result.length, 5);
+  const merged = result.find(project => project.id === original.id)!;
+  assert.equal(merged.workLogs.length, original.workLogs.length + 1);
+  assert.equal(result.some(project => project.id === 'separately-created-choicepilot'), false);
+  assert.equal(result.some(project => project.id === 'risk-assessment-workplan-automation'), true);
+});

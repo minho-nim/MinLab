@@ -1,10 +1,18 @@
 import { INITIAL_PROJECTS } from '../data/initialData';
 import type { Project } from '../types';
 
-const VERSION_KEY = 'minlab_backup_snapshot_2026_10_22_v1';
+const VERSION_KEY = 'minlab_backup_snapshot_2026_10_22_v2';
 const nutritionAliases = new Set(['nutrifit', 'proj-1792558759961']);
 
 const mergeById = <T extends { id: string }>(items: T[]): T[] => [...new Map(items.map(item => [item.id, item])).values()];
+
+function repositoryKey(value?: string): string {
+  if (!value) return '';
+  try {
+    const url = new URL(value);
+    return url.hostname === 'github.com' ? url.pathname.replace(/\.git\/?$/, '').replace(/\/$/, '').toLowerCase() : '';
+  } catch { return ''; }
+}
 
 /** Import the published backup once, keeping newer browser edits and all existing records. */
 export function connectBackupSnapshotOnce(projects: Project[], storage: Pick<Storage, 'getItem' | 'setItem'>, dataKey: string): Project[] {
@@ -12,7 +20,10 @@ export function connectBackupSnapshotOnce(projects: Project[], storage: Pick<Sto
     if (storage.getItem(VERSION_KEY)) return projects;
     let merged = [...projects];
     for (const saved of INITIAL_PROJECTS) {
-      const matching = merged.filter(project => project.id === saved.id || (nutritionAliases.has(saved.id) && nutritionAliases.has(project.id)));
+      const savedRepository = repositoryKey(saved.githubUrl);
+      const matching = merged.filter(project => project.id === saved.id
+        || (nutritionAliases.has(saved.id) && nutritionAliases.has(project.id))
+        || (!saved.isSample && !project.isSample && Boolean(savedRepository) && repositoryKey(project.githubUrl) === savedRepository));
       if (!matching.length) { merged.push(saved); continue; }
       const preferred = matching.reduce((current, project) => Date.parse(project.updatedAt) > Date.parse(current.updatedAt) ? project : current, saved);
       const result: Project = {

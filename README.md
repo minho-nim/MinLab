@@ -31,7 +31,7 @@ npm run build
 
 ## 자동 입력 설정
 
-MinLab 저장소의 Actions Secret에 `GEMINI_API_KEY`를 등록하고 **Collect GitHub record drafts** 워크플로를 실행합니다. 이후 6시간마다 최근 30일의 기록을 수집합니다. 키가 없어도 GitHub 원문 초안은 수집되지만 AI 요약으로 표시하지 않습니다.
+MinLab 저장소의 Actions Secret에 `GEMINI_API_KEY`를 등록하고 **Collect GitHub record drafts** 워크플로를 실행합니다. 이후 6시간마다 `archive.config.json`의 `recordsSince` 이후이면서 최근 30일 내인 변경만 수집합니다. 기존 작성분은 제외하며, 새 초안은 요약·주요 변경·수정 이유·확인 결과·다음 작업으로 정리합니다. 키가 없으면 연결 안내만 표시하고 커밋 제목 나열은 생성하지 않습니다.
 
 실제로 사용한 프롬프트는 각 공개 프로젝트의 `.minlab/prompts.json` 파일에서 원문을 가져옵니다. 커밋 내용으로 프롬프트를 추측하지 않습니다. 비공개 저장소의 기록은 공개 초안으로 수집하지 않습니다.
 

@@ -15,6 +15,8 @@ function fixture({ privateRepo = false, prompts, failCommits = false } = {}) {
     if (path === '/repos/owner/demo') body = { private: privateRepo, default_branch: 'main' };
     else if (path.endsWith('/commits')) { body = [commit]; if (failCommits) status = 403; }
     else if (path.endsWith('/pulls')) body = [{ number: 12, title: '아카이브 링크', body: '사용자가 아카이브로 이동할 수 있게 함', merged_at: '2026-10-22T16:30:00Z', updated_at: '2026-10-22T16:30:00Z' }, { number: 11, title: '미병합', merged_at: null }];
+    else if (path.includes('/commits/')) body = { files: [{ filename: 'src/App.tsx', status: 'modified', patch: '+<a>아카이브</a>' }] };
+    else if (path.endsWith('/files')) body = [{ filename: 'src/App.tsx', status: 'modified', patch: '+<a>아카이브</a>' }];
     else if (path.includes('/contents/')) { status = prompts ? 200 : 404; body = prompts ? { encoding: 'base64', content: Buffer.from(JSON.stringify(prompts)).toString('base64') } : {}; }
     else throw new Error('Unexpected URL ' + url);
     return { ok: status === 200, status, json: async () => body };
@@ -42,7 +44,7 @@ test('public commits and merged PRs become one Seoul-day AI draft with real sour
   assert.equal(draft.record.date, '2026-10-23');
   assert.equal(draft.record.source.engine, 'gemini');
   assert.equal(draft.record.source.urls.length, 2);
-  assert.ok(draft.record.testResult.includes('확인할 수 있는 테스트 결과가 없습니다'));
+  assert.ok(draft.record.testResult.includes('확인 필요'));
   assert.equal(result.drafts.filter(item => item.kind === 'prompt').length, 0);
 });
 
@@ -53,12 +55,10 @@ test('unchanged sources do not call AI again or duplicate saved drafts', async (
   assert.deepEqual(second.failures, []);
 });
 
-test('missing AI key labels original GitHub content and never invents prompts', async () => {
+test('missing AI key waits without publishing raw commit-title drafts', async () => {
   const result = await run({ summarize: async () => { throw new Error('must not call'); } });
-  assert.equal(result.drafts[0].record.source.engine, 'github');
   assert.ok(result.notices.some(notice => notice.includes('GEMINI_API_KEY')));
-  assert.equal(result.drafts[0].record.reason, '');
-  assert.equal(result.drafts.length, 1);
+  assert.equal(result.drafts.length, 0);
 });
 
 test('saved prompt text is preserved exactly and versioned by content', async () => {
@@ -72,7 +72,7 @@ test('saved prompt text is preserved exactly and versioned by content', async ()
 });
 
 test('private repository events and previously generated private drafts are excluded', async () => {
-  const previous = await run();
+  const previous = await run({ apiKey: 'test-only-key', summarize: async () => summary });
   const source = fixture({ privateRepo: true });
   const result = await run({ ...source, previous });
   assert.deepEqual(source.calls, ['/repos/owner/demo']);
@@ -80,14 +80,15 @@ test('private repository events and previously generated private drafts are excl
 });
 
 test('read failures preserve existing drafts and report failure instead of fake success', async () => {
-  const previous = await run();
+  const previous = await run({ apiKey: 'test-only-key', summarize: async () => summary });
   const result = await run({ ...fixture({ failCommits: true }), previous });
   assert.deepEqual(result.drafts, previous.drafts);
   assert.equal(result.failures.length, 1);
 });
 
-test('AI failure preserves previous raw draft, allowing a later retry', async () => {
-  const previous = await run();
+test('AI failure preserves previous AI draft, allowing a later retry', async () => {
+  const previous = await run({ apiKey: 'test-only-key', summarize: async () => summary });
+  previous.drafts[0].record.source.fingerprint = 'older-content';
   const result = await run({ previous, apiKey: 'test-only-key', summarize: async () => { throw new Error('AI unavailable'); } });
   assert.deepEqual(result.drafts, previous.drafts);
   assert.equal(result.failures.length, 1);

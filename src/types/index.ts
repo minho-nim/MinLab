@@ -8,7 +8,7 @@ export interface RecordSource {
   fingerprint: string;
   repository: string;
   urls: string[];
-  engine: 'gemini' | 'github';
+  engine: 'codex' | 'gemini' | 'github';
   generatedAt: string;
 }
 

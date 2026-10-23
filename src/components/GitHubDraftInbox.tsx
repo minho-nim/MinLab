@@ -19,7 +19,7 @@ export function GitHubDraftInbox({ projects, projectId, kind = 'log', onReview, 
     setLoading(true); setError('');
     try {
       const response = await fetch(import.meta.env.BASE_URL + 'data/github-drafts.json', { cache: 'no-store', signal });
-      if (!response.ok) throw new Error('GitHub 수집 결과를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.');
+      if (!response.ok) throw new Error('Codex 기록을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.');
       setFeed(parseDraftFeed(await response.json()));
     } catch (err) {
       if (!signal?.aborted) setError(err instanceof Error ? err.message : '초안을 불러오지 못했습니다.');
@@ -31,25 +31,25 @@ export function GitHubDraftInbox({ projects, projectId, kind = 'log', onReview, 
   return (
     <section className="rounded-xl border border-accent-line bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><h2 className="text-sm font-semibold text-ink">GitHub 기록 초안 <span className="ml-1 text-accent">{pending.length}</span></h2><p className="mt-1 text-xs leading-6 text-muted">{kind === 'prompt' ? '프로젝트에 기록한 실제 프롬프트 원문을 확인하고 보관하세요.' : '커밋·병합된 PR을 정리한 초안을 확인하고 개발일지에 저장하세요.'}</p></div>
+        <div><h2 className="text-sm font-semibold text-ink">Codex 기록 초안 <span className="ml-1 text-accent">{pending.length}</span></h2><p className="mt-1 text-xs leading-6 text-muted">{kind === 'prompt' ? 'Codex 작업 중 기록한 실제 요청 원문을 확인하고 보관하세요.' : 'Codex가 작업을 마치며 작성한 개발일지를 확인하고 저장하세요.'}</p></div>
         <div className="flex items-center gap-3 text-xs">
           <button type="button" onClick={() => void refresh()} disabled={loading} className="inline-flex items-center gap-1 text-muted hover:text-accent disabled:opacity-50"><RefreshCw className="h-3 w-3" />{loading ? '확인 중' : '초안 새로고침'}</button>
-          <a href="https://github.com/minho-nim/MinLab/actions/workflows/sync-records.yml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-accent">GitHub 수집 실행<ArrowUpRight className="h-3 w-3" /></a>
+          <a href="https://github.com/minho-nim/MinLab/actions/workflows/deploy.yml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-accent">배포 상태<ArrowUpRight className="h-3 w-3" /></a>
         </div>
       </div>
       {error && <p role="alert" className="mt-3 text-xs text-rose-700">{error}</p>}
       {kind === 'log' && feed?.notices.map((notice, index) => <p key={index} className="mt-2 text-xs leading-6 text-muted">{notice}</p>)}
-      {!loading && !pending.length && <p className="mt-4 border-t border-line pt-4 text-xs text-muted">검토할 새 초안이 없습니다. GitHub 수집은 6시간마다 실행되며 수동으로도 실행할 수 있습니다.</p>}
+      {!loading && !pending.length && <p className="mt-4 border-t border-line pt-4 text-xs text-muted">검토할 새 초안이 없습니다. Codex에서 작업 기록을 작성하고 GitHub에 반영하면 새 초안이 표시됩니다.</p>}
       <div className="mt-4 space-y-3">{pending.map(draft => {
         const targetId = targets[draft.record.id] ?? projectForDraft(projects, draft)?.id ?? '';
         const source = draft.record.source!;
         return <article key={draft.record.id} className="rounded-lg border border-line bg-canvas p-4">
-          <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted"><span className="rounded bg-accent-soft px-2 py-1 text-accent">{draft.kind === 'prompt' ? '프롬프트 원문' : source.engine === 'gemini' ? 'AI 초안' : 'GitHub 원문 · AI 미연결'}</span><span>{source.repository}</span><time>{draft.record.date}</time></div>
+          <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted"><span className="rounded bg-accent-soft px-2 py-1 text-accent">{draft.kind === 'prompt' ? '프롬프트 원문' : source.engine === 'codex' ? 'Codex 작성' : '이전 기록'}</span><span>{source.repository}</span><time>{draft.record.date}</time></div>
           <h3 className="mt-2 text-sm font-semibold text-ink">{draft.record.title}</h3>
           <p className="mt-2 whitespace-pre-line text-xs leading-6 text-ink-secondary">{draft.kind === 'log' ? draft.record.content : draft.record.prompt}</p>
           <details className="mt-3 text-xs text-ink-secondary"><summary className="cursor-pointer text-muted">{draft.kind === 'log' ? '수정 이유 · 확인 결과 · 다음 작업 · 출처' : '결과 메모 · 출처'}</summary>
             {draft.kind === 'log' ? <div className="mt-3 space-y-3">{[['수정 이유', draft.record.reason], ['확인 결과·남은 문제', draft.record.testResult], ['다음 작업', draft.record.nextSteps]].map(([label, value]) => <div key={label}><h4 className="font-semibold">{label}</h4><p className="mt-1 whitespace-pre-line leading-6">{value || '검토 후 입력해 주세요.'}</p></div>)}</div> : <p className="mt-3 whitespace-pre-line leading-6">{draft.record.outcome || '결과 메모 없음'}</p>}
-            <div className="mt-3 flex flex-wrap gap-3">{source.urls.map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="text-accent underline">관련 {kind === 'log' ? '커밋·PR' : '원문'} {index + 1}</a>)}</div>
+            <div className="mt-3 flex flex-wrap gap-3">{source.urls.map((url, index) => <a key={url} href={url} target="_blank" rel="noreferrer" className="text-accent underline">{index === 0 && source.engine === 'codex' ? 'Codex 기록 원본' : '관련 자료 ' + (index + 1)}</a>)}</div>
           </details>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <label className="flex items-center gap-2 text-xs text-muted">대상 프로젝트<select value={targetId} onChange={e => setTargets(prev => ({ ...prev, [draft.record.id]: e.target.value }))} className="max-w-64 rounded-md border border-line bg-surface px-2 py-1.5 text-ink"><option value="">프로젝트 선택</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>

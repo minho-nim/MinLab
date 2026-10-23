@@ -7,9 +7,9 @@ export type GitHubDraft =
 export interface DraftFeed { generatedAt: string; drafts: GitHubDraft[]; notices: string[]; }
 
 export function parseDraftFeed(value: unknown): DraftFeed {
-  if (!value || typeof value !== 'object') throw new Error('GitHub 초안 파일 형식이 올바르지 않습니다.');
+  if (!value || typeof value !== 'object') throw new Error('기록 초안 파일 형식이 올바르지 않습니다.');
   const feed = value as Record<string, unknown>;
-  if (feed.version !== 1 || !Array.isArray(feed.drafts)) throw new Error('지원하지 않는 GitHub 초안 파일입니다.');
+  if (feed.version !== 1 || !Array.isArray(feed.drafts)) throw new Error('지원하지 않는 기록 초안 파일입니다.');
   const drafts: GitHubDraft[] = [];
   for (const item of feed.drafts) {
     if (!item || typeof item !== 'object' || !item.record || typeof item.projectId !== 'string') throw new Error('초안 항목을 읽지 못했습니다.');

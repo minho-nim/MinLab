@@ -32,7 +32,8 @@ export function compileCodexRecords({ config, journal }) {
     seen.add(id);
     if (since && Date.parse(entry.recordedAt) <= Date.parse(since)) continue;
     if (Date.parse(entry.recordedAt) > Date.parse(generatedAt)) generatedAt = entry.recordedAt;
-    const date = dayInSeoul(entry.recordedAt);
+    const date = entry.date || dayInSeoul(entry.recordedAt);
+    if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date + 'T00:00:00Z')) || new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) !== date) throw new Error('date는 실제 YYYY-MM-DD 날짜여야 합니다.');
     const title = requiredText(entry.title, '작업 제목');
     const summary = requiredText(entry.summary, '요약');
     if (!Array.isArray(entry.changes) || !entry.changes.length || !entry.changes.every(item => typeof item === 'string' && item.trim())) throw new Error('changes는 주요 변경 내용의 문자열 배열이어야 합니다.');

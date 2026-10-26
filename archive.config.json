@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "recordsSince": "2026-10-23T00:37:00.000Z",
   "recordsRepository": "minho-nim/MinLab",
   "projects": [
@@ -38,6 +38,15 @@
       "category": "업무 자동화",
       "appUrl": "https://minho-nim.github.io/MinLab/apps/work-schedule/",
       "techStack": ["Python", "React", "TypeScript", "Vite"]
+    },
+    {
+      "id": "proj-1792978415000",
+      "repository": "minho-nim/worthit",
+      "name": "WorthIt",
+      "description": "구매한 물건·구독·멤버십의 사용 횟수와 기간을 기록해 회당 사용 단가와 목표 달성률을 확인하는 소비 가치 추적 웹앱",
+      "category": "소비 관리",
+      "appUrl": "",
+      "techStack": ["React", "TypeScript", "LocalStorage"]
     }
   ]
 }

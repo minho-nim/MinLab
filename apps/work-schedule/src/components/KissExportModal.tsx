@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { KissExcelOptions, ProcessedItem, EmployeeInfo } from '../types';
 import { formatToKissTime, formatTitleForKiss } from '../utils/parser';
+import { DEFAULT_KISS_CALENDAR, kissDate, readKissAccounts, validateKissExport } from '../utils/kissExport';
 import { EmployeeManagerModal } from './EmployeeManagerModal';
 import {
   FileSpreadsheet,
@@ -27,7 +28,7 @@ interface KissExportModalProps {
   items: ProcessedItem[];
   employees: EmployeeInfo[];
   onSaveEmployees: (employees: EmployeeInfo[]) => void;
-  onConfirmExport: (options: KissExcelOptions, employees: EmployeeInfo[]) => void;
+  onConfirmExport: (options: KissExcelOptions, employees: EmployeeInfo[]) => Promise<void>;
 }
 
 export const KissExportModal: React.FC<KissExportModalProps> = ({
@@ -40,8 +41,10 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
 }) => {
   // 저장한 회사 캘린더명만 복원합니다.
   const [calTitle, setCalTitle] = useState(() => {
-    try { return localStorage.getItem('kiss_calendar_title') || ''; }
-    catch { return ''; }
+    try {
+      const saved = localStorage.getItem('kiss_calendar_title') || '';
+      return /^\d+\.\s*\S/.test(saved) ? saved : DEFAULT_KISS_CALENDAR;
+    } catch { return DEFAULT_KISS_CALENDAR; }
   });
   useEffect(() => {
     if (!calTitle.trim()) return;
@@ -64,6 +67,13 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
 
   // 사원 관리 모달 상태
   const [isEmpManagerOpen, setIsEmpManagerOpen] = useState(false);
+  const [exportError, setExportError] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const [templateData, setTemplateData] = useState<ArrayBuffer>();
+  const errorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (exportError) errorRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [exportError]);
 
   // Sync createId if current createId is not in employees
   useEffect(() => {
@@ -74,8 +84,26 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
 
   if (!isOpen) return null;
 
-  const validItems = items.filter((r) => r.매칭상태 === '✅ 성공');
-  const targetItems = validItems.length > 0 ? validItems : items;
+  const targetItems = items;
+
+  const handleAccountTemplate = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const buffer = await file.arrayBuffer();
+      const imported = readKissAccounts(buffer);
+      setTemplateData(buffer);
+      setCalTitle(imported.calTitle);
+      onSaveEmployees(imported.employees);
+      setCreateId(imported.employees[0]?.사원ID || '');
+      setSelectedParticipants([]);
+      setCustomParticipantText('');
+      setExportError('');
+    } catch (error) {
+      setExportError(error instanceof Error ? error.message : '원본 양식을 읽지 못했습니다.');
+    }
+  };
 
   // Toggle participant checkbox
   const handleToggleParticipant = (empId: string) => {
@@ -118,19 +146,30 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
     }).length,
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onConfirmExport(
-      {
-        calTitle: calTitle.trim() || '',
-        createId: createId.trim() || '',
-        schUserIdList: customParticipantText.trim() || '',
-        alldayYn,
-        fileName: fileName.trim() || '업무관리(Kiss)_작업일정(TEST)_일정일괄등록양식.xlsx',
-      },
-      employees
-    );
-    onClose();
+    if (isExporting) return;
+    const options: KissExcelOptions = {
+      calTitle,
+      createId: createId.trim() || '',
+      schUserIdList: customParticipantText.trim() || '',
+      alldayYn,
+      templateData,
+      fileName: fileName.trim() || '업무관리(Kiss)_작업일정(TEST)_일정일괄등록양식.xlsx',
+    };
+    const errors = validateKissExport(targetItems, options);
+    if (errors.length) {
+      setExportError(errors.slice(0, 20).join('\n') + (errors.length > 20 ? `\n외 ${errors.length - 20}개 항목` : ''));
+      return;
+    }
+    setExportError('');
+    setIsExporting(true);
+    try {
+      await onConfirmExport(options, employees);
+      onClose();
+    } catch (error) {
+      setExportError(error instanceof Error ? error.message : '파일 생성에 실패했습니다. 다시 시도해 주세요.');
+    } finally { setIsExporting(false); }
   };
 
   return (
@@ -192,6 +231,18 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
 
           {/* Form Body */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[72vh] overflow-y-auto text-xs">
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-blue-900">
+              회사 원본 양식의 시트·서식·드롭다운을 보존해 전체 {targetItems.length}건을 출력합니다.
+              시간 지정은 서버 규칙인 15분 단위를 확인하며 자동 반올림하지 않습니다. 종일은 날짜만 출력합니다.
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3 space-y-2">
+              <label className="block font-bold text-slate-800">
+                원본 양식에서 캘린더·사원 목록 가져오기
+                <input type="file" accept=".xlsx" onChange={handleAccountTemplate} disabled={isExporting} className="mt-2 block w-full font-normal" />
+              </label>
+              <p className="text-slate-500">선택한 원본 파일에 일정을 채워 출력합니다. 계정 정보는 이 브라우저에 저장하며 파일을 서버로 보내지 않습니다. 참여자는 아래에서 선택해 주세요.</p>
+            </div>
+            {exportError && <div ref={errorRef} role="alert" className="whitespace-pre-line rounded-xl border border-red-200 bg-red-50 p-3 text-red-800">{exportError}</div>}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* 1. 캘린더(ID).캘린더명 */}
               <div className="sm:col-span-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
@@ -208,11 +259,11 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                   required
                   value={calTitle}
                   onChange={(e) => setCalTitle(e.target.value)}
-                  placeholder="예: (작업일정(TEST))"
+                  placeholder="원본 양식의 캘린더 번호와 이름 입력"
                   className="w-full text-xs font-semibold px-3 py-2 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="mt-1 text-[10px] text-slate-500">
-                  입력한 캘린더명은 이 브라우저에 자동 저장됩니다. 입력칸을 클릭하면 수정할 수 있습니다. 회사 시스템의 캘린더명과 띄어쓰기까지 맞춰 주세요.
+                  원본 양식 A7의 번호와 이름을 띄어쓰기까지 그대로 입력해 주세요. 이 브라우저에 자동 저장되며 클릭해서 수정할 수 있습니다.
                 </p>
               </div>
 
@@ -401,7 +452,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      시트 1: 일정 리스트 ({targetItems.length}건)
+                      시트 1: 일정리스트 ({targetItems.length}건)
                     </button>
                     <button
                       type="button"
@@ -412,7 +463,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      시트 2: 캘린더 참여자 ({employees.length}명) · 업로드용
+                      시트 3: 캘린더 참여자 ({employees.length}명) · 업로드용
                     </button>
                     <button
                       type="button"
@@ -469,8 +520,8 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                       {targetItems.slice(0, 4).map((item) => {
                         const safeTitle = formatTitleForKiss(item.schTitle);
                         const isTitleTruncated = item.schTitle && item.schTitle.length > 64;
-                        const sTime = formatToKissTime(item.startDate, false);
-                        const eTime = formatToKissTime(item.endDate, true);
+                        const sTime = kissDate(item.startDate, alldayYn === 'Y') || '날짜/시간 확인 필요';
+                        const eTime = kissDate(item.endDate, alldayYn === 'Y') || '날짜/시간 확인 필요';
 
                         return (
                           <tr key={item.id} className="text-slate-700 hover:bg-slate-50">
@@ -586,7 +637,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                       <Moon className="h-4 w-4 text-indigo-600 shrink-0" />
                       <span>
                         야간/심야 공사 <strong>{validationSummary.nightWorkCount}건</strong>이 감지되었습니다.
-                        익일 종료 시간 및 날짜가 자동으로 계산되어 엑셀에 반영됩니다.
+                        일정 상세의 시작·종료 날짜와 시간을 확인해 주세요.
                       </span>
                     </div>
                   )}
@@ -605,11 +656,11 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
               </button>
               <button
                 type="submit"
-                disabled={targetItems.length === 0}
+                disabled={targetItems.length === 0 || isExporting}
                 className="px-6 py-2.5 rounded-xl text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 flex items-center gap-1.5 transition-all active:scale-95"
               >
                 <FileSpreadsheet className="h-4 w-4" />
-                <span>일괄등록 엑셀 다운로드</span>
+                <span>{isExporting ? '파일 생성 중…' : '일괄등록 엑셀 다운로드'}</span>
               </button>
             </div>
           </form>

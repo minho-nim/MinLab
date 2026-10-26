@@ -179,13 +179,12 @@ export default function App() {
   };
 
   // Confirm and download Kiss batch registration Excel
-  const handleConfirmExport = (options: KissExcelOptions, targetEmployees: EmployeeInfo[]) => {
+  const handleConfirmExport = async (options: KissExcelOptions, targetEmployees: EmployeeInfo[]) => {
     if (processedResults.length === 0) {
-      alert('내보낼 공사 일정 데이터가 없습니다.');
-      return;
+      throw new Error('내보낼 공사 일정 데이터가 없습니다.');
     }
 
-    exportToKissExcel(processedResults, options, targetEmployees);
+    await exportToKissExcel(processedResults, options, targetEmployees);
 
     const outName = options.fileName || '업무관리(Kiss)_작업일정(TEST)_일정일괄등록양식.xlsx';
     addLog(`📥 업무관리(Kiss) 엑셀 일괄등록 양식 내보내기 완료: ${outName}`);

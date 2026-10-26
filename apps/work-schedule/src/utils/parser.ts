@@ -1,11 +1,11 @@
 import mammoth from 'mammoth';
+import { kissDate } from './kissExport';
 import { extractDocumentFields, readDocumentTables } from './docxTables';
 import * as XLSX from 'xlsx';
 import {
   ParsedWorkPlan,
   ProcessedItem,
   ExcelContractRow,
-  KissExcelOptions,
   EmployeeInfo,
   WorkerInfo,
 } from '../types';
@@ -371,146 +371,8 @@ export function formatTitleForKiss(title: string): string {
   return trimmed.substring(0, 63) + '…';
 }
 
-export function formatToKissTime(rawTimeStr: string, isEnd = false): string {
-  if (!rawTimeStr || rawTimeStr === '미발견') {
-    return isEnd ? '2026.10.15 18:00' : '2026.10.15 09:00';
-  }
-
-  // Handle format like '2026.10.05 09:12:00' or '2026.10.05 09:12' or '2026.10.05'
-  const match = rawTimeStr.match(/(\d{4})[\.\-\/](\d{1,2})[\.\-\/](\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?/);
-  if (!match) return rawTimeStr;
-
-  const y = match[1];
-  const m = String(parseInt(match[2], 10)).padStart(2, '0');
-  const d = String(parseInt(match[3], 10)).padStart(2, '0');
-
-  const hour = match[4] !== undefined ? String(parseInt(match[4], 10)).padStart(2, '0') : (isEnd ? '18' : '09');
-  const minute = match[5] !== undefined ? String(parseInt(match[5], 10)).padStart(2, '0') : '00';
-
-  // EXACT original time from docx without artificial rounding
-  return `${y}.${m}.${d} ${hour}:${minute}`;
+export function formatToKissTime(rawTimeStr: string, _isEnd = false): string {
+  return kissDate(rawTimeStr, false) || rawTimeStr || '';
 }
 
-export function exportToKissExcel(
-  results: ProcessedItem[],
-  options: KissExcelOptions,
-  employees?: EmployeeInfo[]
-) {
-  const wb = XLSX.utils.book_new();
-
-  const calTitleVal = options.calTitle?.trim() || '';
-  const createIdVal = options.createId?.trim() || '';
-  const schUserIdListVal = options.schUserIdList?.trim() || '';
-  const alldayYnVal = options.alldayYn || 'N';
-
-  // ==========================================
-  // 1. [일정 리스트] Sheet (Image 1 완전 일치: A1~H6 헤더 및 A7~ 데이터)
-  // ==========================================
-  const noticeText =
-    '1. 붉은 텍스트는 필수 입력 값으로 반드시 입력해야 합니다. (붉은 영역을 제외한 나머지 컬럼은 선택 입력 항목으로 생략 가능합니다.)\n' +
-    '2. 양식 입력 완료 후 저장한 파일로 업로드 하셔야 합니다.\n' +
-    '3. [캘린더명]은 양식 다운로드 시 시스템에서 자동 제공되는 영역으로, 일괄등록이 필요한 만큼 동일한 내용을 입력해야 합니다. (다른 캘린더로도 수정이 가능합니다.\n' +
-    '★ 캘린더명 수정 시, 명확한 캘린더명을 입력해야만 반영됩니다. (띄어쓰기 포함))\n' +
-    '4. 시작시간과 종료시간은15분 단위로 입력 해주세요. (15분 단위가 아닐 시, 오류 항목으로 표시됩니다.)';
-
-  const row6Specs = [
-    '타입 : 문자\n길이 : 50\n필수 : True\n설명 : 시스템 제공 영역\n(변경가능)',
-    '타입 : 문자\n길이 : 50\n필수 : True\n설명 : 최대 64글자까지 작성 가능',
-    '타입 : 문자\n길이 : 50\n필수 : False\n설명 : 일정내용',
-    '타입 : 문자\n길이 : 50\n필수 : True\n설명 : YYYY.MM.DD HH:mm\n15분 단위로 입력',
-    '타입 : 문자\n길이 : 50\n필수 : True\n설명 : YYYY.MM.DD HH:mm\n15분 단위로 입력',
-    '타입 : 문자\n길이 : 50\n필수 : True\n설명 : 공유 캘린더의 경우 소유자/관리자/참여자인 경우에만 등록 가능',
-    '타입 : 문자\n길이 : 50\n필수 : True\n설명 : 사원 아이디\n다수일 경우 ; 으로 구분\n(ex: admin1; admin2)',
-    '타입 : 문자\n길이 : 1\n필수 : False\n설명 : Y/N\n공란인 경우 N값으로 입력됨',
-  ];
-
-  const scheduleSheetData: any[][] = [
-    // Row 1: Merged Title (A1:H1)
-    ['업무관리(Kiss) - (작업일정(TEST)) 일정 일괄등록 양식 - (작업일정 등록 TEST)', null, null, null, null, null, null, null],
-    // Row 2: Merged Notice Title (A2:H2)
-    ['※ 참고사항', null, null, null, null, null, null, null],
-    // Row 3: Merged Notice Body (A3:H3)
-    [noticeText, null, null, null, null, null, null, null],
-    // Row 4: Korean Headers
-    ['캘린더(ID).캘린더명', '일정제목', '일정내용', '시작시간', '종료시간', '등록자(ID)', '참여자(ID)', '종일여부'],
-    // Row 5: English Field Codes
-    ['calTitle', 'schTitle', 'contents', 'startDate', 'endDate', 'createId', 'schUserIdList', 'alldayYn'],
-    // Row 6: Field Specifications
-    row6Specs,
-  ];
-
-  // Row 7 onwards: Extracted data with EXACT document time
-  results.forEach((r) => {
-    scheduleSheetData.push([
-      calTitleVal,
-      formatTitleForKiss(r.schTitle),
-      r.contents || '',
-      formatToKissTime(r.startDate, false),
-      formatToKissTime(r.endDate, true),
-      createIdVal,
-      schUserIdListVal,
-      alldayYnVal,
-    ]);
-  });
-
-  const wsSchedule = XLSX.utils.aoa_to_sheet(scheduleSheetData);
-
-  // Set cell merges for A1:H1, A2:H2, A3:H3
-  wsSchedule['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 7 } },
-    { s: { r: 2, c: 0 }, e: { r: 2, c: 7 } },
-  ];
-
-  // Set column widths
-  wsSchedule['!cols'] = [
-    { wch: 28 }, // 캘린더(ID).캘린더명
-    { wch: 42 }, // 일정제목
-    { wch: 42 }, // 일정내용
-    { wch: 22 }, // 시작시간 (YYYY.MM.DD HH:mm)
-    { wch: 22 }, // 종료시간 (YYYY.MM.DD HH:mm)
-    { wch: 18 }, // 등록자(ID)
-    { wch: 26 }, // 참여자(ID)
-    { wch: 12 }, // 종일여부
-  ];
-
-  XLSX.utils.book_append_sheet(wb, wsSchedule, '일정 리스트');
-
-  // ==========================================
-  // 2. [캘린더 참여자] Sheet (Image 2 완전 일치: A1:E4 + 동적 사원 목록)
-  // ==========================================
-  const activeEmployees = employees && employees.length > 0 ? employees : DEFAULT_EMPLOYEES;
-  const participantSheetData: any[][] = [
-    // Row 1: Merged Title (A1:E1)
-    ['일정대상자 가능 사원 목록', null, null, null, null],
-    // Row 2: Headers
-    ['사원번호', '부서명', '직급명', '사원명', '사원ID'],
-    // Dynamic employee rows
-    ...activeEmployees.map((emp) => [
-      emp.사원번호,
-      emp.부서명,
-      emp.직급명 || '',
-      emp.사원명,
-      emp.사원ID,
-    ]),
-  ];
-
-  const wsParticipants = XLSX.utils.aoa_to_sheet(participantSheetData);
-
-  // Set cell merges for A1:E1
-  wsParticipants['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
-
-  // Set column widths
-  wsParticipants['!cols'] = [
-    { wch: 14 }, // 사원번호
-    { wch: 20 }, // 부서명
-    { wch: 14 }, // 직급명
-    { wch: 24 }, // 사원명
-    { wch: 18 }, // 사원ID
-  ];
-
-  XLSX.utils.book_append_sheet(wb, wsParticipants, '캘린더 참여자');
-
-  const outFileName = options.fileName?.trim() || '업무관리(Kiss)_작업일정(TEST)_일정일괄등록양식.xlsx';
-  XLSX.writeFile(wb, outFileName);
-}
+export { exportToKissExcel } from './kissExport';

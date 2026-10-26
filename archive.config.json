@@ -67,6 +67,15 @@
         "TypeScript",
         "LocalStorage"
       ]
+    },
+    {
+      "id": "proj-excuseoffice",
+      "repository": "https://github.com/minho-nim/excuseoffice",
+      "name": "공식 핑계 발급소",
+      "description": "상황에 맞는 핑계를 공식 문서로 발급하고 문서 보관·내보내기와 도장 수집을 제공하는 웹앱",
+      "category": "엔터테인먼트",
+      "appUrl": "",
+      "techStack": ["React", "TypeScript", "Vite", "IndexedDB"]
     }
   ]
 }

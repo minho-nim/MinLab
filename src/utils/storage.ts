@@ -7,6 +7,7 @@ import { connectNutriFitOnce } from '../data/nutriFitProject';
 import { connectCatalogOnce } from '../data/projectCatalog';
 import { connectRiskAssessmentProjectOnce } from '../data/riskAssessmentProject';
 import { connectBackupSnapshotOnce } from './backupSnapshot';
+import { connectPublishedRecordCopy } from './recordCopy';
 
 const STORAGE_KEY = 'minlab_projects_data_v2';
 
@@ -34,7 +35,7 @@ export const loadProjects = (): Project[] => {
         status: normalizeProjectStatus(p.status),
       }));
       saveProjects(normalizedInitial);
-      return connectCatalogOnce(connectRiskAssessmentProjectOnce(connectNutriFitOnce(connectBackupSnapshotOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
+      return connectPublishedRecordCopy(connectCatalogOnce(connectRiskAssessmentProjectOnce(connectNutriFitOnce(connectBackupSnapshotOnce(normalizedInitial, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     const result = parseImportJson(raw);
     if (result.success && result.projects?.length) {
@@ -49,7 +50,7 @@ export const loadProjects = (): Project[] => {
           projectName: log.projectName || project.name,
         })),
       }));
-      return connectCatalogOnce(connectRiskAssessmentProjectOnce(connectNutriFitOnce(connectChoicePilotOnce(connectBackupSnapshotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
+      return connectPublishedRecordCopy(connectCatalogOnce(connectRiskAssessmentProjectOnce(connectNutriFitOnce(connectChoicePilotOnce(connectBackupSnapshotOnce(normalizedProjects, localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY), localStorage, STORAGE_KEY);
     }
     return INITIAL_PROJECTS;
   } catch (err) {

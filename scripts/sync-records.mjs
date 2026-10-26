@@ -43,7 +43,7 @@ export function compileCodexRecords({ config, journal }) {
       id, date, title, version: optionalText(entry.version),
       content: '요약\n' + summary + '\n\n주요 변경\n' + entry.changes.map(item => '- ' + item).join('\n'),
       reason: optionalText(entry.reason),
-      testResult: optionalText(entry.testResult) || '미실행: 별도로 확인한 결과가 없습니다.',
+      testResult: optionalText(entry.testResult) || '미실행: 별도로 확인한 결과 없음.',
       nextSteps: optionalText(entry.nextSteps), createdAt: entry.recordedAt,
     };
     const sourceFor = value => ({ repository: project.repository, fingerprint: digest(value), urls: [...new Set([fileUrl, ...urls])], engine: 'codex', generatedAt: entry.recordedAt });
@@ -61,7 +61,7 @@ export function compileCodexRecords({ config, journal }) {
   drafts.sort((a, b) => b.record.date.localeCompare(a.record.date) || a.record.id.localeCompare(b.record.id));
   return {
     version: 1, recordsSince: since, generatedAt, drafts,
-    notices: ['Codex에서 작성한 개발일지와 실제 프롬프트만 가져옵니다. API 키 없이 GitHub 업로드 시 반영됩니다. 기존 작성분은 다시 수집하지 않습니다.'],
+    notices: ['작업 기록·프롬프트 통합 연동: 업로드된 작업 산출물을 배포 시 자동으로 갱신합니다. 새 기록은 검토 후 저장할 수 있습니다.'],
   };
 }
 

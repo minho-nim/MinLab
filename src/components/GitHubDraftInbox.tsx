@@ -31,7 +31,7 @@ export function GitHubDraftInbox({ projects, projectId, kind = 'log', onReview, 
   return (
     <section className="rounded-xl border border-accent-line bg-surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><h2 className="text-sm font-semibold text-ink">Codex 기록 초안 <span className="ml-1 text-accent">{pending.length}</span></h2><p className="mt-1 text-xs leading-6 text-muted">{kind === 'prompt' ? 'Codex 작업 중 기록한 실제 요청 원문을 확인하고 보관하세요.' : 'Codex가 작업을 마치며 작성한 개발일지를 확인하고 저장하세요.'}</p></div>
+        <div><h2 className="text-sm font-semibold text-ink">{kind === 'prompt' ? '프롬프트 아카이브 연동' : '개발 기록 통합 연동'} <span className="ml-1 text-accent">{pending.length}</span></h2><p className="mt-1 text-xs leading-6 text-muted">{kind === 'prompt' ? '작업에 사용한 요청과 결과를 연결해, 프로젝트별 활용 맥락을 보관합니다.' : 'Codex 작업 이력을 프로젝트별 기록으로 연결합니다. 새 초안을 확인하고 개발일지에 반영하세요.'}</p></div>
         <div className="flex items-center gap-3 text-xs">
           <button type="button" onClick={() => void refresh()} disabled={loading} className="inline-flex items-center gap-1 text-muted hover:text-accent disabled:opacity-50"><RefreshCw className="h-3 w-3" />{loading ? '확인 중' : '초안 새로고침'}</button>
           <a href="https://github.com/minho-nim/MinLab/actions/workflows/deploy.yml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-accent">배포 상태<ArrowUpRight className="h-3 w-3" /></a>

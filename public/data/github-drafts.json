@@ -9,16 +9,16 @@
       "record": {
         "id": "codex:proj-1792978415000:2026-10-26-worthit-v1-0-review",
         "date": "2026-10-26",
-        "title": "WorthIt 기능 점검과 오류 개선",
-        "version": "1.0",
-        "content": "요약\n사용자 요청에 따라 WorthIt 기존 기능과 저장·계산 흐름을 살펴보고 GitHub 공개 준비를 위해 프로젝트 설정과 사용량 계산을 정리했음.\n\n주요 변경\n- 프로젝트 설명과 패키지 설정을 정리하고 빌드 도구 의존성 버전을 맞췄음.\n- 로컬 날짜 기준 사용 일수·연속 사용일과 월간·연간 결제 주기 계산을 점검하고 보완했음.\n- 저장 데이터·백업·예시 데이터 관련 유틸리티를 다시 구성했음.",
-        "reason": "사용자가 다른 프로젝트처럼 검사하고 GitHub에 올려 달라고 요청했음.",
-        "testResult": "npm run lint와 npm run build를 실행해 모두 통과했음. 샘플 예시 데이터가 원본과 완전히 일치하는지는 추가 확인이 필요함.",
-        "nextSteps": "기본 사용 흐름에서 예시 데이터와 백업 복원 결과를 추가로 확인할 수 있음.",
+        "title": "첫 공개를 위한 저장·사용량 계산 점검",
+        "version": "1.0.0",
+        "content": "작업 목적\nWorthIt을 공개하기 전에 저장 방식과 사용량 계산을 정리하고자 함. 날짜·결제 주기에 따른 계산과 프로젝트 설정을 점검함.\n\n주요 변경\n- 앱 설명과 실행·배포 설정을 정리함.\n- 사용 일수·연속 사용일과 월간·연간 결제 주기 계산을 보완함.\n- 저장 데이터·백업·예시 데이터를 다루는 공통 처리를 정리함.",
+        "reason": "사용자가 기존 기능을 확인한 뒤 다른 프로젝트처럼 GitHub에 올리도록 요청했음.",
+        "testResult": "코드 점검과 배포용 파일 생성을 통과함. 예시 데이터가 원본과 완전히 같은지는 추가 확인이 필요한 상태였음.",
+        "nextSteps": "사용 흐름에서 예시 데이터와 백업 복원 결과를 추가 확인할 필요가 있음.",
         "createdAt": "2026-10-26T10:46:20+09:00",
         "source": {
           "repository": "minho-nim/worthit",
-          "fingerprint": "6bbfce7134f0a6d07c1a39ad5cf6f83fef40de9923b1201b82874afcefed7f72",
+          "fingerprint": "a6ec8dd1d0d10844501eda26285c8d45a725f44c357a02280c198c25b3ef2a3f",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/worthit/commit/a21d8ccb18b4d7123c24de1daf4538b178087336"
@@ -55,16 +55,16 @@
       "record": {
         "id": "codex:proj-1792978415000:2026-10-26-worthit-v1-1-github",
         "date": "2026-10-26",
-        "title": "WorthIt GitHub 저장소 생성과 소스 업로드",
-        "version": "1.1",
-        "content": "요약\n사용자 요청에 따라 minho-nim 계정에 WorthIt 공개 저장소를 만들고 main 브랜치에 프로젝트 소스를 업로드했음.\n\n주요 변경\n- 공개 GitHub 저장소 minho-nim/worthit을 생성했음.\n- 검토한 앱 소스와 프로젝트 안내를 main 브랜치에 커밋하고 원격 저장소에 반영했음.\n- GitHub Pages 배포용 Vite 경로 설정과 Actions 워크플로를 추가했음.",
-        "reason": "사용자가 GitHub 저장소를 직접 만들고 MinLab에 올려 연결해 달라고 요청했음.",
-        "testResult": "npm run lint와 npm run build가 통과했으며, 저장소에서 커밋 a21d8cc와 배포 워크플로 커밋 dd1f93b를 확인했음.",
-        "nextSteps": "MinLab 프로젝트 목록과 개발 기록을 공개 앱 주소에 연결했음.",
+        "title": "WorthIt 소스 보관과 공개 배포 준비",
+        "version": "1.0.0",
+        "content": "작업 목적\nWorthIt 소스를 원격에 보관하고 공개 배포를 준비하고자 함. 저장소를 만들고 첫 공개에 필요한 실행 경로와 배포 절차를 구성함.\n\n주요 변경\n- 사용자 GitHub 계정에 WorthIt 저장소를 생성함.\n- 점검한 앱 소스와 안내 문서를 업로드함.\n- 공개 주소에 맞는 실행 경로와 배포 절차를 추가함.",
+        "reason": "사용자가 GitHub 저장소를 만들고 MinLab에서 연결해 사용할 수 있도록 요청했음.",
+        "testResult": "코드 점검과 배포용 파일 생성을 통과함. 저장소에 소스와 배포 설정이 반영된 것을 확인함.",
+        "nextSteps": "같은 첫 공개 작업에서 공개 사이트 배포와 MinLab 연결을 이어서 완료함.",
         "createdAt": "2026-10-26T10:46:20+09:00",
         "source": {
           "repository": "minho-nim/worthit",
-          "fingerprint": "fd251750ba9b4b0840f13e52e4cebde66131c6f75e948d7ff84396dc2ef43251",
+          "fingerprint": "0aa02bf03afc64e92cda8dc14ebcf08046df9b7b5afb3e031b0ab11c3a9e90e7",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/worthit",
@@ -105,16 +105,16 @@
       "record": {
         "id": "codex:proj-1792978415000:2026-10-26-worthit-v1-2-minlab-pages",
         "date": "2026-10-26",
-        "title": "WorthIt 공개 배포와 MinLab 연결",
-        "version": "1.2",
-        "content": "요약\n사용자 요청에 따라 WorthIt을 GitHub Pages로 공개 배포하고 MinLab 카탈로그에 실행 주소와 버전별 개발 기록을 연결했음.\n\n주요 변경\n- Vite 앱 경로를 /worthit/에 맞추고 GitHub Actions 배포 워크플로를 구성했음.\n- GitHub Pages를 Actions 방식으로 활성화하고 공개 사이트를 배포했음.\n- MinLab의 WorthIt 프로젝트 카드에 GitHub 저장소와 실행 주소를 연결했음.\n- WorthIt 작업을 기능 점검, GitHub 저장소 업로드, Pages·MinLab 연결의 1.0·1.1·1.2 기록으로 나눴음.",
-        "reason": "사용자가 WorthIt을 MinLab에 연결하고 개발일지를 2~3개 버전으로 나눠 작성해 달라고 요청했음.",
-        "testResult": "GitHub Actions 배포 실행 40255784433이 성공했음. 워크플로에서 lint, build, Pages 설정, artifact 업로드, 배포가 모두 통과했으며 Pages 설정 화면에서 사이트가 공개 상태임을 확인했음.",
-        "nextSteps": "샘플 예시 데이터와 백업 복원 흐름의 추가 확인은 후속 점검 항목임.",
+        "title": "WorthIt 첫 공개와 MinLab 프로젝트 연결",
+        "version": "1.0.0",
+        "content": "작업 목적\n다른 사람도 WorthIt을 열 수 있도록 공개 배포함. MinLab에서 실행 주소와 개발 기록을 함께 확인하도록 연결함.\n\n주요 변경\n- 공개 앱 주소에 맞춰 실행 경로와 배포 절차를 구성함.\n- GitHub Pages에서 공개 사이트를 배포함.\n- MinLab에 WorthIt 카드와 저장소·실행 주소를 연결함.",
+        "reason": "사용자가 앱을 MinLab에 연결하고 공개 준비 과정도 개발일지로 남기도록 요청했음.",
+        "testResult": "배포 과정의 코드 점검·파일 생성·업로드·사이트 배포가 모두 통과함. 사이트가 공개 상태인 것을 확인함.",
+        "nextSteps": "실제 사용 과정의 예시 데이터와 백업 복원 흐름은 후속 점검 대상으로 남김.",
         "createdAt": "2026-10-26T10:46:20+09:00",
         "source": {
           "repository": "minho-nim/worthit",
-          "fingerprint": "93685d76be0f2c5fb5a54833f7dc4cbc59129f4039a82aa7bc169ff3fb952407",
+          "fingerprint": "963d95a20202574a7c710e3ffe437fff700f8188a49eb2d83f13349d9bf0c683",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/worthit",
@@ -131,12 +131,12 @@
       "record": {
         "id": "codex:proj-1792978415000:2026-10-26-worthit-v1-2-minlab-pages:prompt:request-1",
         "date": "2026-10-26",
-        "title": "WorthIt MinLab 연결과 2~3개 버전 기록 요청",
+        "title": "첫 공개와 MinLab 연결 과정의 기록 요청",
         "prompt": "Wothlit 이거 Min Lab에 연결해야지 뭐해 연결하고 개발일지도 알아서 나누고 작성해줘 버전 2개~3개 정도로 나눠서",
-        "outcome": "공개 실행 주소를 MinLab 카탈로그에 연결하고 개발 기록을 3개 버전으로 구분했음.",
+        "outcome": "공개 실행 주소를 MinLab에 연결하고 첫 공개 과정을 세 개의 작업 기록으로 정리함.",
         "source": {
           "repository": "minho-nim/worthit",
-          "fingerprint": "115b9e21e0474ffcd6eb37f83a724249234f38a8d00c6c8976fbffdc6da41fa6",
+          "fingerprint": "e1fab46649ed42bdf7e19c9c555c3b2256c22be1b39f78c0c65d9d00e8681c9b",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/worthit",
@@ -153,16 +153,16 @@
       "record": {
         "id": "codex:proj-1792978415000:2026-10-26-worthit-v1-3-value-subscriptions",
         "date": "2026-10-26",
-        "title": "현실 체감 가치 구간과 생활·구독 예시 개편",
-        "version": "1.3",
-        "content": "요약\n사용자 요청에 따라 Codex로 WorthIt의 회당 단가 비교 목록을 생활용품·교통·문화·구독·전자기기 중심으로 개편함. 저가 구간을 세분화하고 비슷한 식사·스마트폰 예시의 반복을 줄였음.\n\n주요 변경\n- 5천원 이하를 500원 간격, 5천~1만원을 1천원 간격으로 나누어 낮은 단가 변화가 비교 항목에도 드러나도록 구성함.\n- 식사 중심 예시를 볼펜·물티슈·양말·노트·택배·택시·책·영화 등 실제 생활 소비 예시로 교체함.\n- 넷플릭스 광고형 월 7,000원과 YouTube Premium 한국 웹·Android 개인 요금 월 14,900원을 공식 안내에서 확인해 해당 구간에 반영함.\n- ChatGPT Plus를 25,001~35,000원 비교 구간에 추가하고 국가·결제 경로에 따라 실제 청구액이 달라질 수 있음을 표시함.\n- 고가 구간을 스마트워치·청소가전·세탁기·노트북·냉장고·프리미엄 스마트폰·PC·여행 등으로 재구성함.",
-        "reason": "사용자가 낮은 금액일수록 변화가 잘 보이고, 중복이 없으며 사람들이 자주 소비하는 품목과 구독료로 비교되기를 요청했음.",
-        "testResult": "변경 과정에서 npm run build가 통과했음. 이번 전체 검토에서 넷플릭스 7,000원·YouTube Premium 14,900원·ChatGPT Plus 비교 기준 29,000원이 각각 의도한 항목으로 매핑되는 것을 실행 확인했음. 구독료 결제 자체는 실행하지 않았음.",
-        "nextSteps": "대표 구매금액을 이용한 체감 비교이며 시장 평균을 보장하지 않음. 구독료와 생활 소비 예시는 가격 변경 시 재확인이 필요함.",
+        "title": "생활용품·구독료를 활용한 단가 비교 예시 정리",
+        "version": "1.0.1",
+        "content": "작업 목적\n회당 단가가 얼마나 달라졌는지 쉽게 느끼도록 비교 예시를 정리함. 자주 쓰는 생활용품과 구독료를 활용하고 낮은 금액 구간을 세분화함.\n\n주요 변경\n- 5천원 이하는 500원, 5천~1만원은 1천원 간격으로 나눔.\n- 반복되던 식사·스마트폰 예시를 문구·생활용품·교통·문화 소비로 바꿈.\n- 작업 당시 공식 안내에서 확인한 넷플릭스와 YouTube Premium 요금을 해당 비교 구간에 반영함.\n- ChatGPT Plus 비교 구간을 추가하고 국가·결제 방식에 따라 청구액이 다를 수 있음을 표시함.\n- 높은 금액대는 가전·노트북·PC·여행 등으로 나눠 같은 품목의 반복을 줄임.",
+        "reason": "사용자가 작은 금액 변화도 비교에서 드러나고, 사람들이 익숙한 품목으로 구성되기를 요청했음.",
+        "testResult": "배포용 파일 생성을 통과함. 당시 확인한 구독 요금이 의도한 비교 항목에 연결되는 것을 실행 확인함. 결제는 진행하지 않았음.",
+        "nextSteps": "실제 평균 가격을 보장하는 자료는 아님. 구독료·생활 예시의 가격이 바뀌면 다시 확인할 필요가 있음.",
         "createdAt": "2026-10-26T11:38:36.394+09:00",
         "source": {
           "repository": "minho-nim/worthit",
-          "fingerprint": "b4931458e464ae52ce94ea4558248c62c2e299c99054c1d0d1059297dae1e841",
+          "fingerprint": "f80f7b3e74e8fa85cb4ed08a7bc6fac3ba1326c5fe61101e01ebffb5bb243c04",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/worthit/commit/941e909",
@@ -223,16 +223,16 @@
       "record": {
         "id": "codex:proj-1792978415000:2026-10-26-worthit-v1-4-review-validation",
         "date": "2026-10-26",
-        "title": "전체 검토와 구독 계산·백업 복원·사용 기록 입력 보완",
-        "version": "1.4",
-        "content": "요약\n사용자 요청에 따라 Codex로 WorthIt의 저장·백업·계산·입력·배포 설정을 검토함. 검토 중 확인한 누적 구독금액 계산 불일치, 백업 검증 부족, 사용 기록 입력창 상태 초기화 문제를 수정했음.\n\n주요 변경\n- 구독에 결제기간이 여러 개 있을 때 빠른 사용 기록의 단가 절감 안내와 상세 시뮬레이션도 본 통계와 같은 누적 결제금액을 사용하도록 수정함.\n- 백업 내부 항목의 필수 필드·금액·사용량·날짜·설정 형식을 검증하고 중복 ID, 존재하지 않는 소비의 기록, 역전된 결제기간을 거부하도록 보완함.\n- 사용 기록 입력창의 훅을 조건부 반환 앞으로 옮기고 항목·기록·열림 상태에 맞춰 수량·날짜·메모·오류를 초기화하도록 수정함.\n- 결제기간 입력에서 음수·비정상 금액과 시작일보다 빠른 종료일을 차단하고 오류 메시지를 표시함.\n- 영수증의 체감 가치에서 0원 단가가 구매금액으로 대체되지 않도록 수정함.\n- 이번 대화의 실제 작업과 사용자 요청 원문을 기존 기록과 중복되지 않는 1.3·1.4 개발일지 2개로 정리함.",
-        "reason": "사용자가 전체 검토 후 MinLab 개발일지와 프롬프트를 약 2개 기록으로 나누어 게시하도록 요청했음.",
-        "testResult": "npm run lint, npm run build, git diff --check가 통과했음. 데모·레거시 백업 수용, 잘못된 백업 9종 거부, 두 달 구독 누적금액, 빠른 기록 절감액과 실제 통계 일치, 시뮬레이션 일치, 0원 결제, 구독 예시 매핑 등 총 16개 실행 검증을 통과했음. 검증은 메모리 내 데이터로 실행했으며 사용자 브라우저 저장소를 변경하지 않았음. 브라우저 클릭으로 복원·입력창 재열기를 확인하는 검증은 미실행함.",
-        "nextSteps": "저장 공간 부족 등 localStorage 저장 실패가 현재 콘솔에만 기록되는 점은 추가 개선이 필요함. 실제 모바일 화면과 백업 복원·입력창 재열기 흐름의 브라우저 검증이 남아 있음.",
+        "title": "누적 구독금액·백업 복원·사용 기록 입력 오류 수정",
+        "version": "1.0.1",
+        "content": "작업 목적\n저장과 계산 결과가 화면마다 다르게 나오지 않도록 점검함. 여러 결제기간의 합계와 백업 입력 검사, 사용 기록 입력창의 초기화 처리를 수정함.\n\n주요 변경\n- 빠른 기록과 상세 계산이 같은 누적 구독금액을 사용하도록 맞춤.\n- 백업의 필수 정보·금액·사용량·날짜·중복 항목을 확인하고 잘못된 기록은 거부하도록 보완함.\n- 기록 입력창을 다시 열거나 다른 항목으로 이동할 때 수량·날짜·메모·오류를 맞게 초기화함.\n- 음수 금액과 거꾸로 입력한 결제기간을 막고 안내를 표시함.\n- 회당 단가가 0원일 때 구매금액으로 잘못 바뀌는 문제를 수정함.",
+        "reason": "사용자가 앱 전체를 점검하고 확인한 개선 내용을 두 개 정도의 기록으로 나눠 남기도록 요청했음.",
+        "testResult": "코드 점검과 배포용 파일 생성, 임시 데이터를 이용한 검사 16개를 통과함. 잘못된 백업 9종의 거부, 누적 구독금액과 화면별 계산 일치, 0원 결제와 비교 항목 연결을 확인함. 사용자 브라우저 기록은 변경하지 않았음. 실제 화면에서 복원과 입력창 재열기를 눌러 보는 검사는 하지 않았음.",
+        "nextSteps": "저장 공간 부족 시 화면 안내와 실제 모바일·백업 복원·입력창 재열기 흐름의 추가 확인이 필요함.",
         "createdAt": "2026-10-26T11:38:36.394+09:00",
         "source": {
           "repository": "minho-nim/worthit",
-          "fingerprint": "2a82d5ac0999b92a597a6d65c25d3a36508df25c18d562863ffd8a4fe90fc92e",
+          "fingerprint": "fdedfe78c1cb446f8dfa50f3943d50b6511aa30c9a2ce950c21c260bd35d931c",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/worthit/commit/c786b39"
@@ -269,16 +269,16 @@
       "record": {
         "id": "codex:proj-1792485558773:2026-10-23-codex-record-workflow",
         "date": "2026-10-23",
-        "title": "개발 기록·프롬프트 통합 연동 체계 구축",
-        "version": "",
-        "content": "요약\n사용자 요청에 따라 Codex 작업 맥락과 실제 프롬프트를 프로젝트별 기록으로 연결함. 중앙 기록 파일과 배포 과정을 연계해 최신 작업 산출물이 검토용 초안에 자동 반영되도록 구성함.\n\n주요 변경\n- 중앙 기록 파일을 기준으로 개발일지와 실제 요청 원문을 일관된 구조로 관리함.\n- 개발 서버·배포 빌드에 기록 변환 절차를 연결해 게시된 초안을 자동 갱신함.\n- 프로젝트별 작업 이력과 프롬프트 활용 맥락을 함께 보관하고 검토·저장 흐름을 제공함.\n- 별도 AI API 호출 없이 Codex 작성 결과를 활용하도록 전환함.\n- 저장소·작업 공간 지침을 마련해 이후 작업에도 같은 기록 절차를 적용함.",
-        "reason": "Codex만 사용하는 개발 흐름에 맞춰 별도 API 키 없이 작업 맥락과 요청 원문을 함께 관리하기 위해 통합함.",
-        "testResult": "배포용 빌드 완료함. 당시 빌드에서 개발일지 1건과 프롬프트 1건 생성을 확인함. 별도 기능 테스트는 실행하지 않았음.",
-        "nextSteps": "이후 작업 기록을 중앙 파일에 추가하고, 배포된 초안을 검토한 뒤 저장할 예정임.",
+        "title": "개발일지와 실제 프롬프트 통합 관리",
+        "version": "1.2.0",
+        "content": "작업 목적\n개발 과정과 사용한 요청을 프로젝트별로 함께 보관하고자 함. Codex가 작성한 기록 파일을 MinLab 게시 과정에 연결함.\n\n주요 변경\n- 개발일지와 실제 요청 원문을 한 파일에서 프로젝트별로 관리하도록 구성함.\n- 개발 서버와 배포 준비 과정에 기록 변환을 연결함.\n- 별도 AI API 키 없이 Codex에서 작성한 결과를 활용하도록 변경함.\n- 다음 작업에서도 같은 형식으로 기록할 수 있도록 작성 지침을 마련함.",
+        "reason": "사용자가 Codex만 사용하는 개발 흐름에 맞춰 별도 API 연결 없이 기록을 관리하기를 요청했음.",
+        "testResult": "배포용 파일 생성에 성공했고 당시 개발일지 1건과 프롬프트 1건 생성을 확인함. 별도 기능 검사는 실행하지 않았음.",
+        "nextSteps": "후속 작업에서 별도 검토 버튼을 제거함. 현재는 사용자가 업데이트를 요청한 기록을 일반 목록에 바로 반영함.",
         "createdAt": "2026-10-23T09:47:27+09:00",
         "source": {
           "repository": "minho-nim/MinLab",
-          "fingerprint": "a85a2f13a99c34e6155a50f2212fefb63a42552f9fc7326eee7790276d852917",
+          "fingerprint": "85ce849770dff64ffce4a03fbce62e16dcaf6f19e997ca00835e858ac56de8c9",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -295,10 +295,10 @@
         "date": "2026-10-23",
         "title": "Codex 전용 기록 방식으로 전환 요청",
         "prompt": "그렇게 바꿔줘 codex만 쓸거니까",
-        "outcome": "Codex가 작성한 개발일지·프롬프트 파일을 MinLab 배포에 반영하는 방식으로 전환",
+        "outcome": "Codex가 작성한 개발일지·프롬프트 파일을 MinLab 배포에 반영하는 방식으로 전환함.",
         "source": {
           "repository": "minho-nim/MinLab",
-          "fingerprint": "7a5527b9787051a3db6b05be95023db4cbf72c4b153ce7ee2ffa62879ad15315",
+          "fingerprint": "9955a35f5603a93be007017d82dbe27edeb429640cec7b0c61b404d05ab3aed8",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -313,16 +313,16 @@
       "record": {
         "id": "codex:proj-1792485558773:2026-10-23-minlab-nutrifit-record-recovery",
         "date": "2026-10-23",
-        "title": "NutriFit 누락 개발일지 복원과 작업 날짜 지정",
-        "version": "",
-        "content": "요약\n사용자 요청에 따라 Codex로 누락된 NutriFit 작업 기록과 요청 원문을 복원함. 중앙 기록에 작업 날짜를 지정해 개발일지를 10월 23일자로 표시함.\n\n주요 변경\n- 펫 성장 제한·식사 기반 진화·성장 도감, 공개 배포, 포만감·돼지 진화를 작업 목적별 개발일지로 정리했음.\n- 기존에 로컬로 작성된 NutriFit 기능 연결성 검토 기록을 보완하고 모든 대상 기록을 10월 23일자로 지정했음.\n- 작성 시각과 별도로 선택적인 작업 날짜를 지원해 누락된 기록을 원하는 날짜로 표시하도록 변경했음.\n- 각 작업의 실제 사용자 요청 원문과 확인된 결과를 보존하고 다음 버전 기능은 보류 항목으로 구분했음.",
-        "reason": "사용자가 한도 부족으로 누락된 펫 육성 개선 대화의 개발일지를 방금 완료한 내용까지 10월 23일 기준으로 작성하도록 요청했음.",
-        "testResult": "별도 앱 테스트는 실행하지 않았음. 해당 대화에서 확인한 검사·빌드·배포 결과만 과거 작업의 확인 결과로 기재했음.",
-        "nextSteps": "추가된 개발일지·프롬프트 초안을 MinLab에서 검토한 뒤 저장할 예정임.",
+        "title": "누락된 펫 개발 기록 복원과 작업 날짜 지정",
+        "version": "1.2.1",
+        "content": "작업 목적\n사용 한도로 빠졌던 NutriFit 개발 기록을 다시 정리함. 요청한 작업 날짜로 표시할 수 있도록 기록 날짜와 작성 시각을 구분함.\n\n주요 변경\n- 펫 성장·도감·포만감·공개 배포 내용을 작업별 기록으로 복원함.\n- 기능 연결성 점검까지 포함해 요청한 10월 23일자로 정리함.\n- 실제 작성 시각은 보관하면서 별도의 작업 날짜를 표시하도록 보완함.\n- 구현한 기능과 다음 버전으로 미룬 아이디어를 구분함.",
+        "reason": "사용자가 한도로 누락된 펫 육성 대화의 기록을 방금 완료한 내용까지 포함해 정리하도록 요청했음.",
+        "testResult": "해당 작업 대화에서 확인한 검사·배포 결과를 기록에 옮김. 앱 기능 검사는 다시 실행하지 않았음.",
+        "nextSteps": "이후 개발일지 수정도 사용자가 별도로 요청한 범위만 반영할 예정임.",
         "createdAt": "2026-10-26T08:57:33+09:00",
         "source": {
           "repository": "minho-nim/MinLab",
-          "fingerprint": "b94f985bdd09210acee5d5fc37cd179f7dedc0ae54aeea5ca36acc2d68ecfd06",
+          "fingerprint": "86e085ee44a43b8a9107a7c9de1a65da4725c56f0e7e2df2d818fd4cf7309100",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -339,10 +339,10 @@
         "date": "2026-10-23",
         "title": "누락된 펫 육성 개발일지 반영 요청",
         "prompt": "방금 펫 성장 제한과 육성 개선 대화 기록까지 개발일지를 업데이트 해야돼 토큰 부족해서 업데이트 못했었으니 10.23일 기준으로 작성해줘",
-        "outcome": "누락된 NutriFit 작업 기록을 실제 대화 근거로 복원",
+        "outcome": "누락된 NutriFit 작업 기록을 실제 대화 근거로 복원함.",
         "source": {
           "repository": "minho-nim/MinLab",
-          "fingerprint": "41a0869c9cbd178062501d65ae9ee277736d42f85c3b701ffd07383ffa792dfb",
+          "fingerprint": "c06cc54b074670d64e4323a3e0d64ba5e98adf34192fa70338a407fc8197ad22",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -359,10 +359,10 @@
         "date": "2026-10-23",
         "title": "방금 완료한 내용까지 10월 23일 지정",
         "prompt": "아니 23일 기준임 방금까지 한것도",
-        "outcome": "마무리 작업을 포함한 대상 개발일지와 프롬프트 표시 날짜를 10월 23일로 통일",
+        "outcome": "마무리 작업을 포함한 대상 개발일지와 프롬프트 표시 날짜를 10월 23일로 통일함.",
         "source": {
           "repository": "minho-nim/MinLab",
-          "fingerprint": "e039dbaa6b661947c9b55861a128a89031583048a0a8271c8f7b1cb428170cbc",
+          "fingerprint": "6b9c7b87b02b2593f021d7d319f427b5b82b89efaf4bf0c5bd273cb0bf3ac846",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -377,16 +377,16 @@
       "record": {
         "id": "codex:proj-1792558759961:2026-10-23-nutrifit-fullness-and-pig-evolution",
         "date": "2026-10-23",
-        "title": "NutriFit 시간 기반 포만감과 단계별 돼지 진화 추가",
-        "version": "공개 배포 3d746de",
-        "content": "요약\n사용자 요청에 따라 Codex로 NutriFit에 시간 기반 포만감과 단계별 돼지 진화를 구현함. 급식 간격·포만감에 따라 추가 성장 보상을 조절함.\n\n주요 변경\n- 포만감 게이지는 시간 경과로만 감소하며 대화와 쓰다듬기로 내려가지 않도록 구성했음.\n- 급식 후 포만감 75% 이상에서는 추가 EXP를 절반으로, 95% 이상에서는 0으로 제한하고 기존 경험치는 유지했음.\n- 같은 끼니를 여러 음식으로 나눠 기록해도 급식 한 번으로 계산하도록 처리했음.\n- 배부를 때의 반응과 단계별 돼지 성장 모습 네 가지를 추가하고 실제 성장한 모습만 도감에서 공개했음.",
-        "reason": "사용자가 배부를 때의 반응과 통통한 돼지 진화를 원하면서, 대화로 포만감이 줄어드는 방식은 원하지 않는다고 명확히 요청했음.",
-        "testResult": "10월 23일 해당 대화에서 npm run test:pet, npm run lint, npm run build:pages 명령 성공과 검사 17개·타입 검사·빌드 및 공개 화면 확인 완료가 보고됐음. 이번 기록 정리에서는 해당 검사를 다시 실행하지 않았음.",
-        "nextSteps": "돌봄 기억·자기만의 행동·짧은 놀이와 탐험·집 꾸미기·성장 이벤트와 추억 카드는 이후 버전으로 보류함.",
+        "title": "시간에 따른 포만감과 돼지 성장 모습 추가",
+        "version": "1.1.0",
+        "content": "작업 목적\n펫이 배부른 상태를 표현하고, 급식을 반복해 성장 보상을 과하게 받는 문제를 줄이고자 함. 시간 기반 포만감과 단계별 돼지 모습을 추가함.\n\n주요 변경\n- 포만감은 시간이 지나야 줄어들며 대화·쓰다듬기로는 줄지 않도록 구성함.\n- 급식 후 포만감이 75% 이상이면 추가 경험치를 절반으로, 95% 이상이면 0으로 제한함. 이미 얻은 경험치는 유지함.\n- 같은 끼니를 여러 음식으로 나눠 기록해도 급식 한 번으로 계산함.\n- 배부른 반응과 단계별 돼지 모습 네 가지를 추가하고 직접 성장한 모습만 도감에서 공개함.",
+        "reason": "사용자가 배부른 반응과 돼지 성장을 제안했으며, 대화로 포만감이 줄어드는 방식은 제외해 달라고 요청했음.",
+        "testResult": "해당 작업에서 검사 17개와 코드 점검·배포용 파일 생성을 통과함. 공개 사이트의 포만감 화면 확인 완료 내용을 확인함.",
+        "nextSteps": "돌봄 기억·자발적인 행동·놀이·집 꾸미기·성장 이벤트는 다음 버전으로 보류함.",
         "createdAt": "2026-10-26T08:57:33+09:00",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "57fb77264cd212d9307c6c216f353b106f3427046f8467fcf52af6af66769106",
+          "fingerprint": "c2b5738f667c1460db13cfb2411f087192fe3ea49abd6ea47a6cd5e94f1319a1",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web/commit/3d746de"
@@ -404,10 +404,10 @@
         "date": "2026-10-23",
         "title": "배부른 반응과 돼지 진화 제안",
         "prompt": "너무 많이 먹으면 펫이 싫어하는 기능도 넣는게 좋을까? 아 배불러~ 그래도 맛은 있네..~ 하면서 경험치는 줄어들거나 혹은 좀 뚱뚱하게 성장하는 느낌으로 진화 단계별로 돼지 모습이 있으면 좋겠다 ㅋㅋㅋ",
-        "outcome": "포만감에 따른 추가 보상 조절과 단계별 돼지 성장 모습 구현",
+        "outcome": "포만감에 따른 추가 보상 조절과 단계별 돼지 성장 모습 구현함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "eb239e8c42d00f13fe21af82a305b2d449d1f2a6d6e97949a03610ecb3fc56c3",
+          "fingerprint": "16a67e71bc49fef41fa535e81fdbd378f8a033881cf1222ac8449adfdf752373",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web/commit/3d746de"
@@ -425,10 +425,10 @@
         "date": "2026-10-23",
         "title": "대화로 포만감 감소 제외 요청",
         "prompt": "음... 포만감 게이지를 대화로 줄이는건 별로 다른건 괜찮은듯",
-        "outcome": "시간 경과로만 포만감이 줄어들도록 구현",
+        "outcome": "시간 경과로만 포만감이 줄어들도록 구현함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "169e16a1e79e9afcf68bdeeb82c504ca8390f018395df46576b62559c217f81e",
+          "fingerprint": "acbbba41e2d452e145008e06e165ff81f0bbcad6ccf2178b14b8afa69261e96d",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web/commit/3d746de"
@@ -444,16 +444,16 @@
       "record": {
         "id": "codex:proj-1792558759961:2026-10-23-nutrifit-pet-growth-and-collection",
         "date": "2026-10-23",
-        "title": "NutriFit 일일 성장 제한과 식사 기반 진화·성장 도감 개선",
-        "version": "",
-        "content": "요약\n사용자 요청에 따라 Codex로 NutriFit의 반복 돌봄 보상을 제한하고, 최근 식사 구성에 따라 성장 방향이 달라지는 진화·도감을 구현함.\n\n주요 변경\n- 식사 기록과 추천 피드백의 성장 경험치를 합산해 하루 최대 60 EXP로 제한하고, 다음 날 다시 보상을 받을 수 있도록 변경했음.\n- 쓰다듬기는 성장 EXP 대신 하루 한 번 친밀도 3을 주며, 반복 행동은 추가 보상 없이 반응만 보여주도록 변경했음.\n- 새 펫은 1단계·0 EXP에서 시작하고, 기존 저장 프로필은 유지하며 홈에서 오늘 획득 EXP와 일일 한도를 표시했음.\n- 최근 7일 식사 구성을 다음 진화 시점에 반영하는 네 가지 성장 계열을 추가했음.\n- 13종 성장 도감을 추가하고 미발견 모습은 실루엣과 ???로 가려 실제 진화해야 공개되도록 변경했음.\n- 1,000 EXP 이후 도감과 친밀도를 유지하면서 새로운 성장 이야기를 시작할 수 있도록 구성했음.",
-        "reason": "반복 클릭만으로 성장이 완료되는 문제를 줄이고, 식사와 돌봄을 통해 성장에 애정을 쏟을 수 있도록 개선함. 사용자 지정 기준에 따라 10월 23일자 기록으로 정리함.",
-        "testResult": "초기 성장 제한 수정 당시에는 의존성 부재로 검사를 실행하지 못한 것으로 확인됨. 이후 성장 계열·도감 작업 대화에서 검사 10개·타입 검사·빌드와 실제 도감 화면 확인 완료를 확인함. 기록 정리 과정에서는 테스트를 다시 실행하지 않았음.",
-        "nextSteps": "일일 돌봄 미션·소품·방 꾸미기·진화 추억 일기는 다음 버전 검토 항목으로 보류함.",
+        "title": "반복 돌봄 중심의 성장 구조와 식사별 진화 개선",
+        "version": "0.2.0",
+        "content": "작업 목적\n쓰다듬기를 반복하면 성장이 너무 빨리 끝나는 문제를 줄이고자 함. 하루 성장 보상과 친밀도를 나누고 식사 구성에 따라 다른 모습으로 성장하도록 개선함.\n\n주요 변경\n- 식사 기록과 추천 평가의 성장 경험치를 합쳐 하루 최대 60으로 제한함.\n- 쓰다듬기는 하루 한 번 친밀도 3을 주고 성장 경험치와 분리함.\n- 새 펫은 1단계·경험치 0에서 시작하고 기존 저장 정보는 유지함.\n- 최근 7일 식사 구성에 따른 네 가지 성장 계열과 13종 성장 도감을 추가함.\n- 발견하지 않은 모습은 그림자로 가리고 실제 성장한 모습만 공개함.\n- 경험치 1,000 이후에는 도감과 친밀도를 유지하며 다시 성장할 수 있게 구성함.",
+        "reason": "꾸준히 식사를 기록하고 돌보는 과정에 의미를 주어, 반복 클릭보다 오래 애정을 쏟을 수 있게 하고자 함.",
+        "testResult": "초기 수정 때는 필요한 실행 환경이 없어 검사하지 못했음. 이후 성장·도감 작업에서 검사 10개, 코드 점검, 배포용 파일 생성과 실제 도감 화면 확인을 완료한 내용을 확인함.",
+        "nextSteps": "일일 돌봄 미션·방 꾸미기·성장 추억 기록은 다음 버전 검토 항목으로 보류함.",
         "createdAt": "2026-10-26T08:57:33+09:00",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "b723b9b905c2b752bfc5e62174c844986647a29d6a32e7acff2fe5cdfa667777",
+          "fingerprint": "28de8698e369d0ee4809e3a68063e576237980219364858868172b61cf3f83e0",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -470,10 +470,10 @@
         "date": "2026-10-23",
         "title": "식사에 따른 성장 방향과 실루엣 도감 요청",
         "prompt": "펫은 먹는거에 따라 성장 방향이 바뀌는게 좋겠어 도감에서는 미리보기로 실루엣만 보이고 실제 성장해야만 보이게 그리고 더 업그레이드할만한 요소가 있는지 찾아줘",
-        "outcome": "식사 기반 성장 계열, 발견 전 실루엣 도감과 새로운 성장 이야기 구현",
+        "outcome": "식사 기반 성장 계열, 발견 전 실루엣 도감과 새로운 성장 이야기 구현함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "a90cbae6887d4dd22688cb309f1596866c2f2700b05a47bec8c1b67c1c3e3991",
+          "fingerprint": "b1696ffb0dabad12753a5b806daf6be7079ce47df52acc8cdffda7a1a2ece23d",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -490,10 +490,10 @@
         "date": "2026-10-23",
         "title": "하루 성장 제한과 실제 육성 게임 방향 요청",
         "prompt": "C:\\Users\\USER\\Documents\\Codex\\개발\\nutrifit-ai---개인-맞춤형-영양-관리-및-ai-식단-추천 \n이거 검토해서 오류 개선하고 아래내용 확인해봐\n\n펫 기능의 하루 성장제한이 필요해 쓰다듬기 만으로 성장이 완료되네 이런건아냐 실제로 펫 키우는 게임처럼 내가 애정이 좀 더 들어갈 만한 방향이 필요함 펫 관련 사항은 실제 게임처럼 해줘",
-        "outcome": "일일 60 EXP 제한과 쓰다듬기 친밀도 보상을 분리하고 반복 보상을 제한",
+        "outcome": "일일 60 EXP 제한과 쓰다듬기 친밀도 보상을 분리하고 반복 보상을 제한함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "706114d42998c51724848ff1335249373e24d7a4279e20fd300dad0efaf27bdf",
+          "fingerprint": "172eb859fa061396b2407bce8538f13339da59ab54e2a291c6d312aeccb9750f",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -508,16 +508,16 @@
       "record": {
         "id": "codex:proj-1792558759961:2026-10-23-nutrifit-public-pages-and-minlab",
         "date": "2026-10-23",
-        "title": "NutriFit 로그인 없는 GitHub Pages 배포와 MinLab 연결 수정",
-        "version": "MinLab 53595e1",
-        "content": "요약\n사용자 요청에 따라 Codex로 NutriFit 원본과 공개 배포 저장소를 분리함. GitHub Pages로 로그인 없는 실행을 제공하고 MinLab의 이전 로그인 링크를 수정함.\n\n주요 변경\n- 비공개 NutriFit 원본 저장소와 HTML·JS·CSS 빌드 결과만 담는 공개 NutriFit-web 저장소를 분리했음.\n- GitHub Pages 주소에서 API 키 없이 식사 기록·영양 계산·메뉴 추천·펫 성장·도감을 이용하도록 배포했음.\n- 외부 AI 사진 분석은 비활성화하고 .env 및 API 키를 업로드 대상에서 제외했음.\n- MinLab에 남아 있던 ChatGPT 로그인 주소를 공개 앱 실행·미리보기 주소로 수정하고 재배포했음.",
-        "reason": "사용자가 ChoicePilot처럼 GitHub에 올리고 다른 사람이 로그인 없이 열기를 원했으며, MinLab에 이전 로그인 주소가 남아 있던 문제를 해결하기 위한 작업임.",
-        "testResult": "해당 대화에서 배포용 빌드·타입 검사, 인증 없는 페이지와 JS·CSS 응답, 공개 앱 및 MinLab 미리보기 화면 확인 완료가 보고됐음. 이번 기록 정리에서는 앱 테스트나 재배포를 실행하지 않았음.",
-        "nextSteps": "이후 NutriFit 변경 시 공개 배포 결과도 함께 갱신할 예정임.",
+        "title": "원본을 비공개로 유지하며 NutriFit 공개 배포",
+        "version": "1.0.0",
+        "content": "작업 목적\n다른 사람도 로그인 없이 NutriFit을 열 수 있게 하고자 함. 원본 코드 보관과 공개 사이트 배포를 분리하고 MinLab 실행 주소를 수정함.\n\n주요 변경\n- 비공개 원본 저장소와 공개 사이트 파일용 저장소를 분리함.\n- 공개 주소에서 식사 기록·영양 계산·추천·펫 성장·도감을 사용할 수 있도록 배포함.\n- 외부 AI 사진 분석은 끄고 비밀 설정 파일과 API 키는 업로드에서 제외함.\n- MinLab에 남은 이전 로그인 주소를 공개 실행 주소로 교체함.",
+        "reason": "사용자가 원본을 비공개로 유지하면서 다른 사람에게 실행 주소를 공유하기를 요청했음.",
+        "testResult": "당시 코드 점검과 배포용 파일 생성, 로그인 없는 페이지 응답을 확인함. 공개 앱과 MinLab 미리보기에서 화면이 열리는 것을 확인함.",
+        "nextSteps": "이후 NutriFit 수정 시 공개 사이트에도 같은 내용을 반영할 필요가 있음.",
         "createdAt": "2026-10-26T08:57:33+09:00",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "134668168c1c2158a6834a427ba2667de866f280dc97c9f93b0827d58acc6f71",
+          "fingerprint": "2a2429e4fb4c71ec915cef255857a61e18edb7c072ec7bf3f1d577ceedd230ee",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web",
@@ -536,10 +536,10 @@
         "date": "2026-10-23",
         "title": "GitHub 배포 요청",
         "prompt": "내 Choice 처럼 깃허브에 올리고 싶어",
-        "outcome": "비공개 원본과 공개 정적 배포 저장소를 분리",
+        "outcome": "비공개 원본과 공개 정적 배포 저장소를 분리함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "2d2ce40f2fad9c5d2ef5613cf50b7a28f37419dfb5de8530f3539f8228d33ab4",
+          "fingerprint": "dfc8fb3943b24b30e4fb4cb49e2dfd8194f59c6a1756f6def7784ef704cd57d9",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web",
@@ -558,10 +558,10 @@
         "date": "2026-10-23",
         "title": "MinLab 로그인 주소 오류 제보",
         "prompt": "안되는데? 챗지피티 로그인 하라고 나옴",
-        "outcome": "MinLab의 이전 실행·미리보기 주소 수정과 재배포",
+        "outcome": "MinLab의 이전 실행·미리보기 주소 수정과 재배포함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "2188f3e1ecd84ced88f57671f742e384ca262454f29cba9623bc1d70bec3e879",
+          "fingerprint": "15ad079ee580d603d615516003c24590823e67e77d4d0e16127a610ec2f6a45a",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web",
@@ -580,10 +580,10 @@
         "date": "2026-10-23",
         "title": "다른 사람의 공개 접속 요청",
         "prompt": "다른 사람이 열수만 있으면 돼 ",
-        "outcome": "로그인 없는 NutriFit-web 공개 주소 제공",
+        "outcome": "로그인 없는 NutriFit-web 공개 주소 제공함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "409fe662e2f4578242a796b806e3534f67935004991f186bda43f1d642f9cae8",
+          "fingerprint": "d464638f0e03870c01fda7a80c4d4d6ca43d457fc8bcd1892b350ea329b53e39",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit-web",
@@ -600,16 +600,16 @@
       "record": {
         "id": "codex:proj-1792558759961:2026-10-26-nutrifit-feature-flow-review",
         "date": "2026-10-23",
-        "title": "NutriFit 기존 기능 연결성 검토와 중단 작업 마무리",
-        "version": "8346399 · e4c0f15 / 118775b",
-        "content": "요약\n사용자 요청에 따라 Codex로 중단된 NutriFit 연결성 검토를 재개함. 식사·추천·도감·펫 성장·설정·백업 사이의 연결을 수정하고 GitHub Pages 배포를 완료함.\n\n주요 변경\n- 대화의 끼니 기록, 성장 도감, 성장·성격 화면, 상단 취향·알레르기 버튼을 해당 화면으로 직접 연결했음.\n- 홈과 추천 화면의 메뉴 선정·영양값·알레르기 조건을 통일하고, 대체 메뉴의 전체 영양값과 평가 대상을 함께 전환했음.\n- 도감 기록 횟수 중복 누적, 기준 중량 혼용, 조합 반복 횟수와 합산 보상 표시를 수정했음.\n- 추천 식재료·조리법·맛과 별점이 취향 학습 및 진화 방향으로 연결되도록 보완했음.\n- 오늘 이외 날짜 기록의 성장 보상, 같은 끼니 친밀도 중복, 같은 메뉴 평가 보상과 먹음 평가 이중 EXP를 제한했음.\n- 기록 삭제 시 다음 진화 방향을 재계산하고, 현재 펫 상태와 선택 날짜의 영양 합계를 구분했음.\n- 체중 변경의 목표 연동, 백업 형식 검사와 실패 복구를 보완하고 다음 버전의 다섯 기능은 보류했음.",
-        "reason": "사용자가 기존 기능의 연결성과 중단된 구현을 검토해 현재 버전을 마무리하도록 요청했음.",
-        "testResult": "해당 작업 대화에서 npm test 32개 통과, npm run lint·npm run build:pages·git diff --check 통과를 확인했음. 로컬 브라우저에서 추천→기록·대화→국물 추천·간식 기록·성장 도감·취향·알레르기 상세·과거 날짜 무보상 흐름을 확인했음. GitHub Pages 118775b 배포 성공 및 공개 주소의 새 버전, 성장 배지→성장·성격 화면 연결을 확인했음. 확인한 공개 페이지의 콘솔 오류는 없었음. 이번 기록 정리에서는 검사를 다시 실행하지 않았음.",
-        "nextSteps": "기능 연결성 수정과 NutriFit 공개 배포 완료. 돌봄 기억·자기만의 행동·놀이와 탐험·집 꾸미기·성장 이벤트와 추억 카드는 다음 버전으로 보류함.",
+        "title": "식사·추천·도감·펫 성장 사이의 연결 오류 수정",
+        "version": "1.1.1",
+        "content": "작업 목적\n각 기능을 따로 사용하는 데서 그치지 않고 자연스럽게 이어지도록 점검함. 식사 기록과 추천 결과가 도감·취향·펫 성장에 맞게 반영되도록 수정함.\n\n주요 변경\n- 대화와 홈의 버튼을 식사 기록·성장 도감·취향·알레르기 화면에 직접 연결함.\n- 홈과 추천 화면의 메뉴 선정·영양값·알레르기 조건을 맞추고 대체 메뉴도 같은 기준으로 전환함.\n- 도감 기록 횟수와 반복 횟수, 보상 합계가 중복 계산되는 문제를 수정함.\n- 과거 날짜 기록과 같은 끼니·메뉴 평가에서 보상이 반복되지 않도록 제한함.\n- 식사 삭제 후 다음 성장 방향을 다시 계산하고 선택 날짜의 영양값과 현재 펫 상태를 구분함.\n- 체중 변경과 목표 계산, 백업 형식 검사와 실패 시 복구를 보완함.",
+        "reason": "사용자가 중단된 작업을 이어서 마무리하고 기존 기능끼리 잘 연결되는지 확인하도록 요청했음.",
+        "testResult": "기능 검사 32개와 코드 점검·배포용 파일 생성을 통과함. 추천에서 식사 기록으로 이동하는 흐름, 도감·취향·알레르기 연결과 과거 기록의 무보상 처리를 확인함. 공개 배포 후 성장 화면 연결을 확인했고 확인 범위의 화면 오류는 없었음.",
+        "nextSteps": "돌봄 기억·자발적인 행동·놀이와 탐험·집 꾸미기·성장 추억 카드는 다음 버전으로 남김.",
         "createdAt": "2026-10-26T08:52:04+09:00",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "9a184c059b6765279ed26c5b2035d18822500398142328b0a60f906b5f22a470",
+          "fingerprint": "a0f58bf820bba1c58d1f2bc32b826c810fdb529dc9124a7cd83c2f297f345d10",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit/commit/8346399",
@@ -629,10 +629,10 @@
         "date": "2026-10-23",
         "title": "기존 기능 연결성 검토와 마무리",
         "prompt": "지금까지 있는 기능들이 서로 잘 어우러지는지 확인 해봐 개발하다 중단된거 있는지 보고 이어서 작업하고 마무리 하자 기능들 연결성도 검토하라는 거야&#x20;\n\n1. **돌봄 기억**: “어제 같이 먹은 두부 맛있었어!”처럼 함께한 일을 기억하기\n2. **자기만의 행동**: 배부르면 눕고, 심심하면 장난감을 가져오고, 접속하면 반겨주기\n3. **짧은 놀이와 탐험**: 하루 한 번 함께 놀거나 탐험하고 작은 선물 가져오기\n4. **집 꾸미기**: 돌봄으로 얻은 재화로 침대·그릇·소품을 모으기\n5. **성장 이벤트**: 숫자가 차는 순간에 특별한 연출과 추억 카드 남기기\n\n이건 다음 버전에서 하자",
-        "outcome": "현재 기능의 연결 오류 수정과 검증, 다음 버전 기능 보류",
+        "outcome": "현재 기능의 연결 오류 수정과 검증, 다음 버전 기능 보류함.",
         "source": {
           "repository": "minho-nim/NutriFit-web",
-          "fingerprint": "6548f7a6eba8d2c1b203ae64f0fc3bdb924782d57094152898632a6bbda9ac29",
+          "fingerprint": "b455c1a6cb0e8aa21d2e52a7c6d46e68308fe1f27924b4f90b5073e15caa880a",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/NutriFit/commit/8346399",
@@ -669,20 +669,87 @@
     },
     {
       "kind": "log",
+      "projectId": "proj-1792563333333",
+      "record": {
+        "id": "codex:proj-1792563333333:2026-10-23-choicepilot-reflection-flow",
+        "date": "2026-10-23",
+        "title": "고민 입력부터 감정 정리·실행 계획까지 흐름 개선",
+        "version": "1.0.0",
+        "content": "작업 목적\n선택을 대신 추천하는 방식보다 사용자가 자신의 고민을 정리하도록 돕고자 함. 짧은 입력과 필요한 질문을 거쳐 핵심 내용과 다음 행동을 확인하는 흐름으로 정리함.\n\n주요 변경\n- 첫 화면은 고민 한 개 입력으로 줄이고 추가 질문은 이미 답한 내용을 활용해 최대 세 번만 제시함.\n- 사용자가 고친 상황·감정·걱정·목표를 결과와 행동 계획에 반영하고 화면 이동 후에도 유지함.\n- 직접 말한 내용과 따로 확인한 사실을 구분하고 선택지 비교는 요청한 경우에만 제공함.\n- 목표 유형·가용 시간·마감에 맞는 7일 행동 계획과 완료 기준을 제공함.\n- 중복 실행을 막고 글·이미지 복사, 완료 표시, 전체 초기화 기능을 유지함.",
+        "reason": "사용자가 감정과 핵심 걱정을 정리해 스스로 판단할 수 있는 방향을 원했음.",
+        "testResult": "자동 검사 14개와 코드 점검·배포용 파일 생성을 통과함. 브라우저에서 수정 내용 유지, 조건 비교, 글 복사 후 붙여넣기, 이미지 복사 성공 표시, 완료 표시와 초기화를 확인함. 공개 배포 완료도 확인함.",
+        "nextSteps": "규칙과 정해진 문장 틀을 활용하므로 복잡한 한국어 맥락과 미묘한 감정 표현은 추가 개선이 필요함.",
+        "createdAt": "2026-10-23T14:12:56+09:00",
+        "source": {
+          "repository": "minho-nim/ChoicePilot",
+          "fingerprint": "e23df7dc5ccbaa417a064a3a90e727f0944edd8c08aae7a2ffc9d5e9a29e370c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/ChoicePilot/commit/b63c81a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T14:12:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-1792563333333",
+      "record": {
+        "id": "codex:proj-1792563333333:2026-10-23-choicepilot-reflection-flow:prompt:request-1",
+        "date": "2026-10-23",
+        "title": "짧은 고민 입력과 질문·결과 흐름 개선 요청",
+        "prompt": "ㄱㄱ 그렇게 해보자",
+        "outcome": "고민 입력부터 필요한 질문·확인·핵심 카드·행동 계획까지의 흐름을 구성함.",
+        "source": {
+          "repository": "minho-nim/ChoicePilot",
+          "fingerprint": "8f06012d1fe8f8b983f20b3860200a924e2cf692ec87e19b523dbbe028760805",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/ChoicePilot/commit/b63c81a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T14:12:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-1792563333333",
+      "record": {
+        "id": "codex:proj-1792563333333:2026-10-23-choicepilot-reflection-flow:prompt:request-2",
+        "date": "2026-10-23",
+        "title": "작업 이어가기",
+        "prompt": "하던작업 계속 해줘",
+        "outcome": "남은 선택지 비교 확인과 GitHub 배포 진행함.",
+        "source": {
+          "repository": "minho-nim/ChoicePilot",
+          "fingerprint": "a0ce30242e904438ac101b89f26964a9578298895e8c24ee110f4a438a4dc379",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/ChoicePilot/commit/b63c81a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-23T14:12:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
       "projectId": "risk-assessment-workplan-automation",
       "record": {
         "id": "codex:risk-assessment-workplan-automation:2026-10-23-risk-assessment-web-link-and-schedule-roster",
         "date": "2026-10-23",
-        "title": "자동화 도구 카드에 DOCX 일정 웹앱 연결",
-        "version": "",
-        "content": "요약\n사용자 요청에 따라 Codex로 MinLab 자동화 도구에 일정 웹앱을 연결하고, DOCX 원본 시각·작업자 명단을 일정 화면과 연계함.\n\n주요 변경\n- 기존 MinLab 샘플 카드를 같은 프로젝트 ID로 유지하면서 AI Studio 앱 링크와 웹앱 기능 설명을 추가했음.\n- MinLab 사용자의 기존 작업일지와 프롬프트를 보존하며 프로젝트 링크를 갱신하도록 일회성 마이그레이션을 추가했음.\n- 일정 내보내기에서 시간 라운딩 단위 설정을 제거하고 DOCX에서 추출한 원본 시각을 유지하도록 했음.\n- 일정 목록과 달력 상세에서 DOCX 작업자의 R&R·회사명·이름·연락처를 표시하고 작업자 정보로 일정 검색을 지원했음.\n- 등록자·참여자 ID와 사원 목록이 실제 현장 작업자 명단이 아니라 회사 업로드 양식용임을 UI에 구분해 표시했음.",
-        "reason": "사용자는 기존 MinLab 자동화 도구 항목에 일정 웹앱을 연결하고, 작업자 일정은 DOCX의 연락처·회사명·R&R·이름을 기준으로 보며 등록자와 참여자는 회사 업로드 양식용으로만 사용하길 요청했음.",
-        "testResult": "MinLab npm run build 성공. 별도 기능 테스트는 실행하지 않았으며, 일정 웹앱 빌드와 실제 DOCX 파일 파싱은 미실행임.",
-        "nextSteps": "당시 다음 작업으로 앱 동기화와 실제 DOCX 작업자 파싱 확인을 계획함.",
+        "title": "기존 자동화 도구에 일정 앱과 작업자 정보 연결",
+        "version": "0.1.0",
+        "content": "작업 목적\n기존 자동화 도구 안에서 공사 일정도 볼 수 있도록 연결함. 작업자 표시는 회사 업로드용 계정 대신 원본 문서의 현장 명단을 사용하도록 정리함.\n\n주요 변경\n- 기존 프로젝트 항목을 유지하면서 일정 앱 주소와 설명을 연결함.\n- 기존 개발일지와 프롬프트를 보존하며 실행 주소를 갱신하도록 처리함.\n- 시간을 임의로 반올림하지 않고 원본 문서의 시각을 유지함.\n- 작업자의 역할·회사명·이름·연락처로 일정 확인과 검색이 가능하도록 연결함.\n- 회사 업로드용 등록자·참여자 계정과 실제 현장 작업자를 구분해 표시함.",
+        "reason": "사용자가 작업자 일정은 원본 문서의 명단을 기준으로 보고, 별도 계정은 회사 업로드에만 사용하기를 요청했음.",
+        "testResult": "MinLab 배포용 파일 생성에 성공함. 당시 일정 앱의 별도 빌드와 실제 업무 문서 분석은 확인하지 않았음.",
+        "nextSteps": "당시 다음 작업으로 공개 앱 반영과 실제 문서의 작업자 추출 확인을 계획함.",
         "createdAt": "2026-10-23T13:56:23+09:00",
         "source": {
           "repository": "",
-          "fingerprint": "a0c5edb24146dbeace613db524d09c6b48fb945cbd704561fd9ed8b5f38a8cc7",
+          "fingerprint": "fd3c55565530bb329eb8a031905227260c436b130a34a60876d937e13f09135b",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -699,10 +766,10 @@
         "date": "2026-10-23",
         "title": "기존 자동화 도구에 일정 웹앱 연결 요청",
         "prompt": "C:\\Users\\USER\\Documents\\Codex\\개발\\위험성평가서 작업계획서 자동화 도구\\공사-일정-통합-관리-시스템-(modern-schedule-web) 이거도 다른것 처럼 MinLab 에 올리고 싶어 이미 올라가 있는 위험성평가서 / 작업계획서 자동화 도구 이거야",
-        "outcome": "기존 MinLab 프로젝트 카드에 같은 프로젝트 ID로 웹앱을 연결하고 작업 기록을 추가",
+        "outcome": "기존 MinLab 프로젝트 카드에 같은 프로젝트 ID로 웹앱을 연결하고 작업 기록을 추가함.",
         "source": {
           "repository": "",
-          "fingerprint": "1114a38e0df493eb4c8289bf1a6a12b142b935dc9d7b0b33eb39aae635f7ec5c",
+          "fingerprint": "8dc105407d4769ce5df500e19a42d3c43d5be756b3f9f50dda7dfe70321c18c7",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -719,10 +786,10 @@
         "date": "2026-10-23",
         "title": "작업자 명단과 업로드용 참여자 구분 요청",
         "prompt": "시간 라운딩 단위 필요 없음\n보내주는 docx 파일에서 연락처 회사명 R&R 이름 연락처 있는데 작업자 일정은 이걸 봐야돼 등록자 참여자는 회사 업로드 양식에 올리기 위한것일 뿐이야.",
-        "outcome": "원본 DOCX 시각을 유지하고 작업자 일정 UI는 DOCX 현장 작업자 명단을 사용하도록 수정; 등록자·참여자 ID는 회사 업로드용으로 구분",
+        "outcome": "원본 DOCX 시각을 유지하고 작업자 일정 UI는 DOCX 현장 작업자 명단을 사용하도록 수정; 등록자·참여자 ID는 회사 업로드용으로 구분함.",
         "source": {
           "repository": "",
-          "fingerprint": "b401bf91bd5d072ad9932daa3781ce0989f59714d49991cb5ffbd6dec1fb5eb6",
+          "fingerprint": "3c3b89382186d6fd96090c96a8bb67748a355bf429ed19e9aee80a3d1b5ff379",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -737,16 +804,16 @@
       "record": {
         "id": "codex:risk-assessment-workplan-automation:2026-10-23-schedule-docx-fields-preview",
         "date": "2026-10-23",
-        "title": "DOCX 작업명·연락처 표 추출 및 원본 미리보기",
-        "version": "",
-        "content": "요약\n사용자 요청에 따라 Codex로 DOCX 첫 표의 작업명과 연락처 표의 열 제목을 기준으로 일정 정보를 추출하도록 개선함. 캘린더명 저장과 원본 미리보기를 추가함.\n\n주요 변경\n- 일정내용(C열)을 첫 표의 작업명 값으로 설정하고 기존 목적 필드는 별도로 유지함.\n- 회사명·R&R·이름·연락처 열을 찾아 같은 행의 값을 읽고 병합 셀을 확장해 정렬함.\n- 캘린더명을 브라우저 로컬에 자동 저장하며 입력칸에서 수정할 수 있음.\n- 매칭 목록·일정표의 상세 창에서 업로드한 원본 DOCX를 재다운로드 없이 텍스트·표·이미지로 미리볼 수 있음. 원본 파일은 현재 세션 메모리에서 보관함.",
-        "reason": "사용자가 회사 업로드 C열의 작업명, 캘린더명 저장, DOCX 표 기준 작업자 추출과 원본 미리보기를 요청했음.",
-        "testResult": "작업명·목적 분리, 작업자 열 순서·빈 값, 무관한 연락처 제외 테스트 3건과 TypeScript 검사·빌드 통과. 제공 양식의 표 제목을 로컬에서 확인했음. 공개 배포 후 가상 DOCX 업로드→분석→작업자 열 매핑→C열 작업명→상세 원본 미리보기를 브라우저에서 확인했고, 캘린더명이 새로고침 후 유지됨을 확인했음. 검증용 설정은 원상 복원했음.",
-        "nextSteps": "다양한 업무 문서의 병합 셀과 원본 미리보기 배치 차이에 대한 추가 확인이 필요함.",
+        "title": "작업명·연락처 추출과 원본 문서 미리보기 추가",
+        "version": "1.1.0",
+        "content": "작업 목적\n일정에 들어가는 작업명과 연락처를 원본 문서의 표에 맞춰 읽도록 개선함. 같은 문서를 다시 내려받지 않고 내용도 확인할 수 있게 구성함.\n\n주요 변경\n- 일정내용은 문서 첫 표의 작업명으로 채우고 작업 목적은 별도로 유지함.\n- 회사명·역할·이름·연락처 열의 제목을 찾아 같은 행의 작업자 정보를 읽도록 변경함.\n- 입력한 캘린더명을 브라우저에 저장하고 직접 수정할 수 있도록 구성함.\n- 일정 상세 화면에서 원본 문서의 글·표·이미지를 바로 볼 수 있게 추가함. 원본 파일은 현재 접속 중에만 임시 보관함.",
+        "reason": "사용자가 회사 업로드 양식에 맞는 작업명과 작업자 추출, 캘린더명 저장, 다운로드 없는 원본 확인을 요청했음.",
+        "testResult": "문서 항목 추출 검사 3건과 코드 점검·배포용 파일 생성을 통과함. 공개 앱에서 가상 문서를 올려 작업명·작업자 정보와 원본 표시를 확인함. 캘린더명이 새로고침 후에도 유지되는 것을 확인함.",
+        "nextSteps": "다양한 업무 문서의 합쳐진 셀과 원본 표시 모양은 추가 확인이 필요함.",
         "createdAt": "2026-10-23T14:38:40+09:00",
         "source": {
           "repository": "",
-          "fingerprint": "f074f497c00780b1e4daa4154ae4952a3f618a1eae5fa2b1d382c2afab77d9c3",
+          "fingerprint": "663e01ae989a8821695a57c67cf39f38b9d29df226565b6f92dd474ae3b90674",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -763,10 +830,10 @@
         "date": "2026-10-23",
         "title": "일정내용·캘린더명·작업자·원본 문서 개선",
         "prompt": "1. 일정내용(contents) 이거 (C행) .docx에서 첫칸에 쓰는 작업명 이 들어가야할 듯&#x20;\n2. 양식 다운로드의 캘린더명은 한버 쓰면 로컬로 저장되게 하면 좋을거같고... 클릭으로 수정 가능하게.\n3. 작업자부분에서는 .Docx 에서 회사명 아래에, R&R 아래에,이름 아래에, 연락처 아래에 있는거를 맞춰서 쓰면 돼\n4. 매칭리스트랑 통합 공사 일정표 들에서 등록된 내용 누르면 작업 내용 뜨는데 띄우고 작업 절차서 .docx 파일 열리는 버튼 추가 해주면 좋을 듯?",
-        "outcome": "요청한 DOCX 필드 추출과 캘린더명 저장 및 상세 원본 미리보기 구현",
+        "outcome": "요청한 DOCX 필드 추출과 캘린더명 저장 및 상세 원본 미리보기 구현함.",
         "source": {
           "repository": "",
-          "fingerprint": "15e1e2691f45bdac05d86df962113745f264f054b6a6fb7be3fc5fd3d926e151",
+          "fingerprint": "8ee7b3e24a3ea31ce15d3a71e4c716e0f298582aed03675a70d07d457f6eb613",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -783,10 +850,10 @@
         "date": "2026-10-23",
         "title": "다운로드 없이 원본 미리보기",
         "prompt": "이거 다시 다운은 필요없고 원본 바로 열기로 미리보기만 ㄱㄱ",
-        "outcome": "다운로드 버튼을 제거하고 상세 창 내부 DOCX 미리보기로 변경",
+        "outcome": "다운로드 버튼을 제거하고 상세 창 내부 DOCX 미리보기로 변경함.",
         "source": {
           "repository": "",
-          "fingerprint": "58df93e5463248a2b60bfe431a3974a9ad9dd5ae275b5a174c5e07f68c907d94",
+          "fingerprint": "0cf5ee62c3775ffaf5eb847111d8a025f5e73726707cc976488a6bb9f36cfa91",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -801,16 +868,16 @@
       "record": {
         "id": "codex:risk-assessment-workplan-automation:2026-10-23-schedule-public-preview",
         "date": "2026-10-23",
-        "title": "로그인 없는 일정 앱 미리보기 배포",
-        "version": "",
-        "content": "요약\n사용자가 보고한 로그인·401 오류를 해결하기 위해 Codex로 MinLab 빌드에 일정 웹앱을 통합하고, 공개 실행·미리보기 주소로 교체함.\n\n주요 변경\n- 일정 앱 소스를 MinLab 빌드에 포함해 /apps/work-schedule/에서 공개 실행하도록 구성했음.\n- 기존 브라우저에 저장된 AI Studio 실행·미리보기 링크도 공개 앱 주소로 갱신하며 사용자 기록은 보존함.\n- 앞선 작업의 원본 시각 유지와 DOCX 작업자 명단 표시 변경도 공개 실행본에 포함했음.\n- 공개 예시에 포함된 작업자 연락처와 사원 계정은 가상 값으로 바꾸고, 문서·엑셀 처리는 브라우저 내부에서 수행함.\n- Excel 처리는 공식 SheetJS 배포본 0.20.3을 사용함.",
-        "reason": "사용자가 MinLab 앱 미리보기에서 로그인 요구 및 401 오류를 보고하고 로그인 없이 사용할 수 있게 해달라고 요청했음.",
-        "testResult": "MinLab·일정 웹앱 빌드 성공, TypeScript 검사 통과, 주소 전환·기록 보존·사용자 링크 유지 테스트 1건 통과. GitHub Pages 배포 성공 후 공개 앱 직접 실행과 MinLab iframe 미리보기에서 로그인 없이 문서 분석 화면·일정표가 표시됨을 브라우저로 확인했음. 실제 업무 DOCX 파일 파싱은 미실행임.",
-        "nextSteps": "실제 업무 DOCX의 작업자 정보 파싱, 회사 업로드 계정 입력·엑셀 내보내기 결과의 추가 확인이 필요함.",
+        "title": "로그인 없이 사용할 수 있는 일정 앱 공개",
+        "version": "1.0.0",
+        "content": "작업 목적\n앱을 열 때 로그인을 요구하거나 오류가 나던 문제를 해결하고자 함. MinLab 안에서 바로 사용할 수 있는 공개 일정 앱으로 연결함.\n\n주요 변경\n- 일정 앱을 MinLab에 함께 배포해 별도 로그인 없이 열리도록 구성함.\n- 기존에 저장된 편집용 주소를 공개 실행 주소로 바꾸고 사용자 기록은 유지함.\n- 문서의 원래 시각과 작업자 명단 표시 기능을 공개 앱에 반영함.\n- 공개 예시의 연락처·사원 계정을 가상 값으로 교체함. 문서와 엑셀 처리는 사용자 브라우저 안에서 수행함.",
+        "reason": "사용자가 미리보기의 로그인 요구와 접속 오류를 제보해, 다른 사람도 바로 이용할 수 있는 실행 경로가 필요했음.",
+        "testResult": "코드 점검과 배포용 파일 생성, 주소 전환·기록 보존 검사 1건을 통과함. 공개 앱과 MinLab 미리보기에서 로그인 없이 문서 분석 화면과 일정표가 열리는 것을 확인함. 당시 실제 업무 문서 분석은 확인하지 않았음.",
+        "nextSteps": "실제 업무 문서의 작업자 추출과 회사 업로드용 엑셀 결과를 추가 확인할 필요가 있음.",
         "createdAt": "2026-10-23T14:10:11+09:00",
         "source": {
           "repository": "",
-          "fingerprint": "0f0f9af0094d08d08b86906a1f1a67fd9c90e30c9288293a3596e18a609711f3",
+          "fingerprint": "eed48c417783b7cab26f191117be88028202f9af16d28b2d5ec9b813329b7ae5",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],
@@ -827,10 +894,10 @@
         "date": "2026-10-23",
         "title": "로그인 없는 앱 미리보기 요청",
         "prompt": "앱 미리보기 화면에서 안되네 로그인 해야된대 로그인 없이도 할 수 있게 해줘",
-        "outcome": "AI Studio 로그인 화면 대신 MinLab에서 직접 실행하는 공개 일정 앱으로 연결",
+        "outcome": "AI Studio 로그인 화면 대신 MinLab에서 직접 실행하는 공개 일정 앱으로 연결함.",
         "source": {
           "repository": "",
-          "fingerprint": "f06ed4956812cd93916e7ede735417293ce748f175ed83120729fc3f356f143a",
+          "fingerprint": "fa669102ee50cf6fcdce14cfb3038976f24ae8aafcf8bb9a50da7fe959b51d7b",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
           ],

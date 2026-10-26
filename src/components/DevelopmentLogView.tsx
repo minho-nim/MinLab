@@ -258,7 +258,7 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                 {/* Content / 변경 사항 */}
                 {logContent && (
                   <div className="space-y-1">
-                    <div className="text-[11px] font-medium text-muted">변경 사항 / 수정 내용</div>
+                    <div className="text-[11px] font-medium text-muted">작업 내용</div>
                     <p className="text-xs text-ink-secondary leading-relaxed whitespace-pre-wrap bg-surface-alt/60 p-2.5 rounded-md border border-line/60 font-sans">
                       {logContent}
                     </p>
@@ -274,12 +274,12 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                     >
                       {isExpanded ? (
                         <>
-                          <span>세부 정보 접기 (수정 이유, 테스트 결과, 다음 작업)</span>
+                          <span>세부 정보 접기 (작업 이유, 확인 결과, 다음 작업)</span>
                           <ChevronUp className="w-3 h-3" />
                         </>
                       ) : (
                         <>
-                          <span>세부 정보 보기 (수정 이유, 테스트 결과, 다음 작업)</span>
+                          <span>세부 정보 보기 (작업 이유, 확인 결과, 다음 작업)</span>
                           <ChevronDown className="w-3 h-3" />
                         </>
                       )}
@@ -291,7 +291,7 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                         {logReason && (
                           <div className="space-y-0.5">
                             <div className="text-[11px] font-medium text-amber-700/90">
-                              수정 이유
+                              작업 이유
                             </div>
                             <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                               {logReason}
@@ -303,7 +303,7 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                         {testResult && (
                           <div className="space-y-0.5">
                             <div className="text-[11px] font-medium text-emerald-700/90">
-                              테스트 결과
+                              확인 결과
                             </div>
                             <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                               {testResult}
@@ -315,7 +315,7 @@ export const DevelopmentLogView: React.FC<DevelopmentLogViewProps> = ({
                         {nextSteps && (
                           <div className="space-y-0.5">
                             <div className="text-[11px] font-medium text-accent/90">
-                              다음 작업 (Next Steps)
+                              다음 작업
                             </div>
                             <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">
                               {nextSteps}

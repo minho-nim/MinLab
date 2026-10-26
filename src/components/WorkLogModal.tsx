@@ -69,11 +69,15 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
       return;
     }
     if (!title.trim()) {
-      setError('수정 제목 / 작업명을 입력해 주세요.');
+      setError('작업 제목을 입력해 주세요.');
       return;
     }
     if (!content.trim()) {
-      setError('변경 사항 / 수정 내용을 입력해 주세요.');
+      setError('작업 내용을 입력해 주세요.');
+      return;
+    }
+    if (version.trim() && !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version.trim())) {
+      setError('버전은 0.1.0처럼 숫자 세 자리로 입력하거나 비워 주세요.');
       return;
     }
 
@@ -152,7 +156,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-medium text-muted mb-1">
-                수정 날짜 <span className="text-accent">*</span>
+                작업 날짜 <span className="text-accent">*</span>
               </label>
               <input
                 type="date"
@@ -171,22 +175,23 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
                 type="text"
                 value={version}
                 onChange={(e) => setVersion(e.target.value)}
-                placeholder="예: v0.1.0, v1.2.0"
+                placeholder="예: 0.1.0, 1.0.1"
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink font-mono focus:outline-none focus:border-accent"
               />
+              <p className="mt-1 text-[10px] leading-5 text-muted">기능 추가는 가운데, 작은 수정은 마지막 숫자를 올립니다. 같은 배포는 같은 버전, 기획만 한 작업은 비워 둡니다.</p>
             </div>
           </div>
 
           {/* Title / Task */}
           <div>
             <label className="block text-[11px] font-medium text-muted mb-1">
-              수정 제목 / 작업명 <span className="text-accent">*</span>
+              작업 제목 <span className="text-accent">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="예: 위험 요인 템플릿 자동 분류 로직 구현"
+              placeholder="예: 식사 기록과 펫 성장 연결 오류 수정"
               required
               className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent"
             />
@@ -195,13 +200,13 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
           {/* Content / 변경 사항 */}
           <div>
             <label className="block text-[11px] font-medium text-muted mb-1">
-              변경 사항 / 수정 내용 <span className="text-accent">*</span>
+              작업 내용 <span className="text-accent">*</span>
             </label>
             <textarea
               rows={3}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="구현하거나 수정한 구체적인 작업 내용을 작성하세요."
+              placeholder={'작업 목적\n어떤 문제를 해결하려 했는지 작성함.\n\n주요 변경\n- 실제로 바꾼 내용을 항목별로 작성함.'}
               required
               className="w-full px-3 py-2 bg-surface-alt border border-line-strong rounded-md text-ink placeholder-muted focus:outline-none focus:border-accent leading-relaxed"
             />
@@ -210,7 +215,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
           {/* Reason / 수정 이유 */}
           <div>
             <label className="block text-[11px] font-medium text-muted mb-1">
-              수정 이유
+              작업 이유
             </label>
             <textarea
               rows={2}
@@ -224,13 +229,13 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
           {/* Test Results / 테스트 결과 */}
           <div>
             <label className="block text-[11px] font-medium text-muted mb-1">
-              테스트 결과
+              확인 결과
             </label>
             <textarea
               rows={2}
               value={testResult}
               onChange={(e) => setTestResult(e.target.value)}
-              placeholder="테스트 수행 결과 또는 동작 검증 사항을 작성하세요."
+              placeholder="실제로 확인한 결과와 아직 확인하지 못한 내용을 구분해 작성하세요."
               className="w-full px-3 py-2 bg-surface-alt border border-line-strong rounded-md text-ink placeholder-muted focus:outline-none focus:border-accent leading-relaxed"
             />
           </div>

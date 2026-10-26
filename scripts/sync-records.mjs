@@ -35,13 +35,15 @@ export function compileCodexRecords({ config, journal }) {
     const date = entry.date || dayInSeoul(entry.recordedAt);
     if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date + 'T00:00:00Z')) || new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) !== date) throw new Error('date는 실제 YYYY-MM-DD 날짜여야 합니다.');
     const title = requiredText(entry.title, '작업 제목');
+    const version = optionalText(entry.version).trim();
+    if (version && !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version)) throw new Error('버전은 0.1.0처럼 숫자 세 자리로 입력하거나 비워야 합니다: ' + entry.id);
     const summary = requiredText(entry.summary, '요약');
     if (!Array.isArray(entry.changes) || !entry.changes.length || !entry.changes.every(item => typeof item === 'string' && item.trim())) throw new Error('changes는 주요 변경 내용의 문자열 배열이어야 합니다.');
     const urls = entry.urls || [];
     if (!Array.isArray(urls) || !urls.every(url => typeof url === 'string' && /^https:\/\/github\.com\//.test(url))) throw new Error('관련 출처는 GitHub HTTPS 주소만 허용합니다.');
     const record = {
-      id, date, title, version: optionalText(entry.version),
-      content: '요약\n' + summary + '\n\n주요 변경\n' + entry.changes.map(item => '- ' + item).join('\n'),
+      id, date, title, version,
+      content: '작업 목적\n' + summary + '\n\n주요 변경\n' + entry.changes.map(item => '- ' + item).join('\n'),
       reason: optionalText(entry.reason),
       testResult: optionalText(entry.testResult) || '미실행: 별도로 확인한 결과 없음.',
       nextSteps: optionalText(entry.nextSteps), createdAt: entry.recordedAt,

@@ -304,6 +304,95 @@
           "outcome": "보존된 수정사항 재검사, 소스 업로드와 공개 배포 재개"
         }
       ]
+    },
+    {
+      "id": "2026-10-26-worthit-v1-0-review",
+      "projectId": "proj-1792978415000",
+      "recordedAt": "2026-10-26T10:46:20+09:00",
+      "date": "2026-10-26",
+      "version": "1.0",
+      "title": "WorthIt 기능 점검과 오류 개선",
+      "summary": "사용자 요청에 따라 WorthIt 기존 기능과 저장·계산 흐름을 살펴보고 GitHub 공개 준비를 위해 프로젝트 설정과 사용량 계산을 정리했음.",
+      "changes": [
+        "프로젝트 설명과 패키지 설정을 정리하고 빌드 도구 의존성 버전을 맞췄음.",
+        "로컬 날짜 기준 사용 일수·연속 사용일과 월간·연간 결제 주기 계산을 점검하고 보완했음.",
+        "저장 데이터·백업·예시 데이터 관련 유틸리티를 다시 구성했음."
+      ],
+      "reason": "사용자가 다른 프로젝트처럼 검사하고 GitHub에 올려 달라고 요청했음.",
+      "testResult": "npm run lint와 npm run build를 실행해 모두 통과했음. 샘플 예시 데이터가 원본과 완전히 일치하는지는 추가 확인이 필요함.",
+      "nextSteps": "기본 사용 흐름에서 예시 데이터와 백업 복원 결과를 추가로 확인할 수 있음.",
+      "urls": [
+        "https://github.com/minho-nim/worthit/commit/a21d8ccb18b4d7123c24de1daf4538b178087336"
+      ],
+      "prompts": [
+        {
+          "id": "request-1",
+          "title": "WorthIt 검사와 Git 업로드 요청",
+          "prompt": "다른 프로젝트처럼 검사해서 깃 올려줘",
+          "outcome": "프로젝트 상태를 점검하고 GitHub 공개 저장소에 올릴 준비를 진행했음."
+        }
+      ]
+    },
+    {
+      "id": "2026-10-26-worthit-v1-1-github",
+      "projectId": "proj-1792978415000",
+      "recordedAt": "2026-10-26T10:46:20+09:00",
+      "date": "2026-10-26",
+      "version": "1.1",
+      "title": "WorthIt GitHub 저장소 생성과 소스 업로드",
+      "summary": "사용자 요청에 따라 minho-nim 계정에 WorthIt 공개 저장소를 만들고 main 브랜치에 프로젝트 소스를 업로드했음.",
+      "changes": [
+        "공개 GitHub 저장소 minho-nim/worthit을 생성했음.",
+        "검토한 앱 소스와 프로젝트 안내를 main 브랜치에 커밋하고 원격 저장소에 반영했음.",
+        "GitHub Pages 배포용 Vite 경로 설정과 Actions 워크플로를 추가했음."
+      ],
+      "reason": "사용자가 GitHub 저장소를 직접 만들고 MinLab에 올려 연결해 달라고 요청했음.",
+      "testResult": "npm run lint와 npm run build가 통과했으며, 저장소에서 커밋 a21d8cc와 배포 워크플로 커밋 dd1f93b를 확인했음.",
+      "nextSteps": "MinLab 프로젝트 목록과 개발 기록을 공개 앱 주소에 연결했음.",
+      "urls": [
+        "https://github.com/minho-nim/worthit",
+        "https://github.com/minho-nim/worthit/commit/a21d8ccb18b4d7123c24de1daf4538b178087336",
+        "https://github.com/minho-nim/worthit/commit/dd1f93ba0abc28c65f6c15e73bc587078b2c131a"
+      ],
+      "prompts": [
+        {
+          "id": "request-1",
+          "title": "GitHub와 MinLab 연결 및 저장소 생성 요청",
+          "prompt": "깃허브 연결하고 내 MinLAb에 올려야 되는데.. 저장소 직접 만들어서 올려",
+          "outcome": "WorthIt 공개 저장소를 만들고 GitHub Pages·MinLab 연결을 진행했음."
+        }
+      ]
+    },
+    {
+      "id": "2026-10-26-worthit-v1-2-minlab-pages",
+      "projectId": "proj-1792978415000",
+      "recordedAt": "2026-10-26T10:46:20+09:00",
+      "date": "2026-10-26",
+      "version": "1.2",
+      "title": "WorthIt 공개 배포와 MinLab 연결",
+      "summary": "사용자 요청에 따라 WorthIt을 GitHub Pages로 공개 배포하고 MinLab 카탈로그에 실행 주소와 버전별 개발 기록을 연결했음.",
+      "changes": [
+        "Vite 앱 경로를 /worthit/에 맞추고 GitHub Actions 배포 워크플로를 구성했음.",
+        "GitHub Pages를 Actions 방식으로 활성화하고 공개 사이트를 배포했음.",
+        "MinLab의 WorthIt 프로젝트 카드에 GitHub 저장소와 실행 주소를 연결했음.",
+        "WorthIt 작업을 기능 점검, GitHub 저장소 업로드, Pages·MinLab 연결의 1.0·1.1·1.2 기록으로 나눴음."
+      ],
+      "reason": "사용자가 WorthIt을 MinLab에 연결하고 개발일지를 2~3개 버전으로 나눠 작성해 달라고 요청했음.",
+      "testResult": "GitHub Actions 배포 실행 40255784433이 성공했음. 워크플로에서 lint, build, Pages 설정, artifact 업로드, 배포가 모두 통과했으며 Pages 설정 화면에서 사이트가 공개 상태임을 확인했음.",
+      "nextSteps": "샘플 예시 데이터와 백업 복원 흐름의 추가 확인은 후속 점검 항목임.",
+      "urls": [
+        "https://github.com/minho-nim/worthit",
+        "https://minho-nim.github.io/worthit/",
+        "https://github.com/minho-nim/worthit/actions/runs/40255784433"
+      ],
+      "prompts": [
+        {
+          "id": "request-1",
+          "title": "WorthIt MinLab 연결과 2~3개 버전 기록 요청",
+          "prompt": "Wothlit 이거 Min Lab에 연결해야지 뭐해 연결하고 개발일지도 알아서 나누고 작성해줘 버전 2개~3개 정도로 나눠서",
+          "outcome": "공개 실행 주소를 MinLab 카탈로그에 연결하고 개발 기록을 3개 버전으로 구분했음."
+        }
+      ]
     }
   ]
 }

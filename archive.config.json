@@ -10,7 +10,11 @@
       "description": "AI 활용 프로젝트와 개발일지, 프롬프트를 모아두는 아카이브",
       "category": "프로젝트 아카이브",
       "appUrl": "",
-      "techStack": ["React", "TypeScript", "GitHub Actions"]
+      "techStack": [
+        "React",
+        "TypeScript",
+        "GitHub Actions"
+      ]
     },
     {
       "id": "proj-1792563333333",
@@ -19,7 +23,10 @@
       "description": "고민과 선택지를 정리하고 판단 기준과 다음 행동을 구체화하는 의사결정 도우미",
       "category": "라이프스타일",
       "appUrl": "https://minho-nim.github.io/ChoicePilot/",
-      "techStack": ["React", "TypeScript"]
+      "techStack": [
+        "React",
+        "TypeScript"
+      ]
     },
     {
       "id": "proj-1792558759961",
@@ -28,7 +35,11 @@
       "description": "식사와 영양 목표를 기록하고 밥친구를 키우는 개인 식단 관리 앱",
       "category": "건강 관리",
       "appUrl": "https://minho-nim.github.io/NutriFit-web/",
-      "techStack": ["React", "TypeScript", "LocalStorage"]
+      "techStack": [
+        "React",
+        "TypeScript",
+        "LocalStorage"
+      ]
     },
     {
       "id": "risk-assessment-workplan-automation",
@@ -37,7 +48,12 @@
       "description": "위험성평가서·작업계획서 자동화 도구와 DOCX 기반 공사 일정 관리 웹앱",
       "category": "업무 자동화",
       "appUrl": "https://minho-nim.github.io/MinLab/apps/work-schedule/",
-      "techStack": ["Python", "React", "TypeScript", "Vite"]
+      "techStack": [
+        "Python",
+        "React",
+        "TypeScript",
+        "Vite"
+      ]
     },
     {
       "id": "proj-1792978415000",
@@ -45,8 +61,12 @@
       "name": "WorthIt",
       "description": "구매한 물건·구독·멤버십의 사용 횟수와 기간을 기록해 회당 사용 단가와 목표 달성률을 확인하는 소비 가치 추적 웹앱",
       "category": "소비 관리",
-      "appUrl": "",
-      "techStack": ["React", "TypeScript", "LocalStorage"]
+      "appUrl": "https://minho-nim.github.io/worthit/",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "LocalStorage"
+      ]
     }
   ]
 }

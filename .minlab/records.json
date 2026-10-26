@@ -382,7 +382,6 @@
       "nextSteps": "샘플 예시 데이터와 백업 복원 흐름의 추가 확인은 후속 점검 항목임.",
       "urls": [
         "https://github.com/minho-nim/worthit",
-        "https://minho-nim.github.io/worthit/",
         "https://github.com/minho-nim/worthit/actions/runs/40255784433"
       ],
       "prompts": [

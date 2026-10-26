@@ -1212,7 +1212,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
           <div>
             <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted">WORKING NOTES</p>
             <h2 className="text-lg font-semibold tracking-tight text-ink">프롬프트 기록</h2>
-            <p className="mt-1 text-xs text-muted">이 프로젝트에서 사용한 프롬프트와 결과를 모아둡니다.</p>
+            <p className="mt-1 text-xs text-muted">이 프로젝트의 목표와 요구사항을 정리한 작업 프롬프트입니다.</p>
           </div>
           {!isAddingPrompt && (
             <button
@@ -1249,12 +1249,12 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({
               </label>
             </div>
             <label className="block space-y-1.5 text-xs text-muted">
-              <span>사용한 프롬프트</span>
+              <span>작업 프롬프트</span>
               <textarea
                 rows={5}
                 value={newPromptText}
                 onChange={(e) => setNewPromptText(e.target.value)}
-                placeholder="실제 입력한 프롬프트를 기록하세요."
+                placeholder="목표·해야 할 일·지켜야 할 조건·완료 기준을 작성하세요."
                 className="w-full resize-y rounded-md border border-line-strong bg-surface-alt px-3 py-2.5 font-mono text-xs leading-6 text-ink placeholder:font-sans placeholder:text-muted focus:border-line-strong focus:outline-none"
               />
             </label>

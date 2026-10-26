@@ -1,6 +1,7 @@
 import published from '../../public/data/github-drafts.json';
 import type { Project } from '../types';
 import { parseDraftFeed, projectForDraft, type GitHubDraft } from './githubDrafts';
+import { connectPromptPresentation, retiredPromptKeys } from './promptPresentation';
 
 const LEDGER_KEY = 'minlab_published_records_v1';
 const entryKey = (entry: GitHubDraft) => entry.kind + ':' + entry.record.id;
@@ -8,13 +9,14 @@ const entryKey = (entry: GitHubDraft) => entry.kind + ':' + entry.record.id;
 /** Published records are finalized by an explicit Codex update request; no inbox or polling. */
 export function connectPublishedRecords(projects: Project[], storage: Pick<Storage, 'getItem' | 'setItem'>, dataKey: string): Project[] {
   try {
+    projects = connectPromptPresentation(projects, storage, dataKey);
     const feed = parseDraftFeed(published);
     let previous: GitHubDraft[] = [];
     try {
       const raw = storage.getItem(LEDGER_KEY);
       if (raw) previous = parseDraftFeed(JSON.parse(raw)).drafts;
     } catch { /* A broken ledger must not prevent reading the archive. */ }
-    const ledger = new Map(previous.map(entry => [entryKey(entry), entry]));
+    const ledger = new Map(previous.filter(entry => entry.kind !== 'prompt' || !retiredPromptKeys.has(entry.projectId + ':' + entry.record.id)).map(entry => [entryKey(entry), entry]));
     let result = projects;
     for (const entry of feed.drafts) {
       const field = entry.kind === 'log' ? 'workLogs' : 'promptHistory';

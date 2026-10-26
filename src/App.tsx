@@ -391,7 +391,7 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface p-3">
             <nav aria-label="기록 종류" className="flex gap-2 text-xs">
               <a href={routeHash({ view: 'records', projectId: devLogProjectIdFilter || undefined })} className={'rounded-md px-3 py-2 ' + (route.view === 'records' && route.tab === 'prompts' ? 'text-muted' : 'bg-accent-soft font-semibold text-accent')}>개발일지</a>
-              <a href={routeHash({ view: 'records', projectId: devLogProjectIdFilter || undefined, tab: 'prompts' })} className={'rounded-md px-3 py-2 ' + (route.view === 'records' && route.tab === 'prompts' ? 'bg-accent-soft font-semibold text-accent' : 'text-muted')}>사용한 프롬프트</a>
+              <a href={routeHash({ view: 'records', projectId: devLogProjectIdFilter || undefined, tab: 'prompts' })} className={'rounded-md px-3 py-2 ' + (route.view === 'records' && route.tab === 'prompts' ? 'bg-accent-soft font-semibold text-accent' : 'text-muted')}>작업 프롬프트</a>
             </nav>
             {route.view === 'records' && route.tab === 'prompts' && <select aria-label="기록 대상 프로젝트" value={devLogProjectIdFilter || ''} onChange={event => navigate({ view: 'records', projectId: event.target.value || undefined, tab: 'prompts' })} className="max-w-full rounded-md border border-line bg-canvas px-2 py-2 text-xs text-ink"><option value="">전체 프로젝트</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select>}
           </div>

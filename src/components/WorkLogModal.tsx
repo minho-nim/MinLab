@@ -108,7 +108,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
           <h3 className="text-sm font-semibold text-ink">
-            {initialLog?.source ? (initialLog.source.engine === 'codex' ? 'Codex 기록 검토·수정' : 'GitHub 초안 검토·수정') : initialLog ? '개발 기록 수정' : '새 개발 기록 등록'}
+            {initialLog ? '개발 기록 수정' : '새 개발 기록 등록'}
           </h3>
           <button
             onClick={onClose}

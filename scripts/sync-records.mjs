@@ -61,7 +61,7 @@ export function compileCodexRecords({ config, journal }) {
   drafts.sort((a, b) => b.record.date.localeCompare(a.record.date) || a.record.id.localeCompare(b.record.id));
   return {
     version: 1, recordsSince: since, generatedAt, drafts,
-    notices: ['작업 기록·프롬프트 통합 연동: 업로드된 작업 산출물을 배포 시 자동으로 갱신합니다. 새 기록은 검토 후 저장할 수 있습니다.'],
+    notices: [],
   };
 }
 

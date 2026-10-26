@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Project, WorkLog, NavigationTab, PromptHistoryItem } from './types';
+import { Project, WorkLog, NavigationTab } from './types';
 import { loadProjects, saveProjects } from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { StatsBanner } from './components/StatsBanner';
@@ -7,7 +7,6 @@ import { ProjectCard } from './components/ProjectCard';
 import { ProjectDetail } from './components/ProjectDetail';
 import { ProjectPage } from './components/ProjectPage';
 import { ProjectPreview } from './components/ProjectPreview';
-import { GitHubDraftInbox } from './components/GitHubDraftInbox';
 import { PromptHistoryView } from './components/PromptHistoryView';
 import { parseRoute, routeHash, type ArchiveRoute } from './utils/navigation';
 import { ProjectModal } from './components/ProjectModal';
@@ -255,16 +254,6 @@ export default function App() {
     navigate({ view: 'records', projectId });
   };
 
-  const handleSavePrompt = (prompt: PromptHistoryItem, projectId: string): boolean => {
-    const project = projects.find(item => item.id === projectId);
-    if (!project) return false;
-    const current = project.promptHistory || [];
-    const updated = current.some(item => item.id === prompt.id) ? current.map(item => item.id === prompt.id ? prompt : item) : [prompt, ...current];
-    if (!handleUpdateProject({ ...project, promptHistory: updated, updatedAt: new Date().toISOString() })) return false;
-    showToast('프롬프트 원문을 저장했습니다.', 'success');
-    return true;
-  };
-
   const handleDismissNotice = () => {
     setShowStorageNotice(false);
     try {
@@ -399,7 +388,6 @@ export default function App() {
         ) : currentTab === 'development-log' ? (
           /* 2. Development Log View: 날짜별 개발 기록과 수정 이력 조회 및 프로젝트별 필터링 */
           <div className="space-y-6">
-          <GitHubDraftInbox projects={projects} projectId={devLogProjectIdFilter} kind={route.view === 'records' && route.tab === 'prompts' ? 'prompt' : 'log'} onReview={(log, id) => handleOpenWorkLogModal(id, log)} onSavePrompt={handleSavePrompt} />
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface p-3">
             <nav aria-label="기록 종류" className="flex gap-2 text-xs">
               <a href={routeHash({ view: 'records', projectId: devLogProjectIdFilter || undefined })} className={'rounded-md px-3 py-2 ' + (route.view === 'records' && route.tab === 'prompts' ? 'text-muted' : 'bg-accent-soft font-semibold text-accent')}>개발일지</a>

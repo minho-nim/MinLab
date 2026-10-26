@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { EmployeeInfo } from '../types';
-import { DEFAULT_EMPLOYEES } from '../utils/parser';
 import { Users, X, Plus, Trash2, RotateCcw, Check, AlertCircle, Building2, User, KeyRound, Hash } from 'lucide-react';
 
 interface EmployeeManagerModalProps {
@@ -17,7 +16,7 @@ export const EmployeeManagerModal: React.FC<EmployeeManagerModalProps> = ({
   onSaveEmployees,
 }) => {
   const [empNo, setEmpNo] = useState('');
-  const [dept, setDept] = useState('예시 부서');
+  const [dept, setDept] = useState('');
   const [position, setPosition] = useState('');
   const [name, setName] = useState('');
   const [empId, setEmpId] = useState('');
@@ -45,7 +44,7 @@ export const EmployeeManagerModal: React.FC<EmployeeManagerModalProps> = ({
 
     const newEmp: EmployeeInfo = {
       사원번호: trimmedNo || `${Math.floor(1000 + Math.random() * 9000)}`,
-      부서명: dept.trim() || '예시 부서',
+      부서명: dept.trim(),
       직급명: position.trim(),
       사원명: trimmedName,
       사원ID: trimmedId,
@@ -70,11 +69,6 @@ export const EmployeeManagerModal: React.FC<EmployeeManagerModalProps> = ({
     onSaveEmployees(updated);
   };
 
-  const handleResetToDefault = () => {
-    if (confirm('기본 사원 목록(예시 등록자, 예시 참여자)으로 초기화하시겠습니까?')) {
-      onSaveEmployees(DEFAULT_EMPLOYEES);
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
@@ -204,14 +198,6 @@ export const EmployeeManagerModal: React.FC<EmployeeManagerModalProps> = ({
               <span className="font-bold text-slate-800 text-xs">
                 현재 등록된 사원 목록 (총 {employees.length}명)
               </span>
-              <button
-                type="button"
-                onClick={handleResetToDefault}
-                className="text-[11px] text-slate-500 hover:text-slate-800 flex items-center gap-1 hover:underline"
-              >
-                <RotateCcw className="h-3 w-3" />
-                <span>기본값 복원</span>
-              </button>
             </div>
 
             <div className="overflow-x-auto">

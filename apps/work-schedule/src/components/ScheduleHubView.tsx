@@ -29,8 +29,8 @@ export const ScheduleHubView: React.FC<ScheduleHubViewProps> = ({
     .filter((i) => i.매칭상태 === '✅ 성공' && i.작업일자 !== '미발견')
     .map((i) => i.작업일자);
 
-  const initialYear = validDates.length > 0 ? parseInt(validDates[0].split('.')[0], 10) : 2026;
-  const initialMonth = validDates.length > 0 ? parseInt(validDates[0].split('.')[1], 10) : 10;
+  const initialYear = validDates.length > 0 ? parseInt(validDates[0].split('.')[0], 10) : new Date().getFullYear();
+  const initialMonth = validDates.length > 0 ? parseInt(validDates[0].split('.')[1], 10) : new Date().getMonth() + 1;
 
   const [currYear, setCurrYear] = useState<number>(initialYear);
   const [currMonth, setCurrMonth] = useState<number>(initialMonth);

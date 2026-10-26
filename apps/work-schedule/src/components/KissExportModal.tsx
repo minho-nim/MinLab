@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { KissExcelOptions, ProcessedItem, EmployeeInfo } from '../types';
-import { DEFAULT_EMPLOYEES, formatToKissTime, formatTitleForKiss } from '../utils/parser';
+import { formatToKissTime, formatTitleForKiss } from '../utils/parser';
 import { EmployeeManagerModal } from './EmployeeManagerModal';
 import {
   FileSpreadsheet,
@@ -38,22 +38,20 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
   onSaveEmployees,
   onConfirmExport,
 }) => {
-  // 1. 캘린더(ID).캘린더명 (기본값: (작업일정(TEST)))
+  // 저장한 회사 캘린더명만 복원합니다.
   const [calTitle, setCalTitle] = useState(() => {
-    try { return localStorage.getItem('kiss_calendar_title') || '(작업일정(TEST))'; }
-    catch { return '(작업일정(TEST))'; }
+    try { return localStorage.getItem('kiss_calendar_title') || ''; }
+    catch { return ''; }
   });
   useEffect(() => {
     if (!calTitle.trim()) return;
     try { localStorage.setItem('kiss_calendar_title', calTitle); } catch {}
   }, [calTitle]);
 
-  // 2. 등록자(ID) (기본값: demo1 - 예시 등록자)
-  const [createId, setCreateId] = useState('demo1');
+  const [createId, setCreateId] = useState('');
 
-  // 3. 참여자(ID) (기본값: demo1; demo2)
-  const [selectedParticipants, setSelectedParticipants] = useState<string[]>(['demo1', 'demo2']);
-  const [customParticipantText, setCustomParticipantText] = useState('demo1; demo2');
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [customParticipantText, setCustomParticipantText] = useState('');
 
   // 4. 종일여부 (기본값: N)
   const [alldayYn, setAlldayYn] = useState<'Y' | 'N'>('N');
@@ -100,26 +98,11 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
     setSelectedParticipants(parsed);
   };
 
-  // Apply Team Presets
-  const applyPreset = (presetType: 'team' | 'kim' | 'lee' | 'all') => {
-    if (presetType === 'team') {
-      setCreateId('demo1');
-      setSelectedParticipants(['demo1', 'demo2']);
-      setCustomParticipantText('demo1; demo2');
-    } else if (presetType === 'kim') {
-      setCreateId('demo1');
-      setSelectedParticipants(['demo1']);
-      setCustomParticipantText('demo1');
-    } else if (presetType === 'lee') {
-      setCreateId('demo2');
-      setSelectedParticipants(['demo2']);
-      setCustomParticipantText('demo2');
-    } else if (presetType === 'all') {
-      const allIds = employees.map((e) => e.사원ID);
-      setCreateId(allIds[0] || 'demo1');
-      setSelectedParticipants(allIds);
-      setCustomParticipantText(allIds.join('; '));
-    }
+  const selectAllEmployees = () => {
+    const ids = employees.map(employee => employee.사원ID);
+    setCreateId(ids[0] || '');
+    setSelectedParticipants(ids);
+    setCustomParticipantText(ids.join('; '));
   };
 
   // Pre-validation inspection results
@@ -139,9 +122,9 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
     e.preventDefault();
     onConfirmExport(
       {
-        calTitle: calTitle.trim() || '(작업일정(TEST))',
-        createId: createId.trim() || 'demo1',
-        schUserIdList: customParticipantText.trim() || 'demo1; demo2',
+        calTitle: calTitle.trim() || '',
+        createId: createId.trim() || '',
+        schUserIdList: customParticipantText.trim() || '',
         alldayYn,
         fileName: fileName.trim() || '업무관리(Kiss)_작업일정(TEST)_일정일괄등록양식.xlsx',
       },
@@ -187,31 +170,10 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
           <div className="px-6 py-2.5 bg-slate-100/80 border-b border-slate-200 text-xs flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <BookmarkCheck className="h-4 w-4 text-blue-600 shrink-0" />
-              <span className="font-bold text-slate-700 text-[11px]">원클릭 프리셋:</span>
+              <span className="font-bold text-slate-700 text-[11px]">업로드 사원 선택:</span>
               <button
                 type="button"
-                onClick={() => applyPreset('team')}
-                className="px-2 py-0.5 rounded-md bg-white hover:bg-blue-50 text-blue-700 font-bold border border-slate-200 text-[10px] transition-colors"
-              >
-                예시 부서 표준
-              </button>
-              <button
-                type="button"
-                onClick={() => applyPreset('kim')}
-                className="px-2 py-0.5 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 text-[10px] transition-colors"
-              >
-                예시 등록자
-              </button>
-              <button
-                type="button"
-                onClick={() => applyPreset('lee')}
-                className="px-2 py-0.5 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 text-[10px] transition-colors"
-              >
-                예시 참여자
-              </button>
-              <button
-                type="button"
-                onClick={() => applyPreset('all')}
+                onClick={selectAllEmployees}
                 className="px-2 py-0.5 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 text-[10px] transition-colors"
               >
                 전체 사원
@@ -295,7 +257,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                   required
                   value={createId}
                   onChange={(e) => setCreateId(e.target.value)}
-                  placeholder="예: demo1"
+                  placeholder="회사 등록자 ID 입력"
                   className="w-full text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -344,7 +306,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                   required
                   value={customParticipantText}
                   onChange={(e) => handleCustomParticipantChange(e.target.value)}
-                  placeholder="예: demo1; demo2"
+                  placeholder="회사 참여자 ID 입력 (;로 구분)"
                   className="w-full text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -512,7 +474,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
 
                         return (
                           <tr key={item.id} className="text-slate-700 hover:bg-slate-50">
-                            <td className="p-1.5 font-mono text-blue-700">{calTitle || '(작업일정(TEST))'}</td>
+                            <td className="p-1.5 font-mono text-blue-700">{calTitle || ''}</td>
                             <td className="p-1.5 font-medium max-w-xs" title={item.schTitle}>
                               <div className="flex items-center gap-1.5">
                                 <span className="truncate">{safeTitle}</span>
@@ -538,8 +500,8 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
                                 {eTime}
                               </span>
                             </td>
-                            <td className="p-1.5 font-mono text-slate-800">{createId || 'demo1'}</td>
-                            <td className="p-1.5 font-mono text-slate-800">{customParticipantText || 'demo1; demo2'}</td>
+                            <td className="p-1.5 font-mono text-slate-800">{createId || ''}</td>
+                            <td className="p-1.5 font-mono text-slate-800">{customParticipantText || ''}</td>
                             <td className="p-1.5 text-center font-bold">{alldayYn}</td>
                           </tr>
                         );
@@ -610,12 +572,12 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
 
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                       <span className="text-slate-600">캘린더명 & 등록자ID:</span>
-                      <span className="font-bold text-emerald-700">입력 완료 (정상)</span>
+                      <span className="font-bold text-emerald-700">{calTitle.trim() && createId.trim() ? '입력 완료' : '입력 필요'}</span>
                     </div>
 
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                       <span className="text-slate-600">참여자 ID 형식:</span>
-                      <span className="font-bold text-emerald-700 font-mono">; 구분자 적용됨</span>
+                      <span className="font-bold text-emerald-700 font-mono">{customParticipantText.trim() ? '; 구분자로 입력' : '입력 필요'}</span>
                     </div>
                   </div>
 
@@ -643,6 +605,7 @@ export const KissExportModal: React.FC<KissExportModalProps> = ({
               </button>
               <button
                 type="submit"
+                disabled={targetItems.length === 0}
                 className="px-6 py-2.5 rounded-xl text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/20 flex items-center gap-1.5 transition-all active:scale-95"
               >
                 <FileSpreadsheet className="h-4 w-4" />

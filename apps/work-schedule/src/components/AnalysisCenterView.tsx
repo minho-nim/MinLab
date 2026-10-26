@@ -24,7 +24,6 @@ interface AnalysisCenterViewProps {
   onDocxFilesSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDocxFolderSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRunProcess: () => void;
-  onLoadSampleDocx: () => void;
 }
 
 export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
@@ -38,7 +37,6 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
   onDocxFilesSelect,
   onDocxFolderSelect,
   onRunProcess,
-  onLoadSampleDocx,
 }) => {
   const excelInputRef = useRef<HTMLInputElement>(null);
   const docxFilesInputRef = useRef<HTMLInputElement>(null);
@@ -136,7 +134,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
 
         <div className="flex items-center gap-3">
           <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-700 font-medium flex items-center justify-between">
-            <span className="truncate">{excelFileName || '계약목록.xlsx (샘플 10건 등록됨)'}</span>
+            <span className="truncate">{excelFileName || '계약목록 Excel을 선택해 주세요'}</span>
             <span className="text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
               계약 {excelContracts.length}건 탑재
             </span>
@@ -163,7 +161,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
           <span className="text-xs font-bold text-blue-600">
             {selectedDocxFiles.length > 0
               ? `선택된 문서: ${selectedDocxFiles.length}개`
-              : `기본 샘플 문서: ${processedResults.length}개 준비됨`}
+              : '선택된 문서 없음'}
           </span>
         </div>
 
@@ -183,14 +181,6 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
             <FolderOpen className="h-3.5 w-3.5 text-amber-600" />
             <span>폴더 지정 (전체 Word 일괄)</span>
           </button>
-
-          <button
-            onClick={onLoadSampleDocx}
-            className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-colors flex items-center gap-1.5"
-          >
-            <Layers className="h-3.5 w-3.5" />
-            <span>표준 샘플 11건 일괄 채우기</span>
-          </button>
         </div>
       </div>
 
@@ -198,7 +188,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
       <div>
         <button
           onClick={onRunProcess}
-          disabled={isProcessing}
+          disabled={isProcessing || selectedDocxFiles.length === 0}
           className="w-full py-3.5 rounded-2xl text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-75"
         >
           <Play className="h-4 w-4 fill-current" />

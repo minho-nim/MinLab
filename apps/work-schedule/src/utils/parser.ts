@@ -362,10 +362,7 @@ export async function parseExcelFile(file: File): Promise<ExcelContractRow[]> {
   return contracts;
 }
 
-export const DEFAULT_EMPLOYEES: EmployeeInfo[] = [
-  { 사원번호: '1001', 부서명: '예시 부서', 직급명: '', 사원명: '예시 등록자', 사원ID: 'demo1' },
-  { 사원번호: '1002', 부서명: '예시 부서', 직급명: '', 사원명: '예시 참여자(예시 부서)', 사원ID: 'demo2' },
-];
+export const DEFAULT_EMPLOYEES: EmployeeInfo[] = [];
 
 export function formatTitleForKiss(title: string): string {
   if (!title) return '';
@@ -401,9 +398,9 @@ export function exportToKissExcel(
 ) {
   const wb = XLSX.utils.book_new();
 
-  const calTitleVal = options.calTitle?.trim() || '(작업일정(TEST))';
-  const createIdVal = options.createId?.trim() || 'demo1';
-  const schUserIdListVal = options.schUserIdList?.trim() || 'demo1; demo2';
+  const calTitleVal = options.calTitle?.trim() || '';
+  const createIdVal = options.createId?.trim() || '';
+  const schUserIdListVal = options.schUserIdList?.trim() || '';
   const alldayYnVal = options.alldayYn || 'N';
 
   // ==========================================

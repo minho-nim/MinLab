@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ExcelContractRow, ProcessedItem, KissExcelOptions, EmployeeInfo } from './types';
-import { SAMPLE_EXCEL_CONTRACTS, INITIAL_PROCESSED_RESULTS as SAMPLE_RESULTS } from './data/sampleData';
 import {
   parseExcelFile,
   parseDocxFile,
@@ -16,16 +15,15 @@ import { DetailModal } from './components/DetailModal';
 import { KissExportModal } from './components/KissExportModal';
 import { CheckCircle2, Download, FolderOpen } from 'lucide-react';
 
-const INITIAL_PROCESSED_RESULTS = SAMPLE_RESULTS.map(item => ({ ...item, contents: item.작업명 }));
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'analysis' | 'matching' | 'schedule'>('analysis');
 
-  const [excelContracts, setExcelContracts] = useState<ExcelContractRow[]>(SAMPLE_EXCEL_CONTRACTS);
-  const [excelFileName, setExcelFileName] = useState<string>('계약목록.xlsx (샘플 10건 등록됨)');
+  const [excelContracts, setExcelContracts] = useState<ExcelContractRow[]>([]);
+  const [excelFileName, setExcelFileName] = useState<string>('');
   const [selectedDocxFiles, setSelectedDocxFiles] = useState<File[]>([]);
   const [processedResults, setProcessedResults] =
-    useState<ProcessedItem[]>(INITIAL_PROCESSED_RESULTS);
+    useState<ProcessedItem[]>([]);
 
   // Dynamic employees state persisted in localStorage
   const [employees, setEmployees] = useState<EmployeeInfo[]>(() => {
@@ -33,7 +31,7 @@ export default function App() {
       const saved = localStorage.getItem('kiss_calendar_employees');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed.filter((employee: EmployeeInfo) => !((employee.사원ID === 'demo1' && employee.사원명 === '예시 등록자') || (employee.사원ID === 'demo2' && employee.사원명 === '예시 참여자(예시 부서)')));
       }
     } catch {}
     return DEFAULT_EMPLOYEES;
@@ -49,8 +47,7 @@ export default function App() {
 
   const [logs, setLogs] = useState<string[]>([
     '⚡ 시스템 준비 완료: 공사 일정 통합 관리 센터 (업무관리 Kiss 일정 연동)',
-    '📁 계약목록.xlsx 샘플 데이터 10건이 정상 로드되어 있습니다.',
-    '📝 작업계획서 Word 샘플 11건 분석 데이터가 통합 일정표 및 매칭 리스트에 반영되었습니다.',
+    '📁 계약목록 Excel과 작업계획서 DOCX를 선택해 주세요.',
     '🎯 타겟 양식: [업무관리(Kiss) 작업일정(TEST) 일정 일괄등록 양식]',
     '👷 실제 작업자 일정은 DOCX의 R&R·회사명·이름·연락처를 기준으로 표시합니다.',
     '💡 등록자·참여자와 사원 목록은 회사 업로드 양식의 계정 정보로만 사용합니다.',
@@ -121,21 +118,9 @@ export default function App() {
     e.target.value = '';
   };
 
-  // Reset to initial sample
-  const handleResetSample = () => {
-    setExcelContracts(SAMPLE_EXCEL_CONTRACTS);
-    setExcelFileName('계약목록.xlsx (샘플 10건 등록됨)');
-    setSelectedDocxFiles([]);
-    setProcessedResults(INITIAL_PROCESSED_RESULTS);
-    setLogs([
-      '🔄 샘플 데이터로 복원 완료되었습니다.',
-      '📁 계약목록.xlsx (10건) 및 판교/보라매/성수/분당 등 작업계획서 11건이 준비되었습니다.',
-    ]);
-    showToast('샘플 데이터가 성공적으로 복원되었습니다.');
-  };
-
   // Run matching process
   const handleRunProcess = async () => {
+    if (!selectedDocxFiles.length) { showToast('분석할 작업계획서 DOCX를 선택해 주세요.'); return; }
     setIsProcessing(true);
     addLog('\n--------------------------------------------------');
     addLog('🚀 스마트 문서 매칭 프로세스를 시작합니다...');
@@ -159,17 +144,6 @@ export default function App() {
             })`
           );
         }
-      } else {
-        addLog(`📂 선택된 파일이 없어 기본 11건 작업계획서로 매칭을 재실행합니다...\n`);
-
-        INITIAL_PROCESSED_RESULTS.forEach((r, idx) => {
-          results.push({ ...r, id: `processed-${Date.now()}-${idx}` });
-          addLog(
-            `[${idx + 1}/${INITIAL_PROCESSED_RESULTS.length}] ${r.파일명} -> ${r.매칭상태} (작업번호: ${
-              r.작업번호
-            })`
-          );
-        });
       }
 
       setProcessedResults(results);
@@ -228,7 +202,6 @@ export default function App() {
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         onOpenExportModal={() => setIsExportModalOpen(true)}
-        onResetSample={handleResetSample}
       />
 
       {/* Toast Notification */}
@@ -253,7 +226,6 @@ export default function App() {
             onDocxFilesSelect={handleDocxFilesSelect}
             onDocxFolderSelect={handleDocxFolderSelect}
             onRunProcess={handleRunProcess}
-            onLoadSampleDocx={handleResetSample}
           />
         )}
 

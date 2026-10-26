@@ -49,8 +49,8 @@ export interface ProcessedItem {
 
 export interface KissExcelOptions {
   calTitle: string;        // 캘린더(ID).캘린더명 (예: (작업일정(TEST)))
-  createId: string;        // 등록자(ID) (시스템 업로드용 계정: demo1)
-  schUserIdList: string;   // 참여자(ID) (시스템 업로드용 계정: demo1; demo2)
+  createId: string;        // 등록자(ID) (회사 업로드용 계정)
+  schUserIdList: string;   // 참여자(ID) (회사 업로드용 계정)
   alldayYn: 'Y' | 'N';     // 종일여부
   fileName?: string;       // 파일명
 }

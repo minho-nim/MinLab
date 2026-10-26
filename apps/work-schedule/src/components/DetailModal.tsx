@@ -48,7 +48,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
   }, [item?.sourceFile]);
 
   // New worker form inputs
-  const [newRr, setNewRr] = useState('작업원');
+  const [newRr, setNewRr] = useState('작업자');
+  const [customRr, setCustomRr] = useState('');
   const [newCompany, setNewCompany] = useState('');
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
@@ -109,10 +110,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
   const handleAddWorker = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim() || !newPhone.trim()) return;
+    const role = newRr === '__custom__' ? customRr.trim() : newRr;
+    if (!role) return;
 
     const newW: WorkerInfo = {
-      rr: newRr.trim() || '작업원',
-      company: newCompany.trim() || '협력사',
+      rr: role,
+      company: newCompany.trim(),
       name: newName.trim(),
       phone: newPhone.trim(),
     };
@@ -174,6 +177,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
                 </span>
               </div>
               <p className="text-xs text-slate-500 truncate max-w-md">{item.파일명}</p>
+              {item.matchFailureReason && <p className="mt-1 text-xs text-red-700 max-w-xl">매칭 실패 사유: {item.matchFailureReason}</p>}
             </div>
           </div>
 
@@ -226,7 +230,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
                     현장 작업자 명단 & 비상연락망 (R&R)
                   </h4>
                   <p className="text-[10px] text-indigo-600">
-                    문서에서 파싱된 실제 작업 인력 정보 (등록자/참여자는 ERP 양식 업로드용 코드입니다)
+                    작업절차서에서 추출한 실제 작업 인력 정보
                   </p>
                 </div>
               </div>
@@ -254,13 +258,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
                     onChange={(e) => setNewRr(e.target.value)}
                     className="w-full text-xs px-2 py-1 rounded border border-slate-300 bg-white"
                   >
-                    <option value="작업책임자">작업책임자</option>
-                    <option value="안전관리자">안전관리자</option>
-                    <option value="현장대리인">현장대리인</option>
-                    <option value="화기감시자">화기감시자</option>
+                    <option value="작업자">작업자</option>
                     <option value="신호수">신호수</option>
-                    <option value="작업원">작업원</option>
+                    <option value="관리감독자">관리감독자</option>
+                    <option value="관리책임자">관리책임자</option>
+                    <option value="안전관리자">안전관리자</option>
+                    <option value="__custom__">직접 입력</option>
                   </select>
+                  {newRr === '__custom__' && <input aria-label="R&R 직접 입력" required value={customRr} onChange={e => setCustomRr(e.target.value)} placeholder="역할 직접 입력" className="mt-1 w-full rounded border border-slate-300 px-2 py-1" />}
                 </div>
                 <div>
                   <label className="block text-[9px] font-bold text-slate-500 mb-0.5">회사명 (소속)</label>
@@ -306,10 +311,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
             )}
 
             {/* Workers Table */}
+            {workers.length > 0 && item.workerExtractionReason && <p className="text-xs text-amber-800">{item.workerExtractionReason}</p>}
             <div className="bg-white rounded-xl border border-indigo-100 overflow-hidden">
               {workers.length === 0 ? (
                 <div className="p-4 text-center text-slate-400 text-xs">
-                  작업계획서 문서에서 추출된 작업자 정보가 없습니다. (상단 [+ 작업자 추가]를 눌러 등록할 수 있습니다)
+                  <p>{item.workerExtractionReason || '작업절차서 문서에서 추출된 작업자 정보가 없습니다.'}</p>
+                  <p className="mt-1">상단 [작업자 추가]로 직접 등록할 수 있습니다.</p>
                 </div>
               ) : (
                 <table className="w-full text-left text-xs border-collapse">
@@ -328,7 +335,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onUpdat
                         <td className="p-2">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              w.rr === '작업책임자' || w.rr === '현장대리인'
+                              w.rr === '관리책임자' || w.rr === '관리감독자'
                                 ? 'bg-blue-100 text-blue-800 font-extrabold'
                                 : w.rr === '안전관리자'
                                 ? 'bg-amber-100 text-amber-800'

@@ -32,6 +32,7 @@ export const MatchingListView: React.FC<MatchingListViewProps> = ({
       (item['엑셀 원본 계약명'] && item['엑셀 원본 계약명'].toLowerCase().includes(query)) ||
       (item.파일명 && item.파일명.toLowerCase().includes(query)) ||
       (item.위치 && item.위치.toLowerCase().includes(query)) ||
+      item.matchFailureReason?.toLowerCase().includes(query) ||
       workerMatch
     );
   });
@@ -69,7 +70,7 @@ export const MatchingListView: React.FC<MatchingListViewProps> = ({
               계약 및 작업자 매칭 리스트 (총 {filteredItems.length}건)
             </h3>
             <span className="text-xs text-slate-500">
-              (행을 클릭하면 현장 작업자 연락처 및 작업계획서 세부 내용을 확인합니다)
+              (행을 클릭하면 현장 작업자 연락처 및 작업절차서 세부 내용을 확인합니다)
             </span>
           </div>
           <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">
@@ -84,7 +85,7 @@ export const MatchingListView: React.FC<MatchingListViewProps> = ({
                 <th className="p-3 w-12 text-center">No</th>
                 <th className="p-3 w-28 text-center">작업번호</th>
                 <th className="p-3 w-24 text-center">계약번호</th>
-                <th className="p-3 w-20 text-center">상태</th>
+                <th className="p-3 min-w-48 text-center">상태 / 실패 사유</th>
                 <th className="p-3 min-w-[240px]">공사 계약명</th>
                 <th className="p-3 min-w-[240px] bg-indigo-50/50 text-indigo-950">
                   <div className="flex items-center gap-1">
@@ -132,6 +133,7 @@ export const MatchingListView: React.FC<MatchingListViewProps> = ({
                         >
                           {item.매칭상태}
                         </span>
+                        {item.matchFailureReason && <p className="mt-1 text-left text-[11px] text-red-700">{item.matchFailureReason}</p>}
                       </td>
                       <td className="p-3 font-semibold text-slate-800 max-w-xs truncate" title={item['추출 계약명']}>
                         {item['추출 계약명']}
@@ -144,7 +146,7 @@ export const MatchingListView: React.FC<MatchingListViewProps> = ({
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span
                                 className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                                  primaryWorker.rr === '작업책임자' || primaryWorker.rr === '현장대리인'
+                                  primaryWorker.rr === '관리책임자' || primaryWorker.rr === '관리감독자'
                                     ? 'bg-blue-100 text-blue-900'
                                     : 'bg-slate-200 text-slate-800'
                                 }`}
@@ -166,7 +168,7 @@ export const MatchingListView: React.FC<MatchingListViewProps> = ({
                             </div>
                           </div>
                         ) : (
-                          <span className="text-slate-400 text-[11px] italic">작업자 미지정</span>
+                          <span className="text-slate-500 text-[11px]">{item.workerExtractionReason || '작업자 미지정'}</span>
                         )}
                       </td>
 

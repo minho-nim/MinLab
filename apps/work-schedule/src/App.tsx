@@ -3,6 +3,7 @@ import { ExcelContractRow, ProcessedItem, KissExcelOptions, EmployeeInfo } from 
 import {
   parseExcelFile,
   parseDocxFile,
+  parseWorkPlanText,
   processSinglePlan,
   exportToKissExcel,
   DEFAULT_EMPLOYEES,
@@ -47,7 +48,7 @@ export default function App() {
 
   const [logs, setLogs] = useState<string[]>([
     '⚡ 시스템 준비 완료: 공사 일정 통합 관리 센터 (업무관리 Kiss 일정 연동)',
-    '📁 계약목록 Excel과 작업계획서 DOCX를 선택해 주세요.',
+    '📁 계약목록 Excel과 작업절차서 DOCX를 선택해 주세요.',
     '🎯 타겟 양식: [업무관리(Kiss) 작업일정(TEST) 일정 일괄등록 양식]',
     '👷 실제 작업자 일정은 DOCX의 R&R·회사명·이름·연락처를 기준으로 표시합니다.',
     '💡 등록자·참여자와 사원 목록은 회사 업로드 양식의 계정 정보로만 사용합니다.',
@@ -67,60 +68,51 @@ export default function App() {
     setLogs((prev) => [...prev, msg]);
   };
 
-  // Handle Excel upload
-  const handleExcelSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const loadExcelFile = async (file: File) => {
+    if (isProcessing) return;
+    if (!/\.xlsx?$/i.test(file.name) || file.name.startsWith('~$')) { showToast('계약목록 Excel(.xlsx, .xls)을 선택해 주세요.'); return; }
     try {
-      addLog(`📁 엑셀 파일 읽는 중: ${file.name}...`);
       const contracts = await parseExcelFile(file);
-      if (contracts.length === 0) {
-        alert('엑셀 파일에서 4행 이후의 유효한 계약 정보를 찾지 못했습니다.');
-        return;
-      }
+      if (!contracts.length) { showToast('계약목록에서 계약번호·계약명을 찾지 못했습니다.'); return; }
       setExcelContracts(contracts);
       setExcelFileName(file.name);
-      addLog(`✅ 엑셀 파일 분석 완료: 총 ${contracts.length}개 계약 로드됨`);
-      showToast(`계약목록 엑셀(${contracts.length}건)이 로드되었습니다.`);
-    } catch (err: any) {
-      console.error(err);
-      alert('엑셀 파일 파싱 중 오류가 발생했습니다: ' + err.message);
+      addLog(`✅ 계약목록 ${file.name}: ${contracts.length}건 불러옴. 분석을 실행하면 이 목록으로 매칭합니다.`);
+      showToast(`계약목록 ${contracts.length}건을 불러왔습니다.`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '파일을 읽지 못했습니다.';
+      addLog(`❌ 계약목록 읽기 실패: ${message}`);
+      showToast(`계약목록 읽기 실패: ${message}`);
     }
-    e.target.value = '';
   };
 
-  // Handle docx files selection
+  const addDocxFiles = (files: File[], replace = false) => {
+    if (isProcessing) return;
+    const valid = files.filter(file => /\.docx$/i.test(file.name) && !file.name.startsWith('~$'));
+    if (!valid.length) { showToast('작업절차서 DOCX 파일을 선택해 주세요.'); return; }
+    setSelectedDocxFiles(previous => {
+      const unique = new Map<string, File>();
+      for (const file of [...(replace ? [] : previous), ...valid]) unique.set(`${file.webkitRelativePath || file.name}:${file.size}:${file.lastModified}`, file);
+      return [...unique.values()];
+    });
+    addLog(`📝 작업절차서 ${valid.length}개 ${replace ? '지정' : '추가'} (중복 파일은 한 번만 등록)`);
+    showToast(`작업절차서 ${valid.length}개를 선택했습니다.${files.length > valid.length ? ' DOCX 이외의 파일은 제외했습니다.' : ''}`);
+  };
+
+  const handleExcelSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (file) void loadExcelFile(file);
+  };
   const handleDocxFilesSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    const docxOnly = files.filter((f) => f.name.endsWith('.docx') && !f.name.startsWith('~$'));
-    setSelectedDocxFiles((prev) => [...prev, ...docxOnly]);
-    addLog(
-      `📝 작업계획서 Word 파일 ${docxOnly.length}개 추가됨 (총 ${
-        selectedDocxFiles.length + docxOnly.length
-      }개 대기)`
-    );
-    showToast(`${docxOnly.length}개 작업계획서 파일이 선택되었습니다.`);
-    e.target.value = '';
+    addDocxFiles(Array.from(e.target.files || [])); e.target.value = '';
   };
-
-  // Handle docx folder selection
   const handleDocxFolderSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    const docxOnly = files.filter((f) => f.name.endsWith('.docx') && !f.name.startsWith('~$'));
-    setSelectedDocxFiles(docxOnly);
-    addLog(`📂 폴더 내 작업계획서 Word 문서 ${docxOnly.length}개 일괄 지정 완료`);
-    showToast(`폴더 내 ${docxOnly.length}개 작업계획서가 지정되었습니다.`);
-    e.target.value = '';
+    addDocxFiles(Array.from(e.target.files || []), true); e.target.value = '';
   };
 
   // Run matching process
   const handleRunProcess = async () => {
-    if (!selectedDocxFiles.length) { showToast('분석할 작업계획서 DOCX를 선택해 주세요.'); return; }
+    if (!selectedDocxFiles.length) { showToast('분석할 작업절차서 DOCX를 선택해 주세요.'); return; }
     setIsProcessing(true);
     addLog('\n--------------------------------------------------');
     addLog('🚀 스마트 문서 매칭 프로세스를 시작합니다...');
@@ -129,14 +121,24 @@ export default function App() {
       let results: ProcessedItem[] = [];
 
       if (selectedDocxFiles.length > 0) {
-        addLog(`📂 총 ${selectedDocxFiles.length}개 작업계획서 파일 실제 파싱 중...\n`);
+        addLog(`📂 총 ${selectedDocxFiles.length}개 작업절차서 파일 실제 파싱 중...\n`);
 
         for (let i = 0; i < selectedDocxFiles.length; i++) {
           const file = selectedDocxFiles[i];
-          const wordData = await parseDocxFile(file);
-          const item = processSinglePlan(wordData, file.name, excelContracts);
+          let item: ProcessedItem;
+          try {
+            const wordData = await parseDocxFile(file);
+            item = processSinglePlan(wordData, file.name, excelContracts);
+          } catch (error) {
+            item = processSinglePlan(parseWorkPlanText(''), file.name, excelContracts);
+            const reason = `DOCX 읽기 실패: ${error instanceof Error ? error.message : '파일 형식을 확인해 주세요.'}`;
+            item.matchFailureReason = reason;
+            item.workerExtractionReason = reason;
+          }
           item.sourceFile = file;
           results.push(item);
+          if (item.matchFailureReason) addLog(`   매칭 실패 사유: ${item.matchFailureReason}`);
+          addLog(`   작업자: ${item.workers?.length || 0}명${item.workerExtractionReason ? ` — ${item.workerExtractionReason}` : ''}`);
 
           addLog(
             `[${i + 1}/${selectedDocxFiles.length}] ${file.name} -> ${item.매칭상태} (작업번호: ${
@@ -225,6 +227,8 @@ export default function App() {
             onDocxFilesSelect={handleDocxFilesSelect}
             onDocxFolderSelect={handleDocxFolderSelect}
             onRunProcess={handleRunProcess}
+            onExcelDropFile={loadExcelFile}
+            onDocxDropFiles={addDocxFiles}
           />
         )}
 

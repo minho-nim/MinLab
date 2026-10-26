@@ -460,7 +460,7 @@ export const ScheduleHubView: React.FC<ScheduleHubViewProps> = ({
                 {currYear}년 {currMonth}월 공사 계약별 간트 타임라인 (Gantt Chart)
               </h3>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                ● 마크를 클릭하면 해당 작업계획서의 세부 제원과 일정을 확인합니다.
+                ● 마크를 클릭하면 해당 작업절차서의 세부 제원과 일정을 확인합니다.
               </p>
             </div>
             <div className="flex items-center gap-2 text-xs">

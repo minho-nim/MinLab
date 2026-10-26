@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-500 hidden sm:block">
-                작업계획서 Word(.docx) 파싱 및 계약목록 Excel(.xlsx) 스마트 자동 매칭 시스템
+                작업절차서 Word(.docx) 파싱 및 계약목록 Excel(.xlsx) 스마트 자동 매칭 시스템
               </p>
             </div>
           </div>

@@ -1,13 +1,13 @@
 import mammoth from 'mammoth';
+import JSZip from 'jszip';
 import { kissDate } from './kissExport';
-import { extractDocumentFields, readDocumentTables } from './docxTables';
+import { extractDocumentFields, readWordTables } from './docxTables';
 import * as XLSX from 'xlsx';
 import {
   ParsedWorkPlan,
   ProcessedItem,
   ExcelContractRow,
   EmployeeInfo,
-  WorkerInfo,
 } from '../types';
 
 export function normalizeText(text: string): string {
@@ -139,90 +139,7 @@ export function parseWorkPlanText(combinedText: string): ParsedWorkPlan {
     result['작업명'] = purposeMatch[1].trim();
   }
 
-  // 작업자 / 비상연락망 / R&R 파싱
-  const workers: WorkerInfo[] = [];
-  const lines = combinedText.split('\n');
-  const phoneRegex = /(01[016789][-\s.]?\d{3,4}[-\s.]?\d{4})/;
-  const roleKeywords = [
-    '작업책임자',
-    '현장대리인',
-    '안전관리자',
-    '화기감시자',
-    '신호수',
-    '유도원',
-    '공사담당자',
-    '작업원',
-    '작업자',
-    '반장',
-    '소장',
-    '팀장',
-  ];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-
-    const phoneMatch = trimmed.match(phoneRegex);
-    if (phoneMatch) {
-      const phone = phoneMatch[1].replace(/[\s.]/g, '-');
-
-      let foundRole = '작업원';
-      for (const r of roleKeywords) {
-        if (trimmed.includes(r)) {
-          foundRole = r;
-          break;
-        }
-      }
-
-      let foundCompany = '협력사';
-      const companyMatch = trimmed.match(
-        /(?:주식회사|\(주\)|주\)|[가-힣A-Za-z0-9]{2,15}(?:통신|전기|건설|이엔지|ENG|정보|네트워크|시스템|테크|설비|엔지니어링|기술))/
-      );
-      if (companyMatch) {
-        foundCompany = companyMatch[0];
-      }
-
-      let foundName = '';
-      const nameMatch = trimmed.match(/([가-힣]{2,4})(?:\s*[\(\/]|[\s:]*010)/);
-      if (nameMatch && !roleKeywords.includes(nameMatch[1])) {
-        foundName = nameMatch[1];
-      } else {
-        const tokens = trimmed.replace(phone, '').split(/[\s,:\(\)\[\]\/]+/);
-        for (const t of tokens) {
-          if (
-            /^[가-힣]{2,4}$/.test(t) &&
-            !roleKeywords.includes(t) &&
-            !t.includes('공사') &&
-            !t.includes('작업') &&
-            !t.includes('팀')
-          ) {
-            foundName = t;
-            break;
-          }
-        }
-      }
-
-      workers.push({
-        rr: foundRole,
-        company: foundCompany,
-        name: foundName || '현장작업자',
-        phone,
-      });
-    }
-  }
-
-  // 중복 제거
-  const uniqueWorkers: WorkerInfo[] = [];
-  const seen = new Set<string>();
-  for (const w of workers) {
-    const key = `${w.name}-${w.phone}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      uniqueWorkers.push(w);
-    }
-  }
-
-  result.workers = uniqueWorkers;
+  result.workers = [];
 
   return result;
 }
@@ -239,23 +156,24 @@ export function processSinglePlan(
   let matchedName = '미발견';
   let status: '✅ 성공' | '❌ 실패' = '❌ 실패';
 
-  for (const row of excelContracts) {
-    const excelRaw = String(row.계약명 || '');
-    const excelNorm = normalizeText(excelRaw);
-
-    if (wordNorm && excelNorm) {
-      if (
-        wordNorm === excelNorm ||
-        (wordNorm.includes(excelNorm) && wordNorm.length >= excelNorm.length * 0.7) ||
-        (excelNorm.includes(wordNorm) && excelNorm.length >= wordNorm.length * 0.7)
-      ) {
-        matchedNo = row.계약번호;
-        matchedName = excelRaw;
-        status = '✅ 성공';
-        break;
-      }
-    }
-  }
+  const docNo = wordData.계약번호 === '미발견' ? '' : normalizeText(wordData.계약번호);
+  const docName = wordRaw === '미발견' ? '' : wordNorm;
+  const byNumber = docNo ? excelContracts.filter(row => normalizeText(row.계약번호) === docNo) : [];
+  const exactNames = docName ? excelContracts.filter(row => normalizeText(row.계약명) === docName) : [];
+  const similarNames = docName ? excelContracts.filter(row => {
+    const name = normalizeText(row.계약명);
+    return name && (docName.includes(name) || name.includes(docName)) && Math.min(name.length, docName.length) / Math.max(name.length, docName.length) >= 0.7;
+  }) : [];
+  const candidates = byNumber.length ? byNumber : exactNames.length ? exactNames : similarNames;
+  let matchFailureReason = '';
+  if (candidates.length === 1) {
+    matchedNo = candidates[0].계약번호;
+    matchedName = candidates[0].계약명;
+    status = '✅ 성공';
+  } else if (!excelContracts.length) matchFailureReason = '계약목록이 업로드되지 않았거나 목록이 비어 있습니다.';
+  else if (!docNo && !docName) matchFailureReason = '작업절차서에서 계약번호와 계약명(근거)을 찾지 못했습니다.';
+  else if (candidates.length > 1) matchFailureReason = `일치 후보가 ${candidates.length}건입니다. 계약번호·계약명을 확인해 주세요.`;
+  else matchFailureReason = `계약목록에서 일치하는 항목이 없습니다. 문서 계약번호: ${wordData.계약번호}, 계약명: ${wordRaw}`;
 
   const workDate = wordData.작업일자;
   const tStart = wordData.작업시각시작 || '09:00:00';
@@ -305,6 +223,7 @@ export function processSinglePlan(
     id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     파일명: fileName,
     매칭상태: status,
+    matchFailureReason,
     작업번호: wordData.작업번호,
     계약번호: wordData.계약번호 !== '미발견' ? wordData.계약번호 : matchedNo,
     '추출 계약명': wordRaw,
@@ -319,19 +238,22 @@ export function processSinglePlan(
     위치: locationStr,
     rawText: wordData.rawText,
     workers: wordData.workers || [],
+    workerExtractionReason: wordData.workerExtractionReason,
   };
 }
 
 export async function parseDocxFile(file: File): Promise<ParsedWorkPlan> {
   const arrayBuffer = await file.arrayBuffer();
-  const [res, html] = await Promise.all([
+  const [res, zip] = await Promise.all([
     mammoth.extractRawText({ arrayBuffer }),
-    mammoth.convertToHtml({ arrayBuffer }),
+    JSZip.loadAsync(arrayBuffer),
   ]);
-  const text = res.value || '';
-  const parsed = parseWorkPlanText(text);
-  const document = new DOMParser().parseFromString(html.value, 'text/html');
-  const fields = extractDocumentFields(readDocumentTables(document));
+  const source = zip.file('word/document.xml');
+  if (!source) throw new Error('DOCX 본문을 찾지 못했습니다.');
+  const parsed = parseWorkPlanText(res.value || '');
+  const document = new DOMParser().parseFromString(await source.async('string'), 'application/xml');
+  if (document.getElementsByTagName('parsererror').length) throw new Error('DOCX 본문 XML을 읽지 못했습니다.');
+  const fields = extractDocumentFields(readWordTables(document));
   return { ...parsed, ...fields };
 }
 
@@ -344,17 +266,17 @@ export async function parseExcelFile(file: File): Promise<ExcelContractRow[]> {
 
   const contracts: ExcelContractRow[] = [];
 
-  // In the user's python code:
-  // df_raw = pd.read_excel(excel_path, header=None)
-  // df_data = df_raw.iloc[3:].copy()
-  // df_data = df_data[[4, 5]].dropna(subset=[5])
-  // df_data.columns = ['계약번호', '계약명']
-  for (let i = 3; i < rows.length; i++) {
+  const label = (value: unknown) => String(value || '').replace(/\s/g, '');
+  const headerIndex = rows.findIndex(row => row?.some(value => label(value) === '계약번호') && row?.some(value => label(value) === '계약명'));
+  const numberColumn = headerIndex >= 0 ? rows[headerIndex].findIndex(value => label(value) === '계약번호') : 4;
+  const nameColumn = headerIndex >= 0 ? rows[headerIndex].findIndex(value => label(value) === '계약명') : 5;
+  // Retain E/F row-four compatibility for the existing contract list format.
+  for (let i = headerIndex >= 0 ? headerIndex + 1 : 3; i < rows.length; i++) {
     const row = rows[i];
-    if (row && row[5]) {
+    if (row && String(row[nameColumn] || '').trim()) {
       contracts.push({
-        계약번호: String(row[4] || '미발견').trim(),
-        계약명: String(row[5]).trim(),
+        계약번호: String(row[numberColumn] || '미발견').trim(),
+        계약명: String(row[nameColumn]).trim(),
       });
     }
   }

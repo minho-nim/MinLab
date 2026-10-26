@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { ExcelContractRow, ProcessedItem } from '../types';
 import {
   FileSpreadsheet,
@@ -24,6 +24,8 @@ interface AnalysisCenterViewProps {
   onDocxFilesSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDocxFolderSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRunProcess: () => void;
+  onExcelDropFile: (file: File) => void;
+  onDocxDropFiles: (files: File[]) => void;
 }
 
 export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
@@ -37,10 +39,30 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
   onDocxFilesSelect,
   onDocxFolderSelect,
   onRunProcess,
+  onExcelDropFile,
+  onDocxDropFiles,
 }) => {
   const excelInputRef = useRef<HTMLInputElement>(null);
   const docxFilesInputRef = useRef<HTMLInputElement>(null);
   const docxFolderInputRef = useRef<HTMLInputElement>(null);
+  const [dragTarget, setDragTarget] = useState<'excel' | 'docx' | null>(null);
+  const [contractSearch, setContractSearch] = useState('');
+  const [dropError, setDropError] = useState('');
+  const visibleContracts = excelContracts.filter(row => `${row.계약번호} ${row.계약명}`.toLowerCase().includes(contractSearch.trim().toLowerCase()));
+  const dragProps = (target: 'excel' | 'docx') => ({
+    onDragOver: (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); if (!isProcessing) { e.dataTransfer.dropEffect = 'copy'; setDragTarget(target); } },
+    onDragLeave: (e: React.DragEvent) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setDragTarget(null); },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault(); e.stopPropagation(); setDragTarget(null); setDropError('');
+      if (isProcessing) return;
+      const files = Array.from(e.dataTransfer.files);
+      if (target === 'excel') {
+        if (files.length !== 1 || !/\.xlsx?$/i.test(files[0]?.name || '')) { setDropError('계약목록 Excel 파일을 한 개씩 올려 주세요.'); return; }
+        onExcelDropFile(files[0]);
+      } else if (files.length) onDocxDropFiles(files);
+      else setDropError('폴더는 폴더 지정 버튼으로 선택해 주세요.');
+    },
+  });
 
   const totalCount = processedResults.length;
   const successCount = processedResults.filter((r) => r.매칭상태 === '✅ 성공').length;
@@ -49,6 +71,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
 
   return (
     <div className="space-y-6">
+      {dropError && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{dropError}</p>}
       {/* 4 KPI Cards matching Python GUI */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Documents */}
@@ -126,7 +149,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
       />
 
       {/* Card 1: 계약목록 Excel 선택 */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
+      <div {...dragProps('excel')} className={`rounded-2xl border-2 border-dashed shadow-xs p-5 ${dragTarget === 'excel' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'}`}>
         <label className="text-xs font-bold text-slate-700 flex items-center gap-2 mb-2">
           <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
           <span>📁 계약목록 Excel 선택</span>
@@ -141,6 +164,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
           </div>
 
           <button
+            disabled={isProcessing}
             onClick={() => excelInputRef.current?.click()}
             className="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition-colors flex items-center gap-1.5"
           >
@@ -148,14 +172,27 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
             <span>파일 찾기</span>
           </button>
         </div>
+        <p className="mt-2 text-xs text-slate-500">계약목록 Excel 파일을 여기에 드래그해서 올릴 수 있습니다.</p>
+        {excelContracts.length > 0 && <div className="mt-4 border-t border-slate-200 pt-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <h3 className="text-sm font-bold text-slate-800">업로드한 계약목록 ({visibleContracts.length}/{excelContracts.length}건)</h3>
+            <input aria-label="계약목록 검색" value={contractSearch} onChange={e => setContractSearch(e.target.value)} placeholder="계약번호·계약명 검색" className="rounded-lg border border-slate-300 p-2 text-xs" />
+          </div>
+          <div className="max-h-64 overflow-auto rounded-lg border border-slate-200">
+            <table className="w-full text-left text-xs"><thead className="sticky top-0 bg-slate-100"><tr><th className="p-2">계약번호</th><th className="p-2">계약명</th></tr></thead>
+              <tbody>{visibleContracts.map((row, index) => <tr key={`${row.계약번호}-${index}`} className="border-t border-slate-100"><td className="p-2 font-mono">{row.계약번호}</td><td className="p-2">{row.계약명}</td></tr>)}
+                {!visibleContracts.length && <tr><td colSpan={2} className="p-4 text-slate-500">검색 결과가 없습니다.</td></tr>}
+              </tbody></table>
+          </div>
+        </div>}
       </div>
 
-      {/* Card 2: 작업계획서 Word(.docx) 선택 */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
+      {/* Card 2: 작업절차서 Word(.docx) 선택 */}
+      <div {...dragProps('docx')} className={`rounded-2xl border-2 border-dashed shadow-xs p-5 ${dragTarget === 'docx' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white'}`}>
         <div className="flex items-center justify-between mb-2">
           <label className="text-xs font-bold text-slate-700 flex items-center gap-2">
             <FileText className="h-4 w-4 text-blue-600" />
-            <span>📝 작업계획서 Word(.docx) 선택</span>
+            <span>📝 작업절차서 Word(.docx) 선택</span>
           </label>
 
           <span className="text-xs font-bold text-blue-600">
@@ -167,6 +204,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
 
         <div className="flex flex-wrap items-center gap-2">
           <button
+            disabled={isProcessing}
             onClick={() => docxFilesInputRef.current?.click()}
             className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 transition-colors flex items-center gap-1.5"
           >
@@ -175,6 +213,7 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
           </button>
 
           <button
+            disabled={isProcessing}
             onClick={() => docxFolderInputRef.current?.click()}
             className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 transition-colors flex items-center gap-1.5"
           >
@@ -182,6 +221,8 @@ export const AnalysisCenterView: React.FC<AnalysisCenterViewProps> = ({
             <span>폴더 지정 (전체 Word 일괄)</span>
           </button>
         </div>
+        <p className="mt-2 text-xs text-slate-500">작업절차서 DOCX 파일 여러 개를 여기에 드래그해서 올릴 수 있습니다.</p>
+        {!!selectedDocxFiles.length && <ul className="mt-3 max-h-40 overflow-auto text-xs text-slate-700 space-y-1">{selectedDocxFiles.map((file, index) => <li key={`${file.name}-${index}`} className="rounded-lg bg-slate-50 p-2">{file.name}</li>)}</ul>}
       </div>
 
       {/* Action Button: 스마트 문서 매칭 실행하기 */}

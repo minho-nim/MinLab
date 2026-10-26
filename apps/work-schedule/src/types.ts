@@ -1,5 +1,5 @@
 export interface WorkerInfo {
-  rr: string;        // R&R (구분/역할: 작업책임자, 안전관리자, 현장대리인, 작업원, 신호수 등)
+  rr: string;        // R&R: 작업자·신호수·관리감독자·관리책임자·안전관리자 또는 직접 입력
   company: string;   // 회사명 (소속 협력사/업체명)
   name: string;      // 이름 (성명)
   phone: string;     // 연락처 (휴대폰 번호)
@@ -17,6 +17,7 @@ export interface ParsedWorkPlan {
   rawText?: string;
   documentTitle?: string; // DOCX 첫 표의 작업명 값
   workers?: WorkerInfo[]; // 현장 작업자/비상연락망 목록
+  workerExtractionReason?: string;
 }
 
 export interface ExcelContractRow {
@@ -30,6 +31,7 @@ export interface ProcessedItem {
   파일명: string;
   파일절대경로?: string;
   매칭상태: '✅ 성공' | '❌ 실패';
+  matchFailureReason?: string;
   작업번호: string;
   계약번호: string;
   '추출 계약명': string;
@@ -45,6 +47,7 @@ export interface ProcessedItem {
   rawText?: string;
   dt?: Date;
   workers?: WorkerInfo[]; // 현장 작업자/비상연락망 (회사명, R&R, 이름, 연락처)
+  workerExtractionReason?: string;
 }
 
 export interface KissExcelOptions {

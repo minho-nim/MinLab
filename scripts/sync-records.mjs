@@ -48,7 +48,8 @@ export function compileCodexRecords({ config, journal }) {
       testResult: optionalText(entry.testResult) || '미실행: 별도로 확인한 결과 없음.',
       nextSteps: optionalText(entry.nextSteps), createdAt: entry.recordedAt,
     };
-    const sourceFor = value => ({ repository: project.repository, fingerprint: digest(value), urls: [...new Set([fileUrl, ...urls])], engine: 'codex', generatedAt: entry.recordedAt });
+    const repository = project.repository.replace(/^https:\/\/github\.com\//, '').replace(/\.git\/?$/, '').replace(/\/$/, '');
+    const sourceFor = value => ({ repository, fingerprint: digest(value), urls: [...new Set([fileUrl, ...urls])], engine: 'codex', generatedAt: entry.recordedAt });
     drafts.push({ kind: 'log', projectId: project.id, record: { ...record, source: sourceFor(record) } });
     if (entry.prompts !== undefined && !Array.isArray(entry.prompts)) throw new Error('prompts는 배열이어야 합니다.');
     const promptIds = new Set();

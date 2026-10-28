@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "recordsSince": "2026-10-23T00:37:00.000Z",
   "recordsRepository": "minho-nim/MinLab",
   "projects": [
@@ -76,6 +76,20 @@
       "category": "엔터테인먼트",
       "appUrl": "https://minho-nim.github.io/excuseoffice/",
       "techStack": ["React", "TypeScript", "Vite", "IndexedDB"]
+    },
+    {
+      "id": "proj-minially",
+      "repository": "minho-nim/minially",
+      "name": "미니어리 (Minially)",
+      "description": "일정·할 일·프로젝트를 관리하고 자주 쓰는 문구로 반복 입력을 줄이는 개인 플래너",
+      "category": "일정 관리",
+      "appUrl": "https://minho-nim.github.io/minially/",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "IndexedDB",
+        "PWA"
+      ]
     }
   ]
 }

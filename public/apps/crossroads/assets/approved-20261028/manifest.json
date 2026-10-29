@@ -1,0 +1,785 @@
+{
+  "method": "Unmodified approved sheets; lossless native-pixel crops; group portraits assembled from approved member crops.",
+  "characters": {
+    "seoYoonha": {
+      "sheet": "seoYoonha-sheet.png",
+      "sha256": "3c8e2505cba23cd05f3cc03ef35a1a3fb95b055bae150894a23f1bb90c6be06e",
+      "width": 1024,
+      "height": 1536,
+      "upload": "cdd271a7-0291-4d9c-bcb1-2237014f1b41",
+      "portrait": [
+        510,
+        8,
+        506,
+        600
+      ],
+      "expressions": [
+        [
+          510,
+          8,
+          506,
+          600
+        ],
+        [
+          260,
+          1340,
+          245,
+          116
+        ],
+        [
+          700,
+          770,
+          295,
+          147
+        ]
+      ],
+      "crops": {
+        "seoYoonha-portrait.png": {
+          "rect": [
+            510,
+            8,
+            506,
+            600
+          ],
+          "width": 506,
+          "height": 600
+        },
+        "seoYoonha-expression-0.png": {
+          "rect": [
+            510,
+            8,
+            506,
+            600
+          ],
+          "width": 506,
+          "height": 600
+        },
+        "seoYoonha-expression-1.png": {
+          "rect": [
+            260,
+            1340,
+            245,
+            116
+          ],
+          "width": 245,
+          "height": 116
+        },
+        "seoYoonha-expression-2.png": {
+          "rect": [
+            700,
+            770,
+            295,
+            147
+          ],
+          "width": 295,
+          "height": 147
+        }
+      }
+    },
+    "hanJiwoo": {
+      "sheet": "hanJiwoo-sheet.png",
+      "sha256": "8d2f16053f8d7d0cb23b43f40496ac11b13f0971a64cd3b13f305c157862d4ef",
+      "width": 1024,
+      "height": 1536,
+      "upload": "750d8723-020b-42ae-ac01-92994c2b6797",
+      "portrait": [
+        440,
+        5,
+        360,
+        470
+      ],
+      "expressions": [
+        [
+          440,
+          5,
+          360,
+          470
+        ],
+        [
+          264,
+          1344,
+          240,
+          108
+        ],
+        [
+          520,
+          1344,
+          237,
+          108
+        ]
+      ],
+      "crops": {
+        "hanJiwoo-portrait.png": {
+          "rect": [
+            440,
+            5,
+            360,
+            470
+          ],
+          "width": 360,
+          "height": 470
+        },
+        "hanJiwoo-expression-0.png": {
+          "rect": [
+            440,
+            5,
+            360,
+            470
+          ],
+          "width": 360,
+          "height": 470
+        },
+        "hanJiwoo-expression-1.png": {
+          "rect": [
+            264,
+            1344,
+            240,
+            108
+          ],
+          "width": 240,
+          "height": 108
+        },
+        "hanJiwoo-expression-2.png": {
+          "rect": [
+            520,
+            1344,
+            237,
+            108
+          ],
+          "width": 237,
+          "height": 108
+        }
+      }
+    },
+    "ohHyejin": {
+      "sheet": "ohHyejin-sheet.png",
+      "sha256": "3ad811f6e9e6e4128e640f57c3e170a5bb27314f14983ef7d312798ac178e5ca",
+      "width": 1024,
+      "height": 1536,
+      "upload": "9aaef9b9-ed47-4773-8208-ed29fe907c53",
+      "portrait": [
+        500,
+        5,
+        420,
+        510
+      ],
+      "expressions": [
+        [
+          500,
+          5,
+          420,
+          510
+        ],
+        [
+          25,
+          1360,
+          222,
+          110
+        ],
+        [
+          515,
+          1360,
+          235,
+          110
+        ]
+      ],
+      "crops": {
+        "ohHyejin-portrait.png": {
+          "rect": [
+            500,
+            5,
+            420,
+            510
+          ],
+          "width": 420,
+          "height": 510
+        },
+        "ohHyejin-expression-0.png": {
+          "rect": [
+            500,
+            5,
+            420,
+            510
+          ],
+          "width": 420,
+          "height": 510
+        },
+        "ohHyejin-expression-1.png": {
+          "rect": [
+            25,
+            1360,
+            222,
+            110
+          ],
+          "width": 222,
+          "height": 110
+        },
+        "ohHyejin-expression-2.png": {
+          "rect": [
+            515,
+            1360,
+            235,
+            110
+          ],
+          "width": 235,
+          "height": 110
+        }
+      }
+    },
+    "oracle": {
+      "sheet": "oracle-sheet.png",
+      "sha256": "7b8b65265c3da8c799dc83621ec48582a84e2680f920343a6d03077411db5189",
+      "width": 1024,
+      "height": 1536,
+      "upload": "95c90099-edd4-4fa2-a0b7-501341d0d683",
+      "portrait": [
+        28,
+        935,
+        223,
+        180
+      ],
+      "expressions": [
+        [
+          28,
+          935,
+          223,
+          180
+        ],
+        [
+          518,
+          935,
+          220,
+          180
+        ],
+        [
+          767,
+          935,
+          220,
+          180
+        ]
+      ],
+      "crops": {
+        "oracle-portrait.png": {
+          "rect": [
+            28,
+            935,
+            223,
+            180
+          ],
+          "width": 223,
+          "height": 180
+        },
+        "oracle-expression-0.png": {
+          "rect": [
+            28,
+            935,
+            223,
+            180
+          ],
+          "width": 223,
+          "height": 180
+        },
+        "oracle-expression-1.png": {
+          "rect": [
+            518,
+            935,
+            220,
+            180
+          ],
+          "width": 220,
+          "height": 180
+        },
+        "oracle-expression-2.png": {
+          "rect": [
+            767,
+            935,
+            220,
+            180
+          ],
+          "width": 220,
+          "height": 180
+        }
+      }
+    },
+    "kangDohyun": {
+      "sheet": "kangDohyun-sheet.png",
+      "sha256": "1f9023f1209147c91d0b7bb784350436549a7ec1be4c0fc5ab13d2a39147943a",
+      "width": 1024,
+      "height": 1536,
+      "upload": "4657f4fd-14b5-408c-8975-fd9bbdadd46e",
+      "portrait": [
+        440,
+        4,
+        350,
+        273
+      ],
+      "expressions": [
+        [
+          440,
+          4,
+          350,
+          273
+        ],
+        [
+          350,
+          1246,
+          150,
+          122
+        ],
+        [
+          684,
+          1246,
+          150,
+          122
+        ]
+      ],
+      "crops": {
+        "kangDohyun-portrait.png": {
+          "rect": [
+            440,
+            4,
+            350,
+            273
+          ],
+          "width": 350,
+          "height": 273
+        },
+        "kangDohyun-expression-0.png": {
+          "rect": [
+            440,
+            4,
+            350,
+            273
+          ],
+          "width": 350,
+          "height": 273
+        },
+        "kangDohyun-expression-1.png": {
+          "rect": [
+            350,
+            1246,
+            150,
+            122
+          ],
+          "width": 150,
+          "height": 122
+        },
+        "kangDohyun-expression-2.png": {
+          "rect": [
+            684,
+            1246,
+            150,
+            122
+          ],
+          "width": 150,
+          "height": 122
+        }
+      }
+    },
+    "baekSion": {
+      "sheet": "baekSion-sheet.png",
+      "sha256": "7bfe2565382acb4491781451869e406fdf7ed3f8cc1db04fe8962140bd5e5d88",
+      "width": 1024,
+      "height": 1536,
+      "upload": "e5ace11b-a556-4132-a6df-0433d0db8ec1",
+      "portrait": [
+        480,
+        2,
+        420,
+        298
+      ],
+      "expressions": [
+        [
+          480,
+          2,
+          420,
+          298
+        ],
+        [
+          349,
+          1185,
+          154,
+          119
+        ],
+        [
+          684,
+          1185,
+          152,
+          119
+        ]
+      ],
+      "crops": {
+        "baekSion-portrait.png": {
+          "rect": [
+            480,
+            2,
+            420,
+            298
+          ],
+          "width": 420,
+          "height": 298
+        },
+        "baekSion-expression-0.png": {
+          "rect": [
+            480,
+            2,
+            420,
+            298
+          ],
+          "width": 420,
+          "height": 298
+        },
+        "baekSion-expression-1.png": {
+          "rect": [
+            349,
+            1185,
+            154,
+            119
+          ],
+          "width": 154,
+          "height": 119
+        },
+        "baekSion-expression-2.png": {
+          "rect": [
+            684,
+            1185,
+            152,
+            119
+          ],
+          "width": 152,
+          "height": 119
+        }
+      }
+    },
+    "council": {
+      "sheet": "council-sheet.png",
+      "sha256": "9c94bfc0b2e983d27ebbef54f74f8aa5615420d96119f0d3b6e19ad16d3463bd",
+      "width": 2048,
+      "height": 768,
+      "upload": "e2c8228a-8735-4fd5-88fb-7698bd065e7e",
+      "members": [
+        [
+          467,
+          8,
+          289,
+          230
+        ],
+        [
+          768,
+          8,
+          266,
+          230
+        ],
+        [
+          1045,
+          8,
+          271,
+          230
+        ],
+        [
+          1332,
+          8,
+          282,
+          230
+        ],
+        [
+          1631,
+          8,
+          403,
+          230
+        ]
+      ],
+      "scenes": [
+        [
+          9,
+          350,
+          443,
+          365
+        ],
+        [
+          467,
+          8,
+          289,
+          230
+        ],
+        [
+          1045,
+          8,
+          271,
+          230
+        ],
+        [
+          1332,
+          8,
+          282,
+          230
+        ]
+      ],
+      "crops": {
+        "council-speaker-0.png": {
+          "rect": [
+            467,
+            8,
+            289,
+            230
+          ],
+          "width": 289,
+          "height": 230
+        },
+        "council-speaker-1.png": {
+          "rect": [
+            768,
+            8,
+            266,
+            230
+          ],
+          "width": 266,
+          "height": 230
+        },
+        "council-speaker-2.png": {
+          "rect": [
+            1045,
+            8,
+            271,
+            230
+          ],
+          "width": 271,
+          "height": 230
+        },
+        "council-speaker-3.png": {
+          "rect": [
+            1332,
+            8,
+            282,
+            230
+          ],
+          "width": 282,
+          "height": 230
+        },
+        "council-speaker-4.png": {
+          "rect": [
+            1631,
+            8,
+            403,
+            230
+          ],
+          "width": 403,
+          "height": 230
+        },
+        "council-scene-0.png": {
+          "rect": [
+            9,
+            350,
+            443,
+            365
+          ],
+          "width": 443,
+          "height": 365
+        },
+        "council-scene-1.png": {
+          "rect": [
+            467,
+            8,
+            289,
+            230
+          ],
+          "width": 289,
+          "height": 230
+        },
+        "council-scene-2.png": {
+          "rect": [
+            1045,
+            8,
+            271,
+            230
+          ],
+          "width": 271,
+          "height": 230
+        },
+        "council-scene-3.png": {
+          "rect": [
+            1332,
+            8,
+            282,
+            230
+          ],
+          "width": 282,
+          "height": 230
+        }
+      }
+    },
+    "citizen": {
+      "sheet": "citizen-sheet.png",
+      "sha256": "7974bb8c4e273231b5f0220ee14fe2f6a661c4bc34800bd35296acce0c261153",
+      "width": 1958,
+      "height": 803,
+      "upload": "7d30fd40-6bf4-4198-b3d6-ac833ad646b8",
+      "members": [
+        [
+          336,
+          8,
+          211,
+          182
+        ],
+        [
+          563,
+          8,
+          209,
+          182
+        ],
+        [
+          788,
+          8,
+          210,
+          182
+        ],
+        [
+          1015,
+          8,
+          210,
+          182
+        ],
+        [
+          1241,
+          8,
+          210,
+          182
+        ],
+        [
+          1468,
+          8,
+          210,
+          182
+        ]
+      ],
+      "scenes": [
+        [
+          8,
+          323,
+          312,
+          365
+        ],
+        [
+          1698,
+          45,
+          250,
+          67
+        ],
+        [
+          1698,
+          192,
+          250,
+          67
+        ],
+        [
+          1698,
+          273,
+          250,
+          67
+        ]
+      ],
+      "crops": {
+        "citizen-speaker-0.png": {
+          "rect": [
+            336,
+            8,
+            211,
+            182
+          ],
+          "width": 211,
+          "height": 182
+        },
+        "citizen-speaker-1.png": {
+          "rect": [
+            563,
+            8,
+            209,
+            182
+          ],
+          "width": 209,
+          "height": 182
+        },
+        "citizen-speaker-2.png": {
+          "rect": [
+            788,
+            8,
+            210,
+            182
+          ],
+          "width": 210,
+          "height": 182
+        },
+        "citizen-speaker-3.png": {
+          "rect": [
+            1015,
+            8,
+            210,
+            182
+          ],
+          "width": 210,
+          "height": 182
+        },
+        "citizen-speaker-4.png": {
+          "rect": [
+            1241,
+            8,
+            210,
+            182
+          ],
+          "width": 210,
+          "height": 182
+        },
+        "citizen-speaker-5.png": {
+          "rect": [
+            1468,
+            8,
+            210,
+            182
+          ],
+          "width": 210,
+          "height": 182
+        },
+        "citizen-scene-0.png": {
+          "rect": [
+            8,
+            323,
+            312,
+            365
+          ],
+          "width": 312,
+          "height": 365
+        },
+        "citizen-scene-1.png": {
+          "rect": [
+            1698,
+            45,
+            250,
+            67
+          ],
+          "width": 250,
+          "height": 67
+        },
+        "citizen-scene-2.png": {
+          "rect": [
+            1698,
+            192,
+            250,
+            67
+          ],
+          "width": 250,
+          "height": 67
+        },
+        "citizen-scene-3.png": {
+          "rect": [
+            1698,
+            273,
+            250,
+            67
+          ],
+          "width": 250,
+          "height": 67
+        }
+      }
+    }
+  }
+}

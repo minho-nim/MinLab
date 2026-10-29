@@ -45,6 +45,6 @@ test('catalog connection preserves local edits and does not resurrect later dele
   const existing = { ...catalogProjects()[0], description: '사용자 설명', workLogs: [log] };
   const merged = connectCatalogOnce([existing], storage, 'test-projects');
   assert.deepEqual(merged[0], existing);
-  assert.equal(merged.length, 3);
+  assert.equal(merged.length, catalogProjects().length);
   assert.deepEqual(connectCatalogOnce([existing], storage, 'test-projects'), [existing]);
 });

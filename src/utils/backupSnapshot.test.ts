@@ -11,16 +11,21 @@ function storageFixture() {
   return { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value); } };
 }
 
-test('published snapshot retains all five projects, ten work logs and seven prompt originals', () => {
+test('published snapshot retains five projects, ten work logs and all currently authored prompts', () => {
   const parsed = parseImportJson(JSON.stringify(INITIAL_PROJECTS));
   assert.equal(parsed.success, true);
   assert.equal(parsed.projects!.length, 5);
   assert.equal(parsed.projects!.reduce((sum, project) => sum + project.workLogs.length, 0), 10);
-  assert.equal(parsed.projects!.reduce((sum, project) => sum + (project.promptHistory?.length || 0), 0), 7);
+  for (const original of INITIAL_PROJECTS) {
+    const restored = parsed.projects!.find(project=>project.id===original.id)!;
+    for (const prompt of original.promptHistory || []) {
+      assert.equal(restored.promptHistory!.find(item=>item.id===prompt.id)!.prompt,prompt.prompt);
+    }
+  }
   const nutrition = parsed.projects!.find(project => project.id === 'proj-1792558759961')!;
   assert.ok(nutrition.githubUrl?.endsWith('/NutriFit'));
   assert.ok(nutrition.liveUrl.startsWith('https://'));
-  assert.equal(nutrition.promptHistory!.length, 6);
+  assert.equal(nutrition.promptHistory!.length, INITIAL_PROJECTS.find(project=>project.id===nutrition.id)!.promptHistory!.length);
 });
 
 test('snapshot imports once without resurrecting subsequent user deletions', () => {
@@ -41,7 +46,9 @@ test('merging older NutriFit alias keeps both histories and newer browser edits 
   assert.equal(target.workLogs.length, nutrition.workLogs.length + 1);
   assert.equal(target.promptHistory!.length, nutrition.promptHistory!.length + 1);
   const connected = connectCatalogOnce(connectNutriFitOnce(merged, storage, 'projects'), storage, 'projects');
-  assert.equal(connected.length, 5);
+  for (const original of merged) assert.ok(connected.some(project=>project.id===original.id));
+  assert.equal(new Set(connected.map(project=>project.id)).size,connected.length);
+  assert.ok(connected.some(project=>project.id==='proj-crossroads-ai-verdict'));
   assert.equal(connected.filter(project => project.githubUrl?.endsWith('/NutriFit')).length, 1);
 });
 

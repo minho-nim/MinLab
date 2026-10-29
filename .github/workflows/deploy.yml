@@ -36,6 +36,11 @@ jobs:
             npm install
           fi
 
+      - name: Verify catalog and saved-data migrations
+        run: |
+          npm run typecheck
+          node --import tsx --test src/data/projectCatalog.test.ts src/utils/archive.test.ts src/utils/backupSnapshot.test.ts src/utils/projectLinkMigration.test.ts src/utils/riskAssessmentProject.test.ts
+
       - name: Build project
         run: npm run build
 

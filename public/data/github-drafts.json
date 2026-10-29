@@ -1,8 +1,104 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-10-28T05:18:52.394Z",
+  "generatedAt": "2026-10-29T13:42:42.318+09:00",
   "drafts": [
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-29-crossroads-dialogue-layout",
+        "date": "2026-10-29",
+        "title": "대화 카드와 사진 크기 통일 및 쉬운 대사 적용",
+        "version": "0.3.0",
+        "content": "작업 목적\nAI 윤리 스토리 게임 Crossroads의 대화마다 사진과 카드 크기가 달라지는 불편을 개선함. 어려운 대사 7개 장면을 쉬운 표현으로 정리해 정책의 갈등과 결과를 이해하기 쉽게 했음.\n\n주요 변경\n- 같은 화면에서는 인물과 표정에 관계없이 사진 프레임과 카드 높이가 일정하도록 통일함.\n- 얼굴과 ORACLE 링은 추가로 자르지 않고, 긴 제목과 대사는 카드 안에서 스크롤해 읽도록 구성함.\n- 전문용어가 많은 장면 7개의 표시 문구를 풀어 쓰고 실제 조건 분기와 핵심 수치를 유지함.\n- 기존 카드 159개와 선택 효과, ACT 진행, 자유 운영 및 저장 데이터는 유지함.",
+        "reason": "사용자가 대화마다 사진·카드 크기가 달라 어색하고 지나치게 어려운 대사는 피하는 편이 좋다고 요청했음.",
+        "testResult": "작업 당시 자동 테스트 71개, 타입 검사와 빌드를 통과함. 별도 화면에서 카드 159개의 크기를 데스크톱과 모바일 너비 두 종류로 비교하고 긴 대사의 스크롤을 확인함. 이번 기록 작성에서는 기능 테스트를 새로 실행하지 않았음.",
+        "nextSteps": "나머지 대사의 읽기 난이도와 작은 표정 원화의 선명도를 추가로 점검할 필요가 있음. 모든 분기의 실제 플레이를 전부 검수한 것은 아님.",
+        "createdAt": "2026-10-29T13:42:42.318+09:00",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "2dd85805fc3de716e53f61fe68e8be0c623449c3656291489245030fb1b8934f",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/crossroads-ai-verdict/commit/48ded5ce50851e8e37f15fed4a9a283f9e6d65dd",
+            "https://github.com/minho-nim/crossroads-ai-verdict/pull/1"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-29T13:42:42.318+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-29-crossroads-dialogue-layout:prompt:uniform-readable-dialogue",
+        "date": "2026-10-29",
+        "title": "대화 화면 크기를 통일하고 어려운 문장을 쉽게 정리",
+        "prompt": "Crossroads: AI Verdict는 AI의 정책을 검토하면서 시민의 권리·공정성·안전 사이에서 선택하는 한국어 스토리 카드 게임입니다. 대화가 바뀔 때마다 사진과 카드 크기가 달라지지 않도록 표시 방식을 통일하세요.\n\n인물과 표정에 관계없이 같은 화면에서 사진 프레임과 카드 높이를 일정하게 맞추세요. 얼굴과 ORACLE의 링이 잘리지 않게 하고 긴 제목과 대사는 내용을 숨기지 말고 편하게 읽을 수 있게 하세요.\n\n지나치게 어려운 대사는 전문용어와 긴 문장을 쉬운 표현으로 정리하세요. 누가 어떤 문제를 겪는지, AI가 무엇을 제안하는지, 이익과 피해가 무엇인지 이해할 수 있어야 합니다. 기존 캐릭터 모습과 색감, 사건의 핵심 갈등, 선택 효과와 조건 분기, 저장 데이터는 유지하세요.",
+        "outcome": "대화 카드와 사진 프레임을 통일하고 내부 스크롤을 연결했으며 대사 7개 장면을 쉬운 표현으로 표시함.",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "dc34156a10942f519c94120b6e95a2fca2c274d727f81c96062c7a0244700164",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/crossroads-ai-verdict/commit/48ded5ce50851e8e37f15fed4a9a283f9e6d65dd",
+            "https://github.com/minho-nim/crossroads-ai-verdict/pull/1"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-29T13:42:42.318+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-29-crossroads-github-checkpoint",
+        "date": "2026-10-29",
+        "title": "v0.3 개발 버전 GitHub 보존과 업로드 파일 정리",
+        "version": "0.3.0",
+        "content": "작업 목적\n추가 개선 전에 돌아갈 기준점을 남기기 위해 Crossroads의 현재 v0.3 개발 버전을 기존 GitHub 저장소에 보존함. 검토용 초안 PR을 만들고 공개 배포와 구분함.\n\n주요 변경\n- 게임 코드·승인 캐릭터 에셋·테스트·문서를 개발 브랜치에 커밋하고 업로드함.\n- 작업용 이미지 시안·백업·화면 검증 산출물은 컴퓨터에 보관하고 업로드 대상에서 제외함.\n- 실제 구현 상태와 남은 과제를 README에 정리하고 기존 main과 비교할 수 있는 검토용 초안 PR을 생성함.\n- 비공개 저장소 상태를 유지했으며 게임의 공개 배포나 main 병합은 수행하지 않았음.\n- 이번 기록 요청에서 게임 브랜치를 다시 푸시해 원격과 같은 상태임을 확인함.",
+        "reason": "사용자가 현재 버전을 먼저 GitHub에 보존한 뒤 순서대로 개선하고, Git 푸시와 MinLab 기록 반영을 요청했음.",
+        "testResult": "업로드 당시 Git에 담긴 파일만 추출한 별도 스냅샷에서 자동 테스트 71개·타입 검사·빌드가 통과했으며 GitHub 자동 검사도 성공했음. 업로드 파일 검사에서 비밀키·개인 사용자 경로가 발견되지 않았음. 이번에는 푸시가 최신 상태임을 확인했으며 기록을 위해 게임 테스트를 재실행하지 않았음.",
+        "nextSteps": "다음 개선은 전체 대사의 난이도 점검과 초상화·표정의 선명도 개선 순서로 진행할 예정임. 공개 배포는 별도 작업으로 남아 있음.",
+        "createdAt": "2026-10-29T13:42:42.318+09:00",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "160022b945feca11664f41bca4acd07762293d4600e270198fd455ab30d000b4",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/crossroads-ai-verdict/commit/48ded5ce50851e8e37f15fed4a9a283f9e6d65dd",
+            "https://github.com/minho-nim/crossroads-ai-verdict/pull/1"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-29T13:42:42.318+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-29-crossroads-github-checkpoint:prompt:preserve-development-version",
+        "date": "2026-10-29",
+        "title": "현재 개발 버전을 정리해 GitHub에 보존",
+        "prompt": "Crossroads: AI Verdict의 현재 개발 상태를 추가 수정 전에 GitHub에 보존하세요. 현재 Git 상태와 기존 원격 저장소를 먼저 확인하고 다른 작업이나 미커밋 변경을 덮어쓰지 마세요.\n\n게임 실행에 필요한 코드·승인 에셋·테스트·문서를 구분하고 작업용 시안·백업·검증 산출물은 컴퓨터에 보관하세요. 업로드 파일에 비밀키나 개인 경로가 포함되지 않았는지 확인하고 실제 구현 상태와 남은 과제를 문서로 정리하세요.\n\n현재 개발 버전을 커밋·푸시하고 기존 버전과 비교해 검토할 수 있게 하세요. 저장소 업로드와 공개 배포를 구분하고 확인한 검사 결과만 보고하세요.",
+        "outcome": "개발 브랜치와 검토용 초안 PR로 현재 버전을 보존하고 원격 자동 검사 성공을 확인함.",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "ba2baf63582e55205be287209454b3a83ad5ff005cd2f6b799e1f0de9b85ea17",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/crossroads-ai-verdict/commit/48ded5ce50851e8e37f15fed4a9a283f9e6d65dd",
+            "https://github.com/minho-nim/crossroads-ai-verdict/pull/1"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-10-29T13:42:42.318+09:00"
+        }
+      }
+    },
     {
       "kind": "log",
       "projectId": "proj-minially",

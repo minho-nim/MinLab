@@ -90,6 +90,20 @@
         "IndexedDB",
         "PWA"
       ]
+    },
+    {
+      "id": "proj-crossroads-ai-verdict",
+      "repository": "minho-nim/crossroads-ai-verdict",
+      "name": "Crossroads: AI Verdict",
+      "description": "AI 행정 시스템의 정책을 검토하고 시민의 권리·공정성·안전 사이에서 선택하는 한국어 스토리 카드 게임",
+      "category": "스토리 게임",
+      "appUrl": "",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "LocalStorage"
+      ]
     }
   ]
 }

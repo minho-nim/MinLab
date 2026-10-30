@@ -75,7 +75,12 @@
       "description": "상황에 맞는 핑계를 공식 문서로 발급하고 문서 보관·내보내기와 도장 수집을 제공하는 웹앱",
       "category": "엔터테인먼트",
       "appUrl": "https://minho-nim.github.io/excuseoffice/",
-      "techStack": ["React", "TypeScript", "Vite", "IndexedDB"]
+      "techStack": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "IndexedDB"
+      ]
     },
     {
       "id": "proj-minially",
@@ -103,6 +108,20 @@
         "TypeScript",
         "Vite",
         "LocalStorage"
+      ]
+    },
+    {
+      "id": "proj-musclemap",
+      "repository": "minho-nim/musclemap",
+      "name": "MuscleMap",
+      "description": "근육 지도와 루틴을 보며 운동 종목·세트·휴식 시간을 기록하는 운동 관리 앱",
+      "category": "운동 관리",
+      "appUrl": "https://minho-nim.github.io/musclemap/",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "IndexedDB"
       ]
     }
   ]

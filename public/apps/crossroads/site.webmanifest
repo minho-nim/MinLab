@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "Crossroads: AI Verdict",
+  "short_name": "Crossroads",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#030b12",
+  "theme_color": "#030b12",
+  "icons": [
+    {"src":"icons/oracle-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icons/oracle-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"icons/oracle-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}

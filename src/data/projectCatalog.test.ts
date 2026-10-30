@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {catalogProjects,connectCatalogOnce} from './projectCatalog';
 import {connectPublishedRecords} from '../utils/publishedRecords';
+import published from '../../public/data/github-drafts.json';
 
 const catalog=catalogProjects();
 const crossroads=catalog.find(p=>p.id==='proj-crossroads-ai-verdict')!;
@@ -17,14 +18,21 @@ test('v6 returning visitors receive Crossroads without restoring removed older p
   assert.deepEqual(result[0],original);
   assert.equal(result.filter(p=>p.id==='proj-1792563333333').length,0);
 });
-test('the new project receives both existing published logs and both prompts',()=>{
+test('the new project receives all currently published logs and prompts without duplicates',()=>{
   const storage=memoryStorage([['minlab_public_catalog_v6','true']]);
   const result=connectPublishedRecords(connectCatalogOnce([],storage,'projects'),storage,'projects');
   const project=result.find(p=>p.id===crossroads.id)!;
-  assert.equal(project.workLogs.length,2);
-  assert.equal(project.promptHistory?.length,2);
+  const expectedIds=(kind:string)=>published.drafts.filter(entry=>entry.projectId===crossroads.id&&entry.kind===kind).map(entry=>entry.record.id).sort();
+  const logIds=expectedIds('log');
+  const promptIds=expectedIds('prompt');
+  assert.ok(logIds.length>0);
+  assert.ok(promptIds.length>0);
+  assert.deepEqual(project.workLogs.map(record=>record.id).sort(),logIds);
+  assert.deepEqual((project.promptHistory||[]).map(record=>record.id).sort(),promptIds);
   const reloaded=connectPublishedRecords(connectCatalogOnce(result,storage,'projects'),storage,'projects');
-  assert.equal(reloaded.find(p=>p.id===crossroads.id)!.workLogs.length,2);
+  const reopened=reloaded.find(p=>p.id===crossroads.id)!;
+  assert.deepEqual(reopened.workLogs.map(record=>record.id).sort(),logIds);
+  assert.deepEqual((reopened.promptHistory||[]).map(record=>record.id).sort(),promptIds);
 });
 test('deleting Crossroads after its first connection does not recreate it on reload',()=>{
   const storage=memoryStorage([['minlab_public_catalog_v6','true']]);

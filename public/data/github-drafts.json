@@ -1,8 +1,146 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-10-30T08:44:51.787Z",
+  "generatedAt": "2026-11-03T00:06:58.908Z",
   "drafts": [
+    {
+      "kind": "log",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "codex:proj-1792485558773:2026-10-30-minlab-published-count-check",
+        "date": "2026-10-30",
+        "title": "기록이 늘어나도 유지되는 배포 검사 기준 수정",
+        "version": "1.3.4",
+        "content": "작업 목적\n새 개발 기록을 추가하자 배포 검사가 고정 개수 때문에 실패하던 문제를 수정함. 현재 게시된 기록의 ID와 재접속 시 중복 여부를 비교하도록 보완함.\n\n주요 변경\n- Crossroads 기록은 항상 두 건이라는 고정 가정을 제거함.\n- 게시 데이터의 개발일지·프롬프트 ID 전체가 프로젝트에 연결되는지 비교하도록 변경함.\n- 다시 연결한 뒤에도 같은 ID 목록을 유지해 중복이 생기지 않는지 확인하도록 기존 검사를 보완함.\n- 기존 개발일지·프롬프트를 보존하고 수정 후 배포를 완료함.",
+        "reason": "사용자가 요청한 누락 기록을 게시하는 과정에서 기존 검사의 고정 개수 가정으로 배포가 실패해 수정이 필요했음.",
+        "testResult": "당시 수정 커밋 26a97c5의 GitHub Actions 검사·배포 성공을 확인함. 별도 기능 검사를 추가 실행하지 않았음. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "새 기록 수를 고정하지 않고 데이터 보존과 고유 ID 연결을 기준으로 확인할 예정임.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "49aa5704bb43a633a487af9bc7317a63f4c42ef61cb8340d5b7abebd8436edec",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/26a97c5"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "codex:proj-1792485558773:2026-10-30-minlab-published-count-check:prompt:task",
+        "date": "2026-10-30",
+        "title": "기록 추가를 막지 않는 게시 데이터 검사",
+        "prompt": "MinLab에 개발일지와 프롬프트가 늘어나도 배포가 유지되도록 검사 기준을 점검하세요. 특정 프로젝트의 기록 개수를 과거 값으로 고정한 부분이 있는지 확인하세요.\n\n현재 게시 데이터에 있는 개발일지와 프롬프트의 ID 전체가 해당 프로젝트에 연결되는지 비교하세요. 다시 연결해도 같은 ID 목록을 유지하고 중복 기록이 생기지 않는다는 기존 확인 취지를 보존하세요.\n\n실제 기록을 줄이거나 배포 검사를 제거하는 방식으로 처리하지 마세요. 기존 사용자 기록과 직접 편집한 내용은 유지하고 수정 후 자동 배포 결과를 확인하세요.",
+        "outcome": "새 개발 기록을 추가하자 배포 검사가 고정 개수 때문에 실패하던 문제를 수정함. 현재 게시된 기록의 ID와 재접속 시 중복 여부를 비교하도록 보완함.",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "91676fa6c5f842ed541ba41744805768408911a1bf199fe839fc76f9a9cacd26",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/26a97c5"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-desktop-expression-fit",
+        "date": "2026-10-30",
+        "title": "PC 표정 이미지의 프레임 채움 보완",
+        "version": "1.1.3",
+        "content": "작업 목적\n인물 소개의 표정 이미지가 PC에서 칸을 채우지 못하던 표시를 보완함. 모바일과 함께 프레임에 맞는 배치를 공개 반영함.\n\n주요 변경\n- PC에서도 표정 이미지를 지정된 영역에 맞게 표시하도록 수정함.\n- 기존 캐릭터 이미지와 소개 구성을 유지하고 배포 파일을 갱신함.",
+        "reason": "사용자가 캐릭터 시트 영역이 칸에 맞지 않는다고 제보해 PC 표시 방식을 보완함.",
+        "testResult": "당시 빌드·푸시·배포 성공을 확인함. 최종 실제 화면의 시각 재확인은 미완료였음. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "PC의 다양한 너비에서 표정 프레임과 실제 원화 표시를 재확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "74da69a7db17a3726431334843a9052f08e529ae08aabeb1de1cd982b7bb40af",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/0748230"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-desktop-expression-fit:prompt:task",
+        "date": "2026-10-30",
+        "title": "PC에서도 칸에 맞는 표정 이미지 표시",
+        "prompt": "Crossroads 인물 소개에서 캐릭터 표정 이미지가 칸을 채우지 못하는 문제를 수정하세요. 모바일뿐 아니라 PC에서도 같은 의도로 표시되는지 확인하세요.\n\n표정 프레임과 이미지의 크기·배치 규칙을 살펴보고 불필요한 빈 부분을 줄이세요. 기존 캐릭터의 외형과 소개 내용, 게임 진행과 저장 데이터는 유지하세요.\n\n기존 공개 배포 경로에 반영하고 빌드 성공과 실제 화면 확인은 구분해 보고하세요. 최종 화면을 확인하지 못했다면 완료로 단정하지 마세요.",
+        "outcome": "인물 소개의 표정 이미지가 PC에서 칸을 채우지 못하던 표시를 보완함. 모바일과 함께 프레임에 맞는 배치를 공개 반영함.",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "f747202ec4176d4d500effd5daceac5ab62956cbbc14d5f684493b4b054068da",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/0748230"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-fast-card-transition",
+        "date": "2026-10-30",
+        "title": "카드 전환 대기 단축과 대기 안내 제거",
+        "version": "1.2.1",
+        "content": "작업 목적\n선택 후 기다리는 시간이 길게 느껴지던 문제를 보완함. 전환 간격을 줄이면서 연속 오입력 방지는 유지함.\n\n주요 변경\n- 선택 후 대기를 1.1초에서 0.35초로 단축함.\n- 화면을 덮던 대기 안내를 제거함.\n- 같은 선택이 반복 실행되지 않도록 입력 보호는 유지함.",
+        "reason": "사용자가 카드를 넘길 때 지연이 느껴진다고 제보해 직전 진행 간격을 조정함.",
+        "testResult": "당시 타입 검사·빌드와 공개 배포를 통과함. 실제 체감 속도는 재확인하지 못했음. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "실제 모바일에서 전환 속도와 연속 오입력 방지가 자연스럽게 함께 동작하는지 확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "230a6b352ab4c6932a7411d0d530b0a8c07a5a71f0d8f94afda1833d43cc27d4",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/c861429"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-fast-card-transition:prompt:task",
+        "date": "2026-10-30",
+        "title": "빠르게 이어지되 중복 입력은 막는 카드 전환",
+        "prompt": "Crossroads에서 카드를 넘긴 뒤 느껴지는 불필요한 지연을 줄이세요. 직전에 추가한 대기 시간이 실제 진행을 답답하게 만드는지 살펴보세요.\n\n카드 전환 간격을 짧게 조정하고 화면을 덮는 대기 안내는 제거하세요. 다음 카드로 빠르게 이어지되 같은 동작이 여러 번 실행되는 입력은 계속 막아야 합니다.\n\n기존 선택 결과와 저장 상태는 유지하세요. 코드 검사·배포 결과와 실제 터치에서 느껴지는 속도 확인은 구분해 보고하세요.",
+        "outcome": "선택 후 기다리는 시간이 길게 느껴지던 문제를 보완함. 전환 간격을 줄이면서 연속 오입력 방지는 유지함.",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "d12c574ef8d7e13a4028ab2b693e3e8eee3134e2271d8c85183d87fe726ff2b2",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/c861429"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
     {
       "kind": "log",
       "projectId": "proj-crossroads-ai-verdict",
@@ -46,6 +184,98 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-10-30T00:13:08.297Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-oracle-icons",
+        "date": "2026-10-30",
+        "title": "ORACLE 앱 아이콘과 브라우저·홈 화면 연결",
+        "version": "1.1.2",
+        "content": "작업 목적\nORACLE을 바탕으로 앱 아이콘을 제작하고 브라우저 탭·모바일 홈 화면·게임 상단에 연결함.\n\n주요 변경\n- ORACLE의 특징을 살린 아이콘을 제작하고 필요한 크기의 파일을 구성함.\n- 브라우저 탭 아이콘과 홈 화면용 설정, 게임 상단 아이콘을 연결함.\n- 게임 실행 파일과 함께 MinLab의 공개 경로에 반영함.",
+        "reason": "사용자가 게임을 대표하는 아이콘 제작부터 실제 배포 연결까지 요청함.",
+        "testResult": "당시 타입 검사·빌드·공개 아이콘 파일 응답과 GitHub Pages 배포 성공을 확인함. 실제 휴대폰 홈 화면 설치는 미확인임. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "실제 휴대폰 설치 시 아이콘의 잘림과 표시 크기를 확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "0f7f264fdbbf4ef0bea06bc7ece8fa2f90ce3d8ea18bf94eb2a780f399b3a017",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/4f9ece4"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-oracle-icons:prompt:task",
+        "date": "2026-10-30",
+        "title": "게임을 대표하는 ORACLE 아이콘 연결",
+        "prompt": "Crossroads를 대표하는 ORACLE 아이콘을 제작하고 실제 실행 화면과 공개 배포에 연결하세요. 브라우저 탭과 모바일 홈 화면에서도 같은 게임임을 알아볼 수 있어야 합니다.\n\nORACLE의 코어와 링처럼 기존 특징이 작은 크기에서도 읽히도록 구성하세요. 브라우저 탭·홈 화면용 파일과 설정을 마련하고 게임 상단에도 연결하세요.\n\n기존 원화와 게임 로직, 저장 데이터를 유지하세요. 공개 배포 주소에서 아이콘 파일이 응답하는지 확인하고 실제 휴대폰 설치 여부는 별도로 보고하세요.",
+        "outcome": "ORACLE을 바탕으로 앱 아이콘을 제작하고 브라우저 탭·모바일 홈 화면·게임 상단에 연결함.",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "236f0b74bdb97edb0e22c2fe1fd2f7882d8ad9a3ae02bae0b3ee4d1d4cc2c5de",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/4f9ece4"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-reading-decision-pacing",
+        "date": "2026-10-30",
+        "title": "선택 설명 고정·용어 풀이와 카드 진행 간격 개선",
+        "version": "1.2.0",
+        "content": "작업 목적\n스와이프와 선택지 설명을 읽기 쉬운 위치로 옮기고 어려운 용어 풀이를 추가함. 선택 후 다음 카드가 바로 조작되지 않도록 짧은 간격을 제공함.\n\n주요 변경\n- 스와이프 선택 설명을 카드 위 고정 영역으로 옮겨 잘림을 줄임.\n- 선택지 전문 진입을 선택 버튼 위에 배치함.\n- 어려운 용어에 펼쳐 보는 설명을 추가하고 문단 사이 여백을 줄임.\n- 오혜진의 표시 직책을 공공의료 책임자로 정리하고 공식 설정은 유지함.\n- 318개 선택 중 175개가 이미 일부 자원만 바꾸는 것을 확인해 기존 자원 효과는 유지함.\n- 선택 후 카드 전환에 간격을 두고 연속 오입력 방지를 적용함.",
+        "reason": "사용자가 카드가 너무 바로 넘어가고 선택 설명이 잘리며 어려운 용어와 문단 간격을 읽기 불편하다고 제보함.",
+        "testResult": "당시 자동 검사 78개·타입 검사·빌드를 통과하고 공개 배포함. 실제 터치와 최종 화면 배치는 재확인하지 못했음. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "대기 시간의 체감은 사용자 후속 요청으로 조정했으며 실제 모바일 선택·스크롤·오입력 방지를 추가 확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "e33837c3bf474ee3b0310c96b1f506aee7ed24300a9be32985ec050a802b1a87",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/a36c4da"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-10-30-crossroads-reading-decision-pacing:prompt:task",
+        "date": "2026-10-30",
+        "title": "선택의 의미를 읽고 결정할 수 있는 대화 화면",
+        "prompt": "Crossroads에서 다음 카드가 너무 급하게 조작되거나 선택 설명이 화면 중간에서 잘리는 문제를 개선하세요. 선택의 의미를 읽고 판단할 여유가 있어야 합니다.\n\n좌우 스와이프의 승인·거부 설명은 카드 위 고정 영역에서 읽을 수 있게 하세요. 선택지 전문을 여는 경로는 선택 버튼 가까이에 두고 긴 본문을 읽어도 찾기 쉽게 구성하세요.\n\nNLP 언어모델처럼 어려운 단어에는 펼쳐 보는 풀이를 제공하고 문단 사이 여백을 줄이세요. 캐릭터 직책은 공식 설정에 맞추고 자원 효과는 실제 선택 데이터를 먼저 확인한 뒤 필요한 경우에만 바꾸세요.\n\n선택 후 짧은 간격으로 연속 오입력을 막되 게임 진행을 불필요하게 지연시키지 마세요. 기존 카드·효과·저장 데이터를 유지하고 실제 터치와 화면을 확인한 범위를 구분하세요.",
+        "outcome": "스와이프와 선택지 설명을 읽기 쉬운 위치로 옮기고 어려운 용어 풀이를 추가함. 선택 후 다음 카드가 바로 조작되지 않도록 짧은 간격을 제공함.",
+        "source": {
+          "repository": "minho-nim/crossroads-ai-verdict",
+          "fingerprint": "10f4b7469f1204da577cfca6d3c01b16fb03bed386d73f6bb53437c058ec2ea9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/a36c4da"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
         }
       }
     },
@@ -99,6 +329,190 @@
       "kind": "log",
       "projectId": "proj-minially",
       "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-calendar-feedback-task-presets",
+        "date": "2026-10-30",
+        "title": "달력 제목·등록 피드백과 할 일 프리셋 확대",
+        "version": "1.5.0",
+        "content": "작업 목적\n달력에서 일정 내용을 짧게 읽고 등록 결과를 바로 알 수 있도록 개선함. 할 일에도 같은 프리셋 입력을 연결하고 카테고리 선택을 보완함.\n\n주요 변경\n- 할 일에 프리셋 연속 선택·단어 조합·블록 순서 변경과 관리 진입을 연결함.\n- 간편 일정 등록에 카테고리 선택을 추가하고 최대 12개를 여섯 개씩 두 줄로 배치함.\n- 기존 카테고리 색상은 보존하고 새 카테고리에는 고정 색상을 배정함.\n- 오늘·예정·전체 선택과 등록 날짜를 연결하고 팝업별 높이를 기억하도록 개선함.\n- 달력에 짧은 제목과 색상 영역을 표시하고 중요 일정은 굵은 글씨와 별로 구분함.\n- 등록 결과를 위쪽에 안내하고 일정 배경은 연하게, 카테고리 선은 3px로 정리함.",
+        "reason": "사용자가 등록 여부가 잘 보이지 않고 할 일 선택이 중복된다고 지적했으며 달력에도 일정 제목과 구분되는 색상을 원했음.",
+        "testResult": "당시 관련 Chrome 검사 12개와 후속 등록·달력 점검, 타입 검사·배포 빌드를 통과함. af169dd 공개 배포 후 화면 반영을 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "등록 완료 안내의 날짜·시간·제목과 표시 크기는 후속 알림 개선에서 보완함.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "b2519123d75bd18aa7ad591d5022a1afa14eb9df5b09a3b103a5eef4943035b9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/af169dd"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-calendar-feedback-task-presets:prompt:task",
+        "date": "2026-10-30",
+        "title": "일정 내용과 등록 결과가 보이는 달력",
+        "prompt": "미니어리의 달력과 할 일 화면에서 입력 결과를 쉽게 알아볼 수 있도록 개선하세요. 일정 등록 뒤 무엇이 저장됐는지 확인할 수 있어야 하며 목록 필터와 등록 구분이 중복되지 않아야 합니다.\n\n할 일에도 일정과 같은 프리셋 선택·단어 조합·블록 정렬과 관리 기능을 제공하세요. 오늘·예정·전체 선택은 등록 날짜와 자연스럽게 연결하고 캘린더 일정과 할 일의 저장은 구분하세요.\n\n간편 등록에 카테고리 선택을 추가하세요. 카테고리는 최대 12개를 두 줄로 배치하고 기존 색상은 유지하며 새 항목에는 정해진 색상을 배정하세요.\n\n달력에는 점뿐 아니라 짧은 일정 제목을 보여주고 중요 일정은 굵은 글씨와 별로 표시하세요. 연한 배경과 분명한 카테고리 선으로 구분하고 팝업 높이 기억과 위쪽 등록 안내를 연결하세요. 기존 일정·문구·백업 데이터는 유지하세요.",
+        "outcome": "달력에서 일정 내용을 짧게 읽고 등록 결과를 바로 알 수 있도록 개선함. 할 일에도 같은 프리셋 입력을 연결하고 카테고리 선택을 보완함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "8d82e0763720b0ae06c7540f7a1af1709551514509ae89f76f42a24da6d06042",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/af169dd"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-compact-top-notice",
+        "date": "2026-10-30",
+        "title": "날짜·시간·제목을 담은 작은 상단 알림",
+        "version": "1.5.2",
+        "content": "작업 목적\n등록 결과 안내를 화면 상단 하나로 통일하고 날짜·시간·제목과 실행 취소를 담음. 큰 알림이 입력을 가리지 않도록 크기를 줄임.\n\n주요 변경\n- 등록 안내를 날짜·시간·제목 순서로 표시하고 실행 취소를 함께 배치함.\n- 하단 중복 알림을 제거하고 화면 상단 알림 하나로 정리함.\n- 최종 알림은 52px 높이의 두 줄 형태로 줄여 입력창과 저장 버튼을 가리지 않도록 개선함.\n- 날짜 탭 후 간편 등록에서 더보기로 이동하는 경로와 누르기 쉬운 버튼을 정리함.\n- 주요 팝업 모서리를 캘린더와 같은 16px 라운드로 통일함.",
+        "reason": "사용자가 위쪽 등록 안내를 원했으며 하단 알림 중복과 지나치게 큰 안내 크기를 지적함.",
+        "testResult": "당시 화면 정리 Chrome 검사 15개와 안내 관련 검사 7개, 타입 검사·빌드를 통과함. 69cf72b 공개 배포 후 52px 두 줄 알림과 하단 중복 제거를 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "긴 제목과 작은 화면에서도 알림이 핵심 입력을 가리지 않는지 실사용 중 추가 확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "d47a07d775bcf6b8c5ac9d86db11810bcf3825f63e782580e2fe9212fd382bb9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/69cf72b"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-compact-top-notice:prompt:task",
+        "date": "2026-10-30",
+        "title": "입력을 가리지 않는 하나의 등록 완료 알림",
+        "prompt": "미니어리에서 일정을 등록하면 날짜·시간·제목을 화면 상단에서 바로 확인할 수 있도록 알림을 정리하세요. 위아래에 같은 안내가 동시에 뜨지 않게 하고 실행 취소도 상단 알림에서 제공하세요.\n\n알림은 짧은 두 줄 형태로 구성해 입력창이나 저장 버튼을 가리지 않도록 하세요. 긴 제목이 있어도 화면 전체를 덮지 않으며 필요한 정보를 구분해서 읽을 수 있어야 합니다.\n\n모바일은 날짜 탭으로 간편 등록을 열고 더보기에서 추가 기능을 찾는 흐름을 유지하세요. 주요 팝업은 캘린더와 같은 둥근 모서리로 맞추고 터치하기 쉬운 버튼 크기를 사용하세요.\n\n기존 등록·실행 취소와 저장 데이터는 유지하세요. 알림의 표시 위치·높이·중복 여부를 모바일과 PC에서 확인한 뒤 공개 화면에 반영하세요.",
+        "outcome": "등록 결과 안내를 화면 상단 하나로 통일하고 날짜·시간·제목과 실행 취소를 담음. 큰 알림이 입력을 가리지 않도록 크기를 줄임.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "87e77355a37eb7b2aa6f151686db2c451aff44c538a60d8e879e4c21fc757039",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/69cf72b"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-date-menu-desktop-entry",
+        "date": "2026-10-30",
+        "title": "날짜 메뉴 잘림 수정과 PC 간편 등록 연결",
+        "version": "1.5.1",
+        "content": "작업 목적\n달력의 더보기 메뉴가 화면 밖으로 잘리는 문제를 수정함. PC에서도 날짜를 누르면 모바일과 같은 일정 확인·간편 등록을 제공함.\n\n주요 변경\n- 날짜별 더보기 메뉴를 화면 안에 자동 배치해 잘림을 방지함.\n- PC 날짜 클릭에도 일정 확인과 간편 등록 팝업을 연결함.\n- 프리셋·카테고리·연속 등록을 같은 팝업에서 사용할 수 있도록 유지함.\n- 팝업 바깥 클릭으로 날짜가 바뀌는 문제를 수정하고 프리셋을 열 때 자동 확장·스크롤과 높이 조절을 보완함.",
+        "reason": "사용자가 메뉴가 잘린다고 제보하고 모바일의 간편 등록을 PC에도 동일하게 제공해 달라고 요청함.",
+        "testResult": "당시 관련 Chrome 검사 5개와 메뉴·PC 등록 검사 12개, 타입 검사·빌드를 통과함. 156bacc 공개 배포 후 모바일 메뉴와 PC 간편 등록 동작을 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "실제 휴대폰 키보드와 다양한 화면 높이에서도 팝업이 가리지 않는지 추가 확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "3c77ad3b3893a5a0a2af8da2ebf01005c1694845c8018f655cc397623f19fde9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/156bacc"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-date-menu-desktop-entry:prompt:task",
+        "date": "2026-10-30",
+        "title": "화면 안에 유지되는 날짜 메뉴와 공통 간편 등록",
+        "prompt": "미니어리 달력에서 날짜의 더보기 메뉴가 바깥으로 잘리거나 팝업을 닫으며 선택 날짜가 바뀌는 문제를 수정하세요. 메뉴와 날짜 선택의 클릭 처리를 실제 동작 기준으로 확인하세요.\n\nPC에서도 날짜를 누르면 모바일과 같은 일정 확인·간편 등록 팝업이 열리도록 하세요. 프리셋과 카테고리를 선택하고 연속 등록하는 기능도 같은 흐름에서 제공하세요.\n\n프리셋을 열었을 때 입력 영역이 가려지지 않도록 팝업 확장과 스크롤을 조정하고 상단 손잡이로 높이를 조절할 수 있게 하세요. 바깥 클릭은 열린 팝업을 닫되 뒤의 날짜를 선택하지 않도록 하세요.\n\n기존 일정과 초안을 유지하세요. 모바일·PC에서 메뉴 배치와 날짜 클릭, 등록 후 동작을 확인하고 실제 휴대폰에서 확인하지 못한 부분은 별도로 정리하세요.",
+        "outcome": "달력의 더보기 메뉴가 화면 밖으로 잘리는 문제를 수정함. PC에서도 날짜를 누르면 모바일과 같은 일정 확인·간편 등록을 제공함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "9db172e2ac28a3fee82242f300ec40c291a789199913cf0b64ef52257f24c9a5",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/156bacc"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-direct-multi-date-selection",
+        "date": "2026-10-30",
+        "title": "달력에서 바로 고르는 여러 날짜와 기간 선택",
+        "version": "1.5.3",
+        "content": "작업 목적\n여러 날짜 등록의 선택 단계를 줄임. 날짜를 개별 선택하거나 시작일과 종료일을 차례로 눌러 기간을 정하도록 개선함.\n\n주요 변경\n- 날짜 여러 개와 시작일~종료일 두 방식으로 구분하고 달력을 바로 표시함.\n- 개별 날짜는 선택·해제하고 기간은 두 날짜를 누르면 자동으로 포함되도록 처리함.\n- 기준일부터 단축 버튼과 별도 기간 적용 단계를 제거함.\n- 마지막에 선택한 일수 확인 한 번으로 완료하고 기존 제목·시간·카테고리·메모를 보존함.",
+        "reason": "사용자가 여러 날짜·기준일·기간 적용이 나뉜 기존 조작이 불편하다고 알려 직접 선택 방식으로 단순화함.",
+        "testResult": "당시 Chrome 검사 5개·타입 검사·빌드를 통과함. cc73069 공개 배포 후 모바일·PC의 달력 즉시 표시, 두 번의 날짜 선택, 등록·실행 취소를 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "선택 범위와 개별 날짜 해제가 긴 기간에서도 이해하기 쉬운지 추가 확인할 필요가 있음.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "ce93f658c5af11677167ac4a2bc5f10c6e55774de8b92a074cf51505452256e0",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/cc73069"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-direct-multi-date-selection:prompt:task",
+        "date": "2026-10-30",
+        "title": "두 날짜로 끝내는 간단한 기간 등록",
+        "prompt": "미니어리의 여러 날짜 등록을 달력에서 바로 고르는 방식으로 단순화하세요. 기준일부터 계산하거나 별도 적용 버튼을 반복해서 누르는 단계는 줄이세요.\n\n날짜 여러 개는 보이는 달력에서 원하는 날을 선택·해제하게 하세요. 기간 선택은 시작일과 종료일을 차례로 누르면 그 사이 날짜가 자동으로 포함되도록 구성하세요.\n\n선택한 일수를 확인한 뒤 한 번에 완료할 수 있게 하세요. 작성 중인 제목·시간·카테고리·메모는 선택 방식이 바뀌어도 유지해야 합니다.\n\n모바일과 PC에서 달력이 즉시 보이고 날짜 선택·등록·실행 취소가 이어지는지 확인하세요. 기존 일정과 저장 정보는 바꾸지 마세요.",
+        "outcome": "여러 날짜 등록의 선택 단계를 줄임. 날짜를 개별 선택하거나 시작일과 종료일을 차례로 눌러 기간을 정하도록 개선함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "be666ed2edea6028eaf6798c6408e39e4ea5382f645ea4113ffc4373ecb20045",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/cc73069"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
         "id": "codex:proj-minially:2026-10-30-minially-quick-preset-task-entry",
         "date": "2026-10-30",
         "title": "빠른 등록 프리셋과 오늘·예정 할 일 입력 개선",
@@ -138,6 +552,100 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-10-30T00:13:08.297Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-word-presets-floating-nav",
+        "date": "2026-10-30",
+        "title": "그룹별 단어 프리셋과 떠 있는 모바일 메뉴 정리",
+        "version": "1.4.0",
+        "content": "작업 목적\n프리셋을 그룹별 단어 조합 중심으로 단순화하고 모바일 하단 메뉴를 화면 안에 띄우는 형태로 정리함.\n\n주요 변경\n- 그룹별 단어를 골라 제목을 조합하는 사용 흐름을 정리함.\n- 별도 묶음 만들기 메뉴를 제거해 프리셋의 역할이 겹치지 않도록 개선함.\n- 모바일 하단 메뉴를 떠 있는 형태로 배치하고 기존 등록·저장 흐름을 유지함.",
+        "reason": "사용자가 복잡한 프리셋 조작과 모바일 메뉴 사용성을 간편하게 정리하기를 요청함.",
+        "testResult": "당시 커밋 5a6802a의 업로드·공개 배포를 완료하고 공개 사이트에서 하단 메뉴와 그룹별 조합, 묶음 만들기 제거를 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "이후 날짜 팝업과 할 일의 프리셋 입력 개선은 같은 날짜의 후속 기록으로 구분함.",
+        "createdAt": "2026-11-03T00:06:58.908Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "73b29b0a134dc99fce03f0a20aa8386ec57da41cfe81da2cadeddf205a810d44",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/5a6802a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-10-30-minially-word-presets-floating-nav:prompt:task",
+        "date": "2026-10-30",
+        "title": "그룹별 단어 조합에 집중하는 프리셋 화면",
+        "prompt": "미니어리는 반복되는 일정 제목을 프리셋으로 빠르게 작성하는 플래너입니다. 그룹별로 필요한 단어를 골라 제목을 만드는 흐름이 쉽게 보이도록 화면을 정리하세요.\n\n기존 프리셋과 그룹 데이터를 유지하면서 조작이 겹치는 묶음 만들기 메뉴는 줄이세요. 여러 단어의 선택과 제목 조합, 기존 제목 편집 기능은 계속 사용할 수 있어야 합니다.\n\n모바일 하단 메뉴는 화면 안에 떠 있는 형태로 배치하고 콘텐츠와 겹치지 않도록 정리하세요. 기존 일정과 저장 데이터를 보존하고 공개 화면에 반영된 상태를 확인하세요.",
+        "outcome": "프리셋을 그룹별 단어 조합 중심으로 단순화하고 모바일 하단 메뉴를 화면 안에 띄우는 형태로 정리함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "fc914c2203779c1abfbe9505537fc07996d0f98a7cd05cff14b02768e32573e1",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/5a6802a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-03T00:06:58.908Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-musclemap",
+      "record": {
+        "id": "codex:proj-musclemap:2026-10-30-musclemap-anatomy-redesign",
+        "date": "2026-10-30",
+        "title": "인체 근육 지도 형태 개선과 공개 배포",
+        "version": "1.0.1",
+        "content": "작업 목적\n사용자가 첨부한 근육 지도의 어두운 윤곽과 둥근 근육 표현을 개선함. 앞·뒷면 도형을 새로 구성하고 v1.0.1을 공개 실행 페이지에 배포함.\n\n주요 변경\n- 비활성 근육과 몸 전체 윤곽을 밝게 표시하고 근육별 경계를 구분함.\n- 둥근 덩어리처럼 보이던 근육을 길게 이어지는 형태로 바꾸고 강한 발광 효과를 제거함.\n- 앞면과 뒷면을 각각 분리하고 주요 근육·보조 근육·다른 부위의 색상 범례를 추가함.\n- 기존 부위 선택과 운동별 강조 기능을 유지하고 키보드로도 근육을 선택하도록 연결함.\n- 공통 인체 도형으로 앞·뒷면을 관리하고 v1.0.1 코드를 공개 저장소에 반영함.",
+        "reason": "사용자가 Planfit과 비슷한 표현을 줄이고 첨부한 인체 모형을 바꿔 달라고 요청함. 이후 루틴 등록 화면의 분리와 인체 모형의 추가 고도화도 요청함.",
+        "testResult": "수정 당시 타입 검사와 GitHub Pages용 빌드가 통과함. SVG를 이미지로 렌더링해 몸 윤곽과 강조 부위의 구분을 확인함. GitHub 자동 검사·배포가 성공하고 공개 페이지의 HTTP 200 응답, v1.0.1 표시와 새 근육 지도 코드 반영을 확인함. 전체 운동 조작과 실제 모바일·PC 화면의 추가 검증은 미실행함. 이번 기록 작성을 위해 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "루틴 등록·편집을 전용 화면으로 분리하고 종목 추가 연결을 점검하는 작업이 남아 있음. 인체의 각진 윤곽을 자연스럽게 다듬는 후속 고도화도 최종 검증·커밋·배포가 완료되지 않았음. 완료된 v1.0.1과 후속 작업을 구분해 이어서 확인할 필요가 있음.",
+        "createdAt": "2026-11-02T23:55:21Z",
+        "source": {
+          "repository": "minho-nim/musclemap",
+          "fingerprint": "f5e09520ee02a6e0ae8cb3b3661ad54eb13c7cd4e8a8492b7c3a0c35ed825091",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/musclemap/commit/409e1043530489c8fea8173e00ef121668db1c4b",
+            "https://github.com/minho-nim/musclemap/actions/runs/41029718000"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-02T23:55:21Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-musclemap",
+      "record": {
+        "id": "codex:proj-musclemap:2026-10-30-musclemap-anatomy-redesign:prompt:anatomy-redesign",
+        "date": "2026-10-30",
+        "title": "몸 윤곽과 운동 부위가 분명한 인체 지도",
+        "prompt": "MuscleMap은 인체 근육 지도와 루틴을 이용해 운동을 기록하는 웹앱입니다. 첨부한 근육 지도에서 몸 윤곽이 어둡게 사라지고 강조 부위가 둥근 덩어리처럼 보이는 부분을 개선하세요. Planfit과 너무 비슷하게 느껴지는 표현도 줄이세요.\n\n기존 앱 색상은 유지하면서 비활성 근육과 몸 전체의 윤곽을 읽기 쉽게 표시하세요. 근육별 경계를 정리하고 강한 발광 효과를 줄이세요. 앞면과 뒷면을 구분하고 주요 근육과 보조 근육의 의미를 알 수 있게 구성하세요. 기존 부위 선택과 운동별 강조 기능을 유지하세요.\n\n수정한 코드를 검사하고 공개 저장소에 푸시한 뒤 실행 페이지의 배포 여부를 확인하세요. 루틴 등록·편집 화면의 분리와 인체 모형의 추가 고도화는 후속 작업으로 이어가되, 검증·배포가 끝나지 않은 부분을 완료했다고 기록하지 마세요.",
+        "outcome": "인체 지도 v1.0.1의 수정·검사·공개 배포를 완료함. 루틴 등록 분리와 인체 추가 고도화는 후속 작업으로 남아 있음.",
+        "source": {
+          "repository": "minho-nim/musclemap",
+          "fingerprint": "1700e613267230ed44b7de8c4dc4ab453c891473e73ef51821da0c5e941de10d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/musclemap/commit/409e1043530489c8fea8173e00ef121668db1c4b",
+            "https://github.com/minho-nim/musclemap/actions/runs/41029718000"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-02T23:55:21Z"
         }
       }
     },

@@ -42,7 +42,14 @@ export function connectCatalogOnce(projects: Project[], storage: Pick<Storage, '
       if (Array.isArray(ids) && ids.every(id=>typeof id==='string')) seen = new Set(ids);
     }
   } catch { /* A broken or unavailable ledger must not hide a new project. */ }
+  // Refresh the previous public name even for an already-seen catalog entry.
+  // Custom titles and all browser records remain user-owned.
+  const renamed = catalogProjects().find(project => project.id === 'proj-snake-race');
   let merged = projects;
+  if (renamed) merged = projects.map(project => project.id === renamed.id && project.name === '꼬물 레이스'
+    ? {...project, name: renamed.name, englishName: !project.englishName || project.englishName === '꼬물 레이스' ? renamed.name : project.englishName}
+    : project);
+  if (merged.every((project, index) => project === projects[index])) merged = projects;
   for (const candidate of catalogProjects()) {
     if (seen.has(candidate.id)) continue;
     const existing = merged.find(project => project.id === candidate.id || (!project.isSample && project.githubUrl?.replace(/\/$/, '').toLowerCase() === candidate.githubUrl?.toLowerCase()) || project.name.trim().toLowerCase() === candidate.name.toLowerCase());

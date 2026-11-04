@@ -127,7 +127,7 @@
     {
       "id": "proj-snake-race",
       "repository": "minho-nim/snake-race",
-      "name": "꼬물 레이스",
+      "name": "MinSnakey",
       "description": "직접 그린 뱀의 길이·무게·크기로 종합경기와 개별 코스를 달리고 친구 기록에 도전하는 손그림 경주 게임",
       "category": "레이싱 게임",
       "appUrl": "https://minho-nim.github.io/snake-race/",

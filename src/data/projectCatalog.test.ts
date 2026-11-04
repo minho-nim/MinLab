@@ -82,3 +82,14 @@ test('existing visitors receive MuscleMap once while their edited and deleted pr
   assert.equal(musclemap.githubUrl,'https://github.com/minho-nim/musclemap');
   assert.deepEqual(connectCatalogOnce([original],storage,'projects'),[original]);
 });
+
+test('MinSnakey renames a previously connected public title while preserving custom names and saved records',()=>{
+ const snake=catalog.find(p=>p.id==='proj-snake-race')!;
+ const storage=memoryStorage([['minlab_catalog_seen_project_ids_v1',JSON.stringify(catalog.map(p=>p.id))]]);
+ const old={...snake,name:'꼬물 레이스',englishName:'꼬물 레이스',workLogs:[{id:'keep',title:'내 기록',date:'2026-11-04',content:'보존'}]};
+ const result=connectCatalogOnce([old],storage,'projects');
+ assert.equal(result[0].name,'MinSnakey');assert.equal(result[0].englishName,'MinSnakey');assert.deepEqual(result[0].workLogs,old.workLogs);
+ const custom={...old,name:'내가 정한 이름',englishName:'My Snake'};
+ assert.deepEqual(connectCatalogOnce([custom],storage,'projects'),[custom]);
+ assert.deepEqual(connectCatalogOnce([],storage,'projects'),[]);
+});

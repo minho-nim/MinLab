@@ -353,14 +353,14 @@
         "nextSteps": "실제 카카오톡에서 새 도전 링크의 내 뱀 썸네일 표시를 확인하고 다양한 그림·실제 모바일 기기로 종합경기 밸런스를 추가 확인할 필요가 있음. AI Office에서 개발 지시를 전달하는 운영 연동은 아직 미설정임.",
         "createdAt": "2026-11-04T14:59:10+09:00",
         "source": {
-          "repository": "minho-nim/snake-race",
+          "repository": "minho-nim/MinSnakey",
           "fingerprint": "ec55fc5265e590307a3236c8895d61c26356948f7b5dbcb61620d340911f89de",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
-            "https://github.com/minho-nim/snake-race/pull/1",
-            "https://github.com/minho-nim/snake-race/pull/2",
-            "https://github.com/minho-nim/snake-race/pull/3",
-            "https://github.com/minho-nim/snake-race/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
+            "https://github.com/minho-nim/MinSnakey/pull/1",
+            "https://github.com/minho-nim/MinSnakey/pull/2",
+            "https://github.com/minho-nim/MinSnakey/pull/3",
+            "https://github.com/minho-nim/MinSnakey/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
           ],
           "engine": "codex",
           "generatedAt": "2026-11-04T14:59:10+09:00"
@@ -377,14 +377,14 @@
         "prompt": "MinSnakey에 종합경기를 새로 만들고 맵 목록 맨 위의 기본 선택으로 배치해 메인 경기처럼 보이게 하세요. 출발 가속·길이에 따른 출력과 지구력·무게와 유체 저항을 함께 시험하도록 구성하고, 모든 구간에 적합한 뱀이 실제 경기 결과로 이기게 하세요. 다른 맵은 그린 뱀의 특성별로 비교하는 개별 종목으로 구성하세요.\n\n점프하는 장애물 달리기를 넣고 장애물에 걸리면 넘어져 속도가 줄게 하세요. 경기장이 달리는 중 길어졌다 작아지는 표시를 고치세요. 기본 속도는 3배로 높이고 여기서 2·4·8배 빨리감기와 결과보기를 제공하세요.",
         "outcome": "평지·언덕·물·점프를 묶은 기본 종합경기, 개별 종목, 넘어짐·감속과 고정 카메라를 구현함. 3배 기본 진행과 추가 배속·결과보기를 제공함.",
         "source": {
-          "repository": "minho-nim/snake-race",
+          "repository": "minho-nim/MinSnakey",
           "fingerprint": "c8e98066e12d86c662adb1944cc5ae9723fbc8d5e404dee9a93cf69d973fb445",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
-            "https://github.com/minho-nim/snake-race/pull/1",
-            "https://github.com/minho-nim/snake-race/pull/2",
-            "https://github.com/minho-nim/snake-race/pull/3",
-            "https://github.com/minho-nim/snake-race/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
+            "https://github.com/minho-nim/MinSnakey/pull/1",
+            "https://github.com/minho-nim/MinSnakey/pull/2",
+            "https://github.com/minho-nim/MinSnakey/pull/3",
+            "https://github.com/minho-nim/MinSnakey/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
           ],
           "engine": "codex",
           "generatedAt": "2026-11-04T14:59:10+09:00"
@@ -401,14 +401,14 @@
         "prompt": "MinSnakey를 친구에게 링크로 공유하면 친구가 나중에 내 뱀과 기록에 도전하게 하세요. 실시간 동시 대전 대신 기록 도전 방식으로 구성하세요.\n\n공유 링크로 들어온 친구에게 저장한 내 뱀으로 도전하기와 내 뱀 새로 그리기를 연결해 주세요. 새로 그려도 받은 도전 상대와 같은 코스에서 대결할 수 있어야 합니다.\n\n카카오톡 등에 링크만 붙여 넣었을 때 내 뱀과 함께 덤벼보라는 장난스러운 문구가 자동 미리보기로 보이게 하세요. 이를 위한 별도 공유 서버를 사용하고 실제 게임 주소와 도전 흐름을 연결하세요.",
         "outcome": "압축 도전 링크와 실제 상대 입력 재생, 내 뱀 선택·새로 그리기 연결을 구현함. 별도 공개 Worker에서 개인화 PNG와 OG 메타데이터를 제공하며 실제 카카오톡 앱 표시는 미확인임.",
         "source": {
-          "repository": "minho-nim/snake-race",
+          "repository": "minho-nim/MinSnakey",
           "fingerprint": "da565b2c4da60901b8f9c0d11c09f55a400534d8219c5a327eebcd853637577b",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
-            "https://github.com/minho-nim/snake-race/pull/1",
-            "https://github.com/minho-nim/snake-race/pull/2",
-            "https://github.com/minho-nim/snake-race/pull/3",
-            "https://github.com/minho-nim/snake-race/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
+            "https://github.com/minho-nim/MinSnakey/pull/1",
+            "https://github.com/minho-nim/MinSnakey/pull/2",
+            "https://github.com/minho-nim/MinSnakey/pull/3",
+            "https://github.com/minho-nim/MinSnakey/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
           ],
           "engine": "codex",
           "generatedAt": "2026-11-04T14:59:10+09:00"
@@ -425,14 +425,14 @@
         "prompt": "직접 그린 뱀으로 100m를 달리는 웹게임을 개발하세요. 낙서로 그린 캐릭터가 실제 경기에 참여하는 재미를 살리고, 머리·몸통·꼬리를 그려 조립한 모습을 경기에서도 알아볼 수 있게 하세요.\n\nAI Office는 개발 에이전트에게 지시하는 관리 공간으로 두고 게임은 별도 저장소와 실행 링크로 분리하세요. 이후 AI Office에서 개발 지시를 전달할 수 있도록 저장소와 개발 안내를 마련하세요. GitHub에 코드를 올리고 친구들이 링크로 시험할 수 있는 공개 게임 주소를 제공하세요.",
         "outcome": "독립된 snake-race 저장소와 GitHub Pages 공개 게임, 그림 편집·조립·저장과 경기 흐름을 구현함. AI Office의 실제 운영 지시 연동은 미설정임.",
         "source": {
-          "repository": "minho-nim/snake-race",
+          "repository": "minho-nim/MinSnakey",
           "fingerprint": "81d3499f1395b28fa8a46ef6789950d74dd4df047d3915bb3ba7212dbf212032",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
-            "https://github.com/minho-nim/snake-race/pull/1",
-            "https://github.com/minho-nim/snake-race/pull/2",
-            "https://github.com/minho-nim/snake-race/pull/3",
-            "https://github.com/minho-nim/snake-race/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
+            "https://github.com/minho-nim/MinSnakey/pull/1",
+            "https://github.com/minho-nim/MinSnakey/pull/2",
+            "https://github.com/minho-nim/MinSnakey/pull/3",
+            "https://github.com/minho-nim/MinSnakey/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
           ],
           "engine": "codex",
           "generatedAt": "2026-11-04T14:59:10+09:00"
@@ -449,14 +449,14 @@
         "prompt": "MinSnakey에서 길이·무게·크기에 따라 능력치와 달리기 결과가 달라지도록 만드세요. 실제 자동차의 출력·질량·가속·접지 관계와 유체 저항의 기본 규칙을 적용하고, 체형 차이를 숫자뿐 아니라 경기 속도와 기록에서도 크게 느끼게 하세요.\n\n가볍고 작은 뱀의 출발 가속, 긴 뱀의 출력과 지구력, 굵고 큰 뱀의 무게와 유체 저항을 반영하세요. 능력치는 읽기 쉽게 보여 주세요. 언덕은 오르내림이 확실히 보이게 하고, 물이 있는 맵에서는 물의 저항이 작용하게 하세요. 원본 그림과 저장한 기록을 보존하세요.",
         "outcome": "체형에서 물리 계수를 추정하고 공기·물 저항·경사·부력을 적용함. 체형별 실제 가속·기록 차이를 강화하고 능력치 막대와 추진 체력 표시를 추가함.",
         "source": {
-          "repository": "minho-nim/snake-race",
+          "repository": "minho-nim/MinSnakey",
           "fingerprint": "d5d94e296505fcd25bd8b57140ae209d94824e242e46bbaf36468df2dabea9e9",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
-            "https://github.com/minho-nim/snake-race/pull/1",
-            "https://github.com/minho-nim/snake-race/pull/2",
-            "https://github.com/minho-nim/snake-race/pull/3",
-            "https://github.com/minho-nim/snake-race/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
+            "https://github.com/minho-nim/MinSnakey/pull/1",
+            "https://github.com/minho-nim/MinSnakey/pull/2",
+            "https://github.com/minho-nim/MinSnakey/pull/3",
+            "https://github.com/minho-nim/MinSnakey/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
           ],
           "engine": "codex",
           "generatedAt": "2026-11-04T14:59:10+09:00"

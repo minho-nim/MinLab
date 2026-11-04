@@ -46,9 +46,14 @@ export function connectCatalogOnce(projects: Project[], storage: Pick<Storage, '
   // Custom titles and all browser records remain user-owned.
   const renamed = catalogProjects().find(project => project.id === 'proj-snake-race');
   let merged = projects;
-  if (renamed) merged = projects.map(project => project.id === renamed.id && project.name === '꼬물 레이스'
-    ? {...project, name: renamed.name, englishName: !project.englishName || project.englishName === '꼬물 레이스' ? renamed.name : project.englishName}
-    : project);
+  if(renamed)merged=projects.map(project=>{
+    if(project.id!==renamed.id)return project;
+    const updated={...project};
+    if(project.name==='꼬물 레이스'){updated.name=renamed.name;if(!project.englishName||project.englishName==='꼬물 레이스')updated.englishName=renamed.name;}
+    const old={githubUrl:'https://github.com/minho-nim/snake-race',liveUrl:'https://minho-nim.github.io/snake-race',previewUrl:'https://minho-nim.github.io/snake-race'};
+    for(const key of ['githubUrl','liveUrl','previewUrl'] as const)if(project[key]?.replace(/\/$/,'')===old[key])updated[key]=renamed[key];
+    return updated.name===project.name&&updated.englishName===project.englishName&&updated.githubUrl===project.githubUrl&&updated.liveUrl===project.liveUrl&&updated.previewUrl===project.previewUrl?project:updated;
+  });
   if (merged.every((project, index) => project === projects[index])) merged = projects;
   for (const candidate of catalogProjects()) {
     if (seen.has(candidate.id)) continue;

@@ -1859,10 +1859,10 @@
       "testResult": "개발 당시 타입 검사·물리/형태/기록/공유 서버 검증 36개·빌드와 Chromium PC/모바일 E2E 12개를 통과함. 얇은 선과 굵은 선의 같은 형상 비교에서 약 13.28초와 19.40초의 평지 기록 차이를 확인함. 배속별 결과 일치, 종합경기 완주, 장애물 넘어짐·회복, 공유 HTML/PNG와 새 브라우저 친구 도전 흐름을 확인함. GitHub Pages 배포와 공개 공유 Worker 배포 성공을 확인함. 실제 카카오톡 앱의 미리보기·캐시 및 실제 iOS/Android 기기 검증은 미확인임. 이번 기록 작성을 위한 게임 기능 테스트는 새로 실행하지 않았음.",
       "nextSteps": "실제 카카오톡에서 새 도전 링크의 내 뱀 썸네일 표시를 확인하고 다양한 그림·실제 모바일 기기로 종합경기 밸런스를 추가 확인할 필요가 있음. AI Office에서 개발 지시를 전달하는 운영 연동은 아직 미설정임.",
       "urls": [
-        "https://github.com/minho-nim/snake-race/pull/1",
-        "https://github.com/minho-nim/snake-race/pull/2",
-        "https://github.com/minho-nim/snake-race/pull/3",
-        "https://github.com/minho-nim/snake-race/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
+        "https://github.com/minho-nim/MinSnakey/pull/1",
+        "https://github.com/minho-nim/MinSnakey/pull/2",
+        "https://github.com/minho-nim/MinSnakey/pull/3",
+        "https://github.com/minho-nim/MinSnakey/commit/4747bd74cc97e85d1c58a8c9c24bae853a5103c6"
       ],
       "prompts": [
         {

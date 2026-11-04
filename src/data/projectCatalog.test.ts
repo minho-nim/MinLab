@@ -93,3 +93,12 @@ test('MinSnakey renames a previously connected public title while preserving cus
  assert.deepEqual(connectCatalogOnce([custom],storage,'projects'),[custom]);
  assert.deepEqual(connectCatalogOnce([],storage,'projects'),[]);
 });
+
+test('renamed repository URLs update for existing visitors without replacing their custom URLs or records',()=>{
+ const snake=catalog.find(p=>p.id==='proj-snake-race')!;
+ const storage=memoryStorage([['minlab_catalog_seen_project_ids_v1',JSON.stringify(catalog.map(p=>p.id))]]);
+ const saved={...snake,githubUrl:'https://github.com/minho-nim/snake-race',liveUrl:'https://minho-nim.github.io/snake-race/',previewUrl:'https://minho-nim.github.io/snake-race/'};
+ const [updated]=connectCatalogOnce([saved],storage,'projects');assert.equal(updated.githubUrl,'https://github.com/minho-nim/MinSnakey');assert.equal(updated.liveUrl,'https://minho-nim.github.io/MinSnakey/');assert.deepEqual(updated.workLogs,saved.workLogs);
+ const custom={...saved,liveUrl:'https://my-game.example/',githubUrl:'https://github.com/me/my-game'};
+ const [kept]=connectCatalogOnce([custom],storage,'projects');assert.equal(kept.liveUrl,custom.liveUrl);assert.equal(kept.githubUrl,custom.githubUrl);
+});

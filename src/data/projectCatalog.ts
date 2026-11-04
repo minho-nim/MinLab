@@ -51,7 +51,10 @@ export function connectCatalogOnce(projects: Project[], storage: Pick<Storage, '
     const updated={...project};
     if(project.name==='꼬물 레이스'){updated.name=renamed.name;if(!project.englishName||project.englishName==='꼬물 레이스')updated.englishName=renamed.name;}
     const old={githubUrl:'https://github.com/minho-nim/snake-race',liveUrl:'https://minho-nim.github.io/snake-race',previewUrl:'https://minho-nim.github.io/snake-race'};
-    for(const key of ['githubUrl','liveUrl','previewUrl'] as const)if(project[key]?.replace(/\/$/,'')===old[key])updated[key]=renamed[key];
+    for(const key of ['githubUrl','liveUrl','previewUrl'] as const){
+      const replacement=renamed[key];
+      if(typeof replacement==='string'&&project[key]?.replace(/\/$/,'')===old[key])updated[key]=replacement;
+    }
     return updated.name===project.name&&updated.englishName===project.englishName&&updated.githubUrl===project.githubUrl&&updated.liveUrl===project.liveUrl&&updated.previewUrl===project.previewUrl?project:updated;
   });
   if (merged.every((project, index) => project === projects[index])) merged = projects;

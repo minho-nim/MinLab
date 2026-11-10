@@ -1,8 +1,422 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-11-04T23:07:34+00:00",
+  "generatedAt": "2026-11-10T02:56:17.808Z",
   "drafts": [
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-10-minially-calendar-without-year-autofocus",
+        "date": "2026-11-10",
+        "title": "검색 기간에서 연도 선택창 자동 열림 제거",
+        "version": "1.13.2",
+        "content": "작업 목적\n검색 기간의 날짜를 누르면 연도 선택창이 먼저 뜨지 않고 달력만 바로 펼쳐지도록 수정함.\n\n주요 변경\n- 공통 날짜 선택기의 연도 항목에 자동으로 초점이 가던 처리를 제거함.\n- 연도·월 변경은 사용자가 직접 누를 때만 수행하고 기존 날짜·기간 검색 동작을 유지함.",
+        "reason": "사용자가 검색 기간을 설정할 때 연도가 먼저 나타나지 않고 달력만 보이기를 요청함.",
+        "testResult": "기간·검색 관련 모바일·PC 검사 2개와 타입 검사·빌드가 통과함. 공개 배포의 새 파일 반영을 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "Cloudflare 이전 시 최종 도메인에 맞춘 공유 주소·배포 설정 변경과 기존 브라우저 데이터의 JSON 백업·복원이 필요함. Cloudflare 배포는 아직 실행하지 않았음.",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "4081557cf3dfba692523dc8b4d20778dcd84bd3b6c8b4f4d1b4395ea4c4de926",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/9955347b98d5823181580f7aa335c6e8083756d8"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-10-minially-calendar-without-year-autofocus:prompt:task",
+        "date": "2026-11-10",
+        "title": "검색 기간에서 연도 선택창 자동 열림 제거",
+        "prompt": "미니어리 검색에서 기간의 시작일이나 종료일을 눌렀을 때 연도 선택창이 자동으로 열리지 않도록 수정하세요. 처음에는 달력만 펼치고 연도와 월은 사용자가 직접 누를 때 변경하게 하세요. 기존 날짜 선택과 기간 검색은 유지하세요.",
+        "outcome": "검색 기간의 날짜를 누르면 연도 선택창이 먼저 뜨지 않고 달력만 바로 펼쳐지도록 수정함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "7428abc74645598315240655e66e2db43902aea6867b4bb30e54b1b07d9dfcb2",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/9955347b98d5823181580f7aa335c6e8083756d8"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-10-minially-share-icons-persistent-presets",
+        "date": "2026-11-10",
+        "title": "미니어리 공유 아이콘과 입력을 유지하는 프리셋",
+        "version": "1.13.1",
+        "content": "작업 목적\n공유할 때 다른 프로젝트 아이콘으로 보이지 않도록 미니어리 이미지를 명시함. 간편 등록의 프리셋 입력 유지와 검색 닫기, 버튼·배경 범위를 함께 정리함.\n\n주요 변경\n- 공유 미리보기 이미지와 사이트·홈 화면 아이콘을 미니어리 달력 이미지로 지정함.\n- 공유 주소와 이미지 경로를 HTML에 명시하고 새 공유 이미지 파일을 배포함.\n- 프리셋을 입력창 위에 펼쳐 제목을 계속 보면서 문구를 선택하고 수정·등록하도록 개선함.\n- 프리셋 사용 시 자동 초점 해제와 화면 이동을 없애고 입력 초점을 유지함.\n- 검색 바깥을 누르면 닫히도록 하고 상단 세 버튼의 높이와 가로줄 아래 간격을 줄임.\n- 키보드로 가용 높이가 줄어도 배경 마스크가 웹 화면 전체에 이어지도록 범위를 넓힘.",
+        "reason": "공유 아이콘이 2048로 나타나고 프리셋을 열면 입력창과 키보드가 사라져 작성 내용을 알 수 없다는 문제 및 검색·여백·배경 처리 요청을 반영함.",
+        "testResult": "브라우저 검사 6개와 타입 검사·빌드를 통과함. 프리셋 선택 중 입력 유지·직접 수정·등록, 검색 바깥 닫기와 배경 범위를 확인함. 공개 HTML의 공유 이미지·아이콘 경로와 실제 이미지 파일의 일치를 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "54361b033fd1e19880bfe38e683d2bea15b4a59ae16f9146683063af2cfa0fda",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/dab185eb9477aaf16cdf23a16fbb19140e005710"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-10-minially-share-icons-persistent-presets:prompt:task",
+        "date": "2026-11-10",
+        "title": "미니어리 공유 아이콘과 입력을 유지하는 프리셋",
+        "prompt": "미니어리를 공유할 때 다른 프로젝트의 2048 아이콘이 표시되지 않도록 미니어리 달력 이미지를 명확히 지정하세요. 공유 미리보기와 사이트 아이콘, 홈 화면 아이콘이 모두 올바른 앱을 가리키도록 하세요.\n\n간편 등록에서 프리셋을 열어도 입력창을 숨기거나 다른 화면으로 이동하지 마세요. 프리셋을 입력창 위에 펼치고 선택한 문구를 바로 확인·수정·등록할 수 있게 하며 입력 초점과 키보드를 유지하세요.\n\n검색은 팝업 바깥을 누르면 닫히게 하세요. 프리셋·카테고리·일정 등록 버튼의 높이와 위쪽 가로줄까지의 간격을 줄이고 키보드 주변 웹 배경에도 어두운 마스크가 이어지도록 하세요. 기존 일정과 프리셋 데이터를 보존하세요.",
+        "outcome": "공유할 때 다른 프로젝트 아이콘으로 보이지 않도록 미니어리 이미지를 명시함. 간편 등록의 프리셋 입력 유지와 검색 닫기, 버튼·배경 범위를 함께 정리함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "de39b3b78c4fc2d8026ac643db694924be2837adbcc01f03dfeaaccaa118e039",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/dab185eb9477aaf16cdf23a16fbb19140e005710"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-07-minially-connected-task-import-growth",
+        "date": "2026-11-07",
+        "title": "일정 가져오기와 연결되는 날짜 탐색·자동 확장 할 일",
+        "version": "1.13.0",
+        "content": "작업 목적\n일정 가져오기와 할 일의 날짜·기간 선택 및 스와이프를 공통 방식으로 연결함. 많은 할 일이 칸 안에 갇히지 않고 목록 높이가 자연스럽게 늘어나도록 변경함.\n\n주요 변경\n- 일정 가져오기 팝업에 손가락을 따라오는 좌우 스와이프와 공통 날짜·기간 선택을 연결함.\n- 오늘·이번 주·이번 달과 이전·다음 날짜 또는 기간 이동을 같은 구성으로 제공함.\n- 팝업에서 선택한 날짜 범위를 할 일 화면과 공유하고 가져온 항목을 해당 범위에서 바로 확인하도록 연결함.\n- 반복 일정의 이동·취소를 반영하는 기간 조회와 중복 가져오기 방지를 유지함.\n- 빈 할 일의 기본 높이는 유지하고 항목·완료 필터·날짜 변경에 맞춰 칸 높이가 부드럽게 늘거나 줄도록 보완함.",
+        "reason": "일정 가져오기에도 같은 날짜 조작과 스와이프를 제공하고, 등록이 많아지면 할 일 칸이 커지도록 전체 흐름을 일관되게 연결해 달라는 요청을 반영함.",
+        "testResult": "관련 브라우저 검사 6개에서 가져오기·날짜·기간 공유, 중복 방지, 많은 할 일의 높이 확장과 검색을 확인함. 타입 검사·빌드와 배포 반영도 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "fc572ca4f297c67c28ee35a8e7fce4787226af5401ac797db969c2542448b0b2",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/30ce0c26804d48c846ec7cfed155b788d81ba77b"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-07-minially-connected-task-import-growth:prompt:task",
+        "date": "2026-11-07",
+        "title": "일정 가져오기와 연결되는 날짜 탐색·자동 확장 할 일",
+        "prompt": "미니어리의 할 일과 일정 가져오기를 같은 날짜 조작으로 연결하세요. 일정 가져오기에도 좌우 스와이프와 일관된 하루·기간 선택, 오늘·이번 주·이번 달 이동을 제공하세요.\n\n팝업에서 고른 날짜 범위가 할 일 화면에도 이어지고 가져온 항목을 바로 확인할 수 있게 하세요. 반복 일정의 이동과 취소를 반영하고 같은 일정을 중복해서 가져오지 않도록 하세요.\n\n할 일은 빈 상태의 기본 공간을 유지하되 등록이 많아지면 칸 높이가 자연스럽게 커지도록 변경하세요. 목록 안에 고정된 작은 스크롤로 가두지 말고 긴 목록은 화면 전체를 내려볼 수 있게 하세요. 입력과 완료 필터, 날짜 이동도 함께 자연스럽게 이어지도록 하세요.",
+        "outcome": "일정 가져오기와 할 일의 날짜·기간 선택 및 스와이프를 공통 방식으로 연결함. 많은 할 일이 칸 안에 갇히지 않고 목록 높이가 자연스럽게 늘어나도록 변경함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "80601c815784961dc65fb45ec4b8733c104490143c49401a08a1e162889260e4",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/30ce0c26804d48c846ec7cfed155b788d81ba77b"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-calendar-keyboard-motion",
+        "date": "2026-11-06",
+        "title": "날짜 누름·일정창 펼침과 키보드 주변 배치 개선",
+        "version": "1.12.1",
+        "content": "작업 목적\n달력 페이지 사이 간격과 날짜 누름 효과를 추가함. 일정창을 누른 날짜 위치에서 펼치고 하단 카드의 둥근 모서리와 키보드 주변 이동을 정리함.\n\n주요 변경\n- 달력 페이지 사이에 24px 간격을 두고 날짜를 누르는 동안 배경과 숫자 크기로 반응하도록 처리함.\n- 일정창이 선택한 날짜 위치에서 커지며 열리는 모션을 추가함.\n- 카테고리 하단 카드를 아래쪽까지 둥글게 처리하고 키보드가 열리면 가용 영역 아래에 붙도록 보완함.\n- 줄어드는 화면 높이에 맞춰 입력창이 이동하고 입력 내용과 초점을 유지하도록 개선함.\n- iOS Safari의 이전·다음·완료 입력 보조막대는 웹에서 제거할 수 없는 기본 UI임을 구분함.",
+        "reason": "사용자가 달력 넘김과 날짜 누름, 일정창과 키보드의 움직임을 자연스럽게 하고 하단 모서리와 키보드 주변 간격을 정리해 달라고 요청함.",
+        "testResult": "브라우저 검사 6개에서 날짜 누름, 선택 위치 기반 모션, 둥근 카드, 화면 높이 변화 시 입력 유지와 하단 배치를 확인함. 동작 줄이기 설정과 빌드·배포도 확인함. 실제 iOS 기기에서 키보드 자체의 모션을 검증한 것은 아님. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "실제 iOS 기기의 키보드 이동과 Safari 기본 UI는 추가 확인이 필요함. 기본 입력 보조막대 제거는 웹 구현 범위에서 지원하지 못함.",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "93128438908187f2635aaba1fb07b2e93cfe255c57f893fe8652f8f53844280a",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/9908f85754003861f44eb42b1afe8ef7aeeb7e9c"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-calendar-keyboard-motion:prompt:task",
+        "date": "2026-11-06",
+        "title": "날짜 누름·일정창 펼침과 키보드 주변 배치 개선",
+        "prompt": "미니어리 달력을 넘길 때 페이지 사이에 여백을 두고 날짜를 누르면 가볍게 눌리는 반응을 보여주세요. 일정 목록 팝업은 누른 날짜에서 펼쳐지는 느낌으로 자연스럽게 열리도록 하세요.\n\n하단 카테고리 창은 아래 모서리도 둥글게 처리하세요. 키보드가 열릴 때 입력창이 가용 높이에 맞춰 부드럽게 이동하고 앱이 만든 불필요한 간격 없이 붙도록 하세요. 작성 중인 내용과 입력 초점은 보존하세요.\n\n웹에서 제어 가능한 앱 배치와 iOS Safari가 표시하는 기본 보조 UI를 구분하세요. 운영체제 UI까지 제거했다고 단정하지 말고 실제 확인한 범위와 제약을 설명하세요.",
+        "outcome": "달력 페이지 사이 간격과 날짜 누름 효과를 추가함. 일정창을 누른 날짜 위치에서 펼치고 하단 카드의 둥근 모서리와 키보드 주변 이동을 정리함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "2d2090b873adc8244635993c8010d9d8978715dbb44fd989a1700788d3a8ab09",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/9908f85754003861f44eb42b1afe8ef7aeeb7e9c"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-calendar-task-swipes",
+        "date": "2026-11-06",
+        "title": "달력과 할 일의 좌우 스와이프 탐색",
+        "version": "1.11.0",
+        "content": "작업 목적\n달력은 이전·다음 달로, 할 일 목록은 이전·다음 날짜로 이동하는 터치 스와이프를 추가함.\n\n주요 변경\n- 달력과 할 일 목록의 좌우 터치로 날짜를 이동하도록 연결함.\n- 세로 움직임과 짧은 터치를 날짜 이동으로 처리하지 않도록 구분함.\n- 스와이프 직후 날짜 팝업이 잘못 열리는 클릭을 차단하고 버튼 조작을 유지함.\n- 초기 빈 할 일 안내 아래 여백을 늘렸으며 이후 목록 크기 조정은 후속 작업에서 개선함.",
+        "reason": "사용자가 달력과 할 일 목록을 좌우로 밀어 날짜를 옮기고 빈 할 일 안내 아래 공간을 늘려 달라고 요청함.",
+        "testResult": "모바일·PC 크기의 터치 검사에서 월 이동, 날짜 이동과 연말·연초 전환, 세로 스크롤 구분, 등록과 오늘 복귀를 확인함. 타입 검사·빌드와 공개 배포를 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "3ea5e88699d6330a7c8ace8617417a8e3bfb4235e656956dbcfc8a0452e7b73c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/8884a8f15098f45c2bb87dd3dfaa87563646d373"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-calendar-task-swipes:prompt:task",
+        "date": "2026-11-06",
+        "title": "달력과 할 일의 좌우 스와이프 탐색",
+        "prompt": "미니어리 달력과 할 일 목록에서 좌우 스와이프로 날짜를 탐색할 수 있도록 개선하세요. 왼쪽으로 밀면 다음 달이나 다음 날짜로, 오른쪽으로 밀면 이전 달이나 이전 날짜로 이동하게 하세요.\n\n세로 스크롤과 버튼 탭을 스와이프로 오인하지 않도록 구분하세요. 스와이프를 마친 직후 날짜 팝업이나 완료 버튼이 잘못 눌리지 않게 하세요. 할 일의 빈 안내 아래 공간도 조금 늘리세요. 기존 날짜 이동 버튼과 오늘 복귀, 등록·저장 동작은 유지하세요.",
+        "outcome": "달력은 이전·다음 달로, 할 일 목록은 이전·다음 날짜로 이동하는 터치 스와이프를 추가함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "29ab917284e6aaf3f2638791bd4c3ce6c963054341287df8e368f922fa13f1d2",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/8884a8f15098f45c2bb87dd3dfaa87563646d373"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-paged-swipes-bottom-composer",
+        "date": "2026-11-06",
+        "title": "손가락을 따라오는 페이지 전환과 하단 간편 입력",
+        "version": "1.12.0",
+        "content": "작업 목적\n스와이프 중 화면이 손가락을 따라 움직이고 놓으면 전환하거나 제자리로 돌아오도록 개선함. 간편 등록을 목록·카테고리·하단 입력 순서로 분리함.\n\n주요 변경\n- 이전·다음 페이지를 함께 보여주는 공통 스와이프 화면을 구성하고 짧은 드래그는 원위치로 복귀하도록 처리함.\n- 날짜 선택 후 일정 목록을 먼저 보여주고 일정 등록하기에서 카테고리를 고른 뒤 하단 입력창을 열도록 변경함.\n- 하단 입력창에서 날짜·중요 표시·프리셋·카테고리·상세 옵션을 사용할 수 있도록 연결함.\n- 당시 할 일 목록에 최소 공간을 확보하고 항목으로 채우는 구조를 적용했으며, 많은 항목의 자동 확장은 후속 작업에서 보완함.",
+        "reason": "날짜가 즉시 바뀌는 방식보다 손가락을 따라오는 전환을 원했으며, 입력보다 일정 목록과 카테고리 선택이 먼저인 흐름을 요청함.",
+        "testResult": "관련 브라우저 검사 9개에서 드래그 위치 추적, 원위치 복귀, 날짜 전환, 카테고리 우선 입력, 초점·입력 내용 유지와 기간 조회를 확인함. 타입 검사·빌드와 공개 반영을 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "1a98cf7e41475d5cd4c5299ae54b4528fe5385c23e6d2a8ac05b3c0cb2c3011c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/55f73634aa70215286ae25db55ca6a094d655d01"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-paged-swipes-bottom-composer:prompt:task",
+        "date": "2026-11-06",
+        "title": "손가락을 따라오는 페이지 전환과 하단 간편 입력",
+        "prompt": "미니어리의 달력과 할 일 스와이프는 손가락을 따라 화면이 움직이다가 놓으면 자연스럽게 다음 화면으로 넘어가도록 구성하세요. 이전·다음 내용을 함께 보여주고 짧게 움직였으면 제자리로 복귀하게 하세요.\n\n간편 등록은 날짜 누르기, 일정 목록 확인, 일정 등록하기, 카테고리 선택, 하단 일정 입력 순서로 구성하세요. 목록을 먼저 볼 수 있어야 하며 입력창은 별도로 화면 아래에서 열리게 하세요.\n\n할 일 목록은 빈 상태에서도 일정한 공간을 확보하고 등록한 항목이 그 안을 채우도록 하세요. 제목과 프리셋·카테고리·날짜 등 작성 내용을 유지하고 작은 화면에서도 입력과 등록이 이어지는지 확인하세요.",
+        "outcome": "스와이프 중 화면이 손가락을 따라 움직이고 놓으면 전환하거나 제자리로 돌아오도록 개선함. 간편 등록을 목록·카테고리·하단 입력 순서로 분리함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "f273069227cb8fc45312909edc83c37dbb7f26bb51b628aad74572e71f143610",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/55f73634aa70215286ae25db55ca6a094d655d01"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-quiet-calendar-grid",
+        "date": "2026-11-06",
+        "title": "칸 테두리를 줄인 가벼운 달력 화면",
+        "version": "1.12.2",
+        "content": "작업 목적\n날짜 칸의 경계가 스와이프 화면에서 지나치게 두드러지지 않도록 달력의 격자와 큰 배경을 줄임.\n\n주요 변경\n- 월간·주간 날짜 칸의 격자선과 달력 바깥 프레임을 제거함.\n- 선택한 날짜의 큰 칸 배경을 없애고 숫자 주변의 작은 표시를 유지함.\n- 요일·인접 달·페이지 배경을 통일해 스와이프 중 날짜와 일정이 자연스럽게 이어지도록 정리함.\n- 날짜 누름 효과와 일정 내용의 색상 표시는 유지함.",
+        "reason": "사용자가 달력 칸이 지나치게 강조돼 스와이프할 때 거슬린다고 알려 화면 장식을 줄임.",
+        "testResult": "모바일·PC 스와이프와 날짜 모션 관련 검사 3개, 타입 검사·빌드를 통과함. 드래그 화면을 확인하고 공개 배포 반영을 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "9d2901f372ac1e3a1a981cf50de9793bdcc79bcd8331559895250cd67306ce97",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/ba409d7bdad158e81eaf7900d0b10e1bdabae6a3"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-quiet-calendar-grid:prompt:task",
+        "date": "2026-11-06",
+        "title": "칸 테두리를 줄인 가벼운 달력 화면",
+        "prompt": "미니어리 달력의 날짜 칸과 바깥 프레임이 스와이프 중 지나치게 눈에 띄지 않도록 줄이세요. 격자선과 큰 선택 배경을 정리해 날짜와 일정 중심으로 자연스럽게 보이도록 하세요.\n\n페이지 사이 여백, 오늘·선택 날짜의 작은 표시와 날짜 누름 효과는 유지하세요. 기존 일정 색상과 날짜 선택, 모바일·PC의 스와이프 동작도 보존하세요.",
+        "outcome": "날짜 칸의 경계가 스와이프 화면에서 지나치게 두드러지지 않도록 달력의 격자와 큰 배경을 줄임.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "b38c547b3acadeb0e38ce0fdab7a8ada9b73cda6aaef881a6a583757baf3670d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/ba409d7bdad158e81eaf7900d0b10e1bdabae6a3"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-required-fixed-categories",
+        "date": "2026-11-06",
+        "title": "카테고리 우선 등록과 색상별 단일 분류",
+        "version": "1.10.0",
+        "content": "작업 목적\n간편 등록을 시작하면 카테고리를 먼저 선택하도록 변경함. 모든 일정의 분류를 필수로 하고 색상마다 하나의 카테고리를 사용하도록 정리함.\n\n주요 변경\n- 카테고리 카드 선택 뒤 제목 입력으로 이어지도록 연결함.\n- 상세 등록·여러 날짜 저장·실행 취소 경로에서도 카테고리 없는 저장을 차단함.\n- 카테고리 색상을 고정하고 이름·순서 편집을 유지하며 같은 색상 중복 생성을 차단함.\n- 기존 미분류 일정과 반복 일정 변경 내역을 기타에 연결하고 기존 항목의 ID와 내용을 보존함.\n- 사용 중인 카테고리와 마지막 카테고리 삭제를 제한해 분류 연결이 끊기지 않도록 보완함.",
+        "reason": "사용자가 사진처럼 카테고리를 먼저 고르고 모든 일정이 분류되며 색상별로 카테고리 하나만 사용하도록 요청함.",
+        "testResult": "모바일·PC에서 카테고리 우선 선택과 상세 등록 필수 분류, 색상 고정·중복 차단, 백업 이관과 원자적 저장을 확인함. 타입 검사·빌드와 공개 배포 반영을 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "b30c8ca012889a2c59f460c01275a557c985cc02eacb9ddc2ffe6dcfaa469685",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/e3d14d753777ab950a7a93c5ebfa805286a76a23"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-required-fixed-categories:prompt:task",
+        "date": "2026-11-06",
+        "title": "카테고리 우선 등록과 색상별 단일 분류",
+        "prompt": "미니어리는 일정과 할 일을 관리하는 개인 플래너입니다. 간편 등록을 시작하면 카테고리 카드를 먼저 보여주고 하나를 선택한 뒤 제목을 입력하도록 구성하세요.\n\n모든 일정에 카테고리를 필수로 적용하세요. 색상마다 카테고리 하나만 만들 수 있게 하고 만든 뒤에는 이름과 순서를 편집하도록 하세요. 기존 미분류 일정은 기타로 연결하고 일정·메모·반복 정보와 고유 ID를 보존하세요.\n\n상세 등록과 여러 날짜 저장, 백업 복원과 실행 취소에서도 분류 조건이 유지되도록 하세요. 사용 중인 카테고리를 지워 일정의 연결이 끊기지 않도록 처리하고 모바일·PC에서 실제 저장 결과를 확인하세요.",
+        "outcome": "간편 등록을 시작하면 카테고리를 먼저 선택하도록 변경함. 모든 일정의 분류를 필수로 하고 색상마다 하나의 카테고리를 사용하도록 정리함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "ea2c6368b63e49d6089d34d791cf7772739f37eaf8d3a6e3fc5f4f3d3b726797",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/e3d14d753777ab950a7a93c5ebfa805286a76a23"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-weekly-schedule-capacity",
+        "date": "2026-11-06",
+        "title": "주간보기의 일정 개수 제한 해제",
+        "version": "1.12.3",
+        "content": "작업 목적\n주간보기에서 두 개만 보이던 일정을 칸 높이만큼 여러 개 표시하고 넘치는 항목을 해당 날짜 안에서 스크롤하도록 변경함.\n\n주요 변경\n- 주간보기의 일정 두 개 표시 제한과 나머지 개수만 표시하던 안내를 제거함.\n- 날짜별 목록에서 모든 일정을 렌더링하고 넘치는 항목은 칸 안에서 내려보도록 처리함.\n- 일정 수정과 시간순 표시, 날짜 칸의 좌우 주간 이동을 유지함.",
+        "reason": "주간보기는 칸에 여유가 있는데도 등록된 일정 중 일부만 보인다는 요청을 반영함.",
+        "testResult": "모바일·PC에서 하루 24개 일정 표시, 칸 안 스크롤과 마지막 항목 수정, 좌우 주 이동을 검사해 두 경우 모두 통과함. 타입 검사·빌드와 공개 반영도 확인함. 이번 기록 작성을 위한 기능 검사는 새로 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-10T02:56:17.808Z",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "29319b1bfce262d8da22f341ef617601a7bb2c968aa7ed8e509af8ac33111201",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/489afb57b509f1a1a20137f699347e226b2394a0"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minially",
+      "record": {
+        "id": "codex:proj-minially:2026-11-06-minially-weekly-schedule-capacity:prompt:task",
+        "date": "2026-11-06",
+        "title": "주간보기의 일정 개수 제한 해제",
+        "prompt": "미니어리 주간보기에서 날짜 칸의 높이를 활용해 등록한 일정을 여러 개 보여주세요. 두 개만 표시하는 제한을 없애고 칸을 넘치는 일정은 해당 날짜 안에서 스크롤해 볼 수 있게 하세요.\n\n시간순 표시와 일정 수정, 좌우 스와이프의 주간 이동을 유지하세요. 작은 화면과 PC에서 많은 항목을 실제로 읽고 마지막 일정까지 조작할 수 있는지 확인하세요.",
+        "outcome": "주간보기에서 두 개만 보이던 일정을 칸 높이만큼 여러 개 표시하고 넘치는 항목을 해당 날짜 안에서 스크롤하도록 변경함.",
+        "source": {
+          "repository": "minho-nim/minially",
+          "fingerprint": "4c814fc7a24650debe2506e88304e758836d30b7fb566d1caf53d9541dd271e5",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minially/commit/489afb57b509f1a1a20137f699347e226b2394a0"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
     {
       "kind": "log",
       "projectId": "proj-minially",

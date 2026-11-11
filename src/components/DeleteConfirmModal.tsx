@@ -1,3 +1,4 @@
+import { useModalFocus } from '../utils/useModalFocus';
 import React, { useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
@@ -32,10 +33,11 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  const dialogRef=useModalFocus(isOpen,onClose);
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="삭제 확인" className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs">
       <div className="relative w-full max-w-md bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
@@ -44,6 +46,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             <h3 className="text-sm font-semibold text-ink">{title}</h3>
           </div>
           <button
+            aria-label="닫기"
             onClick={onClose}
             className="p-1 rounded text-muted hover:text-ink transition-colors"
           >

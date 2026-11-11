@@ -1,3 +1,4 @@
+import { useModalFocus } from '../utils/useModalFocus';
 import React, { useState, useEffect } from 'react';
 import { WorkLog, Project } from '../types';
 import { X, FolderGit2 } from 'lucide-react';
@@ -60,6 +61,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
     setError('');
   }, [initialLog, defaultProjectId, projects, isOpen]);
 
+  const dialogRef=useModalFocus(isOpen,onClose);
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -107,7 +109,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="개발 기록 편집" className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
       <div className="relative w-full max-w-xl bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
@@ -115,6 +117,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
             {initialLog ? '개발 기록 수정' : '새 개발 기록 등록'}
           </h3>
           <button
+            aria-label="닫기"
             onClick={onClose}
             className="p-1 rounded text-muted hover:text-ink transition-colors"
           >
@@ -138,7 +141,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
               </label>
               <div className="relative">
                 <select
-                  value={projectId}
+                  aria-label="대상 프로젝트" value={projectId}
                   onChange={(e) => setProjectId(e.target.value)}
                   className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent font-medium"
                 >
@@ -160,7 +163,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
               </label>
               <input
                 type="date"
-                value={date}
+                aria-label="작업 날짜" value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent font-mono"
@@ -173,7 +176,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
               </label>
               <input
                 type="text"
-                value={version}
+                aria-label="버전" value={version}
                 onChange={(e) => setVersion(e.target.value)}
                 placeholder="예: 0.1.0, 1.0.1"
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink font-mono focus:outline-none focus:border-accent"
@@ -189,7 +192,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
             </label>
             <input
               type="text"
-              value={title}
+              aria-label="기록 제목" value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="예: 식사 기록과 펫 성장 연결 오류 수정"
               required
@@ -204,7 +207,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
             </label>
             <textarea
               rows={3}
-              value={content}
+              aria-label="작업 내용" value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={'작업 목적\n어떤 문제를 해결하려 했는지 작성함.\n\n주요 변경\n- 실제로 바꾼 내용을 항목별로 작성함.'}
               required
@@ -219,7 +222,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
             </label>
             <textarea
               rows={2}
-              value={reason}
+              aria-label="작업 이유" value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="수정 또는 개발을 진행한 이유, 문제점 또는 배경을 작성하세요."
               className="w-full px-3 py-2 bg-surface-alt border border-line-strong rounded-md text-ink placeholder-muted focus:outline-none focus:border-accent leading-relaxed"
@@ -233,7 +236,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
             </label>
             <textarea
               rows={2}
-              value={testResult}
+              aria-label="확인 결과" value={testResult}
               onChange={(e) => setTestResult(e.target.value)}
               placeholder="실제로 확인한 결과와 아직 확인하지 못한 내용을 구분해 작성하세요."
               className="w-full px-3 py-2 bg-surface-alt border border-line-strong rounded-md text-ink placeholder-muted focus:outline-none focus:border-accent leading-relaxed"
@@ -247,7 +250,7 @@ export const WorkLogModal: React.FC<WorkLogModalProps> = ({
             </label>
             <textarea
               rows={2}
-              value={nextSteps}
+              aria-label="다음 작업" value={nextSteps}
               onChange={(e) => setNextSteps(e.target.value)}
               placeholder="이후 진행할 작업, 추가 개선 과제나 남은 태스크를 작성하세요."
               className="w-full px-3 py-2 bg-surface-alt border border-line-strong rounded-md text-ink placeholder-muted focus:outline-none focus:border-accent leading-relaxed"

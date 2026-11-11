@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
+import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { safeRead, safeWrite } from "../utils/archiveQuery";
 const introKey = "minlab_about_intro_v1";
 const defaultIntro =
@@ -116,9 +117,12 @@ export function AboutPage({
         )}
       </header>
       <section className="about-timeline" aria-label="경험과 성장 과정">
-        {experiences.map((item, i) => (
+        {experiences.map((item) => (
           <article key={item.label}>
-            <div className="timeline-marker">0{i + 1}</div>
+            <div className="timeline-marker">
+              <span>{item.label}</span>
+              <i />
+            </div>
             <div>
               <p className="eyebrow">{item.label}</p>
               <h2>{item.title}</h2>
@@ -126,13 +130,22 @@ export function AboutPage({
               <div className="related-skills">
                 {projects
                   .filter(item.match)
-                  .slice(0, 4)
+                  .slice(0, 2)
                   .map((p) => (
                     <a
                       href={routeHash({ view: "project", projectId: p.id })}
                       key={p.id}
                     >
-                      {p.name} ↗
+                      {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
+                      <div>
+                        <strong>{p.name} ↗</strong>
+                        <p>{p.description}</p>
+                        <small>
+                          {p.workLogs.length
+                            ? `${p.workLogs.length}개의 실제 개발 기록`
+                            : p.category}
+                        </small>
+                      </div>
                     </a>
                   ))}
               </div>
@@ -140,9 +153,15 @@ export function AboutPage({
           </article>
         ))}
       </section>
-      <a className="primary-link" href="#/development-log">
-        실제 개발 과정 읽어보기 ↗
-      </a>
+      <div className="about-next">
+        <p>
+          현장의 문제를 발견하는 경험에서, 직접 만들고 개선하는 기록으로
+          이어갑니다.
+        </p>
+        <a className="primary-link" href="#/development-log">
+          실제 개발 과정 읽어보기 ↗
+        </a>
+      </div>
     </div>
   );
 }

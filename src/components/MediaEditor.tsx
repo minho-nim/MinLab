@@ -111,6 +111,14 @@ export function MediaEditor({
         </p>
       )}
       {error && <p role="alert">{error}</p>}
+      {value.length > 0 && (
+        <p className="media-selection" role="status">
+          등록한 화면 {value.length}개 · 대표 화면:{" "}
+          {value.find((s) => s.id === cover)?.label ||
+            value[0]?.label ||
+            "첫 번째 화면"}
+        </p>
+      )}
       {value.map((s, i) => (
         <div className="media-editor-item" key={s.id}>
           <div className="media-editor-thumbnail">

@@ -1,42 +1,51 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import type { Project, WorkLog } from "../types";
 import { routeHash } from "../utils/navigation";
+
+// A view of the original text, never a replacement for the stored record.
+export function logHighlights(log: WorkLog): string[] {
+  const text = log.content || log.task || "";
+  const changes = text.split(/주요 변경\s*\n/)[1]?.split(/\n\s*\n/)[0];
+  return (changes || text)
+    .split("\n")
+    .map((line) => line.replace(/^[-•]\s*/, "").trim())
+    .filter((line) => line && !["작업 목적", "주요 변경"].includes(line))
+    .slice(0, 3);
+}
 export function LogContent({ log }: { log: WorkLog }) {
-  const title = log.title || log.task || "";
-  const kind = /신규|기능 추가/.test(title)
-    ? "신규 기능"
-    : /개선|수정|보완|정비/.test(title)
-      ? "개선·수정"
-      : null;
   return (
     <div className="log-content">
-      {kind && (
-        <span
-          className={"log-kind " + (kind === "신규 기능" ? "new" : "improved")}
-        >
-          {kind}
-        </span>
-      )}
       <p className="eyebrow">
         {log.date}
-        {log.version ? " / " + log.version : ""}
+        {log.version ? " · v" + log.version : " · 기획·운영 기록"}
       </p>
       <h3>{log.title || log.task || "개발 기록"}</h3>
-      {[
-        ["변경 내용", log.content || log.task],
-        ["수정 이유", log.reason || log.issues],
-        ["해결 방법", log.solution],
-        ["테스트 결과", log.testResult],
-        ["다음 작업", log.nextSteps],
-      ].map(
-        ([label, value]) =>
-          value && (
-            <div key={label}>
-              <h4>{label}</h4>
-              <p>{value}</p>
-            </div>
-          ),
-      )}
+      <div className="log-highlights">
+        <h4>핵심 변경</h4>
+        <ul>
+          {logHighlights(log).map((line, i) => (
+            <li key={i}>{line}</li>
+          ))}
+        </ul>
+      </div>
+      <details className="log-original">
+        <summary>전체 기록과 검증 결과 펼쳐보기</summary>
+        {[
+          ["변경 내용 원문", log.content || log.task],
+          ["수정 이유", log.reason || log.issues],
+          ["해결 방법", log.solution],
+          ["테스트 결과", log.testResult],
+          ["다음 작업", log.nextSteps],
+        ].map(
+          ([label, value]) =>
+            value && (
+              <div key={label}>
+                <h4>{label}</h4>
+                <p>{value}</p>
+              </div>
+            ),
+        )}
+      </details>
     </div>
   );
 }
@@ -52,18 +61,33 @@ export function VersionJournal({
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [selected, setSelected] = useState("");
   const [search, setSearch] = useState("");
-  const logs = useMemo(
+  const deferredSearch = useDeferredValue(search);
+  const [version, setVersion] = useState("");
+  const [month, setMonth] = useState("");
+  const [limit, setLimit] = useState(20);
+  const source = useMemo(
     () =>
       projects
         .filter((p) => !projectId || p.id === projectId)
-        .flatMap((p) =>
-          p.workLogs.map((log) => ({
-            project: p,
+        .flatMap((project) =>
+          project.workLogs.map((log) => ({
+            project,
             log,
-            key: p.id + "/" + log.id,
+            key: project.id + "/" + log.id,
           })),
         )
-        .filter(({ project: p, log: l }) =>
+        .sort((a, b) => b.log.date.localeCompare(a.log.date)),
+    [projects, projectId],
+  );
+  const versions = [
+    ...new Set(source.map((item) => item.log.version).filter(Boolean)),
+  ];
+  const logs = useMemo(
+    () =>
+      source.filter(
+        ({ project: p, log: l }) =>
+          (!version || l.version === version) &&
+          (!month || l.date.startsWith(month)) &&
           [
             p.name,
             l.title,
@@ -71,15 +95,16 @@ export function VersionJournal({
             l.task,
             l.version,
             l.reason,
+            l.issues,
+            l.solution,
             l.testResult,
             l.nextSteps,
           ]
             .join(" ")
             .toLowerCase()
-            .includes(search.toLowerCase()),
-        )
-        .sort((a, b) => b.log.date.localeCompare(a.log.date)),
-    [projects, projectId, search],
+            .includes(deferredSearch.toLowerCase()),
+      ),
+    [source, version, month, deferredSearch],
   );
   const current = logs.find((l) => l.key === selected) || logs[0];
   return (
@@ -87,29 +112,90 @@ export function VersionJournal({
       <header className="page-heading">
         <p className="eyebrow">개발일지</p>
         <h1>만들고 개선한 기록</h1>
-        <p>프로젝트에 남겨진 실제 날짜와 버전, 개선의 이유를 읽어보세요.</p>
+        <p>
+          프로젝트를 고르고, 바뀐 점부터 읽어보세요. 모든 원문은 기록 안에
+          보관되어 있습니다.
+        </p>
       </header>
       <div className="journal-filters">
-        <select
-          aria-label="개발일지 프로젝트"
-          value={projectId || ""}
-          onChange={(e) => onSelect(e.target.value)}
-        >
-          <option value="">전체 프로젝트</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="search"
-          aria-label="개발일지 검색"
-          placeholder="내용, 버전으로 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <label>
+          프로젝트
+          <select
+            aria-label="개발일지 프로젝트"
+            value={projectId || ""}
+            onChange={(e) => {
+              onSelect(e.target.value);
+              setVersion("");
+              setLimit(20);
+            }}
+          >
+            <option value="">전체 프로젝트</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name} · {p.workLogs.length}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          검색
+          <input
+            type="search"
+            aria-label="개발일지 검색"
+            placeholder="변경 내용, 버전으로 검색"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setLimit(20);
+            }}
+          />
+        </label>
+        <label>
+          버전
+          <select
+            aria-label="개발일지 버전"
+            value={version}
+            onChange={(e) => {
+              setVersion(e.target.value);
+              setLimit(20);
+            }}
+          >
+            <option value="">전체 버전</option>
+            {versions.map((v) => (
+              <option key={v} value={v}>
+                v{v}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          작업 월
+          <input
+            type="month"
+            aria-label="개발일지 작업 월"
+            value={month}
+            onChange={(e) => {
+              setMonth(e.target.value);
+              setLimit(20);
+            }}
+          />
+        </label>
+      </div>
+      <div className="journal-result">
         <span role="status">{logs.length}개의 기록</span>
+        {(search || version || month) && (
+          <button
+            className="text-link"
+            onClick={() => {
+              setSearch("");
+              setVersion("");
+              setMonth("");
+              setLimit(20);
+            }}
+          >
+            검색 조건 초기화
+          </button>
+        )}
       </div>
       {!current ? (
         <div className="empty-state">표시할 개발 기록이 없습니다.</div>
@@ -117,21 +203,25 @@ export function VersionJournal({
         <>
           <div className="journal-desktop">
             <nav className="version-index" aria-label="날짜 및 버전 선택">
-              {logs.map(({ project: p, log: l, key }) => (
-                <button
-                  key={key}
-                  aria-current={current.key === key ? "true" : undefined}
-                  onClick={() => setSelected(key)}
-                >
-                  <small>
-                    {l.date} / {l.version || "버전 미지정"}
-                  </small>
-                  <strong>{l.title || l.task || "개발 기록"}</strong>
-                  <span>{p.name}</span>
-                </button>
+              {logs.map(({ project: p, log: l, key }, i) => (
+                <div key={key}>
+                  {(i === 0 || logs[i - 1].log.date !== l.date) && (
+                    <p className="journal-date">{l.date}</p>
+                  )}
+                  <button
+                    aria-current={current.key === key ? "true" : undefined}
+                    onClick={() => setSelected(key)}
+                  >
+                    <small>
+                      {l.version ? "v" + l.version : "기획·운영 기록"}
+                    </small>
+                    <strong>{l.title || l.task || "개발 기록"}</strong>
+                    <span>{p.name}</span>
+                  </button>
+                </div>
               ))}
             </nav>
-            <article className="journal-detail">
+            <article className="journal-detail" key={current.key}>
               <a
                 className="text-link"
                 href={routeHash({
@@ -145,7 +235,7 @@ export function VersionJournal({
             </article>
           </div>
           <div className="journal-mobile">
-            {logs.map(({ project: p, log: l, key }) => (
+            {logs.slice(0, limit).map(({ project: p, log: l, key }) => (
               <details
                 key={key}
                 onToggle={(e) => {
@@ -160,19 +250,32 @@ export function VersionJournal({
               >
                 <summary>
                   <small>
-                    {l.date} · {l.version || "버전 미지정"} / {p.name}
+                    {l.date} · {l.version ? "v" + l.version : "기획·운영 기록"}{" "}
+                    / {p.name}
                   </small>
                   <strong>{l.title || l.task || "개발 기록"}</strong>
                 </summary>
-                {expanded.has(key) && <LogContent log={l} />}
-                <a
-                  href={routeHash({ view: "project", projectId: p.id })}
-                  className="text-link"
-                >
-                  프로젝트 보기 ↗
-                </a>
+                {expanded.has(key) && (
+                  <>
+                    <LogContent log={l} />
+                    <a
+                      href={routeHash({ view: "project", projectId: p.id })}
+                      className="text-link"
+                    >
+                      프로젝트 보기 ↗
+                    </a>
+                  </>
+                )}
               </details>
             ))}
+            {logs.length > limit && (
+              <button
+                className="primary-link"
+                onClick={() => setLimit((n) => n + 20)}
+              >
+                기록 더 보기 · {logs.length - limit}개 남음
+              </button>
+            )}
           </div>
         </>
       )}

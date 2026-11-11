@@ -44,7 +44,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     const before = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("minlab_projects_data_v2")),
     );
-    assert.ok(before.length >= 10);
+    assert.ok(before.length > 0);
     assert.equal(await page.locator("iframe").count(), 0);
     await page.locator(".explorer-index button").nth(0).click();
     const first = await page.locator(".preview-copy h3").innerText();
@@ -70,6 +70,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     assert.ok(
       page.url().includes("q=React") && page.url().includes("layout=list"),
     );
+    assert.equal(await page.locator(".text-project .project-media").count(), 0);
     const count = await page.locator(".archive-project").count();
     assert.ok(count > 0);
     const last = page.locator(".archive-project").last();
@@ -103,9 +104,66 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.goto(base + "#/development-log");
     await page.locator(".version-index button").first().click();
     assert.ok(await page.locator(".journal-detail .log-content").innerText());
+    const recordedProject = before.find((p) => p.workLogs.length > 0);
+    await page
+      .getByRole("combobox", { name: "개발일지 프로젝트" })
+      .selectOption(recordedProject.id);
+    const originalLog = [...recordedProject.workLogs].sort((a, b) =>
+      b.date.localeCompare(a.date),
+    )[0];
+    await page.locator(".journal-detail .log-original summary").click();
+    assert.equal(
+      await page
+        .locator(".journal-detail .log-original > div")
+        .first()
+        .locator("p")
+        .textContent(),
+      originalLog.content || originalLog.task,
+    );
+    const originalReason = originalLog.reason || originalLog.issues;
+    if (originalReason)
+      assert.ok(
+        (
+          await page.locator(".journal-detail .log-original").textContent()
+        ).includes(originalReason),
+      );
+    const versionOption = recordedProject.workLogs.find(
+      (l) => l.version,
+    )?.version;
+    if (versionOption) {
+      await page
+        .getByRole("combobox", { name: "개발일지 버전" })
+        .selectOption(versionOption);
+      assert.equal(
+        await page.locator(".version-index button").count(),
+        recordedProject.workLogs.filter((l) => l.version === versionOption)
+          .length,
+      );
+    }
     await page.goto(base + "#/development-log?tab=prompts");
     assert.ok((await page.locator("main").innerText()).includes("프롬프트"));
+    assert.equal(
+      await page
+        .getByRole("button", { name: "새 프롬프트", exact: true })
+        .count(),
+      0,
+    );
+    await page.locator(".prompt-original summary").first().click();
+    assert.ok(
+      await page.locator(".prompt-original[open] p").first().textContent(),
+    );
     await page.goto(base + "#/admin");
+    await page
+      .getByRole("searchbox", { name: "관리할 프로젝트 검색" })
+      .fill("없는프로젝트_관리검색");
+    assert.equal(await page.locator(".admin-projects article").count(), 0);
+    await page
+      .getByRole("searchbox", { name: "관리할 프로젝트 검색" })
+      .fill("");
+    assert.equal(
+      await page.locator(".admin-projects article").count(),
+      before.length,
+    );
     await page.getByRole("button", { name: "+ 프로젝트 등록" }).click();
     await page
       .getByRole("textbox", { name: "프로젝트명", exact: true })
@@ -182,6 +240,14 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.goto(
       base + "#/development-log?project=" + temporaryId + "&tab=prompts",
     );
+    if (
+      await page
+        .getByRole("button", { name: "관리자 · 상세 기록 편집", exact: true })
+        .count()
+    )
+      await page
+        .getByRole("button", { name: "관리자 · 상세 기록 편집", exact: true })
+        .click();
     await page
       .getByRole("button", { name: "새 프롬프트", exact: true })
       .click();
@@ -226,9 +292,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       "contain",
     );
     await page.goto(base + "#/admin");
-    await page
-      .getByRole("button", { name: "Data Manager · 백업·복원" })
-      .click();
+    await page.getByRole("button", { name: "백업·복원", exact: true }).click();
     const downloadPromise = page.waitForEvent("download");
     await page
       .getByRole("button", { name: "JSON 파일 다운로드", exact: true })

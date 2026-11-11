@@ -15,7 +15,7 @@ test('MINOVA keeps Crossroads records and only migrates the former public name a
   const storage=memoryStorage([['minlab_catalog_seen_project_ids_v1',JSON.stringify(catalog.map(p=>p.id))]]);
   const old={...crossroads,name:'Crossroads: AI Verdict',englishName:'Crossroads: AI Verdict',githubUrl:'https://github.com/minho-nim/crossroads-ai-verdict',liveUrl:'https://minho-nim.github.io/MinLab/apps/crossroads/',previewUrl:'https://minho-nim.github.io/MinLab/apps/crossroads/',workLogs:[{id:'keep',title:'기존 기록',date:'2026-11-10',content:'보존'}]};
   const [updated]=connectCatalogOnce([old],storage,'projects');
-  assert.equal(updated.name,'MINOVA');
+  assert.equal(updated.name,'MINOVA(미노바)');
   assert.equal(updated.githubUrl,'https://github.com/minho-nim/MINOVA');
   assert.equal(updated.liveUrl,'https://minho-nim.github.io/MINOVA/');
   assert.deepEqual(updated.workLogs,old.workLogs);

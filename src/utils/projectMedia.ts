@@ -11,7 +11,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
   "proj-crossroads-ai-verdict": [
     {
       id: "crossroads-start",
-      src: "media/crossroads.webp",
+      src: "media/minova.webp",
       label: "게임 시작 화면",
       fit: "contain",
     },

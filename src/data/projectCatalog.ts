@@ -63,7 +63,7 @@ export function connectCatalogOnce(projects: Project[], storage: Pick<Storage, '
   if (minova) merged = merged.map(project => {
     if (project.id !== minova.id) return project;
     const updated = {...project};
-    const oldNames = ['Crossroads: AI Verdict', 'Crossroads'];
+    const oldNames = ['Crossroads: AI Verdict', 'Crossroads', 'MINOVA'];
     if (oldNames.includes(project.name)) updated.name = minova.name;
     if (!project.englishName || oldNames.includes(project.englishName)) updated.englishName = minova.name;
     for (const key of ['githubUrl', 'liveUrl', 'previewUrl'] as const) {

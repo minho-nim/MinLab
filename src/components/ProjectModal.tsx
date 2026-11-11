@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { MediaEditor } from "./MediaEditor";
 import { parseScreenshots } from "../utils/projectMedia";
 import { Project, ProjectStatus, ProjectScreenshot } from "../types";
+import { routeHash } from "../utils/navigation";
 import { X, Image as ImageIcon } from "lucide-react";
 import { normalizeProjectStatus } from "../utils/storage";
 
@@ -156,6 +157,19 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
           <h3 className="text-sm font-semibold text-ink">
             {initialProject ? "프로젝트 수정" : "새 프로젝트 등록"}
+            {initialProject && (
+              <a
+                className="text-link ml-3"
+                href={routeHash({
+                  view: "project",
+                  projectId: initialProject.id,
+                })}
+                target="_blank"
+                rel="noreferrer"
+              >
+                저장된 공개 화면 ↗
+              </a>
+            )}
           </h3>
           <button
             aria-label="닫기"

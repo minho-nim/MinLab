@@ -158,27 +158,34 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         </div>
       ) : (
         <div className={"project-collection " + query.layout}>
-          {filtered.map((p, i) => (
+          {filtered.map((p) => (
             <a
               className={
-                "archive-project " + (!mediaFor(p).length ? "text-project" : "")
+                "archive-project " +
+                (!mediaFor(p).length ? "text-project" : "image-project")
               }
               key={p.id}
               href={routeHash({ view: "project", projectId: p.id })}
             >
               {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
               <div className="archive-project-copy">
-                <p className="eyebrow">
-                  {String(i + 1).padStart(2, "0")} / {p.category}
-                </p>
+                <p className="eyebrow">{p.category}</p>
                 <h2>
                   {p.name}
                   <ArrowUpRight size={22} />
                 </h2>
                 <p className="project-description">{p.description}</p>
+                <div className="card-footer">
+                  <span>
+                    {p.workLogs.length
+                      ? `개발 기록 ${p.workLogs.length}`
+                      : "프로젝트 소개"}
+                  </span>
+                  <span>살펴보기 ↗</span>
+                </div>
                 <div className="project-tags">
                   <span>{p.status}</span>
-                  {p.techStack.slice(0, 3).map((t) => (
+                  {p.techStack.slice(0, 2).map((t) => (
                     <span key={t}>{t}</span>
                   ))}
                 </div>

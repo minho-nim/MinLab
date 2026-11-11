@@ -43,6 +43,7 @@ export default function App() {
     navigate(id ? { view: "project", projectId: id } : { view: "archive" });
   const [manageRecords, setManageRecords] = useState(false);
   const [adminSection, setAdminSection] = useState("projects");
+  const [adminSearch, setAdminSearch] = useState("");
 
   useEffect(() => {
     const priorRestoration = history.scrollRestoration;
@@ -440,14 +441,19 @@ export default function App() {
                 aria-pressed={adminSection === "projects"}
                 onClick={() => setAdminSection("projects")}
               >
-                Projects
+                프로젝트
               </button>
-              <a href="#/development-log">Development Logs</a>
+              <a
+                href="#/development-log"
+                onClick={() => setManageRecords(true)}
+              >
+                기록 관리
+              </a>
               <button
                 aria-pressed={adminSection === "about"}
                 onClick={() => setAdminSection("about")}
               >
-                About Editor
+                소개 편집
               </button>
               <button
                 aria-pressed={adminSection === "media"}
@@ -456,7 +462,7 @@ export default function App() {
                 프로젝트 이미지
               </button>
               <button onClick={() => setIsBackupModalOpen(true)}>
-                Data Manager · 백업·복원
+                백업·복원
               </button>
             </nav>
             {adminSection === "about" ? (
@@ -483,68 +489,96 @@ export default function App() {
                     + 프로젝트 등록
                   </button>
                 </div>
+                <label className="admin-search">
+                  프로젝트 검색
+                  <input
+                    type="search"
+                    aria-label="관리할 프로젝트 검색"
+                    placeholder="이름, 설명, 분야로 검색"
+                    value={adminSearch}
+                    onChange={(e) => setAdminSearch(e.target.value)}
+                  />
+                </label>
+                <p className="result-count" role="status">
+                  {
+                    projects.filter((p) =>
+                      [p.name, p.description, p.category]
+                        .join(" ")
+                        .toLowerCase()
+                        .includes(adminSearch.toLowerCase()),
+                    ).length
+                  }
+                  개 표시 / 전체 {projects.length}개
+                </p>
                 <div className="admin-projects">
-                  {projects.map((p, index) => (
-                    <article key={p.id}>
-                      <a href={routeHash({ view: "manage", projectId: p.id })}>
-                        <strong>{p.name}</strong>
-                        <span>
-                          {p.category} / {p.status}
-                        </span>
-                      </a>
-                      <a
-                        className="text-link"
-                        href={routeHash({ view: "project", projectId: p.id })}
-                      >
-                        공개 화면 ↗
-                      </a>
-                      <button
-                        disabled={index === 0}
-                        aria-label={p.name + " 표시순 올리기"}
-                        onClick={() => {
-                          const ordered = [...projects];
-                          [ordered[index - 1], ordered[index]] = [
-                            ordered[index],
-                            ordered[index - 1],
-                          ];
-                          updateProjectsState(ordered);
-                        }}
-                      >
-                        ↑
-                      </button>
-                      <button
-                        disabled={index === projects.length - 1}
-                        aria-label={p.name + " 표시순 내리기"}
-                        onClick={() => {
-                          const ordered = [...projects];
-                          [ordered[index], ordered[index + 1]] = [
-                            ordered[index + 1],
-                            ordered[index],
-                          ];
-                          updateProjectsState(ordered);
-                        }}
-                      >
-                        ↓
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingProject(p);
-                          setIsProjectModalOpen(true);
-                        }}
-                      >
-                        수정
-                      </button>
-                      <button onClick={() => handleRequestDelete(p)}>
-                        삭제
-                      </button>
-                    </article>
-                  ))}
+                  {projects.map((p, index) =>
+                    ![p.name, p.description, p.category]
+                      .join(" ")
+                      .toLowerCase()
+                      .includes(adminSearch.toLowerCase()) ? null : (
+                      <article key={p.id}>
+                        <a
+                          href={routeHash({ view: "manage", projectId: p.id })}
+                        >
+                          <strong>{p.name}</strong>
+                          <span>
+                            {p.category} / {p.status}
+                          </span>
+                        </a>
+                        <a
+                          className="text-link"
+                          href={routeHash({ view: "project", projectId: p.id })}
+                        >
+                          공개 화면 ↗
+                        </a>
+                        <button
+                          disabled={index === 0}
+                          aria-label={p.name + " 표시순 올리기"}
+                          onClick={() => {
+                            const ordered = [...projects];
+                            [ordered[index - 1], ordered[index]] = [
+                              ordered[index],
+                              ordered[index - 1],
+                            ];
+                            updateProjectsState(ordered);
+                          }}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          disabled={index === projects.length - 1}
+                          aria-label={p.name + " 표시순 내리기"}
+                          onClick={() => {
+                            const ordered = [...projects];
+                            [ordered[index], ordered[index + 1]] = [
+                              ordered[index + 1],
+                              ordered[index],
+                            ];
+                            updateProjectsState(ordered);
+                          }}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingProject(p);
+                            setIsProjectModalOpen(true);
+                          }}
+                        >
+                          수정
+                        </button>
+                        <button onClick={() => handleRequestDelete(p)}>
+                          삭제
+                        </button>
+                      </article>
+                    ),
+                  )}
                 </div>
               </>
             )}
             <p className="admin-future">
-              추후 연결 예정 · AI Inbox / Review Center / Publishing — 현재
-              미연동
+              프로젝트 편집 내용과 이미지는 이 브라우저에 저장됩니다. 백업
+              파일을 내려받아 보관하세요.
             </p>
           </section>
         ) : currentTab === "development-log" ? (
@@ -619,6 +653,7 @@ export default function App() {
             </div>
             {route.view === "records" && route.tab === "prompts" ? (
               <PromptHistoryView
+                readOnly={!manageRecords}
                 projects={projects}
                 projectId={devLogProjectIdFilter}
                 onUpdateProject={handleUpdateProject}

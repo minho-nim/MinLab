@@ -24,14 +24,18 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
     return () => observer.disconnect();
   }, []);
   const touchX = useRef(0);
+  const touchY = useRef(0);
   const count = projects.length;
-  const STEP = 200; // Native scroll distance per project; no wheel interception or scroll lock.
+  const STEP = 120; // Native scroll distance per project; no wheel interception or scroll lock.
   useEffect(() => {
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        if (!section.current || !matchMedia("(min-width: 900px)").matches)
+        if (
+          !section.current ||
+          !matchMedia("(min-width: 900px) and (min-height: 571px)").matches
+        )
           return;
         const y = -section.current.getBoundingClientRect().top + 90;
         setActive(
@@ -47,7 +51,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
     };
   }, [count]);
   useEffect(() => {
-    if (!matchMedia("(max-width:639px)").matches) return;
+    if (!matchMedia("(max-width:899px)").matches) return;
     const nav = section.current?.querySelector<HTMLElement>(".explorer-index");
     const button = nav?.querySelectorAll("button")[active];
     if (nav && button)
@@ -62,7 +66,10 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const select = (value: number) => {
     const next = Math.max(0, Math.min(value, count - 1));
     setActive(next);
-    if (section.current && matchMedia("(min-width: 900px)").matches)
+    if (
+      section.current &&
+      matchMedia("(min-width: 900px) and (min-height: 571px)").matches
+    )
       window.scrollTo({
         top:
           section.current.getBoundingClientRect().top +
@@ -87,11 +94,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
         <div className="section-heading">
           <div>
             <p className="eyebrow">프로젝트 탐색</p>
-            <h2>
-              프로젝트를 고르면,
-              <br />
-              <em>이 자리에서 살펴봅니다.</em>
-            </h2>
+            <h2>직접 만든 결과를 살펴보세요.</h2>
           </div>
           <a className="text-link" href="#/">
             전체 아카이브 <ArrowUpRight size={16} />
@@ -115,28 +118,45 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
             ))}
           </nav>
           <div
-            className="explorer-preview"
+            className={
+              "explorer-preview " +
+              (!mediaFor(project).length ? "explorer-text" : "")
+            }
             onTouchStart={(e) => {
               touchX.current = e.touches[0].clientX;
+              touchY.current = e.touches[0].clientY;
             }}
             onTouchEnd={(e) => {
               const delta = touchX.current - e.changedTouches[0].clientX;
-              if (Math.abs(delta) > 60) select(index + (delta > 0 ? 1 : -1));
+              const vertical = touchY.current - e.changedTouches[0].clientY;
+              if (
+                Math.abs(delta) > 60 &&
+                Math.abs(delta) > Math.abs(vertical) * 1.3
+              )
+                select(index + (delta > 0 ? 1 : -1));
             }}
           >
-            <a
-              href={routeHash({ view: "project", projectId: project.id })}
-              className="showcase-image"
-              aria-label={project.name + " 상세 보기"}
-            >
-              <ProjectMedia key={project.id} project={project} />
-            </a>
+            {mediaFor(project).length > 0 && (
+              <a
+                href={routeHash({ view: "project", projectId: project.id })}
+                className="showcase-image"
+                aria-label={project.name + " 상세 보기"}
+              >
+                <ProjectMedia key={project.id} project={project} />
+              </a>
+            )}
             <div className="preview-copy" key={project.id}>
               <p className="eyebrow">
                 {project.category} / {project.status}
               </p>
               <h3>{project.name}</h3>
               <p>{project.description}</p>
+              <p className="explorer-facts">
+                {project.workLogs.length
+                  ? `${project.workLogs.length}개의 개발 기록`
+                  : "프로젝트 소개"}{" "}
+                · {project.techStack.slice(0, 2).join(" · ")}
+              </p>
               <div className="preview-bottom">
                 <a
                   className="primary-link"
@@ -156,20 +176,17 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           <div>
             <i style={{ width: `${((index + 1) / count) * 100}%` }} />
           </div>
-          <span>스크롤로 다음 프로젝트 · 모바일에서는 좌우로 넘기기</span>
+          <span>목록을 누르거나 스크롤로 탐색 · 모바일은 좌우로 넘기기</span>
           <a
             className="text-link"
             href="#development-process"
             onClick={(e) => {
               e.preventDefault();
-              document
-                .getElementById("development-process")
-                ?.scrollIntoView({
-                  behavior: matchMedia("(prefers-reduced-motion:reduce)")
-                    .matches
-                    ? "instant"
-                    : "smooth",
-                });
+              document.getElementById("development-process")?.scrollIntoView({
+                behavior: matchMedia("(prefers-reduced-motion:reduce)").matches
+                  ? "instant"
+                  : "smooth",
+              });
             }}
           >
             개발 과정으로 이동 ↗
@@ -203,7 +220,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
   const featured = [
     ...images,
     ...projects.filter((p) => !images.some((i) => i.id === p.id)),
-  ].slice(0, 6);
+  ].slice(0, 4);
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -282,7 +299,13 @@ export function HomePage({ projects }: { projects: Project[] }) {
                     <strong>{main.name}</strong>
                     <p>{main.description}</p>
                   </div>
-                  <ArrowUpRight size={20} />
+                  <a
+                    className="text-link"
+                    href={routeHash({ view: "project", projectId: main.id })}
+                    aria-label={main.name + " 제작 과정 보기"}
+                  >
+                    제작 과정 <ArrowUpRight size={20} />
+                  </a>
                 </div>
                 <div
                   className="hero-image-tabs"
@@ -325,35 +348,6 @@ export function HomePage({ projects }: { projects: Project[] }) {
           >
             프로젝트 탐색 <ArrowDown size={15} />
           </a>
-        </div>
-      </section>
-      <section className="home-selected">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">직접 만든 서비스</p>
-            <h2>작업한 프로젝트</h2>
-          </div>
-          <a className="text-link" href="#/">
-            전체 프로젝트 보기 ↗
-          </a>
-        </div>
-        <div className="home-project-grid">
-          {featured.slice(0, 3).map((p) => (
-            <a
-              key={p.id}
-              href={routeHash({ view: "project", projectId: p.id })}
-            >
-              <ProjectMedia project={p} />
-              <div>
-                <p className="eyebrow">{p.category}</p>
-                <h3>
-                  {p.name}
-                  <ArrowUpRight size={18} />
-                </h3>
-                <p>{p.description}</p>
-              </div>
-            </a>
-          ))}
         </div>
       </section>
       <FeaturedExplorer projects={featured} />

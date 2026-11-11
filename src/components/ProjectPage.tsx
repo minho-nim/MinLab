@@ -1,36 +1,320 @@
-import type { Project } from '../types';
-import { ArrowLeft, ArrowUpRight, FileText, Settings } from 'lucide-react';
-import { ProjectPreview } from './ProjectPreview';
-import { routeHash } from '../utils/navigation';
-import { normalizeProjectStatus } from '../utils/storage';
-
-export function ProjectPage({ project }: { project: Project }) {
-  const appUrl = project.previewUrl?.trim() || project.liveUrl?.trim();
+import { useEffect, useRef, useState } from "react";
+import type { Project } from "../types";
+import { ArrowLeft, ArrowUpRight, Settings } from "lucide-react";
+import { lastArchive } from "../utils/archiveQuery";
+import { routeHash } from "../utils/navigation";
+import { mediaFor, ProjectMedia } from "./ProjectMedia";
+import { LogContent } from "./VersionJournal";
+export function ProjectPage({
+  project,
+  projects = [],
+}: {
+  project: Project;
+  projects?: Project[];
+}) {
+  const [active, setActive] = useState(0);
+  const [mediaIndex, setMediaIndex] = useState(0);
+  const story = useRef<HTMLDivElement>(null);
+  const features = project.keyFeatures.map((f) =>
+    typeof f === "string" ? { name: f, description: "" } : f,
+  );
+  const media = mediaFor(project);
+  const logs = [...project.workLogs].sort((a, b) =>
+    b.date.localeCompare(a.date),
+  );
+  const [selectedLog, setSelectedLog] = useState("");
+  const log = logs.find((l) => l.id === selectedLog) || logs[0];
+  const background = [...logs]
+    .reverse()
+    .find((item) => item.reason || item.issues);
+  const others = projects.filter((p) => p.id !== project.id);
+  const related = others
+    .filter(
+      (p) =>
+        p.category === project.category ||
+        p.techStack.some((t) => project.techStack.includes(t)),
+    )
+    .slice(0, 3);
+  const next =
+    projects.length > 1
+      ? projects[
+          (projects.findIndex((p) => p.id === project.id) + 1) % projects.length
+        ]
+      : undefined;
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries)
+          if (entry.isIntersecting) {
+            const index = Number((entry.target as HTMLElement).dataset.index);
+            setActive(index);
+            const matched = media.findIndex((m) => m.section === index);
+            if (matched >= 0) setMediaIndex(matched);
+          }
+      },
+      { rootMargin: "-15% 0px -40% 0px", threshold: 0.15 },
+    );
+    story.current
+      ?.querySelectorAll("[data-index]")
+      .forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [project.id, media.length]);
   return (
-    <div className="space-y-6 pb-8">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-        <a href={routeHash({ view: 'archive' })} className="inline-flex items-center gap-1.5 text-muted hover:text-accent"><ArrowLeft className="h-3.5 w-3.5" />아카이브로 돌아가기</a>
-        <div className="flex items-center gap-2">
-          <a href={routeHash({ view: 'records', projectId: project.id })} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-ink-secondary hover:border-accent-line hover:text-accent"><FileText className="h-3.5 w-3.5" />개발일지</a>
-          <a href={routeHash({ view: 'manage', projectId: project.id })} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-muted hover:text-ink"><Settings className="h-3.5 w-3.5" />프로젝트 관리</a>
-        </div>
+    <div className="project-story">
+      <div className="project-breadcrumb">
+        <a className="text-link" href={lastArchive()}>
+          <ArrowLeft size={15} /> 아카이브로 돌아가기
+        </a>
+        <a
+          className="text-link"
+          href={routeHash({ view: "manage", projectId: project.id })}
+        >
+          <Settings size={14} /> 프로젝트 관리
+        </a>
       </div>
-      <header className="rounded-2xl border border-line bg-surface p-6 sm:p-8">
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-[11px] text-muted"><span className="text-accent">{project.category}</span><span>·</span><span>{normalizeProjectStatus(project.status)}</span></div>
-        <h1 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">{project.name}</h1>
-        {project.description && <p className="mt-3 max-w-3xl whitespace-pre-wrap text-sm leading-7 text-ink-secondary">{project.description}</p>}
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          {project.techStack.map(tech => <span key={tech} className="rounded-md bg-surface-alt px-2.5 py-1 text-[11px] text-muted">{tech}</span>)}
-          {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noreferrer" className="ml-auto inline-flex items-center gap-1 text-xs text-muted hover:text-accent">GitHub 저장소<ArrowUpRight className="h-3.5 w-3.5" /></a>}
+      <header className="project-intro">
+        <p className="eyebrow">
+          {project.category} / {project.status}
+        </p>
+        <h1>{project.name}</h1>
+        <p>{project.description}</p>
+        <div className="project-tags">
+          {project.techStack.map((t) => (
+            <span key={t}>{t}</span>
+          ))}
+        </div>
+        <div className="project-actions">
+          {project.liveUrl?.trim() && (
+            <a
+              className="primary-link"
+              href={project.liveUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              앱 실행하기 <ArrowUpRight size={17} />
+            </a>
+          )}
+          {project.githubUrl && (
+            <a
+              className="text-link"
+              href={project.githubUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub <ArrowUpRight size={16} />
+            </a>
+          )}
         </div>
       </header>
-      {appUrl ? <ProjectPreview key={project.id + appUrl} name={project.name} url={appUrl} autoOpen /> : (
-        <div className="rounded-xl border border-dashed border-line bg-surface px-6 py-14 text-center text-sm text-muted">아직 실행 사이트가 연결되지 않았습니다.</div>
+      <div className="story-layout">
+        <div className="story-copy" ref={story}>
+          <section data-index="0">
+            <p className="eyebrow">01 / OVERVIEW</p>
+            <h2>이 프로젝트는.</h2>
+            <p>
+              {project.description ||
+                "프로젝트 소개가 아직 등록되지 않았습니다."}
+            </p>
+          </section>
+          <section data-index="1">
+            <p className="eyebrow">02 / BACKGROUND & PROBLEM</p>
+            <h2>제작 배경과 문제.</h2>
+            {background ? (
+              <>
+                <p className="eyebrow">
+                  가장 이른 개발 기록 · {background.date} · 수정 이유
+                </p>
+                <p>{background.reason || background.issues}</p>
+              </>
+            ) : (
+              <p className="muted-copy">
+                제작 배경과 문제 정의는 아직 기록되지 않았습니다.
+              </p>
+            )}
+          </section>
+          <section data-index="2">
+            <p className="eyebrow">03 / FEATURES</p>
+            <h2>기능에서 경험으로.</h2>
+            {features.length ? (
+              <div className="feature-options">
+                {features.map((f, i) => (
+                  <button
+                    key={i}
+                    aria-pressed={active === i + 10}
+                    onClick={() => {
+                      setActive(i + 10);
+                      const matched = media.findIndex(
+                        (m) => m.label === f.name,
+                      );
+                      if (matched >= 0) setMediaIndex(matched);
+                    }}
+                  >
+                    <span>0{i + 1}</span>
+                    <div>
+                      <h3>{f.name}</h3>
+                      {f.description && <p>{f.description}</p>}
+                    </div>
+                    <ArrowUpRight size={16} />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="muted-copy">
+                상세 기능 설명은 아직 등록되지 않았습니다.
+              </p>
+            )}
+          </section>
+          <section data-index="3">
+            <p className="eyebrow">04 / DEVELOPMENT</p>
+            <h2>
+              만들고, 검증하고,
+              <br />
+              개선한 기록.
+            </h2>
+            {log ? (
+              <>
+                <label className="log-select">
+                  날짜 · 버전 선택
+                  <select
+                    value={log.id}
+                    onChange={(e) => setSelectedLog(e.target.value)}
+                  >
+                    {logs.map((l) => (
+                      <option value={l.id} key={l.id}>
+                        {l.date} / {l.version || "버전 미지정"} /{" "}
+                        {l.title || l.task || "개발 기록"}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <LogContent log={log} />
+              </>
+            ) : (
+              <p className="muted-copy">등록된 개발일지가 없습니다.</p>
+            )}
+            <a
+              className="text-link"
+              href={routeHash({ view: "records", projectId: project.id })}
+            >
+              전체 개발일지 보기 ↗
+            </a>
+            <a
+              className="text-link"
+              href={routeHash({
+                view: "records",
+                projectId: project.id,
+                tab: "prompts",
+              })}
+            >
+              작업 프롬프트 {project.promptHistory?.length || 0}개 ↗
+            </a>
+          </section>
+          <section data-index="4">
+            <p className="eyebrow">05 / CHANGELOG & RESULTS</p>
+            <h2>변화와 결과.</h2>
+            {project.changelog.length > 0 && (
+              <div className="changelog-list">
+                {project.changelog.map((c) => (
+                  <article key={c.id}>
+                    <small>
+                      {c.date} / {c.version}
+                    </small>
+                    <p>{c.description}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+            {logs.some((l) => l.testResult) ? (
+              <>
+                <h3>기록에 남겨진 검증 결과</h3>
+                <p>{logs.find((l) => l.testResult)?.testResult}</p>
+              </>
+            ) : (
+              <p className="muted-copy">별도로 기록된 검증 결과가 없습니다.</p>
+            )}
+          </section>
+        </div>
+        <aside className="story-showcase">
+          <div className="window-bar">
+            <span className="window-dots">● ● ●</span>
+            <span>PROJECT SHOWCASE</span>
+            <ArrowUpRight size={12} />
+          </div>
+          <ProjectMedia key={project.id} project={project} index={mediaIndex} />
+          <div className="showcase-caption">
+            <p>{media[mediaIndex]?.label || "프로젝트 화면 미등록"}</p>
+            {media.length > 1 && (
+              <div className="media-tabs">
+                {media.map((m, i) => (
+                  <button
+                    key={m.src}
+                    aria-pressed={i === mediaIndex}
+                    onClick={() => setMediaIndex(i)}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="eyebrow">
+              {active === 0
+                ? "OVERVIEW"
+                : active === 1
+                  ? "BACKGROUND"
+                  : active === 2 || active >= 10
+                    ? "FEATURES"
+                    : active === 3
+                      ? "DEVELOPMENT"
+                      : "RESULTS"}
+            </p>
+            <p>
+              {active >= 10
+                ? features[active - 10]?.description ||
+                  features[active - 10]?.name
+                : active === 3
+                  ? log?.title || "개발 과정"
+                  : project.description}
+            </p>
+          </div>
+        </aside>
+      </div>
+      {related.length > 0 && (
+        <section className="related-projects">
+          <p className="eyebrow">KEEP EXPLORING / RELATED PROJECTS</p>
+          <h2>함께 살펴볼 프로젝트.</h2>
+          <div>
+            {related.map((p) => (
+              <a
+                href={routeHash({ view: "project", projectId: p.id })}
+                key={p.id}
+              >
+                <small>{p.category}</small>
+                <h3>{p.name} ↗</h3>
+                <p>{p.description}</p>
+              </a>
+            ))}
+          </div>
+        </section>
       )}
-      {project.keyFeatures.length > 0 && <section className="rounded-xl border border-line bg-surface p-6">
-        <h2 className="text-sm font-semibold text-ink">주요 기능</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">{project.keyFeatures.map((feature, index) => <li key={typeof feature === 'string' ? index : feature.id} className="rounded-lg bg-canvas p-3 text-xs leading-6 text-ink-secondary">{typeof feature === 'string' ? feature : feature.name}{typeof feature !== 'string' && feature.description && <p className="mt-1 text-muted">{feature.description}</p>}</li>)}</ul>
-      </section>}
+      {next && (
+        <a
+          className="next-project"
+          href={routeHash({ view: "project", projectId: next.id })}
+        >
+          <span className="eyebrow">NEXT PROJECT</span>
+          <strong>{next.name}</strong>
+          <ArrowUpRight />
+        </a>
+      )}
+      <nav className="mini-navigator" aria-label="프로젝트 미니 내비게이터">
+        <a href={lastArchive()}>전체 목록</a>
+        <span>{project.name}</span>
+        {next && (
+          <a href={routeHash({ view: "project", projectId: next.id })}>
+            다음 프로젝트 ↗
+          </a>
+        )}
+      </nav>
     </div>
   );
 }

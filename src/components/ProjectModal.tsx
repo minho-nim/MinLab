@@ -1,3 +1,4 @@
+import { useModalFocus } from '../utils/useModalFocus';
 import React, { useState, useEffect } from 'react';
 import { Project, ProjectStatus } from '../types';
 import { X, Image as ImageIcon } from 'lucide-react';
@@ -60,6 +61,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     setError('');
   }, [initialProject, isOpen]);
 
+  const dialogRef=useModalFocus(isOpen,onClose);
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -92,7 +94,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       isSample: initialProject ? Boolean(initialProject.isSample) : false, // 새로 등록한 프로젝트는 실제 사용자 프로젝트
       archived,
       keyFeatures: initialProject ? initialProject.keyFeatures : [],
-      techStack: techStack.length > 0 ? techStack : ['Python'],
+      techStack,
       liveUrl: liveUrl.trim(),
       previewUrl: previewUrl.trim(),
       githubUrl: githubUrl.trim(),
@@ -108,7 +110,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="프로젝트 편집" className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
       <div className="relative w-full max-w-lg bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
@@ -116,6 +118,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             {initialProject ? '프로젝트 수정' : '새 프로젝트 등록'}
           </h3>
           <button
+            aria-label="닫기"
             onClick={onClose}
             className="p-1 rounded text-muted hover:text-ink transition-colors"
           >
@@ -138,6 +141,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
             <input
               type="text"
+              aria-label="프로젝트명"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="예: 위험성평가서 / 작업계획서 자동화 도구"
@@ -153,6 +157,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
             <input
               type="text"
+              aria-label="영문 표시명"
               value={englishName}
               onChange={(e) => setEnglishName(e.target.value)}
               placeholder="예: Risk Assessment & Work Plan Automation"
@@ -167,6 +172,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
             <textarea
               rows={3}
+              aria-label="프로젝트 소개"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="프로젝트 목적, 배경 및 소개 내용 작성 (비워둘 수 있습니다)"
@@ -182,7 +188,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             <div className="flex gap-2">
               <input
                 type="url"
-                value={thumbnailUrl}
+                aria-label="대표 이미지 URL"
+              value={thumbnailUrl}
                 onChange={(e) => setThumbnailUrl(e.target.value)}
                 placeholder="https://... (비워둘 시 기본 기술 그래픽 커버 적용)"
                 className="flex-1 px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink font-mono focus:outline-none focus:border-accent"
@@ -209,7 +216,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 진행 상태
               </label>
               <select
-                value={status}
+                aria-label="개발 상태"
+              value={status}
                 onChange={(e) => setStatus(e.target.value as ProjectStatus)}
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent"
               >
@@ -227,7 +235,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               </label>
               <input
                 type="text"
-                value={category}
+                aria-label="카테고리"
+              value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="예: 업무 자동화"
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent"
@@ -257,6 +266,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
             <input
               type="text"
+              aria-label="앱 실행 URL"
               value={liveUrl}
               onChange={(e) => setLiveUrl(e.target.value)}
               placeholder="실제 배포 주소가 있을 때만 입력 (미등록 시 빈칸 유지, 임의 생성 금지)"
@@ -271,6 +281,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
             <input
               type="text"
+              aria-label="GitHub 저장소 URL"
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
               placeholder="예: https://github.com/minho-nim/MinLab"
@@ -303,6 +314,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
+                aria-label="아카이브 보관"
                 checked={archived}
                 onChange={(e) => setArchived(e.target.checked)}
                 className="sr-only peer"
@@ -311,6 +323,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
           </div>
 
+          <aside className="editor-live-preview" aria-label="입력 중인 프로젝트 미리보기"><p className="eyebrow">LIVE PREVIEW / 저장 전 미리보기</p><h4>{name || '프로젝트명을 입력하세요'}</h4><p>{description || '소개를 입력하면 여기에 표시됩니다.'}</p><small>{category} / {status}</small></aside>
           {/* Actions */}
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
             <button

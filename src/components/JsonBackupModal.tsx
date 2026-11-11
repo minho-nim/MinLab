@@ -1,3 +1,4 @@
+import { useModalFocus } from '../utils/useModalFocus';
 import React, { useState, useRef } from 'react';
 import { Project } from '../types';
 import { exportToJson, parseImportJson } from '../utils/storage';
@@ -24,6 +25,7 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
   const [importStatus, setImportStatus] = useState<{ message: string; isError: boolean } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const dialogRef=useModalFocus(isOpen,onClose);
   if (!isOpen) return null;
 
   const handleDownloadBackup = () => {
@@ -104,7 +106,7 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="데이터 백업 및 복원" className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
       <div className="relative w-full max-w-lg bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
@@ -112,6 +114,7 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
             데이터 백업 및 복원
           </h3>
           <button
+            aria-label="닫기"
             onClick={onClose}
             className="p-1 rounded text-muted hover:text-ink transition-colors"
           >
@@ -207,7 +210,8 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
                 </label>
                 <textarea
                   rows={5}
-                  value={importText}
+                  aria-label="JSON 텍스트"
+              value={importText}
                   onChange={(e) => {
                     setImportText(e.target.value);
                     setImportStatus(null);

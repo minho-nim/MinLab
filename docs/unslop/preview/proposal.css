@@ -1,0 +1,13 @@
+/* Review-only polish, based on unslop by Damir Sokolovsky, CC BY 4.0.
+   https://github.com/heydamir/unslop */
+.project-first-hero{padding-bottom:24px}
+.project-first-hero .hero-introduction{margin-bottom:32px}
+.project-first-hero h1{font-weight:600;letter-spacing:-.03em;margin-top:16px}
+.hero-support .text-link{margin-top:12px}
+.hero-project-cloud{gap:16px}
+.hero-project-label{padding:12px 0}
+.hero-project-label span{font-size:12px;line-height:20px}
+.project-first-hero .hero-foot{margin-top:24px;padding:16px 0}
+.hero-project-description{transition:opacity 180ms cubic-bezier(.22,1,.36,1),transform 180ms cubic-bezier(.22,1,.36,1)}
+@media(max-width:899px){.hero-support{margin-top:20px}}
+@media(max-width:599px){.hero-project-cloud{gap:12px}.hero-project-label span{font-size:12px;line-height:20px}}

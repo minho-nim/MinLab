@@ -58,6 +58,24 @@ export function connectCatalogOnce(projects: Project[], storage: Pick<Storage, '
     return updated.name===project.name&&updated.englishName===project.englishName&&updated.githubUrl===project.githubUrl&&updated.liveUrl===project.liveUrl&&updated.previewUrl===project.previewUrl?project:updated;
   });
   if (merged.every((project, index) => project === projects[index])) merged = projects;
+  // Crossroads became MINOVA; keep its ID and local records across the rename.
+  const minova = catalogProjects().find(project => project.id === 'proj-crossroads-ai-verdict');
+  if (minova) merged = merged.map(project => {
+    if (project.id !== minova.id) return project;
+    const updated = {...project};
+    const oldNames = ['Crossroads: AI Verdict', 'Crossroads'];
+    if (oldNames.includes(project.name)) updated.name = minova.name;
+    if (!project.englishName || oldNames.includes(project.englishName)) updated.englishName = minova.name;
+    for (const key of ['githubUrl', 'liveUrl', 'previewUrl'] as const) {
+      const old = key === 'githubUrl'
+        ? ['https://github.com/minho-nim/crossroads-ai-verdict']
+        : ['https://minho-nim.github.io/MinLab/apps/crossroads', 'https://minho-nim.github.io/crossroads-ai-verdict'];
+      const replacement = minova[key];
+      if (typeof replacement === 'string' && old.includes(project[key]?.replace(/\/$/, '') || '')) updated[key] = replacement;
+    }
+    return updated.name === project.name && updated.englishName === project.englishName && updated.githubUrl === project.githubUrl && updated.liveUrl === project.liveUrl && updated.previewUrl === project.previewUrl ? project : updated;
+  });
+  if (merged.every((project, index) => project === projects[index])) merged = projects;
   for (const candidate of catalogProjects()) {
     if (seen.has(candidate.id)) continue;
     const existing = merged.find(project => project.id === candidate.id || (!project.isSample && project.githubUrl?.replace(/\/$/, '').toLowerCase() === candidate.githubUrl?.toLowerCase()) || project.name.trim().toLowerCase() === candidate.name.toLowerCase());

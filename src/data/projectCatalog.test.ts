@@ -10,6 +10,19 @@ const musclemap=catalog.find(p=>p.id==='proj-musclemap')!;
 // This is the historical v6 catalog, before later projects were added.
 const historicalIds=new Set(['proj-1792485558773','proj-1792563333333','proj-1792558759961','risk-assessment-workplan-automation','proj-1792978415000','proj-excuseoffice','proj-minially']);
 const laterProjects=catalog.filter(p=>!historicalIds.has(p.id));
+
+test('MINOVA keeps Crossroads records and only migrates the former public name and URLs',()=>{
+  const storage=memoryStorage([['minlab_catalog_seen_project_ids_v1',JSON.stringify(catalog.map(p=>p.id))]]);
+  const old={...crossroads,name:'Crossroads: AI Verdict',englishName:'Crossroads: AI Verdict',githubUrl:'https://github.com/minho-nim/crossroads-ai-verdict',liveUrl:'https://minho-nim.github.io/MinLab/apps/crossroads/',previewUrl:'https://minho-nim.github.io/MinLab/apps/crossroads/',workLogs:[{id:'keep',title:'기존 기록',date:'2026-11-10',content:'보존'}]};
+  const [updated]=connectCatalogOnce([old],storage,'projects');
+  assert.equal(updated.name,'MINOVA');
+  assert.equal(updated.githubUrl,'https://github.com/minho-nim/MINOVA');
+  assert.equal(updated.liveUrl,'https://minho-nim.github.io/MINOVA/');
+  assert.deepEqual(updated.workLogs,old.workLogs);
+  const custom={...old,name:'직접 바꾼 이름',englishName:'My game',liveUrl:'https://example.com/my-game',previewUrl:'https://example.com/my-preview',githubUrl:'https://github.com/me/game'};
+  assert.deepEqual(connectCatalogOnce([custom],storage,'projects'),[custom]);
+  assert.deepEqual(connectCatalogOnce([],storage,'projects'),[]);
+});
 function memoryStorage(entries:[string,string][]=[]){
   const values=new Map(entries);
   return {values,getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>{values.set(key,value);}};
@@ -53,7 +66,7 @@ test('an existing Crossroads entry receives its published URL only where local v
   const result=connectCatalogOnce([original],storage,'projects');
   assert.deepEqual(result.map(p=>p.id),[crossroads.id,...laterProjects.filter(p=>p.id!==crossroads.id).map(p=>p.id)]);
   assert.equal(result[0].description,original.description);
-  assert.equal(result[0].liveUrl,'https://minho-nim.github.io/MinLab/apps/crossroads/');
+  assert.equal(result[0].liveUrl,'https://minho-nim.github.io/MINOVA/');
 });
 test('custom IDs, metadata and records are retained when an existing repository matches',()=>{
   const storage=memoryStorage([['minlab_public_catalog_v6','true']]);

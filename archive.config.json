@@ -70,7 +70,7 @@
     },
     {
       "id": "proj-excuseoffice",
-      "repository": "https://github.com/minho-nim/excuseoffice",
+      "repository": "minho-nim/excuseoffice",
       "name": "공식 핑계 발급소",
       "description": "상황에 맞는 핑계를 공식 문서로 발급하고 문서 보관·내보내기와 도장 수집을 제공하는 웹앱",
       "category": "엔터테인먼트",
@@ -98,11 +98,11 @@
     },
     {
       "id": "proj-crossroads-ai-verdict",
-      "repository": "minho-nim/crossroads-ai-verdict",
-      "name": "Crossroads: AI Verdict",
+      "repository": "minho-nim/MINOVA",
+      "name": "MINOVA",
       "description": "AI 행정 시스템의 정책을 검토하고 시민의 권리·공정성·안전 사이에서 선택하는 한국어 스토리 카드 게임",
       "category": "스토리 게임",
-      "appUrl": "https://minho-nim.github.io/MinLab/apps/crossroads/",
+      "appUrl": "https://minho-nim.github.io/MINOVA/",
       "techStack": [
         "React",
         "TypeScript",
@@ -138,6 +138,36 @@
         "Vite",
         "GitHub Pages",
         "Cloudflare Workers"
+      ]
+    },
+    {
+      "id": "proj-minoom",
+      "repository": "minho-nim/minoom",
+      "name": "minoom (미눔)",
+      "description": "두 개의 방을 둘러보고 가구를 배치하며 함께 사는 공간을 꾸미는 3D 온라인 하우스",
+      "category": "3D 생활 공간",
+      "appUrl": "https://minho-nim.github.io/minoom/",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "Three.js",
+        "React Three Fiber",
+        "Supabase"
+      ]
+    },
+    {
+      "id": "proj-minlab-ai-office",
+      "repository": "minho-nim/minoffia",
+      "name": "MinLab AI Office",
+      "description": "여러 AI의 프로젝트 업무와 기획·결과·배포 승인을 한곳에서 관리하는 개인용 도트 사무실",
+      "category": "AI 업무 관리",
+      "appUrl": "https://minlab-ai-office.pages.dev/",
+      "techStack": [
+        "React",
+        "TypeScript",
+        "Vite",
+        "Supabase",
+        "Cloudflare Pages"
       ]
     }
   ]

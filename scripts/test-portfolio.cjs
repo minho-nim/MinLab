@@ -376,7 +376,15 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       ),
       before,
     );
-    await page.getByRole("button", { name: "전체 메뉴 열기" }).click();
+    const floatingMenu = page.getByRole("button", {
+      name: "플로팅 전체 메뉴 열기",
+      exact: true,
+    });
+    if (await floatingMenu.count()) await floatingMenu.click();
+    else
+      await page
+        .getByRole("button", { name: "전체 메뉴 열기", exact: true })
+        .click();
     await page.getByRole("dialog").waitFor();
     await page.keyboard.press("Escape");
     await page.getByRole("dialog").waitFor({ state: "hidden" });
@@ -462,6 +470,39 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       await p.goto(base + "#/home");
       await p.locator(".home-hero").waitFor();
       if (width < 900) {
+        const choices = p
+          .getByRole("navigation", { name: "첫 화면 프로젝트 선택" })
+          .getByRole("button");
+        const secondName = (
+          await choices.nth(1).getAttribute("aria-label")
+        ).replace(" 화면 선택", "");
+        await choices.nth(1).scrollIntoViewIfNeeded();
+        const homeUrl = p.url();
+        await choices.nth(1).click();
+        assert.equal(
+          await p.locator(".hero-mobile-caption strong").innerText(),
+          secondName,
+        );
+        assert.equal(
+          p.url(),
+          homeUrl,
+          "thumbnail selection keeps visitors on home",
+        );
+        assert.equal(await choices.nth(1).getAttribute("aria-pressed"), "true");
+        const large = await p
+          .locator(".hero-mobile-featured>.project-media")
+          .boundingBox();
+        assert.ok(
+          large.width > width * 0.8,
+          "mobile product preview uses full content width",
+        );
+        await choices.nth(1).press("End");
+        assert.equal(await choices.last().getAttribute("aria-pressed"), "true");
+        await choices.last().press("Home");
+        assert.equal(
+          await choices.first().getAttribute("aria-pressed"),
+          "true",
+        );
         await p.locator(".preview-copy h3").scrollIntoViewIfNeeded();
         await p.waitForTimeout(200);
         const box = await p.locator(".preview-copy h3").boundingBox();
@@ -501,6 +542,28 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
           .evaluate((el) => getComputedStyle(el).animationName),
         "none",
       );
+      if (width < 900) {
+        await p.goto(base + "#/projects/proj-musclemap");
+        await p.locator(".scene-tabs button").nth(1).click();
+        await p.waitForTimeout(100);
+        assert.equal(
+          await p
+            .locator(".scene-tabs button")
+            .nth(1)
+            .getAttribute("aria-pressed"),
+          "true",
+        );
+        const pinned = await p.locator(".browser-showcase").boundingBox();
+        assert.ok(
+          pinned.y >= 70 && pinned.y < 100,
+          "selected mobile scene stays visible below navigation",
+        );
+        assert.ok(
+          (
+            await p.locator(".browser-showcase img").getAttribute("src")
+          ).includes("musclemap-map"),
+        );
+      }
       await mobile.close();
     }
     console.log(

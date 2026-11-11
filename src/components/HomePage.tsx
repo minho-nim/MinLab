@@ -8,6 +8,8 @@ import {
 import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
+import { HeroProjects } from "./HeroProjects";
+import { selectHomeProjects } from "../utils/homeProjects";
 export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const section = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -214,11 +216,9 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
 }
 export function HomePage({ projects }: { projects: Project[] }) {
   const hero = useRef<HTMLElement>(null);
-  const images = projects.filter((p) => mediaFor(p).length).slice(0, 4);
-  const featured = [
-    ...images,
-    ...projects.filter((p) => !images.some((i) => i.id === p.id)),
-  ].slice(0, 6);
+  const hasScreen = (p: Project) => mediaFor(p).length > 0;
+  const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 4);
+  const featured = selectHomeProjects(projects, hasScreen, 6);
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -288,46 +288,22 @@ export function HomePage({ projects }: { projects: Project[] }) {
             </a>
           </div>
         </div>
-        <div
-          className="hero-project-cloud"
-          aria-label="실제 프로젝트 화면 모음"
-        >
-          {images.map((p, i) => (
-            <a
-              key={p.id}
-              className={
-                "hero-project hero-project-" +
-                i +
-                (i === 0 ? " hero-main-image" : "")
-              }
-              href={routeHash({ view: "project", projectId: p.id })}
-              aria-label={p.name + " 프로젝트 살펴보기"}
-            >
-              <div className="hero-project-visual">
-                <ProjectMedia project={p} eager={i < 2} />
-                <p className="hero-project-description">{p.description}</p>
-              </div>
-              <div className="hero-project-label">
-                <strong>{p.name}</strong>
-                <span>{p.category} ↗</span>
-              </div>
-            </a>
-          ))}
-        </div>
+        <HeroProjects projects={images} />
         <div className="hero-foot">
-          <span>{images.length}개의 실제 화면에서 시작하세요.</span>
+          <span>
+            {images.length
+              ? `${images.length}개의 실제 화면에서 시작하세요.`
+              : "전체 프로젝트에서 살펴보세요."}
+          </span>
           <a
             href="#selected-work"
             onClick={(e) => {
               e.preventDefault();
-              document
-                .getElementById("selected-work")
-                ?.scrollIntoView({
-                  behavior: matchMedia("(prefers-reduced-motion:reduce)")
-                    .matches
-                    ? "instant"
-                    : "smooth",
-                });
+              document.getElementById("selected-work")?.scrollIntoView({
+                behavior: matchMedia("(prefers-reduced-motion:reduce)").matches
+                  ? "instant"
+                  : "smooth",
+              });
             }}
           >
             프로젝트 탐색으로 <ArrowDown size={15} />

@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "./portfolio.css";
 @import "./experience.css";
+/* Agent skills and review artifacts are not application UI sources. */
+@source not "../.agents";
+@source not "../docs/unslop";
 /* Hosted game bundles ship their own CSS and are not archive UI sources. */
 @source not "../public/apps/crossroads";
 

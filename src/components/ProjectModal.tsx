@@ -1,5 +1,6 @@
 import { useModalFocus } from "../utils/useModalFocus";
 import React, { useState, useEffect } from "react";
+import { ProjectMedia } from "./ProjectMedia";
 import { MediaEditor } from "./MediaEditor";
 import { parseScreenshots } from "../utils/projectMedia";
 import { Project, ProjectStatus, ProjectScreenshot } from "../types";
@@ -12,6 +13,7 @@ interface ProjectModalProps {
   onClose: () => void;
   onSave: (project: Project) => boolean;
   initialProject?: Project | null;
+  allProjects?: Project[];
 }
 
 const STATUS_OPTIONS: ("구상 중" | "개발 중" | "완성" | "보류")[] = [
@@ -26,7 +28,21 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onClose,
   onSave,
   initialProject,
+  allProjects = [],
 }) => {
+  const [dirty, setDirty] = useState(false);
+  const [previewTab, setPreviewTab] = useState(false);
+  const close = () => {
+    if (!dirty || confirm("저장하지 않은 편집 내용이 있습니다. 닫을까요?"))
+      onClose();
+  };
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => {
+      if (dirty && isOpen) e.preventDefault();
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty, isOpen]);
   const [mediaBusy, setMediaBusy] = useState(false);
   const [screenshots, setScreenshots] = useState<ProjectScreenshot[]>([]);
   const [coverImageId, setCoverImageId] = useState("");
@@ -40,6 +56,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const [liveUrl, setLiveUrl] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
+  const [relatedIds, setRelatedIds] = useState<string[]>([]);
+  const [visible, setVisible] = useState(true);
   const [archived, setArchived] = useState(false);
   const [error, setError] = useState("");
 
@@ -71,19 +89,30 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setGithubUrl("");
       setArchived(false);
     }
+    setRelatedIds(initialProject?.relatedProjectIds || []);
+    setVisible(initialProject?.visible !== false);
     setMediaBusy(false);
     setScreenshots(initialProject?.screenshots || []);
     setCoverImageId(initialProject?.coverImageId || "");
     setError("");
+    setDirty(false);
   }, [initialProject, isOpen]);
 
-  const dialogRef = useModalFocus(isOpen, onClose);
+  const dialogRef = useModalFocus(isOpen, close);
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (mediaBusy) {
       setError("이미지 최적화가 완료된 뒤 저장해 주세요.");
+      return;
+    }
+    if (
+      [liveUrl, githubUrl].some(
+        (u) => u.trim() && !/^https?:\/\//i.test(u.trim()),
+      )
+    ) {
+      setError("앱 실행·GitHub 주소는 http(s) URL로 입력해 주세요.");
       return;
     }
     if (!name.trim()) {
@@ -113,6 +142,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     const now = new Date().toISOString();
 
     const projectToSave: Project = {
+      ...initialProject,
       id: initialProject ? initialProject.id : `proj-${Date.now()}`,
       name: name.trim(),
       englishName: englishName.trim(),
@@ -128,6 +158,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         : {}),
       isSample: initialProject ? Boolean(initialProject.isSample) : false, // 새로 등록한 프로젝트는 실제 사용자 프로젝트
       archived,
+      visible,
+      relatedProjectIds: relatedIds,
       keyFeatures: initialProject ? initialProject.keyFeatures : [],
       techStack,
       liveUrl: liveUrl.trim(),
@@ -141,6 +173,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     };
 
     if (!onSave(projectToSave)) return;
+    setDirty(false);
     onClose();
   };
 
@@ -152,7 +185,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       aria-label="프로젝트 편집"
       className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto"
     >
-      <div className="relative w-full max-w-lg bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
+      <div className="project-studio-modal relative w-full max-w-lg bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
           <h3 className="text-sm font-semibold text-ink">
@@ -173,7 +206,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           </h3>
           <button
             aria-label="닫기"
-            onClick={onClose}
+            onClick={close}
             className="p-1 rounded text-muted hover:text-ink transition-colors"
           >
             <X className="w-4 h-4" />
@@ -182,15 +215,64 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
         {/* Form Body */}
         <form
+          onChange={() => setDirty(true)}
           onSubmit={handleSubmit}
-          className="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs"
+          className={
+            "studio-form p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs " +
+            (previewTab ? "show-preview" : "")
+          }
         >
+          <div className="studio-mobile-tabs">
+            <button
+              type="button"
+              aria-pressed={!previewTab}
+              onClick={() => setPreviewTab(false)}
+            >
+              편집
+            </button>
+            <button
+              type="button"
+              aria-pressed={previewTab}
+              onClick={() => setPreviewTab(true)}
+            >
+              미리보기
+            </button>
+          </div>
           {error && (
             <div className="p-2.5 text-xs text-rose-700 bg-rose-50 border border-rose-850 rounded-md">
               {error}
             </div>
           )}
 
+          <label>
+            <input
+              type="checkbox"
+              checked={visible}
+              onChange={(e) => setVisible(e.target.checked)}
+            />{" "}
+            방문자에게 공개
+          </label>
+          <details className="studio-related">
+            <summary>직접 연결할 관련 프로젝트 (선택)</summary>
+            {allProjects
+              .filter((p) => p.id !== initialProject?.id)
+              .map((p) => (
+                <label key={p.id}>
+                  <input
+                    type="checkbox"
+                    checked={relatedIds.includes(p.id)}
+                    onChange={(e) =>
+                      setRelatedIds(
+                        e.target.checked
+                          ? [...relatedIds, p.id]
+                          : relatedIds.filter((id) => id !== p.id),
+                      )
+                    }
+                  />
+                  {p.name}
+                </label>
+              ))}
+          </details>
           {/* Project Name */}
           <div>
             <label className="block text-[11px] font-medium text-muted mb-1">
@@ -269,9 +351,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           <MediaEditor
             onBusyChange={setMediaBusy}
             value={screenshots}
-            onChange={setScreenshots}
+            onChange={(value) => {
+              setScreenshots(value);
+              setDirty(true);
+            }}
             cover={coverImageId}
-            onCover={setCoverImageId}
+            onCover={(value) => {
+              setCoverImageId(value);
+              setDirty(true);
+            }}
             features={initialProject?.keyFeatures}
           />
           {/* Status & Category */}
@@ -401,8 +489,41 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             aria-label="입력 중인 프로젝트 미리보기"
           >
             <p className="eyebrow">LIVE PREVIEW / 저장 전 미리보기</p>
-            <h4>{name || "프로젝트명을 입력하세요"}</h4>
-            <p>{description || "소개를 입력하면 여기에 표시됩니다."}</p>
+            {screenshots.length > 0 && (
+              <ProjectMedia
+                project={
+                  {
+                    ...initialProject,
+                    screenshots,
+                    coverImageId,
+                    name,
+                    category,
+                    keyFeatures: initialProject?.keyFeatures || [],
+                    techStack: [],
+                  } as Project
+                }
+              />
+            )}
+            <h4
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) => {
+                setName(e.currentTarget.textContent || "");
+                setDirty(true);
+              }}
+            >
+              {name || "프로젝트명을 입력하세요"}
+            </h4>
+            <p
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) => {
+                setDescription(e.currentTarget.textContent || "");
+                setDirty(true);
+              }}
+            >
+              {description || "소개를 입력하면 여기에 표시됩니다."}
+            </p>
             <small>
               {category} / {status}
             </small>
@@ -411,7 +532,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
             <button
               type="button"
-              onClick={onClose}
+              onClick={close}
               className="px-3 py-1.5 rounded-md text-xs font-medium text-ink-secondary bg-surface-alt hover:bg-line-strong transition-colors"
             >
               취소
@@ -420,7 +541,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               type="submit"
               className="px-3.5 py-1.5 rounded-md text-xs font-medium text-white bg-accent hover:bg-accent-hover transition-colors"
             >
-              저장
+              초안 저장
             </button>
           </div>
         </form>

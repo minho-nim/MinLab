@@ -37,7 +37,10 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(base);
     await page.getByRole("heading", { name: /아이디어를 현실로/ }).waitFor();
-    await page.getByRole("button", { name: "안내 닫기" }).click();
+    assert.equal(
+      await page.getByRole("button", { name: "안내 닫기" }).count(),
+      0,
+    );
     await page.locator(".home-hero img").first().waitFor();
     await page.waitForTimeout(900);
     await page.screenshot({ path: `${evidence}/home-desktop.png` });
@@ -64,6 +67,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.goto(base + "#/");
     await page.getByRole("searchbox", { name: "프로젝트 검색" }).fill("React");
     await page.getByRole("button", { name: "리스트 보기" }).click();
+    await page.locator(".filter-disclosure summary").click();
     await page
       .getByRole("combobox", { name: "기술 태그 필터" })
       .selectOption("TypeScript");
@@ -171,7 +175,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page
       .getByRole("textbox", { name: "프로젝트 소개", exact: true })
       .fill("격리된 테스트 컨텍스트의 임시 데이터");
-    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.getByRole("button", { name: "초안 저장", exact: true }).click();
     await page
       .locator(".admin-projects article")
       .filter({ hasText: "브라우저 회귀 검증" })
@@ -180,7 +184,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page
       .getByRole("textbox", { name: "프로젝트명", exact: true })
       .fill("브라우저 회귀 검증 수정");
-    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.getByRole("button", { name: "초안 저장", exact: true }).click();
     await page
       .locator(".admin-projects article")
       .filter({ hasText: "브라우저 회귀 검증 수정" })
@@ -204,10 +208,10 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page
       .getByRole("textbox", { name: "이미지 2 주소" })
       .fill("/media/missing-regression.webp");
-    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.getByRole("button", { name: "초안 저장", exact: true }).click();
     const temporaryId = await page.evaluate(
       () =>
-        JSON.parse(localStorage.getItem("minlab_projects_data_v2")).find(
+        JSON.parse(localStorage.getItem("minlab_content_draft_v2")).find(
           (p) => p.name === "브라우저 회귀 검증 수정",
         ).id,
     );
@@ -223,10 +227,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
         exact: true,
       })
       .click();
-    await page.goto(base + "#/development-log?project=" + temporaryId);
-    await page
-      .getByRole("button", { name: "관리자 · 상세 기록 편집", exact: true })
-      .click();
+    await page.goto(base + "#/development-log?edit=1&project=" + temporaryId);
     await page
       .getByRole("button", { name: "새 개발 기록", exact: true })
       .click();
@@ -238,7 +239,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .fill("브라우저 테스트에서만 생성하는 임시 기록");
     await page.getByRole("button", { name: "저장", exact: true }).click();
     await page.goto(
-      base + "#/development-log?project=" + temporaryId + "&tab=prompts",
+      base + "#/development-log?project=" + temporaryId + "&tab=prompts&edit=1",
     );
     if (
       await page
@@ -260,7 +261,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.getByRole("button", { name: "저장", exact: true }).click();
     await page.goto(base + "#/admin");
     const edited = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem("minlab_projects_data_v2")),
+      JSON.parse(localStorage.getItem("minlab_content_draft_v2")),
     );
     assert.equal(edited.length, before.length + 1);
     assert.equal(edited[0].id, temporaryId);
@@ -272,27 +273,42 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
         original,
         "existing records remain byte-for-byte equivalent",
       );
+    assert.deepEqual(
+      await page.evaluate(() =>
+        JSON.parse(localStorage.getItem("minlab_projects_data_v2")),
+      ),
+      before,
+      "drafts do not change visitor data",
+    );
+    await page.getByRole("button", { name: /변경 사항 검토/ }).click();
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "승인하고 이 브라우저에 적용", exact: true })
+      .click();
     await page.goto(base + "#/projects/" + temporaryId);
     await page
-      .locator(".media-tabs")
+      .locator(".scene-tabs")
       .getByRole("button", { name: "로딩 실패 검증", exact: true })
       .click();
     await page
-      .locator(".story-showcase .media-empty")
+      .locator(".browser-showcase .media-empty")
       .getByText("이미지를 불러오지 못했습니다.", { exact: true })
       .waitFor();
     await page
-      .locator(".media-tabs")
+      .locator(".scene-tabs")
       .getByRole("button", { name: "회귀 검증용 실제 화면", exact: true })
       .click();
     assert.equal(
       await page
-        .locator(".story-showcase img")
+        .locator(".browser-showcase img")
         .evaluate((el) => getComputedStyle(el).objectFit),
       "contain",
     );
     await page.goto(base + "#/admin");
-    await page.getByRole("button", { name: "백업·복원", exact: true }).click();
+    await page
+      .getByRole("navigation", { name: "관리자 메뉴" })
+      .getByRole("button", { name: "백업·복원", exact: true })
+      .click();
     const downloadPromise = page.waitForEvent("download");
     await page
       .getByRole("button", { name: "JSON 파일 다운로드", exact: true })
@@ -307,7 +323,20 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .getByRole("textbox", { name: "JSON 텍스트" })
       .fill(JSON.stringify(before));
     page.once("dialog", (dialog) => dialog.accept());
-    await page.getByRole("button", { name: "복원 적용", exact: true }).click();
+    await page
+      .getByRole("button", {
+        name: "가져올 데이터 검증 및 변경 미리보기",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("button", { name: "백업 생성 후 복원 적용", exact: true })
+      .click();
+    await page.getByRole("button", { name: /변경 사항 검토/ }).click();
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "승인하고 이 브라우저에 적용", exact: true })
+      .click();
     await page.waitForFunction(
       (n) =>
         JSON.parse(localStorage.getItem("minlab_projects_data_v2")).length ===
@@ -328,7 +357,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page
       .getByRole("textbox", { name: "프로젝트명", exact: true })
       .fill("삭제 검증용 임시 프로젝트");
-    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.getByRole("button", { name: "초안 저장", exact: true }).click();
     await page
       .locator(".admin-projects article")
       .filter({ hasText: "삭제 검증용 임시 프로젝트" })
@@ -352,6 +381,48 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.keyboard.press("Escape");
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     assert.equal(errors.length, 0, errors.join("\n"));
+    await page.goto(base + "#/projects/proj-musclemap");
+    await page.locator(".scene-tabs button").nth(1).click();
+    await page.waitForTimeout(700);
+    assert.ok(
+      (
+        await page.locator(".browser-showcase img").getAttribute("src")
+      ).includes("musclemap-map"),
+    );
+    await page.locator(".journey-versions button").nth(1).click();
+    assert.equal(
+      await page.locator(".journey-versions [aria-current=true]").count(),
+      1,
+    );
+    await page
+      .getByRole("combobox", { name: "개발 기록 비교" })
+      .selectOption({ index: 1 });
+    assert.equal(await page.locator(".version-comparison section").count(), 5);
+    const lastProject = before.filter((p) => p.visible !== false).at(-1);
+    await page.goto(base + "#/projects/" + lastProject.id);
+    assert.equal(
+      await page.locator(".next-project").getAttribute("href"),
+      await page.evaluate(
+        () => sessionStorage.getItem("minlab_last_archive") || "#/",
+      ),
+    );
+    await page.goto(base + "#/admin");
+    await page.getByRole("button", { name: "+ 프로젝트 등록" }).click();
+    await page
+      .getByRole("textbox", { name: "프로젝트명", exact: true })
+      .fill("저장하지 않을 입력");
+    page.once("dialog", (d) => d.dismiss());
+    await page.keyboard.press("Escape");
+    assert.equal(
+      await page.getByRole("dialog", { name: "프로젝트 편집" }).count(),
+      1,
+    );
+    page.once("dialog", (d) => d.accept());
+    await page.keyboard.press("Escape");
+    assert.equal(
+      await page.getByRole("dialog", { name: "프로젝트 편집" }).count(),
+      0,
+    );
     await context.close();
     for (const width of [320, 375, 390, 768, 1280, 1440]) {
       const mobile = await browser.newContext({

@@ -184,6 +184,15 @@ export function MediaEditor({
                   <option value="cover">영역 채우기</option>
                 </select>
               </label>
+              <label>
+                기록 버전 (선택)
+                <input
+                  aria-label={"이미지 " + (i + 1) + " 기록 버전"}
+                  value={s.version || ""}
+                  placeholder="기존 기록과 동일한 버전명"
+                  onChange={(e) => patch(s.id, { version: e.target.value })}
+                />
+              </label>
               {features.length > 0 && (
                 <label>
                   연결 기능

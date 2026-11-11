@@ -1,16 +1,17 @@
-import { useModalFocus } from '../utils/useModalFocus';
-import React, { useState, useRef } from 'react';
-import { Project } from '../types';
-import { exportToJson, parseImportJson } from '../utils/storage';
-import { INITIAL_PROJECTS } from '../data/initialData';
-import { X, Download, Upload, RefreshCw } from 'lucide-react';
+import { useModalFocus } from "../utils/useModalFocus";
+import React, { useState, useRef } from "react";
+import { Project } from "../types";
+import { exportToJson, parseImportJson } from "../utils/storage";
+import { contentChanges } from "../utils/contentDraft";
+import { INITIAL_PROJECTS } from "../data/initialData";
+import { X, Download, Upload, RefreshCw } from "lucide-react";
 
 interface JsonBackupModalProps {
   isOpen: boolean;
   onClose: () => void;
   projects: Project[];
   onRestore: (projects: Project[]) => boolean;
-  showToast: (text: string, type: 'success' | 'error' | 'info') => void;
+  showToast: (text: string, type: "success" | "error" | "info") => void;
 }
 
 export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
@@ -20,25 +21,34 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
   onRestore,
   showToast,
 }) => {
-  const [activeTab, setActiveTab] = useState<'export' | 'import' | 'reset'>('export');
-  const [importText, setImportText] = useState('');
-  const [importStatus, setImportStatus] = useState<{ message: string; isError: boolean } | null>(null);
+  const [activeTab, setActiveTab] = useState<"export" | "import" | "reset">(
+    "export",
+  );
+  const [checked, setChecked] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importStatus, setImportStatus] = useState<{
+    message: string;
+    isError: boolean;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const dialogRef=useModalFocus(isOpen,onClose);
+  const dialogRef = useModalFocus(isOpen, onClose);
   if (!isOpen) return null;
 
   const handleDownloadBackup = () => {
     exportToJson(projects);
-    showToast('백업 파일(.json)이 다운로드되었습니다.', 'success');
+    showToast("백업 파일(.json)이 다운로드되었습니다.", "success");
   };
 
   const handleCopyJson = async () => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(projects, null, 2));
-      showToast('JSON 데이터가 클립보드에 복사되었습니다.', 'success');
+      showToast("JSON 데이터가 클립보드에 복사되었습니다.", "success");
     } catch {
-      showToast('클립보드에 복사하지 못했습니다. 브라우저 권한을 확인해 주세요.', 'error');
+      showToast(
+        "클립보드에 복사하지 못했습니다. 브라우저 권한을 확인해 주세요.",
+        "error",
+      );
     }
   };
 
@@ -50,6 +60,7 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
     reader.onload = (event) => {
       const content = event.target?.result as string;
       setImportText(content);
+      setChecked(false);
       const res = parseImportJson(content);
       if (res.success && res.projects) {
         setImportStatus({
@@ -58,55 +69,88 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
         });
       } else {
         setImportStatus({
-          message: res.error || 'JSON 파일 구문 분석 실패',
+          message: res.error || "JSON 파일 구문 분석 실패",
           isError: true,
         });
       }
-      e.target.value = '';
+      e.target.value = "";
     };
     reader.onerror = () => {
-      setImportStatus({ message: '파일을 읽지 못했습니다. 파일을 다시 선택해 주세요.', isError: true });
-      e.target.value = '';
+      setImportStatus({
+        message: "파일을 읽지 못했습니다. 파일을 다시 선택해 주세요.",
+        isError: true,
+      });
+      e.target.value = "";
     };
     reader.readAsText(file);
   };
 
   const handleApplyImport = () => {
     if (!importText.trim()) {
-      setImportStatus({ message: '복원할 JSON 내용을 입력하거나 파일을 선택하세요.', isError: true });
+      setImportStatus({
+        message: "복원할 JSON 내용을 입력하거나 파일을 선택하세요.",
+        isError: true,
+      });
       return;
     }
 
     const res = parseImportJson(importText);
     if (res.success && res.projects) {
-      const confirmed = window.confirm(
-        `가져온 ${res.projects.length}개 프로젝트로 현재 ${projects.length}개 프로젝트를 모두 교체합니다.\n복원 전에 현재 데이터의 JSON 백업을 권장합니다. 계속할까요?`
-      );
-      if (!confirmed) return;
-      if (!onRestore(res.projects)) {
-        setImportStatus({ message: '저장하지 못했습니다. 현재 데이터는 유지됩니다.', isError: true });
+      if (!checked) {
+        const diff = contentChanges(projects, res.projects);
+        setImportStatus({
+          message: `검증 완료: 추가 ${diff.added.length}개 · 수정 ${diff.changed.length}개 · 제거 ${diff.removed.length}개. 같은 ID의 내용은 가져온 값으로 교체됩니다. 기존 개발일지 수 ${projects.reduce((n, p) => n + p.workLogs.length, 0)} → ${res.projects.reduce((n, p) => n + p.workLogs.length, 0)}. 한 번 더 누르면 백업 후 초안으로 복원합니다.`,
+          isError: false,
+        });
+        setChecked(true);
         return;
       }
-      showToast(`${res.projects.length}개 프로젝트 데이터가 복원되었습니다.`, 'success');
+      const confirmed = window.confirm(
+        `가져온 ${res.projects.length}개 프로젝트로 현재 ${projects.length}개 프로젝트를 모두 교체합니다.\n현재 데이터의 JSON 백업 파일을 먼저 만들고 초안으로 복원합니다. 계속할까요?`,
+      );
+      if (!confirmed) return;
+      exportToJson(projects);
+      if (!onRestore(res.projects)) {
+        setImportStatus({
+          message: "저장하지 못했습니다. 현재 데이터는 유지됩니다.",
+          isError: true,
+        });
+        return;
+      }
+      showToast(
+        `${res.projects.length}개 프로젝트 데이터가 복원되었습니다.`,
+        "success",
+      );
       onClose();
     } else {
-      setImportStatus({ message: res.error || '복원 실패', isError: true });
+      setImportStatus({ message: res.error || "복원 실패", isError: true });
     }
   };
 
   const handleResetToDefault = () => {
-    if (window.confirm('초기 프로젝트 데이터로 되돌리시겠습니까? 현재 작성된 데이터는 덮어씌워집니다.')) {
+    if (
+      window.confirm(
+        "초기 프로젝트 데이터로 되돌리시겠습니까? 현재 작성된 데이터는 덮어씌워집니다.",
+      )
+    ) {
+      exportToJson(projects);
       if (!onRestore(INITIAL_PROJECTS)) {
-        showToast('저장하지 못했습니다. 현재 데이터는 유지됩니다.', 'error');
+        showToast("저장하지 못했습니다. 현재 데이터는 유지됩니다.", "error");
         return;
       }
-      showToast('초기 데이터로 복원되었습니다.', 'success');
+      showToast("초기 데이터로 복원되었습니다.", "success");
       onClose();
     }
   };
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="데이터 백업 및 복원" className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="데이터 백업 및 복원"
+      className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto"
+    >
       <div className="relative w-full max-w-lg bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
@@ -125,31 +169,31 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
         {/* Tabs */}
         <div className="flex border-b border-line bg-surface-alt text-xs">
           <button
-            onClick={() => setActiveTab('export')}
+            onClick={() => setActiveTab("export")}
             className={`flex-1 py-2.5 font-medium transition-colors ${
-              activeTab === 'export'
-                ? 'text-ink border-b-2 border-accent bg-surface'
-                : 'text-muted hover:text-ink-secondary'
+              activeTab === "export"
+                ? "text-ink border-b-2 border-accent bg-surface"
+                : "text-muted hover:text-ink-secondary"
             }`}
           >
             백업 (Export)
           </button>
           <button
-            onClick={() => setActiveTab('import')}
+            onClick={() => setActiveTab("import")}
             className={`flex-1 py-2.5 font-medium transition-colors ${
-              activeTab === 'import'
-                ? 'text-ink border-b-2 border-accent bg-surface'
-                : 'text-muted hover:text-ink-secondary'
+              activeTab === "import"
+                ? "text-ink border-b-2 border-accent bg-surface"
+                : "text-muted hover:text-ink-secondary"
             }`}
           >
             복원 (Import)
           </button>
           <button
-            onClick={() => setActiveTab('reset')}
+            onClick={() => setActiveTab("reset")}
             className={`flex-1 py-2.5 font-medium transition-colors ${
-              activeTab === 'reset'
-                ? 'text-ink border-b-2 border-accent bg-surface'
-                : 'text-muted hover:text-ink-secondary'
+              activeTab === "reset"
+                ? "text-ink border-b-2 border-accent bg-surface"
+                : "text-muted hover:text-ink-secondary"
             }`}
           >
             초기화 (Reset)
@@ -158,12 +202,20 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
 
         {/* Tab Body */}
         <div className="p-5 text-xs space-y-4">
-          {activeTab === 'export' && (
+          {activeTab === "export" && (
             <div className="space-y-4">
               <p className="text-muted leading-relaxed">
-                현재 등록된 <span className="text-ink font-medium">{projects.length}개 프로젝트</span>와{' '}
+                현재 등록된{" "}
                 <span className="text-ink font-medium">
-                  {projects.reduce((acc, p) => acc + (p.workLogs?.length || 0), 0)}건의 개발 기록
+                  {projects.length}개 프로젝트
+                </span>
+                와{" "}
+                <span className="text-ink font-medium">
+                  {projects.reduce(
+                    (acc, p) => acc + (p.workLogs?.length || 0),
+                    0,
+                  )}
+                  건의 개발 기록
                 </span>
                 이 포함된 JSON 백업 파일을 저장합니다.
               </p>
@@ -185,7 +237,7 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
             </div>
           )}
 
-          {activeTab === 'import' && (
+          {activeTab === "import" && (
             <div className="space-y-3.5">
               <div>
                 <input
@@ -211,9 +263,10 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
                 <textarea
                   rows={5}
                   aria-label="JSON 텍스트"
-              value={importText}
+                  value={importText}
                   onChange={(e) => {
                     setImportText(e.target.value);
+                    setChecked(false);
                     setImportStatus(null);
                   }}
                   placeholder='[ { "id": "...", "name": "...", "workLogs": [...] } ]'
@@ -225,8 +278,8 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
                 <div
                   className={`p-2.5 rounded-md text-[11px] ${
                     importStatus.isError
-                      ? 'bg-rose-50 text-rose-700 border border-rose-850'
-                      : 'bg-emerald-50 text-emerald-700 border border-emerald-850'
+                      ? "bg-rose-50 text-rose-700 border border-rose-850"
+                      : "bg-emerald-50 text-emerald-700 border border-emerald-850"
                   }`}
                 >
                   {importStatus.message}
@@ -238,12 +291,14 @@ export const JsonBackupModal: React.FC<JsonBackupModalProps> = ({
                 onClick={handleApplyImport}
                 className="w-full py-2 bg-accent hover:bg-accent-hover text-white font-medium rounded-md transition-colors"
               >
-                복원 적용
+                {checked
+                  ? "백업 생성 후 복원 적용"
+                  : "가져올 데이터 검증 및 변경 미리보기"}
               </button>
             </div>
           )}
 
-          {activeTab === 'reset' && (
+          {activeTab === "reset" && (
             <div className="space-y-4">
               <p className="text-muted leading-relaxed">
                 현재 브라우저에 저장된 프로젝트 데이터를 초기 상태로 되돌립니다.

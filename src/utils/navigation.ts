@@ -3,7 +3,7 @@ export type ArchiveRoute =
   | { view: 'home' | 'about' | 'admin' }
   | { view: 'project'; projectId: string }
   | { view: 'manage'; projectId: string }
-  | { view: 'records'; projectId?: string; tab?: 'logs' | 'prompts' };
+  | { view: 'records'; projectId?: string; tab?: 'logs' | 'prompts'; editing?:boolean };
 
 export function routeHash(route: ArchiveRoute): string {
   if (route.view === 'archive') return '#/';
@@ -14,6 +14,7 @@ export function routeHash(route: ArchiveRoute): string {
   if (route.view !== 'records') return '#/home';
   const query = new URLSearchParams();
   if (route.projectId) query.set('project', route.projectId);
+  if(route.editing) query.set('edit','1');
   if (route.tab === 'prompts') query.set('tab', 'prompts');
   return '#/development-log' + (query.size ? '?' + query.toString() : '');
 }
@@ -28,7 +29,7 @@ export function parseRoute(hash: string): ArchiveRoute {
   }
   if (path === '/development-log') {
     const params = new URLSearchParams(query);
-    return { view: 'records', projectId: params.get('project') || undefined, tab: params.get('tab') === 'prompts' ? 'prompts' : 'logs' };
+    return { view: 'records', ...(params.get('edit')==='1'?{editing:true}:{}), projectId: params.get('project') || undefined, tab: params.get('tab') === 'prompts' ? 'prompts' : 'logs' };
   }
   return { view: 'archive' };
 }

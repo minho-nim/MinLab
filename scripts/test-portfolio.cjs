@@ -36,7 +36,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(base);
-    await page.getByRole("heading", { name: "MAKE IT REAL." }).waitFor();
+    await page.getByRole("heading", { name: /아이디어를 현실로/ }).waitFor();
     await page.getByRole("button", { name: "안내 닫기" }).click();
     await page.locator(".home-hero img").first().waitFor();
     await page.waitForTimeout(900);
@@ -123,34 +123,109 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .getByRole("textbox", { name: "프로젝트명", exact: true })
       .fill("브라우저 회귀 검증 수정");
     await page.getByRole("button", { name: "저장", exact: true }).click();
-    const temporaryId=await page.evaluate(()=>JSON.parse(localStorage.getItem('minlab_projects_data_v2')).find(p=>p.name==='브라우저 회귀 검증 수정').id);
-    await page.getByRole('button',{name:'브라우저 회귀 검증 수정 표시순 내리기',exact:true}).click();
-    await page.getByRole('button',{name:'브라우저 회귀 검증 수정 표시순 올리기',exact:true}).click();
-    await page.goto(base+'#/development-log?project='+temporaryId);
-    await page.getByRole('button',{name:'관리자 · 상세 기록 편집',exact:true}).click();
-    await page.getByRole('button',{name:'새 개발 기록',exact:true}).click();
-    await page.getByRole('textbox',{name:'기록 제목',exact:true}).fill('격리된 브라우저 테스트 기록');
-    await page.getByRole('textbox',{name:'작업 내용',exact:true}).fill('브라우저 테스트에서만 생성하는 임시 기록');
-    await page.getByRole('button',{name:'저장',exact:true}).click();
-    await page.goto(base+'#/development-log?project='+temporaryId+'&tab=prompts');
-    await page.getByRole('button',{name:'새 프롬프트',exact:true}).click();
-    await page.getByRole('textbox',{name:'작업 제목',exact:true}).fill('격리된 브라우저 테스트 요청');
-    await page.getByRole('textbox',{name:'작업 프롬프트',exact:true}).fill('테스트 컨텍스트에만 임시 요청을 보관하세요.');
-    await page.getByRole('button',{name:'저장',exact:true}).click();
-    await page.goto(base+'#/admin');
+    await page
+      .locator(".admin-projects article")
+      .filter({ hasText: "브라우저 회귀 검증 수정" })
+      .getByRole("button", { name: "수정", exact: true })
+      .click();
+    await page
+      .getByLabel("프로젝트 이미지 업로드")
+      .setInputFiles("docs/screenshots/v2/home-desktop.webp");
+    await page
+      .getByText("브라우저에 저장된 업로드 이미지", { exact: true })
+      .waitFor();
+    await page
+      .getByRole("textbox", { name: "이미지 1 설명" })
+      .fill("회귀 검증용 실제 화면");
+    await page
+      .getByRole("button", { name: "이미지 URL 추가", exact: true })
+      .click();
+    await page
+      .getByRole("textbox", { name: "이미지 2 설명" })
+      .fill("로딩 실패 검증");
+    await page
+      .getByRole("textbox", { name: "이미지 2 주소" })
+      .fill("/media/missing-regression.webp");
+    await page.getByRole("button", { name: "저장", exact: true }).click();
+    const temporaryId = await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("minlab_projects_data_v2")).find(
+          (p) => p.name === "브라우저 회귀 검증 수정",
+        ).id,
+    );
+    await page
+      .getByRole("button", {
+        name: "브라우저 회귀 검증 수정 표시순 내리기",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("button", {
+        name: "브라우저 회귀 검증 수정 표시순 올리기",
+        exact: true,
+      })
+      .click();
+    await page.goto(base + "#/development-log?project=" + temporaryId);
+    await page
+      .getByRole("button", { name: "관리자 · 상세 기록 편집", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "새 개발 기록", exact: true })
+      .click();
+    await page
+      .getByRole("textbox", { name: "기록 제목", exact: true })
+      .fill("격리된 브라우저 테스트 기록");
+    await page
+      .getByRole("textbox", { name: "작업 내용", exact: true })
+      .fill("브라우저 테스트에서만 생성하는 임시 기록");
+    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.goto(
+      base + "#/development-log?project=" + temporaryId + "&tab=prompts",
+    );
+    await page
+      .getByRole("button", { name: "새 프롬프트", exact: true })
+      .click();
+    await page
+      .getByRole("textbox", { name: "작업 제목", exact: true })
+      .fill("격리된 브라우저 테스트 요청");
+    await page
+      .getByRole("textbox", { name: "작업 프롬프트", exact: true })
+      .fill("테스트 컨텍스트에만 임시 요청을 보관하세요.");
+    await page.getByRole("button", { name: "저장", exact: true }).click();
+    await page.goto(base + "#/admin");
     const edited = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("minlab_projects_data_v2")),
     );
     assert.equal(edited.length, before.length + 1);
-    assert.equal(edited[0].id,temporaryId);
-    assert.equal(edited[0].workLogs.length,1);
-    assert.equal(edited[0].promptHistory.length,1);
+    assert.equal(edited[0].id, temporaryId);
+    assert.equal(edited[0].workLogs.length, 1);
+    assert.equal(edited[0].promptHistory.length, 1);
     for (const original of before)
       assert.deepEqual(
         edited.find((p) => p.id === original.id),
         original,
         "existing records remain byte-for-byte equivalent",
       );
+    await page.goto(base + "#/projects/" + temporaryId);
+    await page
+      .locator(".media-tabs")
+      .getByRole("button", { name: "로딩 실패 검증", exact: true })
+      .click();
+    await page
+      .locator(".story-showcase .media-empty")
+      .getByText("이미지를 불러오지 못했습니다.", { exact: true })
+      .waitFor();
+    await page
+      .locator(".media-tabs")
+      .getByRole("button", { name: "회귀 검증용 실제 화면", exact: true })
+      .click();
+    assert.equal(
+      await page
+        .locator(".story-showcase img")
+        .evaluate((el) => getComputedStyle(el).objectFit),
+      "contain",
+    );
+    await page.goto(base + "#/admin");
     await page
       .getByRole("button", { name: "Data Manager · 백업·복원" })
       .click();
@@ -214,11 +289,11 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.getByRole("dialog").waitFor({ state: "hidden" });
     assert.equal(errors.length, 0, errors.join("\n"));
     await context.close();
-    for (const width of [320, 390, 768]) {
+    for (const width of [320, 375, 390, 768, 1280, 1440]) {
       const mobile = await browser.newContext({
         viewport: { width, height: 844 },
-        isMobile: true,
-        hasTouch: true,
+        isMobile: width < 900,
+        hasTouch: width < 900,
         reducedMotion: "reduce",
       });
       const p = await mobile.newPage();
@@ -243,45 +318,47 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
           `${width} ${hash}: overflow ${JSON.stringify(bounds)}`,
         );
         assert.equal(await p.locator("iframe").count(), 0);
-        if (width === 390)
+        if (width === 390 || width === 1280)
           await p.screenshot({
-            path: `${evidence}/mobile-${hash.replace(/[^a-z]/g, "")}.png`,
+            path: `${evidence}/${width}-${hash.replace(/[^a-z]/g, "")}.png`,
             fullPage: true,
           });
       }
       await p.goto(base + "#/home");
       await p.locator(".home-hero").waitFor();
-      await p.locator(".preview-copy h3").scrollIntoViewIfNeeded();
-      await p.waitForTimeout(200);
-      const box = await p.locator(".preview-copy h3").boundingBox();
-      const cdp = await mobile.newCDPSession(p);
-      const y = box.y + Math.min(15, box.height / 2);
-      await cdp.send("Input.dispatchTouchEvent", {
-        type: "touchStart",
-        touchPoints: [{ x: box.x + box.width * 0.8, y, id: 1 }],
-      });
-      await cdp.send("Input.dispatchTouchEvent", {
-        type: "touchMove",
-        touchPoints: [{ x: box.x + box.width * 0.2, y, id: 1 }],
-      });
-      await cdp.send("Input.dispatchTouchEvent", {
-        type: "touchEnd",
-        touchPoints: [],
-      });
-      await p.waitForTimeout(100);
-      assert.equal(
-        await p
-          .locator(".explorer-index button")
-          .nth(1)
-          .getAttribute("aria-current"),
-        "true",
-        "touch swipe advances one project",
-      );
-      await p.getByRole("button", { name: "다음 대표 프로젝트" }).click();
-      assert.equal(
-        await p.locator(".explorer-index [aria-current]").count(),
-        1,
-      );
+      if (width < 900) {
+        await p.locator(".preview-copy h3").scrollIntoViewIfNeeded();
+        await p.waitForTimeout(200);
+        const box = await p.locator(".preview-copy h3").boundingBox();
+        const cdp = await mobile.newCDPSession(p);
+        const y = box.y + Math.min(15, box.height / 2);
+        await cdp.send("Input.dispatchTouchEvent", {
+          type: "touchStart",
+          touchPoints: [{ x: box.x + box.width * 0.8, y, id: 1 }],
+        });
+        await cdp.send("Input.dispatchTouchEvent", {
+          type: "touchMove",
+          touchPoints: [{ x: box.x + box.width * 0.2, y, id: 1 }],
+        });
+        await cdp.send("Input.dispatchTouchEvent", {
+          type: "touchEnd",
+          touchPoints: [],
+        });
+        await p.waitForTimeout(100);
+        assert.equal(
+          await p
+            .locator(".explorer-index button")
+            .nth(1)
+            .getAttribute("aria-current"),
+          "true",
+          "touch swipe advances one project",
+        );
+        await p.getByRole("button", { name: "다음 대표 프로젝트" }).click();
+        assert.equal(
+          await p.locator(".explorer-index [aria-current]").count(),
+          1,
+        );
+      }
       assert.equal(
         await p
           .locator(".hero-copy h1>span")
@@ -292,7 +369,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       await mobile.close();
     }
     console.log(
-      "PASS: real data, wheel thresholds, archive URL/back/scroll, logs/prompts, CRUD, backup/restore, menu keyboard, touch swipe, reduced motion, 320/390/768px layouts.",
+      "PASS: real data, wheel thresholds, archive URL/back/scroll, logs/prompts, CRUD, backup/restore, menu keyboard, touch swipe, image upload/failure/fit and backup, reduced motion, 320/375/390/768/1280/1440px layouts.",
     );
   } finally {
     await browser.close();

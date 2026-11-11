@@ -16,21 +16,21 @@ export function AboutPage({
   const [saved, setSaved] = useState(false);
   const experiences = [
     {
-      label: "FIELD EXPERIENCE",
+      label: "현장 경험",
       title: "현장에서 문제를 발견합니다.",
       description:
         "통신·데이터센터 프로젝트 관리 경험. 반복되는 업무와 복잡한 정보를 정리하는 데서 출발합니다.",
       match: (p: Project) => /업무|자동화/.test(p.category),
     },
     {
-      label: "INDEPENDENT DEVELOPMENT",
+      label: "독립 개발",
       title: "직접 만들며 답을 찾아갑니다.",
       description:
         "독립적인 웹앱·게임 개발. 필요한 기능을 작게 구현하고 사용 흐름을 다듬습니다.",
       match: (p: Project) => /게임|건강|운동|일정/.test(p.category),
     },
     {
-      label: "AI-ASSISTED WORK",
+      label: "AI 활용",
       title: "AI와 함께 시도하고, 기록합니다.",
       description:
         "기획부터 개발과 검증까지 AI를 활용합니다. 프로젝트별 개발일지와 작업 프롬프트에 실제 과정을 남깁니다.",
@@ -41,7 +41,7 @@ export function AboutPage({
   return (
     <div className="about-page">
       <header className="page-heading">
-        <p className="eyebrow">ABOUT / THE PERSON BEHIND THE PROJECTS</p>
+        <p className="eyebrow">소개</p>
         <h1>
           만든 것들이
           <br />

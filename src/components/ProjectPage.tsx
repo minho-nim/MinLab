@@ -15,8 +15,10 @@ export function ProjectPage({
   const [active, setActive] = useState(0);
   const [mediaIndex, setMediaIndex] = useState(0);
   const story = useRef<HTMLDivElement>(null);
-  const features = project.keyFeatures.map((f) =>
-    typeof f === "string" ? { name: f, description: "" } : f,
+  const features = project.keyFeatures.map((f, i) =>
+    typeof f === "string"
+      ? { id: "feature-" + i, name: f, description: "" }
+      : f,
   );
   const media = mediaFor(project);
   const logs = [...project.workLogs].sort((a, b) =>
@@ -106,10 +108,20 @@ export function ProjectPage({
           )}
         </div>
       </header>
+      <section className="detail-cover" aria-label="프로젝트 대표 화면">
+        <ProjectMedia project={project} eager index={mediaIndex} />
+        <div>
+          <span>
+            {media[mediaIndex]?.label ||
+              "프로젝트 화면은 아직 등록되지 않았습니다."}
+          </span>
+          <span>{project.category}</span>
+        </div>
+      </section>
       <div className="story-layout">
         <div className="story-copy" ref={story}>
           <section data-index="0">
-            <p className="eyebrow">01 / OVERVIEW</p>
+            <p className="eyebrow">프로젝트 소개</p>
             <h2>이 프로젝트는.</h2>
             <p>
               {project.description ||
@@ -117,7 +129,7 @@ export function ProjectPage({
             </p>
           </section>
           <section data-index="1">
-            <p className="eyebrow">02 / BACKGROUND & PROBLEM</p>
+            <p className="eyebrow">제작 배경</p>
             <h2>제작 배경과 문제.</h2>
             {background ? (
               <>
@@ -133,7 +145,7 @@ export function ProjectPage({
             )}
           </section>
           <section data-index="2">
-            <p className="eyebrow">03 / FEATURES</p>
+            <p className="eyebrow">주요 기능</p>
             <h2>기능에서 경험으로.</h2>
             {features.length ? (
               <div className="feature-options">
@@ -144,7 +156,9 @@ export function ProjectPage({
                     onClick={() => {
                       setActive(i + 10);
                       const matched = media.findIndex(
-                        (m) => m.label === f.name,
+                        (m) =>
+                          m.featureId === ("id" in f ? f.id : "feature-" + i) ||
+                          m.label === f.name,
                       );
                       if (matched >= 0) setMediaIndex(matched);
                     }}
@@ -163,9 +177,24 @@ export function ProjectPage({
                 상세 기능 설명은 아직 등록되지 않았습니다.
               </p>
             )}
+            {active >= 10 &&
+              features[active - 10] &&
+              media.some(
+                (m) =>
+                  m.featureId ===
+                    ("id" in features[active - 10]
+                      ? features[active - 10].id
+                      : "feature-" + (active - 10)) ||
+                  m.label === features[active - 10].name,
+              ) && (
+                <div className="feature-inline-media">
+                  <ProjectMedia project={project} index={mediaIndex} />
+                  <p>{media[mediaIndex]?.label}</p>
+                </div>
+              )}
           </section>
           <section data-index="3">
-            <p className="eyebrow">04 / DEVELOPMENT</p>
+            <p className="eyebrow">개발 및 개선 과정</p>
             <h2>
               만들고, 검증하고,
               <br />
@@ -210,7 +239,7 @@ export function ProjectPage({
             </a>
           </section>
           <section data-index="4">
-            <p className="eyebrow">05 / CHANGELOG & RESULTS</p>
+            <p className="eyebrow">변경 기록과 결과</p>
             <h2>변화와 결과.</h2>
             {project.changelog.length > 0 && (
               <div className="changelog-list">
@@ -237,7 +266,7 @@ export function ProjectPage({
         <aside className="story-showcase">
           <div className="window-bar">
             <span className="window-dots">● ● ●</span>
-            <span>PROJECT SHOWCASE</span>
+            <span>프로젝트 화면</span>
             <ArrowUpRight size={12} />
           </div>
           <ProjectMedia key={project.id} project={project} index={mediaIndex} />
@@ -258,14 +287,14 @@ export function ProjectPage({
             )}
             <p className="eyebrow">
               {active === 0
-                ? "OVERVIEW"
+                ? "프로젝트 소개"
                 : active === 1
-                  ? "BACKGROUND"
+                  ? "제작 배경"
                   : active === 2 || active >= 10
-                    ? "FEATURES"
+                    ? "주요 기능"
                     : active === 3
-                      ? "DEVELOPMENT"
-                      : "RESULTS"}
+                      ? "개발 과정"
+                      : "확인 결과"}
             </p>
             <p>
               {active >= 10
@@ -280,7 +309,7 @@ export function ProjectPage({
       </div>
       {related.length > 0 && (
         <section className="related-projects">
-          <p className="eyebrow">KEEP EXPLORING / RELATED PROJECTS</p>
+          <p className="eyebrow">관련 프로젝트</p>
           <h2>함께 살펴볼 프로젝트.</h2>
           <div>
             {related.map((p) => (
@@ -301,7 +330,7 @@ export function ProjectPage({
           className="next-project"
           href={routeHash({ view: "project", projectId: next.id })}
         >
-          <span className="eyebrow">NEXT PROJECT</span>
+          <span className="eyebrow">다음 프로젝트</span>
           <strong>{next.name}</strong>
           <ArrowUpRight />
         </a>

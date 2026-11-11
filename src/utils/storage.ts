@@ -1,3 +1,4 @@
+import { parseScreenshots } from './projectMedia';
 import { Project } from '../types';
 import { INITIAL_PROJECTS } from '../data/initialData';
 import { migrateChangelogToPrompts } from './promptHistory';
@@ -126,6 +127,8 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
         category: text(value.category),
         description: text(value.description),
         thumbnailUrl: safeUrl(value.thumbnailUrl),
+        ...(value.screenshots !== undefined ? { screenshots: parseScreenshots(value.screenshots) } : {}),
+        ...(typeof value.coverImageId === 'string' ? { coverImageId: value.coverImageId } : {}),
         isSample: value.isSample === true,
         archived: value.archived === true,
         keyFeatures: keyFeatures.map((feature, index) => typeof feature === 'string'

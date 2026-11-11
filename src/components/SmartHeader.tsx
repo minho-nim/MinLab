@@ -25,10 +25,10 @@ export function SmartHeader({ view }: { view: string }) {
     menu.current?.close();
   }, [open]);
   const links = [
-    ["home", "Overview", "#/home"],
-    ["archive", "Projects", "#/"],
-    ["records", "Devlog", "#/development-log"],
-    ["about", "About", "#/about"],
+    ["home", "홈", "#/home"],
+    ["archive", "프로젝트", "#/"],
+    ["records", "개발일지", "#/development-log"],
+    ["about", "소개", "#/about"],
   ];
   return (
     <>
@@ -40,7 +40,7 @@ export function SmartHeader({ view }: { view: string }) {
           <a href="#/home" className="brand" aria-label="MinLab 홈">
             MinLab<span>.</span>
           </a>
-          <span className="header-subtitle">A LAB OF IDEAS</span>
+          <span className="header-subtitle">프로젝트 아카이브</span>
           <nav aria-label="메인 메뉴">
             {links.map(([id, title, url]) => (
               <a
@@ -57,7 +57,7 @@ export function SmartHeader({ view }: { view: string }) {
             aria-expanded={open}
             onClick={() => setOpen(true)}
           >
-            <span>MENU</span>
+            <span>메뉴</span>
             <Menu size={19} />
           </button>
         </div>
@@ -76,7 +76,7 @@ export function SmartHeader({ view }: { view: string }) {
             <X />
           </button>
         </div>
-        <p className="eyebrow">EXPLORE MINLAB</p>
+        <p className="eyebrow">MinLab 둘러보기</p>
         <nav aria-label="전체 메뉴">
           {links.map(([id, title, url], i) => (
             <a key={id} href={url} onClick={() => setOpen(false)}>

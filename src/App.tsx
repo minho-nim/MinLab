@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Project, WorkLog, NavigationTab } from "./types";
 import { loadProjects, saveProjects } from "./utils/storage";
 import { SmartHeader } from "./components/SmartHeader";
+import { MediaLibrary } from "./components/MediaLibrary";
 import { HomePage } from "./components/HomePage";
 import { ArchiveView } from "./components/ArchiveView";
 import { AboutPage } from "./components/AboutPage";
@@ -368,25 +369,27 @@ export default function App() {
           />
         ) : selectedProject ? (
           /* Project Detail Page */
-          <ProjectDetail
-            project={selectedProject}
-            onBack={() =>
-              navigate({ view: "project", projectId: selectedProject.id })
-            }
-            onUpdateProject={handleUpdateProject}
-            onOpenEditProjectModal={(p) => {
-              setEditingProject(p);
-              setIsProjectModalOpen(true);
-            }}
-            onRequestDelete={() => handleRequestDelete(selectedProject)}
-            onOpenAddWorkLogModal={(p, existing) =>
-              handleOpenWorkLogModal(p.id, existing)
-            }
-            onNavigateToDevLog={(projectId) =>
-              handleViewLogsForProject(projectId)
-            }
-            showToast={showToast}
-          />
+          <div className="managed-project">
+            <ProjectDetail
+              project={selectedProject}
+              onBack={() =>
+                navigate({ view: "project", projectId: selectedProject.id })
+              }
+              onUpdateProject={handleUpdateProject}
+              onOpenEditProjectModal={(p) => {
+                setEditingProject(p);
+                setIsProjectModalOpen(true);
+              }}
+              onRequestDelete={() => handleRequestDelete(selectedProject)}
+              onOpenAddWorkLogModal={(p, existing) =>
+                handleOpenWorkLogModal(p.id, existing)
+              }
+              onNavigateToDevLog={(projectId) =>
+                handleViewLogsForProject(projectId)
+              }
+              showToast={showToast}
+            />
+          </div>
         ) : selectedProjectId ? (
           <div className="py-16 text-center text-sm text-muted">
             <p>
@@ -406,7 +409,7 @@ export default function App() {
         ) : route.view === "admin" ? (
           <section className="admin-dashboard">
             <header className="page-heading">
-              <p className="eyebrow">ADMIN / LOCAL WORKSPACE</p>
+              <p className="eyebrow">관리자</p>
               <h1>기록을 관리합니다.</h1>
               <p>
                 이 브라우저에 저장되는 편집 공간입니다. 운영 사이트의 원본
@@ -415,15 +418,15 @@ export default function App() {
             </header>
             <div className="admin-metrics">
               <div>
-                <span>PROJECTS</span>
+                <span>프로젝트</span>
                 <strong>{projects.length}</strong>
               </div>
               <div>
-                <span>DEVELOPMENT LOGS</span>
+                <span>개발일지</span>
                 <strong>{totalLogsCount}</strong>
               </div>
               <div>
-                <span>PROMPTS</span>
+                <span>프롬프트</span>
                 <strong>
                   {projects.reduce(
                     (n, p) => n + (p.promptHistory?.length || 0),
@@ -446,12 +449,26 @@ export default function App() {
               >
                 About Editor
               </button>
+              <button
+                aria-pressed={adminSection === "media"}
+                onClick={() => setAdminSection("media")}
+              >
+                프로젝트 이미지
+              </button>
               <button onClick={() => setIsBackupModalOpen(true)}>
                 Data Manager · 백업·복원
               </button>
             </nav>
             {adminSection === "about" ? (
               <AboutPage editing projects={projects} />
+            ) : adminSection === "media" ? (
+              <MediaLibrary
+                projects={projects}
+                onEdit={(p) => {
+                  setEditingProject(p);
+                  setIsProjectModalOpen(true);
+                }}
+              />
             ) : (
               <>
                 <div className="section-heading">
@@ -526,8 +543,8 @@ export default function App() {
               </>
             )}
             <p className="admin-future">
-              추후 연결 예정 · Media Library / AI Inbox / Review Center /
-              Publishing — 현재 미연동
+              추후 연결 예정 · AI Inbox / Review Center / Publishing — 현재
+              미연동
             </p>
           </section>
         ) : currentTab === "development-log" ? (

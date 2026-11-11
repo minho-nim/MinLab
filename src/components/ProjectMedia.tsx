@@ -1,28 +1,8 @@
 import { useState } from "react";
 import type { Project } from "../types";
-// Captures of the real local applications, kept separate from user-owned project records.
-export const projectScreens: Record<
-  string,
-  { src: string; label: string; section?: number }[]
-> = {
-  "proj-crossroads-ai-verdict": [
-    { src: "media/crossroads.webp", label: "게임 시작 화면" },
-  ],
-  "proj-musclemap": [
-    { src: "media/musclemap.webp", label: "운동 관리 화면", section: 0 },
-    { src: "media/musclemap-map.webp", label: "근육 지도", section: 2 },
-  ],
-};
+import { resolveProjectMedia } from "../utils/projectMedia";
 export function mediaFor(project: Project) {
-  if (
-    project.thumbnailUrl &&
-    !project.thumbnailUrl.includes("images.unsplash.com")
-  )
-    return [{ src: project.thumbnailUrl, label: project.name }];
-  return (projectScreens[project.id] || []).map((item) => ({
-    ...item,
-    src: import.meta.env.BASE_URL + item.src,
-  }));
+  return resolveProjectMedia(project, import.meta.env.BASE_URL);
 }
 export function ProjectMedia({
   project,
@@ -36,21 +16,37 @@ export function ProjectMedia({
   const media = mediaFor(project)[index] || mediaFor(project)[0];
   const [failed, setFailed] = useState("");
   return (
-    <div className="project-media">
+    <div
+      className={
+        "project-media " +
+        (!media || failed === media.src ? "without-image" : "")
+      }
+    >
       {media && failed !== media.src ? (
         <img
           src={media.src}
           alt={project.name + " — " + media.label}
           loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          style={{ objectFit: media.fit }}
           onError={() => setFailed(media.src)}
         />
       ) : (
         <div className="media-empty">
-          <span className="eyebrow">
-            {project.category || "PROJECT ARCHIVE"}
-          </span>
-          <strong>{project.name}</strong>
-          <span>등록된 프로젝트 화면이 없습니다.</span>
+          <span>{project.category}</span>
+          <p>
+            {media
+              ? "이미지를 불러오지 못했습니다."
+              : "아직 등록된 화면이 없습니다."}
+          </p>
+          <small>
+            {project.keyFeatures.length
+              ? project.keyFeatures
+                  .slice(0, 2)
+                  .map((f) => (typeof f === "string" ? f : f.name))
+                  .join(" · ")
+              : project.techStack.slice(0, 3).join(" · ")}
+          </small>
         </div>
       )}
     </div>

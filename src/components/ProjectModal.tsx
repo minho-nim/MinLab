@@ -1,8 +1,10 @@
-import { useModalFocus } from '../utils/useModalFocus';
-import React, { useState, useEffect } from 'react';
-import { Project, ProjectStatus } from '../types';
-import { X, Image as ImageIcon } from 'lucide-react';
-import { normalizeProjectStatus } from '../utils/storage';
+import { useModalFocus } from "../utils/useModalFocus";
+import React, { useState, useEffect } from "react";
+import { MediaEditor } from "./MediaEditor";
+import { parseScreenshots } from "../utils/projectMedia";
+import { Project, ProjectStatus, ProjectScreenshot } from "../types";
+import { X, Image as ImageIcon } from "lucide-react";
+import { normalizeProjectStatus } from "../utils/storage";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -11,7 +13,12 @@ interface ProjectModalProps {
   initialProject?: Project | null;
 }
 
-const STATUS_OPTIONS: ('구상 중' | '개발 중' | '완성' | '보류')[] = ['구상 중', '개발 중', '완성', '보류'];
+const STATUS_OPTIONS: ("구상 중" | "개발 중" | "완성" | "보류")[] = [
+  "구상 중",
+  "개발 중",
+  "완성",
+  "보류",
+];
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
   isOpen,
@@ -19,68 +26,89 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onSave,
   initialProject,
 }) => {
-  const [name, setName] = useState('');
-  const [englishName, setEnglishName] = useState('');
-  const [status, setStatus] = useState<ProjectStatus>('개발 중');
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
-  const [techStackInput, setTechStackInput] = useState('');
-  const [liveUrl, setLiveUrl] = useState('');
-  const [previewUrl, setPreviewUrl] = useState('');
-  const [githubUrl, setGithubUrl] = useState('');
+  const [mediaBusy, setMediaBusy] = useState(false);
+  const [screenshots, setScreenshots] = useState<ProjectScreenshot[]>([]);
+  const [coverImageId, setCoverImageId] = useState("");
+  const [name, setName] = useState("");
+  const [englishName, setEnglishName] = useState("");
+  const [status, setStatus] = useState<ProjectStatus>("개발 중");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [techStackInput, setTechStackInput] = useState("");
+  const [liveUrl, setLiveUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
   const [archived, setArchived] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (initialProject) {
-      setName(initialProject.name || '');
-      setEnglishName(initialProject.englishName || '');
+      setName(initialProject.name || "");
+      setEnglishName(initialProject.englishName || "");
       setStatus(normalizeProjectStatus(initialProject.status));
-      setCategory(initialProject.category || '');
-      setDescription(initialProject.description || '');
-      setThumbnailUrl(initialProject.thumbnailUrl || '');
-      setTechStackInput(initialProject.techStack ? initialProject.techStack.join(', ') : '');
-      setLiveUrl(initialProject.liveUrl || '');
-      setPreviewUrl(initialProject.previewUrl || '');
-      setGithubUrl(initialProject.githubUrl || '');
+      setCategory(initialProject.category || "");
+      setDescription(initialProject.description || "");
+      setThumbnailUrl(initialProject.thumbnailUrl || "");
+      setTechStackInput(
+        initialProject.techStack ? initialProject.techStack.join(", ") : "",
+      );
+      setLiveUrl(initialProject.liveUrl || "");
+      setPreviewUrl(initialProject.previewUrl || "");
+      setGithubUrl(initialProject.githubUrl || "");
       setArchived(Boolean(initialProject.archived));
     } else {
-      setName('');
-      setEnglishName('');
-      setStatus('개발 중');
-      setCategory('업무 자동화');
-      setDescription('');
-      setThumbnailUrl('');
-      setTechStackInput('Python');
-      setLiveUrl('');
-      setPreviewUrl('');
-      setGithubUrl('');
+      setName("");
+      setEnglishName("");
+      setStatus("개발 중");
+      setCategory("업무 자동화");
+      setDescription("");
+      setThumbnailUrl("");
+      setTechStackInput("");
+      setLiveUrl("");
+      setPreviewUrl("");
+      setGithubUrl("");
       setArchived(false);
     }
-    setError('');
+    setMediaBusy(false);
+    setScreenshots(initialProject?.screenshots || []);
+    setCoverImageId(initialProject?.coverImageId || "");
+    setError("");
   }, [initialProject, isOpen]);
 
-  const dialogRef=useModalFocus(isOpen,onClose);
+  const dialogRef = useModalFocus(isOpen, onClose);
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (mediaBusy) {
+      setError("이미지 최적화가 완료된 뒤 저장해 주세요.");
+      return;
+    }
     if (!name.trim()) {
-      setError('프로젝트명을 입력해 주세요.');
+      setError("프로젝트명을 입력해 주세요.");
       return;
     }
 
     const techStack = techStackInput
-      .split(',')
+      .split(",")
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
 
-    if (previewUrl.trim() && !/^(https?:\/\/|\/(?!\/)|\.\.?\/)/i.test(previewUrl.trim())) {
-      setError('미리보기 URL은 http(s) 주소 또는 상대 경로로 입력해 주세요.');
+    if (
+      previewUrl.trim() &&
+      !/^(https?:\/\/|\/(?!\/)|\.\.?\/)/i.test(previewUrl.trim())
+    ) {
+      setError("미리보기 URL은 http(s) 주소 또는 상대 경로로 입력해 주세요.");
       return;
     }
 
+    try {
+      parseScreenshots(screenshots);
+    } catch (error) {
+      setError((error as Error).message);
+      return;
+    }
     const now = new Date().toISOString();
 
     const projectToSave: Project = {
@@ -88,9 +116,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       name: name.trim(),
       englishName: englishName.trim(),
       status,
-      category: category.trim() || '기타',
+      category: category.trim() || "기타",
       description: description.trim(),
       thumbnailUrl: thumbnailUrl.trim(),
+      ...(screenshots.length || initialProject?.screenshots
+        ? {
+            screenshots,
+            coverImageId: coverImageId || screenshots[0]?.id || "",
+          }
+        : {}),
       isSample: initialProject ? Boolean(initialProject.isSample) : false, // 새로 등록한 프로젝트는 실제 사용자 프로젝트
       archived,
       keyFeatures: initialProject ? initialProject.keyFeatures : [],
@@ -110,12 +144,18 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   };
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="프로젝트 편집" className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="프로젝트 편집"
+      className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-xs overflow-y-auto"
+    >
       <div className="relative w-full max-w-lg bg-surface border border-line-strong rounded-xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-line">
           <h3 className="text-sm font-semibold text-ink">
-            {initialProject ? '프로젝트 수정' : '새 프로젝트 등록'}
+            {initialProject ? "프로젝트 수정" : "새 프로젝트 등록"}
           </h3>
           <button
             aria-label="닫기"
@@ -127,7 +167,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs">
+        <form
+          onSubmit={handleSubmit}
+          className="p-5 space-y-3.5 max-h-[75vh] overflow-y-auto text-xs"
+        >
           {error && (
             <div className="p-2.5 text-xs text-rose-700 bg-rose-50 border border-rose-850 rounded-md">
               {error}
@@ -189,9 +232,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               <input
                 type="url"
                 aria-label="대표 이미지 URL"
-              value={thumbnailUrl}
+                value={thumbnailUrl}
                 onChange={(e) => setThumbnailUrl(e.target.value)}
-                placeholder="https://... (비워둘 시 기본 기술 그래픽 커버 적용)"
+                placeholder="https://... (비워두면 등록한 프로젝트 화면 사용)"
                 className="flex-1 px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink font-mono focus:outline-none focus:border-accent"
               />
             </div>
@@ -202,13 +245,21 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   alt="미리보기"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLElement).style.display = 'none';
+                    (e.target as HTMLElement).style.display = "none";
                   }}
                 />
               </div>
             )}
           </div>
 
+          <MediaEditor
+            onBusyChange={setMediaBusy}
+            value={screenshots}
+            onChange={setScreenshots}
+            cover={coverImageId}
+            onCover={setCoverImageId}
+            features={initialProject?.keyFeatures}
+          />
           {/* Status & Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -217,7 +268,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               </label>
               <select
                 aria-label="개발 상태"
-              value={status}
+                value={status}
                 onChange={(e) => setStatus(e.target.value as ProjectStatus)}
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent"
               >
@@ -236,7 +287,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               <input
                 type="text"
                 aria-label="카테고리"
-              value={category}
+                value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="예: 업무 자동화"
                 className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink focus:outline-none focus:border-accent"
@@ -246,7 +297,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
           {/* Program Live URL */}
           <div>
-            <label htmlFor="project-preview-url" className="block text-[11px] font-medium text-muted mb-1">
+            <label
+              htmlFor="project-preview-url"
+              className="block text-[11px] font-medium text-muted mb-1"
+            >
               미리보기 앱 URL (선택)
             </label>
             <input
@@ -257,7 +311,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               placeholder="프로젝트를 배포한 https:// 주소"
               className="w-full px-3 py-1.5 bg-surface-alt border border-line-strong rounded-md text-ink font-mono focus:outline-none focus:border-accent"
             />
-            <p className="mt-1 text-[10px] text-muted">상세 화면 안에서 앱을 미리 봅니다. 실행 URL과 같은 주소를 사용해도 됩니다.</p>
+            <p className="mt-1 text-[10px] text-muted">
+              상세 화면 안에서 앱을 미리 봅니다. 실행 URL과 같은 주소를 사용해도
+              됩니다.
+            </p>
           </div>
 
           <div>
@@ -306,7 +363,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           {/* Archived toggle */}
           <div className="pt-1 flex items-center justify-between p-2.5 rounded-md bg-surface-alt border border-line-strong">
             <div>
-              <div className="text-[11px] font-medium text-ink-secondary">아카이브 보관</div>
+              <div className="text-[11px] font-medium text-ink-secondary">
+                아카이브 보관
+              </div>
               <div className="text-[10px] text-muted">
                 완료되었거나 이전 버전으로 보관 목록(Archive)에 이동합니다.
               </div>
@@ -323,7 +382,17 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </label>
           </div>
 
-          <aside className="editor-live-preview" aria-label="입력 중인 프로젝트 미리보기"><p className="eyebrow">LIVE PREVIEW / 저장 전 미리보기</p><h4>{name || '프로젝트명을 입력하세요'}</h4><p>{description || '소개를 입력하면 여기에 표시됩니다.'}</p><small>{category} / {status}</small></aside>
+          <aside
+            className="editor-live-preview"
+            aria-label="입력 중인 프로젝트 미리보기"
+          >
+            <p className="eyebrow">LIVE PREVIEW / 저장 전 미리보기</p>
+            <h4>{name || "프로젝트명을 입력하세요"}</h4>
+            <p>{description || "소개를 입력하면 여기에 표시됩니다."}</p>
+            <small>
+              {category} / {status}
+            </small>
+          </aside>
           {/* Actions */}
           <div className="flex items-center justify-end gap-2 pt-3 border-t border-line">
             <button

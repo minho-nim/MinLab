@@ -11,9 +11,21 @@ import { ProjectMedia, mediaFor } from "./ProjectMedia";
 export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const section = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
+  useEffect(() => {
+    const node = section.current?.querySelector(".featured-sticky");
+    if (!node) return;
+    const observer = new ResizeObserver(() => {
+      section.current?.style.setProperty(
+        "--explore-height",
+        Math.ceil(node.getBoundingClientRect().height) + "px",
+      );
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   const touchX = useRef(0);
   const count = projects.length;
-  const STEP = 520; // Native scroll distance per project; no wheel interception or scroll lock.
+  const STEP = 200; // Native scroll distance per project; no wheel interception or scroll lock.
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -74,11 +86,11 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
       <div className="featured-sticky">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">01 / SELECTED WORK</p>
+            <p className="eyebrow">프로젝트 탐색</p>
             <h2>
-              탐색하고,
+              프로젝트를 고르면,
               <br />
-              <em>발견하는 프로젝트.</em>
+              <em>이 자리에서 살펴봅니다.</em>
             </h2>
           </div>
           <a className="text-link" href="#/">
@@ -144,7 +156,24 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           <div>
             <i style={{ width: `${((index + 1) / count) * 100}%` }} />
           </div>
-          <span>SCROLL TO DISCOVER · 모바일에서는 좌우로 스와이프</span>
+          <span>스크롤로 다음 프로젝트 · 모바일에서는 좌우로 넘기기</span>
+          <a
+            className="text-link"
+            href="#development-process"
+            onClick={(e) => {
+              e.preventDefault();
+              document
+                .getElementById("development-process")
+                ?.scrollIntoView({
+                  behavior: matchMedia("(prefers-reduced-motion:reduce)")
+                    .matches
+                    ? "instant"
+                    : "smooth",
+                });
+            }}
+          >
+            개발 과정으로 이동 ↗
+          </a>
           <div className="explorer-controls">
             <button
               aria-label="이전 대표 프로젝트"
@@ -169,156 +198,180 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
 export function HomePage({ projects }: { projects: Project[] }) {
   const hero = useRef<HTMLElement>(null);
   const images = projects.filter((p) => mediaFor(p).length).slice(0, 3);
+  const [chosen, setChosen] = useState("");
+  const main = images.find((p) => p.id === chosen) || images[0];
   const featured = [
     ...images,
-    ...projects.filter((p) => !images.some((x) => x.id === p.id)),
+    ...projects.filter((p) => !images.some((i) => i.id === p.id)),
   ].slice(0, 6);
   useEffect(() => {
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        if (hero.current)
-          hero.current.style.setProperty(
-            "--hero-progress",
-            String(Math.min(1, window.scrollY / 800)),
-          );
-      });
+      frame = requestAnimationFrame(() =>
+        hero.current?.style.setProperty(
+          "--hero-progress",
+          String(Math.min(1, scrollY / 650)),
+        ),
+      );
     };
     window.addEventListener("scroll", update, { passive: true });
-    update();
     return () => {
-      window.removeEventListener("scroll", update);
       cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", update);
     };
   }, []);
   return (
     <>
-      <section
-        className="home-hero"
-        ref={hero}
-        onPointerMove={(e) => {
-          if (
-            e.pointerType !== "mouse" ||
-            matchMedia("(prefers-reduced-motion: reduce)").matches
-          )
-            return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          e.currentTarget.style.setProperty(
-            "--pointer-x",
-            `${((e.clientX - rect.left) / rect.width - 0.5) * 12}px`,
-          );
-          e.currentTarget.style.setProperty(
-            "--pointer-y",
-            `${((e.clientY - rect.top) / rect.height - 0.5) * 10}px`,
-          );
-        }}
-        onPointerLeave={(e) => {
-          e.currentTarget.style.setProperty("--pointer-x", "0px");
-          e.currentTarget.style.setProperty("--pointer-y", "0px");
-        }}
-      >
-        <div className="hero-meta">
-          <span className="eyebrow">MINLAB / INDEPENDENT PROJECT ARCHIVE</span>
-          <span className="eyebrow">IDEAS → EXPERIENCES → PRODUCTS</span>
-        </div>
+      <section className="home-hero" ref={hero}>
         <div className="hero-layout">
           <div className="hero-copy">
+            <p className="eyebrow">MinLab · 프로젝트와 개발 기록</p>
             <h1>
-              <span>MAKE</span>
-              <span>
-                <em>IT</em> REAL.
-              </span>
+              <span>아이디어를 현실로,</span>
+              <span>경험을 결과물로.</span>
             </h1>
-            <p className="hero-korean">
-              아이디어를 현실로,
-              <br />
-              경험을 결과물로.
-            </p>
             <p className="hero-description">
-              직접 기획하고 만들며 쌓아가는 실험.
+              직접 기획하고 만든 웹앱과 게임.
               <br />
-              완성된 결과와 그 사이의 과정을 기록합니다.
+              작동하는 결과와 그 안의 고민을 함께 기록합니다.
             </p>
-            <a className="primary-link" href="#/">
-              프로젝트 탐색하기 <ArrowUpRight size={18} />
-            </a>
-          </div>
-          <div className="floating-showcase" aria-label="실제 프로젝트 화면">
-            {images.map((p, i) => (
-              <a
-                key={p.id}
-                className={"floating-window floating-" + i}
-                href={routeHash({ view: "project", projectId: p.id })}
-              >
-                <div className="window-bar">
-                  <span className="window-dots">● ● ●</span>
-                  <span>{p.name}</span>
-                  <ArrowUpRight size={12} />
-                </div>
-                <ProjectMedia project={p} eager />
-                <div className="floating-caption">
-                  <strong>{p.name}</strong>
-                  <span>{p.category} ↗</span>
-                </div>
+            <div className="hero-actions">
+              <a className="primary-link" href="#/">
+                프로젝트 둘러보기 <ArrowUpRight size={17} />
               </a>
-            ))}
-            {!images.length && (
-              <div className="hero-number">
-                <span className="eyebrow">AN INDEX OF IDEAS</span>
-                <strong>01 — {projects.length}</strong>
-                <p>기획 · 제작 · 개선의 기록</p>
+              <a className="text-link" href="#/development-log">
+                개발 과정 읽어보기 ↗
+              </a>
+            </div>
+          </div>
+          <div
+            className="hero-showcase"
+            onPointerMove={(e) => {
+              if (
+                e.pointerType === "mouse" &&
+                !matchMedia("(prefers-reduced-motion:reduce)").matches
+              ) {
+                const r = e.currentTarget.getBoundingClientRect();
+                e.currentTarget.style.setProperty(
+                  "--pointer-x",
+                  `${((e.clientX - r.left) / r.width - 0.5) * 4}px`,
+                );
+                e.currentTarget.style.setProperty(
+                  "--pointer-y",
+                  `${((e.clientY - r.top) / r.height - 0.5) * 4}px`,
+                );
+              }
+            }}
+            onPointerLeave={(e) => {
+              e.currentTarget.style.setProperty("--pointer-x", "0px");
+              e.currentTarget.style.setProperty("--pointer-y", "0px");
+            }}
+          >
+            {main ? (
+              <>
+                <a
+                  className="hero-main-image"
+                  href={routeHash({ view: "project", projectId: main.id })}
+                  aria-label={main.name + " 프로젝트 살펴보기"}
+                >
+                  <ProjectMedia key={main.id} project={main} eager />
+                </a>
+                <div className="hero-image-caption">
+                  <div>
+                    <strong>{main.name}</strong>
+                    <p>{main.description}</p>
+                  </div>
+                  <ArrowUpRight size={20} />
+                </div>
+                <div
+                  className="hero-image-tabs"
+                  aria-label="첫 화면 프로젝트 선택"
+                >
+                  {images.map((p) => (
+                    <button
+                      key={p.id}
+                      aria-pressed={p.id === main.id}
+                      onClick={() => setChosen(p.id)}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="hero-text-index">
+                <h2>{projects.length}개의 프로젝트</h2>
+                <p>기획부터 제작과 개선까지, 실제 개발 기록을 살펴보세요.</p>
+                <a className="text-link" href="#/">
+                  전체 프로젝트 보기 ↗
+                </a>
               </div>
             )}
           </div>
         </div>
         <div className="hero-foot">
-          <span>
-            {String(projects.length).padStart(2, "0")} PROJECTS / ALWAYS IN
-            PROGRESS
-          </span>
+          <p>현재 {projects.length}개의 프로젝트를 기록하고 있습니다.</p>
           <a
             href="#selected-work"
             onClick={(e) => {
               e.preventDefault();
-              document
-                .getElementById("selected-work")
-                ?.scrollIntoView({
-                  behavior: matchMedia("(prefers-reduced-motion: reduce)")
-                    .matches
-                    ? "instant"
-                    : "smooth",
-                });
+              document.getElementById("selected-work")?.scrollIntoView({
+                behavior: matchMedia("(prefers-reduced-motion:reduce)").matches
+                  ? "instant"
+                  : "smooth",
+              });
             }}
           >
-            SCROLL TO EXPLORE <ArrowDown size={14} />
+            프로젝트 탐색 <ArrowDown size={15} />
           </a>
         </div>
       </section>
+      <section className="home-selected">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">직접 만든 서비스</p>
+            <h2>작업한 프로젝트</h2>
+          </div>
+          <a className="text-link" href="#/">
+            전체 프로젝트 보기 ↗
+          </a>
+        </div>
+        <div className="home-project-grid">
+          {featured.slice(0, 3).map((p) => (
+            <a
+              key={p.id}
+              href={routeHash({ view: "project", projectId: p.id })}
+            >
+              <ProjectMedia project={p} />
+              <div>
+                <p className="eyebrow">{p.category}</p>
+                <h3>
+                  {p.name}
+                  <ArrowUpRight size={18} />
+                </h3>
+                <p>{p.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
       <FeaturedExplorer projects={featured} />
-      <section className="home-process">
-        <p className="eyebrow">02 / THE PROCESS</p>
+      <section id="development-process" className="home-process">
         <div>
+          <p className="eyebrow">개발 과정</p>
           <h2>
-            결과만큼,
+            문제를 정의하고,
             <br />
-            <em>과정도 남깁니다.</em>
+            만들어 보고, 개선합니다.
           </h2>
-          <p>
-            무엇을 만들었는지, 왜 바꿨는지.
-            <br />
-            실제 개발일지와 작업 프롬프트에서 확인하세요.
-          </p>
+          <p>무엇을 만들었는지, 왜 바꿨는지. 실제 기록에서 확인하세요.</p>
           <a href="#/development-log" className="text-link">
-            개발 과정 읽어보기 <ArrowUpRight size={18} />
+            개발일지 읽어보기 ↗
           </a>
         </div>
         <ol>
-          {[
-            "문제를 정의합니다.",
-            "작게 만들고 확인합니다.",
-            "기록하고 개선합니다.",
-          ].map((text, i) => (
+          {["문제 정의", "구현과 확인", "기록과 개선"].map((text, i) => (
             <li key={text}>
               <span>0{i + 1}</span>
               {text}

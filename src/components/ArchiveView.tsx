@@ -11,8 +11,11 @@ import {
   type ArchiveQuery,
 } from "../utils/archiveQuery";
 import { routeHash } from "../utils/navigation";
-import { ProjectMedia } from "./ProjectMedia";
+import { ProjectMedia, mediaFor } from "./ProjectMedia";
 export function ArchiveView({ projects }: { projects: Project[] }) {
+  const [filtersOpen, setFiltersOpen] = useState(
+    () => matchMedia("(min-width:640px)").matches,
+  );
   const [query, setQuery] = useState<ArchiveQuery>(() => {
     const value = readArchiveQuery(location.hash);
     if (!new URLSearchParams(location.hash.split("?")[1]).has("layout"))
@@ -38,12 +41,8 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
   return (
     <div className="archive-view">
       <header className="page-heading">
-        <p className="eyebrow">THE ARCHIVE / ALL PROJECTS</p>
-        <h1>
-          만들고, 배우고,
-          <br />
-          <em>다시 발전시킵니다.</em>
-        </h1>
+        <p className="eyebrow">프로젝트 아카이브</p>
+        <h1>전체 프로젝트</h1>
         <p>
           작은 실험부터 실제 사용하는 도구까지. 프로젝트와 그 과정을 탐색하세요.
         </p>
@@ -76,67 +75,74 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
           </button>
         </div>
       </div>
-      <div className="archive-filters">
-        <label>
-          분야
-          <select
-            aria-label="카테고리 필터"
-            value={query.category}
-            onChange={(e) => change({ category: e.target.value })}
+      <details
+        className="filter-disclosure"
+        open={filtersOpen}
+        onToggle={(e) => setFiltersOpen(e.currentTarget.open)}
+      >
+        <summary>상세 필터 및 정렬</summary>
+        <div className="archive-filters">
+          <label>
+            분야
+            <select
+              aria-label="카테고리 필터"
+              value={query.category}
+              onChange={(e) => change({ category: e.target.value })}
+            >
+              <option value="">전체 분야</option>
+              {options(projects.map((p) => p.category)).map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            상태
+            <select
+              aria-label="개발 상태 필터"
+              value={query.status}
+              onChange={(e) => change({ status: e.target.value })}
+            >
+              <option value="">전체 상태</option>
+              {options(projects.map((p) => p.status)).map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            태그
+            <select
+              aria-label="기술 태그 필터"
+              value={query.tag}
+              onChange={(e) => change({ tag: e.target.value })}
+            >
+              <option value="">전체 기술</option>
+              {options(projects.flatMap((p) => p.techStack)).map((v) => (
+                <option key={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            정렬
+            <select
+              aria-label="프로젝트 정렬"
+              value={query.sort}
+              onChange={(e) => change({ sort: e.target.value })}
+            >
+              <option value="manual">등록된 표시순</option>
+              <option value="latest">최신 수정순</option>
+              <option value="name">이름순</option>
+            </select>
+          </label>
+          <button
+            className="text-link"
+            onClick={() => change({ ...defaultQuery, layout: query.layout })}
           >
-            <option value="">전체 분야</option>
-            {options(projects.map((p) => p.category)).map((v) => (
-              <option key={v}>{v}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          상태
-          <select
-            aria-label="개발 상태 필터"
-            value={query.status}
-            onChange={(e) => change({ status: e.target.value })}
-          >
-            <option value="">전체 상태</option>
-            {options(projects.map((p) => p.status)).map((v) => (
-              <option key={v}>{v}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          태그
-          <select
-            aria-label="기술 태그 필터"
-            value={query.tag}
-            onChange={(e) => change({ tag: e.target.value })}
-          >
-            <option value="">전체 기술</option>
-            {options(projects.flatMap((p) => p.techStack)).map((v) => (
-              <option key={v}>{v}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          정렬
-          <select
-            aria-label="프로젝트 정렬"
-            value={query.sort}
-            onChange={(e) => change({ sort: e.target.value })}
-          >
-            <option value="manual">등록된 표시순</option>
-            <option value="latest">최신 수정순</option>
-            <option value="name">이름순</option>
-          </select>
-        </label>
-        <button
-          className="text-link"
-          onClick={() => change({ ...defaultQuery, layout: query.layout })}
-        >
-          초기화 ↗
-        </button>
-      </div>
+            초기화 ↗
+          </button>
+        </div>
+      </details>
       <p className="result-count" role="status">
-        {String(filtered.length).padStart(2, "0")} PROJECTS{" "}
+        {String(filtered.length).padStart(2, "0")}개의 프로젝트{" "}
         <span>/ 전체 {projects.length}개</span>
       </p>
       {!filtered.length ? (
@@ -154,11 +160,13 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         <div className={"project-collection " + query.layout}>
           {filtered.map((p, i) => (
             <a
-              className="archive-project"
+              className={
+                "archive-project " + (!mediaFor(p).length ? "text-project" : "")
+              }
               key={p.id}
               href={routeHash({ view: "project", projectId: p.id })}
             >
-              <ProjectMedia project={p} />
+              {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
               <div className="archive-project-copy">
                 <p className="eyebrow">
                   {String(i + 1).padStart(2, "0")} / {p.category}

@@ -49,6 +49,7 @@ export function VersionJournal({
   projectId?: string | null;
   onSelect: (id: string) => void;
 }) {
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const [selected, setSelected] = useState("");
   const [search, setSearch] = useState("");
   const logs = useMemo(
@@ -84,12 +85,8 @@ export function VersionJournal({
   return (
     <section className="version-journal">
       <header className="page-heading">
-        <p className="eyebrow">DEVELOPMENT JOURNAL / REAL WORK, REAL RECORDS</p>
-        <h1>
-          만드는 과정의
-          <br />
-          <em>모든 변화.</em>
-        </h1>
+        <p className="eyebrow">개발일지</p>
+        <h1>만들고 개선한 기록</h1>
         <p>프로젝트에 남겨진 실제 날짜와 버전, 개선의 이유를 읽어보세요.</p>
       </header>
       <div className="journal-filters">
@@ -149,14 +146,25 @@ export function VersionJournal({
           </div>
           <div className="journal-mobile">
             {logs.map(({ project: p, log: l, key }) => (
-              <details key={key}>
+              <details
+                key={key}
+                onToggle={(e) => {
+                  const open = e.currentTarget.open;
+                  setExpanded((previous) => {
+                    const next = new Set(previous);
+                    if (open) next.add(key);
+                    else next.delete(key);
+                    return next;
+                  });
+                }}
+              >
                 <summary>
                   <small>
                     {l.date} · {l.version || "버전 미지정"} / {p.name}
                   </small>
                   <strong>{l.title || l.task || "개발 기록"}</strong>
                 </summary>
-                <LogContent log={l} />
+                {expanded.has(key) && <LogContent log={l} />}
                 <a
                   href={routeHash({ view: "project", projectId: p.id })}
                   className="text-link"

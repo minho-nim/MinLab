@@ -55,6 +55,14 @@ export interface PromptHistoryItem {
   outcome?: string;
 }
 
+export interface ProjectScreenshot {
+  id: string;
+  url: string;
+  label: string;
+  fit?: 'contain' | 'cover';
+  featureId?: string;
+}
+
 export interface Project {
   id: string;
   name: string; // e.g. 위험성평가서 / 작업계획서 자동화 도구
@@ -62,6 +70,8 @@ export interface Project {
   status: ProjectStatus; // '개발 중' | '완성' | '보류'
   category: string; // e.g. '업무 자동화'
   description: string; // 프로젝트 소개/설명
+  screenshots?: ProjectScreenshot[];
+  coverImageId?: string;
   thumbnailUrl?: string; // 대표 이미지 URL
   isSample?: boolean; // 샘플 데이터 여부 (실제 사용자가 등록한 데이터와 구분)
   archived?: boolean; // 아카이브 여부 (데이터 보존용)

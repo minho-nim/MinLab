@@ -32,37 +32,136 @@ export function FeatureShowcase({ project }: { project: Project }) {
   ];
   const [active, setActive] = useState(0);
   const container = useRef<HTMLDivElement>(null);
+  const navigationTarget = useRef<number | null>(null);
+  const navigationTop = useRef<number | null>(null);
   useEffect(() => {
-    const nodes = Array.from(
-      container.current?.querySelectorAll<HTMLElement>("[data-scene]") || [],
-    );
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const current = entries
-          .filter((e) => e.isIntersecting)
-          .sort(
-            (a, b) =>
-              Math.abs(a.boundingClientRect.top - innerHeight * 0.35) -
-              Math.abs(b.boundingClientRect.top - innerHeight * 0.35),
-          )[0];
-        if (current)
-          setActive(Number((current.target as HTMLElement).dataset.scene));
-      },
-      { rootMargin: "-20% 0px -45% 0px", threshold: 0 },
-    );
-    nodes.forEach((n) => observer.observe(n));
-    return () => observer.disconnect();
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const nodes = Array.from(
+          container.current?.querySelectorAll<HTMLElement>("[data-scene]") ||
+            [],
+        );
+        if (!nodes.length) return;
+        const previewElement = container.current?.previousElementSibling;
+        const preview = previewElement?.getBoundingClientRect();
+        const previewTop = previewElement
+          ? parseFloat(getComputedStyle(previewElement).top) || 0
+          : 0;
+        const anchor = matchMedia("(max-width:899px)").matches
+          ? Math.min(
+              innerHeight * 0.8,
+              Math.max(
+                innerHeight * 0.35,
+                (preview?.height || 0) + previewTop + 24,
+              ),
+            )
+          : innerHeight * 0.35;
+        const nearest = nodes.reduce((best, node) => {
+          const rect = node.getBoundingClientRect(),
+            previous = best.getBoundingClientRect();
+          const distance = (r: DOMRect) =>
+            anchor < r.top
+              ? r.top - anchor
+              : anchor > r.bottom
+                ? anchor - r.bottom
+                : 0;
+          return distance(rect) < distance(previous) ? node : best;
+        }, nodes[0]);
+        if (navigationTarget.current !== null) {
+          if (
+            navigationTop.current === null ||
+            Math.abs(scrollY - navigationTop.current) > 2
+          )
+            return;
+          const target = nodes.find(
+            (node) => Number(node.dataset.scene) === navigationTarget.current,
+          );
+          const rect = target?.getBoundingClientRect();
+          if (!rect || (rect.top <= anchor && rect.bottom >= anchor))
+            navigationTarget.current = null;
+          else return;
+        }
+        setActive(Number(nearest.dataset.scene));
+      });
+    };
+    const release = () => {
+      navigationTarget.current = null;
+    };
+    const keyRelease = (event: KeyboardEvent) => {
+      if (
+        [
+          "ArrowUp",
+          "ArrowDown",
+          "PageUp",
+          "PageDown",
+          "Home",
+          "End",
+          " ",
+        ].includes(event.key)
+      )
+        release();
+    };
+    window.addEventListener("wheel", release, { passive: true });
+    window.addEventListener("touchstart", release, { passive: true });
+    window.addEventListener("keydown", keyRelease);
+    const observer = new ResizeObserver(update);
+    if (container.current) {
+      observer.observe(container.current);
+      if (container.current.previousElementSibling)
+        observer.observe(container.current.previousElementSibling);
+    }
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      window.removeEventListener("wheel", release);
+      window.removeEventListener("touchstart", release);
+      window.removeEventListener("keydown", keyRelease);
+    };
   }, [project.id]);
   const choose = (index: number) => {
+    navigationTarget.current = index;
+    navigationTop.current = null;
     setActive(index);
-    container.current
-      ?.querySelector<HTMLElement>('[data-scene="' + index + '"]')
-      ?.scrollIntoView({
-        block: "center",
-        behavior: matchMedia("(prefers-reduced-motion:reduce)").matches
-          ? "instant"
-          : "smooth",
-      });
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const node = container.current?.querySelector<HTMLElement>(
+          '[data-scene="' + index + '"]',
+        );
+        if (!node) return;
+        const previewElement = container.current?.previousElementSibling;
+        const height = previewElement?.getBoundingClientRect().height || 0;
+        const previewTop = previewElement
+          ? parseFloat(getComputedStyle(previewElement).top) || 0
+          : 0;
+        const anchor = matchMedia("(max-width:899px)").matches
+          ? Math.min(
+              innerHeight * 0.8,
+              Math.max(innerHeight * 0.35, height + previewTop + 24),
+            )
+          : innerHeight * 0.35;
+        const top = Math.max(
+          0,
+          Math.min(
+            document.documentElement.scrollHeight - innerHeight,
+            scrollY + node.getBoundingClientRect().top - anchor + 16,
+          ),
+        );
+        navigationTop.current = top;
+        window.scrollTo({
+          top,
+          behavior: matchMedia("(prefers-reduced-motion:reduce)").matches
+            ? "instant"
+            : "smooth",
+        });
+      }),
+    );
   };
   if (!scenes.length)
     return (
@@ -127,14 +226,23 @@ export function FeatureShowcase({ project }: { project: Project }) {
             <article
               key={s.id}
               data-scene={i}
-              className={active === i ? "is-active" : ""}
+              className={[
+                active === i ? "is-active" : "",
+                s.description.trim().length > 180
+                  ? "scene-detailed"
+                  : s.description.trim()
+                    ? "scene-brief"
+                    : "scene-screen",
+              ].join(" ")}
             >
               <span className="eyebrow">
                 {String(i + 1).padStart(2, "0")} / 주요 기능
               </span>
               <h3>{s.name}</h3>
               {s.description && <p>{s.description}</p>}
-              {s.screen >= 0 && <small>{screens[s.screen].label}</small>}
+              {s.screen >= 0 && screens[s.screen].label !== s.name && (
+                <small>{screens[s.screen].label}</small>
+              )}
             </article>
           ))}
         </div>

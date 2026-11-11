@@ -36,7 +36,11 @@ export function SmartHeader({ view }: { view: string }) {
       <a className="skip-link" href="#main-content">
         본문으로 건너뛰기
       </a>
-      <header className={"smart-header " + (compact ? "compact" : "")}>
+      <header
+        inert={compact && !open}
+        aria-hidden={compact && !open}
+        className={"smart-header " + (compact ? "compact" : "")}
+      >
         <div>
           <a href="#/home" className="brand" aria-label="MinLab 홈">
             MinLab<span>.</span>

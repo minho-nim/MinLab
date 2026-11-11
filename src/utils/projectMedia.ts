@@ -4,10 +4,27 @@ export interface ResolvedMedia {
   src: string;
   label: string;
   featureId?: string;
+  version?: string;
   fit: "contain" | "cover";
   section?: number;
 }
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
+  "proj-snake-race": [
+    {
+      id: "minsnakey-sample",
+      src: "media/minsnakey.webp",
+      label: "앱 내 샘플 경기 준비 화면",
+      fit: "contain",
+    },
+  ],
+  "proj-1792978415000": [
+    {
+      id: "worthit-demo",
+      src: "media/worthit.webp",
+      label: "앱 내 샘플 소비 화면",
+      fit: "contain",
+    },
+  ],
   "proj-crossroads-ai-verdict": [
     {
       id: "crossroads-start",
@@ -60,6 +77,9 @@ export function parseScreenshots(value: unknown): ProjectScreenshot[] {
       id: item.id,
       url: item.url,
       label: item.label,
+      ...(typeof item.version === "string" && item.version
+        ? { version: item.version }
+        : {}),
       fit: item.fit === "cover" ? "cover" : "contain",
       ...(typeof item.featureId === "string" && item.featureId
         ? { featureId: item.featureId }
@@ -81,6 +101,7 @@ export function resolveProjectMedia(
           label: s.label || project.name,
           fit: s.fit || "contain",
           featureId: s.featureId,
+          version: s.version,
         }) as ResolvedMedia,
     );
   if (

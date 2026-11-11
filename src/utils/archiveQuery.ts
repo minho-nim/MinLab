@@ -35,15 +35,23 @@ export function archiveHash(query: ArchiveQuery) {
       params.set(key, value);
   return "#/" + (params.size ? "?" + params : "");
 }
+export function projectTags(project: Project) {
+  return [
+    ...new Set([
+      ...project.techStack,
+      ...project.keyFeatures.map((f) => (typeof f === "string" ? f : f.name)),
+    ]),
+  ];
+}
 export function queryProjects(projects: Project[], query: ArchiveQuery) {
   const needle = query.q.trim().toLocaleLowerCase();
   const result = projects.filter(
     (p) =>
       (!query.category || p.category === query.category) &&
       (!query.status || p.status === query.status) &&
-      (!query.tag || p.techStack.includes(query.tag)) &&
+      (!query.tag || projectTags(p).includes(query.tag)) &&
       (!needle ||
-        [p.name, p.englishName, p.description, p.category, ...p.techStack]
+        [p.name, p.englishName, p.description, p.category, ...projectTags(p)]
           .join(" ")
           .toLocaleLowerCase()
           .includes(needle)),

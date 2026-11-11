@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ArrowUpRight, Grid2X2, List, Search } from "lucide-react";
 import type { Project } from "../types";
 import {
+  projectTags,
   archiveHash,
   defaultQuery,
   queryProjects,
@@ -14,8 +15,10 @@ import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 export function ArchiveView({ projects }: { projects: Project[] }) {
   const [filtersOpen, setFiltersOpen] = useState(
-    () => matchMedia("(min-width:640px)").matches,
+    () => safeRead("minlab_archive_filters_open") === "true",
   );
+  const [hovered, setHovered] = useState<Project | null>(null);
+  const preview = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState<ArchiveQuery>(() => {
     const value = readArchiveQuery(location.hash);
     if (!new URLSearchParams(location.hash.split("?")[1]).has("layout"))
@@ -75,10 +78,27 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
           </button>
         </div>
       </div>
+      <nav className="category-bar" aria-label="프로젝트 분야">
+        {["", ...options(projects.map((p) => p.category))].map((c) => (
+          <button
+            key={c}
+            aria-pressed={query.category === c}
+            onClick={() => change({ category: c })}
+          >
+            {c || "전체"}
+          </button>
+        ))}
+      </nav>
       <details
         className="filter-disclosure"
         open={filtersOpen}
-        onToggle={(e) => setFiltersOpen(e.currentTarget.open)}
+        onToggle={(e) => {
+          setFiltersOpen(e.currentTarget.open);
+          safeWrite(
+            "minlab_archive_filters_open",
+            String(e.currentTarget.open),
+          );
+        }}
       >
         <summary>상세 필터 및 정렬</summary>
         <div className="archive-filters">
@@ -116,7 +136,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
               onChange={(e) => change({ tag: e.target.value })}
             >
               <option value="">전체 기술</option>
-              {options(projects.flatMap((p) => p.techStack)).map((v) => (
+              {options(projects.flatMap(projectTags)).map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>
@@ -158,17 +178,54 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         </div>
       ) : (
         <div className={"project-collection " + query.layout}>
+          {query.layout === "list" && (
+            <div className="archive-list-head">
+              <span>프로젝트</span>
+              <span>분야</span>
+              <span>개발 상태</span>
+              <span>최근 수정</span>
+            </div>
+          )}
           {filtered.map((p) => (
             <a
               className={
                 "archive-project " +
                 (!mediaFor(p).length ? "text-project" : "image-project")
               }
+              onPointerEnter={(e) => {
+                if (query.layout === "list" && e.pointerType === "mouse")
+                  setHovered(p);
+              }}
+              onPointerLeave={() => setHovered(null)}
+              onPointerMove={(e) => {
+                if (preview.current) {
+                  preview.current.style.left =
+                    Math.min(innerWidth - 290, e.clientX + 24) + "px";
+                  preview.current.style.top =
+                    Math.max(8, Math.min(innerHeight - 220, e.clientY + 24)) +
+                    "px";
+                }
+              }}
               key={p.id}
               href={routeHash({ view: "project", projectId: p.id })}
             >
-              {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
-              <div className="archive-project-copy">
+              {query.layout === "grid" && mediaFor(p).length > 0 && (
+                <ProjectMedia project={p} />
+              )}
+              {query.layout === "list" && (
+                <div className="archive-list-row">
+                  <strong>{p.name} ↗</strong>
+                  <span>{p.category}</span>
+                  <span>{p.status}</span>
+                  <time>{p.updatedAt?.slice(0, 10) || "미등록"}</time>
+                </div>
+              )}
+              <div
+                className={
+                  "archive-project-copy " +
+                  (query.layout === "list" ? "grid-only-copy" : "")
+                }
+              >
                 <p className="eyebrow">{p.category}</p>
                 <h2>
                   {p.name}
@@ -192,6 +249,12 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
               </div>
             </a>
           ))}
+        </div>
+      )}
+      {hovered && query.layout === "list" && mediaFor(hovered).length > 0 && (
+        <div ref={preview} className="archive-hover-preview" aria-hidden="true">
+          <ProjectMedia project={hovered} />
+          <strong>{hovered.name}</strong>
         </div>
       )}
     </div>

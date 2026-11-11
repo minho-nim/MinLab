@@ -61,6 +61,7 @@ export interface ProjectScreenshot {
   label: string;
   fit?: 'contain' | 'cover';
   featureId?: string;
+  version?: string;
 }
 
 export interface Project {
@@ -70,6 +71,8 @@ export interface Project {
   status: ProjectStatus; // '개발 중' | '완성' | '보류'
   category: string; // e.g. '업무 자동화'
   description: string; // 프로젝트 소개/설명
+  visible?: boolean;
+  relatedProjectIds?: string[];
   screenshots?: ProjectScreenshot[];
   coverImageId?: string;
   thumbnailUrl?: string; // 대표 이미지 URL

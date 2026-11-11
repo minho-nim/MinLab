@@ -17,11 +17,30 @@ import { DevelopmentLogView } from "./components/DevelopmentLogView";
 import { JsonBackupModal } from "./components/JsonBackupModal";
 import { DeleteConfirmModal } from "./components/DeleteConfirmModal";
 import { Toast, ToastMessage } from "./components/Toast";
+import { contentChanges, draftKey, storeDraft } from "./utils/contentDraft";
+import { parseImportJson } from "./utils/storage";
 import { safeRead } from "./utils/archiveQuery";
 import { Info, X, Download } from "lucide-react";
 
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
+  const [published, setPublished] = useState<Project[]>(() => projects);
+  const [review, setReview] = useState(false);
+  const [recovery, setRecovery] = useState<Project[] | null>(null);
+  const dragIndex = React.useRef<number | null>(null);
+  useEffect(() => {
+    const saved = safeRead(draftKey);
+    if (saved) {
+      const parsed = parseImportJson(saved);
+      if (parsed.success && parsed.projects) setProjects(JSON.parse(saved));
+    }
+  }, []);
+  const changes = contentChanges(published, projects);
+  const hasDraft =
+    changes.added.length > 0 ||
+    changes.removed.length > 0 ||
+    changes.changed.length > 0 ||
+    changes.reordered;
   const [route, setRoute] = useState<ArchiveRoute>(() =>
     parseRoute(window.location.hash || "#/home"),
   );
@@ -41,7 +60,11 @@ export default function App() {
   };
   const setSelectedProjectId = (id: string | null) =>
     navigate(id ? { view: "project", projectId: id } : { view: "archive" });
-  const [manageRecords, setManageRecords] = useState(false);
+  const manageRecords = route.view === "records" && !!route.editing;
+  const setManageRecords = (editing: boolean) => {
+    if (route.view === "records")
+      navigate({ ...route, editing: editing || undefined });
+  };
   const [adminSection, setAdminSection] = useState("projects");
   const [adminSearch, setAdminSearch] = useState("");
 
@@ -77,7 +100,7 @@ export default function App() {
       } catch {}
       current = window.location.hash || "#/home";
       setRoute(parseRoute(current));
-      setManageRecords(false);
+
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() =>
         requestAnimationFrame(() => {
@@ -147,7 +170,7 @@ export default function App() {
 
   // Sync to localStorage
   const updateProjectsState = (newProjects: Project[]): boolean => {
-    if (!saveProjects(newProjects)) {
+    if (!storeDraft(newProjects)) {
       showToast(
         "브라우저 저장 공간에 기록하지 못했습니다. JSON 백업 후 저장 공간을 확인해 주세요.",
         "error",
@@ -161,8 +184,14 @@ export default function App() {
   // Currently selected project for Detail view
   const selectedProject = useMemo(() => {
     if (!selectedProjectId) return null;
-    return projects.find((p) => p.id === selectedProjectId) || null;
-  }, [projects, selectedProjectId]);
+    return (
+      (route.view === "project" ? published : projects).find(
+        (p) =>
+          p.id === selectedProjectId &&
+          (route.view !== "project" || p.visible !== false),
+      ) || null
+    );
+  }, [projects, published, route.view, selectedProjectId]);
 
   // Aggregate metrics
   const totalLogsCount = useMemo(() => {
@@ -185,8 +214,8 @@ export default function App() {
     if (updateProjectsState(updatedList)) {
       showToast(
         exists
-          ? `'${projectToSave.name}' 프로젝트가 수정되었습니다.`
-          : `새 프로젝트 '${projectToSave.name}'이(가) 등록되었습니다.`,
+          ? `'${projectToSave.name}' 프로젝트 초안을 저장했습니다.`
+          : `새 프로젝트 '${projectToSave.name}'초안을 저장했습니다.`,
         "success",
       );
       return true;
@@ -209,6 +238,13 @@ export default function App() {
   const handleConfirmDelete = () => {
     if (!projectToDelete) return;
     const deletedName = projectToDelete.name;
+    if (!storeDraft(projects)) return;
+    try {
+      localStorage.setItem("minlab_before_delete_v2", JSON.stringify(projects));
+    } catch {
+      return;
+    }
+    setRecovery(projects);
     const updatedList = projects.filter((p) => p.id !== projectToDelete.id);
     if (!updateProjectsState(updatedList)) return;
     if (selectedProjectId === projectToDelete.id) {
@@ -305,7 +341,7 @@ export default function App() {
 
   // Navigate to Development Log for a specific project
   const handleViewLogsForProject = (projectId: string) => {
-    navigate({ view: "records", projectId });
+    navigate({ view: "records", projectId, editing: true });
   };
 
   const handleDismissNotice = () => {
@@ -325,36 +361,39 @@ export default function App() {
       <SmartHeader view={route.view === "project" ? "archive" : route.view} />
 
       {/* Storage & Data Preservation Notice Banner */}
-      {showStorageNotice && (
-        <aside
-          aria-label="저장 방식 안내"
-          className="bg-surface-alt border-b border-line px-4 py-2.5 text-xs"
-        >
-          <div className="max-w-6xl mx-auto flex items-start sm:items-center justify-between gap-3 text-ink-secondary">
-            <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-accent shrink-0" />
-              <p className="leading-snug">
-                기록은 이 브라우저에 저장됩니다. 보관하려면{" "}
-                <button
-                  onClick={() => setIsBackupModalOpen(true)}
-                  className="text-accent underline font-medium hover:text-accent inline-flex items-center gap-0.5"
-                >
-                  <Download className="w-3 h-3 inline" />
-                  백업·복원
-                </button>
-                에서 JSON 파일을 내려받으세요.
-              </p>
+      {showStorageNotice &&
+        (route.view === "admin" ||
+          route.view === "manage" ||
+          manageRecords) && (
+          <aside
+            aria-label="저장 방식 안내"
+            className="bg-surface-alt border-b border-line px-4 py-2.5 text-xs"
+          >
+            <div className="max-w-6xl mx-auto flex items-start sm:items-center justify-between gap-3 text-ink-secondary">
+              <div className="flex items-center gap-2">
+                <Info className="w-4 h-4 text-accent shrink-0" />
+                <p className="leading-snug">
+                  기록은 이 브라우저에 저장됩니다. 보관하려면{" "}
+                  <button
+                    onClick={() => setIsBackupModalOpen(true)}
+                    className="text-accent underline font-medium hover:text-accent inline-flex items-center gap-0.5"
+                  >
+                    <Download className="w-3 h-3 inline" />
+                    백업·복원
+                  </button>
+                  에서 JSON 파일을 내려받으세요.
+                </p>
+              </div>
+              <button
+                onClick={handleDismissNotice}
+                className="text-muted hover:text-ink p-1 rounded hover:bg-surface shrink-0"
+                title="안내 닫기"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <button
-              onClick={handleDismissNotice}
-              className="text-muted hover:text-ink p-1 rounded hover:bg-surface shrink-0"
-              title="안내 닫기"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </aside>
-      )}
+          </aside>
+        )}
 
       {/* Main View Container */}
       <main
@@ -365,17 +404,18 @@ export default function App() {
         {selectedProject && route.view === "project" ? (
           <ProjectPage
             key={selectedProject.id}
-            project={selectedProject}
-            projects={projects}
+            project={
+              published.find((p) => p.id === selectedProject.id) ||
+              selectedProject
+            }
+            projects={published}
           />
         ) : selectedProject ? (
           /* Project Detail Page */
           <div className="managed-project">
             <ProjectDetail
               project={selectedProject}
-              onBack={() =>
-                navigate({ view: "project", projectId: selectedProject.id })
-              }
+              onBack={() => navigate({ view: "admin" })}
               onUpdateProject={handleUpdateProject}
               onOpenEditProjectModal={(p) => {
                 setEditingProject(p);
@@ -402,11 +442,13 @@ export default function App() {
             </a>
           </div>
         ) : route.view === "home" ? (
-          <HomePage projects={projects} />
+          <HomePage projects={published.filter((p) => p.visible !== false)} />
         ) : route.view === "about" ? (
-          <AboutPage projects={projects} />
+          <AboutPage projects={published.filter((p) => p.visible !== false)} />
         ) : route.view === "archive" ? (
-          <ArchiveView projects={projects} />
+          <ArchiveView
+            projects={published.filter((p) => p.visible !== false)}
+          />
         ) : route.view === "admin" ? (
           <section className="admin-dashboard">
             <header className="page-heading">
@@ -417,6 +459,127 @@ export default function App() {
                 데이터를 직접 변경하지 않습니다.
               </p>
             </header>
+            <section className="draft-review" aria-label="초안 관리">
+              <p>
+                편집 내용은 초안으로만 저장됩니다. 적용하면 이 브라우저의 방문자
+                화면이 바뀝니다. 운영 사이트 배포는 승인된 파일 반영으로 별도
+                진행합니다.
+              </p>
+              <button
+                className="primary-link"
+                disabled={!hasDraft}
+                onClick={() => setReview(!review)}
+              >
+                변경 사항 검토 {hasDraft ? "· 초안 있음" : ""}
+              </button>
+              {review && (
+                <div>
+                  <p>
+                    추가 {changes.added.length}개 · 수정{" "}
+                    {changes.changed.length}개 · 제거 {changes.removed.length}개
+                    ·{" "}
+                    {changes.reordered
+                      ? "표시 순서 변경 있음"
+                      : "표시 순서 유지"}
+                  </p>
+                  {[...changes.added, ...changes.changed].map((p) => (
+                    <details key={p.id}>
+                      <summary>{p.name} · 수정 내용 확인</summary>
+                      <div className="draft-diff">
+                        <pre>
+                          {JSON.stringify(
+                            published.find((b) => b.id === p.id) || {},
+                            null,
+                            2,
+                          )}
+                        </pre>
+                        <pre>{JSON.stringify(p, null, 2)}</pre>
+                      </div>
+                    </details>
+                  ))}
+                  {changes.removed.map((p) => (
+                    <p key={p.id}>제거 예정: {p.name}</p>
+                  ))}
+                  <button
+                    className="primary-link"
+                    onClick={() => {
+                      if (
+                        !window.confirm(
+                          "검토한 초안을 이 브라우저의 방문자 화면에 적용할까요?",
+                        )
+                      )
+                        return;
+                      if (!saveProjects(projects)) {
+                        showToast(
+                          "적용하지 못했습니다. 초안은 유지됩니다.",
+                          "error",
+                        );
+                        return;
+                      }
+                      setPublished(projects);
+                      setReview(false);
+                      try {
+                        localStorage.removeItem(draftKey);
+                      } catch {}
+                      showToast(
+                        "이 브라우저에 적용했습니다. 운영 사이트에는 배포되지 않았습니다.",
+                        "success",
+                      );
+                    }}
+                  >
+                    승인하고 이 브라우저에 적용
+                  </button>
+                </div>
+              )}
+              {hasDraft && (
+                <button
+                  className="text-link"
+                  onClick={() => {
+                    if (
+                      confirm(
+                        "저장한 초안을 버리고 현재 적용된 데이터로 돌아갈까요?",
+                      )
+                    ) {
+                      setProjects(published);
+                      setReview(false);
+                      try {
+                        localStorage.removeItem(draftKey);
+                      } catch {}
+                    }
+                  }}
+                >
+                  초안 버리기
+                </button>
+              )}
+              {recovery && (
+                <button
+                  className="text-link"
+                  onClick={() => {
+                    updateProjectsState(recovery);
+                    setRecovery(null);
+                  }}
+                >
+                  마지막 삭제 되돌리기
+                </button>
+              )}
+              <button
+                className="text-link"
+                onClick={() => {
+                  const saved = safeRead("minlab_before_delete_v2");
+                  if (saved) {
+                    const result = parseImportJson(saved);
+                    if (
+                      result.success &&
+                      result.projects &&
+                      confirm("삭제 전 상태를 초안으로 복구할까요?")
+                    )
+                      updateProjectsState(result.projects);
+                  }
+                }}
+              >
+                삭제 전 백업 복구
+              </button>
+            </section>
             <div className="admin-metrics">
               <div>
                 <span>프로젝트</span>
@@ -443,12 +606,7 @@ export default function App() {
               >
                 프로젝트
               </button>
-              <a
-                href="#/development-log"
-                onClick={() => setManageRecords(true)}
-              >
-                기록 관리
-              </a>
+              <a href="#/development-log?edit=1">기록 관리</a>
               <button
                 aria-pressed={adminSection === "about"}
                 onClick={() => setAdminSection("about")}
@@ -516,7 +674,24 @@ export default function App() {
                       .join(" ")
                       .toLowerCase()
                       .includes(adminSearch.toLowerCase()) ? null : (
-                      <article key={p.id}>
+                      <article
+                        key={p.id}
+                        draggable
+                        onDragStart={() => {
+                          dragIndex.current = index;
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const from = dragIndex.current;
+                          if (from === null || from === index) return;
+                          const ordered = [...projects];
+                          const [item] = ordered.splice(from, 1);
+                          ordered.splice(index, 0, item);
+                          updateProjectsState(ordered);
+                          dragIndex.current = null;
+                        }}
+                      >
                         <a
                           href={routeHash({ view: "manage", projectId: p.id })}
                         >
@@ -590,6 +765,7 @@ export default function App() {
                   href={routeHash({
                     view: "records",
                     projectId: devLogProjectIdFilter || undefined,
+                    editing: manageRecords || undefined,
                   })}
                   className={
                     "rounded-md px-3 py-2 " +
@@ -604,6 +780,7 @@ export default function App() {
                   href={routeHash({
                     view: "records",
                     projectId: devLogProjectIdFilter || undefined,
+                    editing: manageRecords || undefined,
                     tab: "prompts",
                   })}
                   className={
@@ -638,32 +815,39 @@ export default function App() {
                 </select>
               )}
             </div>
-            <div className="journal-mode">
-              <button
-                className="text-link"
-                onClick={() => setManageRecords(!manageRecords)}
-              >
-                {manageRecords
-                  ? "방문자용 타임라인 보기"
-                  : "관리자 · 상세 기록 편집"}
-              </button>
-              <p>
-                프로젝트 JSON 백업에 개발일지와 프롬프트 원본이 함께 보존됩니다.
-              </p>
-            </div>
+            {manageRecords && (
+              <div className="journal-mode">
+                <button
+                  className="text-link"
+                  onClick={() => setManageRecords(!manageRecords)}
+                >
+                  {manageRecords
+                    ? "방문자용 타임라인 보기"
+                    : "관리자 · 상세 기록 편집"}
+                </button>
+                <p>
+                  프로젝트 JSON 백업에 개발일지와 프롬프트 원본이 함께
+                  보존됩니다.
+                </p>
+              </div>
+            )}
             {route.view === "records" && route.tab === "prompts" ? (
               <PromptHistoryView
                 readOnly={!manageRecords}
-                projects={projects}
+                projects={manageRecords ? projects : published}
                 projectId={devLogProjectIdFilter}
                 onUpdateProject={handleUpdateProject}
               />
             ) : !manageRecords ? (
               <VersionJournal
-                projects={projects}
+                projects={manageRecords ? projects : published}
                 projectId={devLogProjectIdFilter}
                 onSelect={(id) =>
-                  navigate({ view: "records", projectId: id || undefined })
+                  navigate({
+                    view: "records",
+                    projectId: id || undefined,
+                    editing: manageRecords || undefined,
+                  })
                 }
               />
             ) : (
@@ -671,7 +855,11 @@ export default function App() {
                 projects={projects}
                 selectedProjectIdFilter={devLogProjectIdFilter}
                 onSelectProjectIdFilter={(id) =>
-                  navigate({ view: "records", projectId: id || undefined })
+                  navigate({
+                    view: "records",
+                    projectId: id || undefined,
+                    editing: manageRecords || undefined,
+                  })
                 }
                 onOpenAddLogModal={(defId, existing) =>
                   handleOpenWorkLogModal(defId, existing)
@@ -696,14 +884,18 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3 text-[11px] text-muted">
-            <button
-              onClick={() => setIsBackupModalOpen(true)}
-              className="hover:text-accent transition-colors"
-            >
-              JSON 데이터 백업·복원
-            </button>
+            {(route.view === "admin" ||
+              route.view === "manage" ||
+              manageRecords) && (
+              <button
+                onClick={() => setIsBackupModalOpen(true)}
+                className="hover:text-accent transition-colors"
+              >
+                JSON 데이터 백업·복원
+              </button>
+            )}
             <span>·</span>
-            <span>브라우저에 저장</span>
+
             <span>·</span>
             <a
               href="https://github.com/minho-nim/MinLab"
@@ -727,6 +919,7 @@ export default function App() {
         }}
         onSave={handleSaveProject}
         initialProject={editingProject}
+        allProjects={projects}
       />
 
       {/* 2. Project Delete Confirmation Modal */}
@@ -736,8 +929,8 @@ export default function App() {
         itemName={projectToDelete ? projectToDelete.name : ""}
         warningText={
           projectToDelete
-            ? `주의: 삭제 시 데이터가 영구적으로 제거됩니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
-            : "주의: 삭제 시 데이터가 영구적으로 제거됩니다."
+            ? `삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
+            : "삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다."
         }
         confirmText="삭제"
         onClose={() => setProjectToDelete(null)}

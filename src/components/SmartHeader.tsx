@@ -7,7 +7,8 @@ export function SmartHeader({ view }: { view: string }) {
   useEffect(() => {
     let last = scrollY;
     const scroll = () => {
-      setCompact(scrollY > 100 && scrollY > last);
+      if (Math.abs(scrollY - last) < 8) return;
+      setCompact(scrollY > 160 && scrollY > last);
       last = scrollY;
     };
     window.addEventListener("scroll", scroll, { passive: true });
@@ -62,6 +63,19 @@ export function SmartHeader({ view }: { view: string }) {
           </button>
         </div>
       </header>
+      {compact && !open && (
+        <div className="floating-navigation">
+          <a href="#/" className="floating-project-link">
+            프로젝트
+          </a>
+          <button
+            aria-label="플로팅 전체 메뉴 열기"
+            onClick={() => setOpen(true)}
+          >
+            메뉴 <Menu size={18} />
+          </button>
+        </div>
+      )}
       <dialog
         ref={menu}
         className="full-menu"
@@ -86,12 +100,6 @@ export function SmartHeader({ view }: { view: string }) {
             </a>
           ))}
         </nav>
-        <a className="text-link" href="#/admin" onClick={() => setOpen(false)}>
-          관리자 · 이 브라우저의 데이터 관리 ↗
-        </a>
-        <p className="menu-note">
-          프로젝트 편집 내용은 이 브라우저에 저장됩니다.
-        </p>
       </dialog>
     </>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
@@ -13,7 +13,62 @@ export function AboutPage({
   projects: Project[];
   editing?: boolean;
 }) {
-  const [intro, setIntro] = useState(() => safeRead(introKey, defaultIntro));
+  const [intro, setIntro] = useState(() =>
+    safeRead(
+      editing ? introKey + "_draft" : introKey,
+      safeRead(introKey, defaultIntro),
+    ),
+  );
+  const [capability, setCapability] = useState(0);
+  const journey = useRef<HTMLElement>(null);
+  const [stage, setStage] = useState(0);
+  useEffect(() => {
+    const o = new IntersectionObserver(
+      (es) => {
+        for (const e of es)
+          if (e.isIntersecting)
+            setStage(Number((e.target as HTMLElement).dataset.stage));
+      },
+      { rootMargin: "-20% 0px -45% 0px" },
+    );
+    journey.current
+      ?.querySelectorAll("[data-stage]")
+      .forEach((n) => o.observe(n));
+    return () => o.disconnect();
+  }, []);
+  const capabilities = [
+    {
+      name: "기획 및 문제 정의",
+      description: "필요한 기능과 사용자 문제를 정리한 기록을 살펴보세요.",
+      match: /요구사항|문제 정의|기획|요구|설계/,
+    },
+    {
+      name: "구현 및 개발",
+      description: "직접 구현한 기능과 개발 과정을 확인하세요.",
+      match: /구현|개발|추가|연동/,
+    },
+    {
+      name: "UX/UI 설계",
+      description: "화면 구성과 사용 흐름을 개선한 사례입니다.",
+      match: /UX|UI|화면|사용성|레이아웃/,
+    },
+    {
+      name: "검증 및 개선",
+      description: "테스트 결과와 수정 근거가 남아 있는 기록입니다.",
+      match: /테스트|검증|오류|수정/,
+    },
+  ];
+  const evidence = projects
+    .flatMap((p) => {
+      const log = p.workLogs.find((l) =>
+        capabilities[capability].match.test(
+          [l.title, l.content, l.reason, l.testResult].join(" "),
+        ),
+      );
+      return log ? [{ project: p, log }] : [];
+    })
+    .slice(0, 3);
+  const [introReview, setIntroReview] = useState(false);
   const [saved, setSaved] = useState(false);
   const experiences = [
     {
@@ -62,11 +117,11 @@ export function AboutPage({
             <button
               className="primary-link"
               onClick={() => {
-                safeWrite(introKey, intro);
-                setSaved(safeRead(introKey) === intro);
+                safeWrite(introKey + "_draft", intro);
+                setSaved(safeRead(introKey + "_draft") === intro);
               }}
             >
-              소개 저장 ↗
+              소개 초안 저장 ↗
             </button>
             <button
               className="text-link"
@@ -106,6 +161,33 @@ export function AboutPage({
                 }}
               />
             </label>
+            <button
+              className="text-link"
+              onClick={() => setIntroReview(!introReview)}
+            >
+              소개 변경 검토
+            </button>
+            {introReview && (
+              <div>
+                <p>현재: {safeRead(introKey, defaultIntro)}</p>
+                <p>초안: {intro}</p>
+                <button
+                  className="primary-link"
+                  onClick={() => {
+                    if (
+                      confirm(
+                        "소개 초안을 이 브라우저의 방문자 화면에 적용할까요?",
+                      )
+                    ) {
+                      safeWrite(introKey, intro);
+                      setIntroReview(false);
+                    }
+                  }}
+                >
+                  소개 승인하고 적용
+                </button>
+              </div>
+            )}
             <p role="status">
               {saved
                 ? "저장되었습니다."
@@ -116,9 +198,17 @@ export function AboutPage({
           <p className="about-intro">{intro}</p>
         )}
       </header>
-      <section className="about-timeline" aria-label="경험과 성장 과정">
-        {experiences.map((item) => (
-          <article key={item.label}>
+      <section
+        className="about-timeline"
+        ref={journey}
+        aria-label="경험과 성장 과정"
+      >
+        {experiences.map((item, i) => (
+          <article
+            key={item.label}
+            data-stage={i}
+            className={stage === i ? "is-current-stage" : ""}
+          >
             <div className="timeline-marker">
               <span>{item.label}</span>
               <i />
@@ -153,6 +243,51 @@ export function AboutPage({
           </article>
         ))}
       </section>
+      <section className="capability-explorer">
+        <header>
+          <p className="eyebrow">프로젝트로 살펴보는 역량</p>
+          <h2>작업의 근거를 확인하세요.</h2>
+        </header>
+        <div className="capability-layout">
+          <nav aria-label="역량 선택">
+            {capabilities.map((c, i) => (
+              <button
+                key={c.name}
+                aria-pressed={capability === i}
+                onClick={() => setCapability(i)}
+              >
+                {c.name} ↗
+              </button>
+            ))}
+          </nav>
+          <div>
+            <h3>{capabilities[capability].name}</h3>
+            <p>{capabilities[capability].description}</p>
+            <div className="capability-evidence">
+              {evidence.map(({ project: p, log }) => (
+                <article key={p.id}>
+                  <a href={routeHash({ view: "project", projectId: p.id })}>
+                    <strong>{p.name} ↗</strong>
+                  </a>
+                  <p>{log.title || log.task || "개발 기록"}</p>
+                  <small>
+                    {log.date} · {log.version || "버전 미지정"}
+                  </small>
+                  <a
+                    className="text-link"
+                    href={routeHash({ view: "records", projectId: p.id })}
+                  >
+                    근거가 된 개발일지 읽기 ↗
+                  </a>
+                </article>
+              ))}
+              {!evidence.length && (
+                <p>연결할 수 있는 개발 기록이 아직 없습니다.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
       <div className="about-next">
         <p>
           현장의 문제를 발견하는 경험에서, 직접 만들고 개선하는 기록으로
@@ -160,6 +295,14 @@ export function AboutPage({
         </p>
         <a className="primary-link" href="#/development-log">
           실제 개발 과정 읽어보기 ↗
+        </a>
+        <a
+          className="text-link"
+          href="https://github.com/minho-nim"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub ↗
         </a>
       </div>
     </div>

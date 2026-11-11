@@ -101,6 +101,7 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
       return /^(https?:\/\/|\/(?!\/)|\.\.?\/)/i.test(url) ? url : '';
     };
     const projects: Project[] = [];
+    const ids = new Set<string>();
 
     for (const value of parsed as unknown[]) {
       if (!isRecord(value) || typeof value.id !== 'string' || !value.id.trim() ||
@@ -108,6 +109,8 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
         return { success: false, error: '유효하지 않은 프로젝트 형식입니다 (id 또는 name 누락).' };
       }
 
+      if (ids.has(value.id)) return { success: false, error: '프로젝트 ID가 중복됩니다: ' + value.id };
+      ids.add(value.id);
       const workLogs = Array.isArray(value.workLogs) ? value.workLogs : [];
       const keyFeatures = Array.isArray(value.keyFeatures) ? value.keyFeatures : [];
       const changelog = Array.isArray(value.changelog) ? value.changelog : [];
@@ -119,6 +122,10 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
         return { success: false, error: `'${value.name}' 프로젝트의 기능·기록 데이터 형식이 올바르지 않습니다.` };
       }
 
+      for (const [label, entries] of [['개발일지', workLogs], ['프롬프트', promptHistory], ['변경 이력', changelog]] as const) {
+        const entryIds = entries.map(entry => typeof entry.id === 'string' ? entry.id : '').filter(Boolean);
+        if (new Set(entryIds).size !== entryIds.length) return { success: false, error: `'${value.name}' ${label} ID가 중복됩니다.` };
+      }
       projects.push({
         id: value.id,
         name: value.name,
@@ -127,6 +134,8 @@ export const parseImportJson = (content: string): { success: boolean; projects?:
         category: text(value.category),
         description: text(value.description),
         thumbnailUrl: safeUrl(value.thumbnailUrl),
+        ...(typeof value.visible === 'boolean' ? { visible: value.visible } : {}),
+        ...(Array.isArray(value.relatedProjectIds) ? { relatedProjectIds: [...new Set(value.relatedProjectIds.filter((id): id is string => typeof id === 'string'))] } : {}),
         ...(value.screenshots !== undefined ? { screenshots: parseScreenshots(value.screenshots) } : {}),
         ...(typeof value.coverImageId === 'string' ? { coverImageId: value.coverImageId } : {}),
         isSample: value.isSample === true,

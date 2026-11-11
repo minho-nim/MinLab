@@ -1,7 +1,7 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-11-11T23:13:34+09:00",
+  "generatedAt": "2026-11-11T23:59:33+09:00",
   "drafts": [
     {
       "kind": "log",
@@ -19,6 +19,28 @@
         "source": {
           "repository": "minho-nim/MinLab",
           "fingerprint": "ada26a84f05adbe948cd86c52d261416a7384719b428999ae5ff2739b06bf2bd",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/5b69a1d",
+            "https://github.com/minho-nim/MinLab/blob/main/docs/minlab-v2-refinement.md"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:13:34+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "codex:proj-1792485558773:2026-11-11-minlab-editorial-media:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "한국어 중심 화면 정리와 프로젝트 이미지 관리",
+        "prompt": "MinLab은 실제 프로젝트의 화면과 개발 기록을 보여 주는 포트폴리오입니다. 제공한 Editorial 화면 사진을 기준으로 한국어 메시지와 실제 화면의 배치·크기·간격을 정리하세요. 홈·전체 프로젝트·상세 페이지의 위계를 맞추고 대표 탐색의 좌측 목록과 우측 미리보기는 유지하면서 불필요하게 긴 스크롤을 줄이세요. 모바일은 목록 선택과 좌우 넘기기를 사용할 수 있게 하세요.\n\n관리자에서 실제 프로젝트 이미지를 업로드하거나 URL로 등록하고, 여러 화면의 설명·대표 화면·비율·연결 기능을 관리하게 하세요. 이미지는 기존 JSON 백업에 포함하고 사용자 등록 이미지를 우선하세요. 화면이 없는 프로젝트에 가짜 이미지를 만들지 말고 기존 데이터·ID·기록·편집 기능을 보존하세요. Figma에 접근하지 못하면 제공한 사진을 기준으로 작업했음을 명확히 밝히세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "3e06335d80338c5c1a2929e849698b1f23cf4c875102992cd1db8b0c8fbc036a",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/MinLab/commit/5b69a1d",
@@ -56,6 +78,76 @@
       }
     },
     {
+      "kind": "prompt",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "codex:proj-1792485558773:2026-11-11-minlab-interactive-archive:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "프로젝트 탐색·검색과 개발일지 화면 개편",
+        "prompt": "MinLab은 직접 만든 웹앱과 게임의 결과물·개발 과정·프롬프트를 보관하는 개인 아카이브입니다. 기존 React·Vite 구조를 유지하면서 실제로 조작할 수 있는 포트폴리오로 개편하세요. 홈의 프로젝트 미리보기와 스크롤·클릭 탐색, 아카이브의 검색·분야·상태·기술 필터와 Grid/List·정렬, 상세 페이지의 제작 배경·기능·개발일지·관련 프로젝트 이동을 연결하세요.\n\n개발일지는 실제 날짜·버전으로 탐색하고 모바일에서는 아코디언으로 읽게 하세요. 확인된 통신·데이터센터 프로젝트 관리, 독립 개발과 AI 활용 경험을 소개에 연결하세요. 기존 프로젝트 ID, WorkLog·PromptHistory·Changelog, 앱·GitHub 주소, 브라우저 저장 데이터와 JSON 백업·복원을 보존하세요. 주소가 없는 앱이나 아직 구현하지 않은 기능을 동작하는 것처럼 표시하지 말고, MINOFFI 연동은 이번 범위에서 구현하지 마세요. 별도 브랜치의 검토용 PR로 제출하고 사용자 승인 전에는 병합·운영 배포하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "05e9098e267bd8bc5c65aa512d282a6abbc32e89873e2794ff50908d4881bafb",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/402a9f8",
+            "https://github.com/minho-nim/MinLab/blob/main/docs/minlab-v2-implementation.md"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:13:34+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "codex:proj-1792485558773:2026-11-11-minlab-third-project-first-review",
+        "date": "2026-11-11",
+        "title": "실제 화면 검토를 반영한 프로젝트 중심 3차 개선",
+        "version": "2.0.0",
+        "content": "작업 목적\n사용자가 제공한 실제 화면의 반복과 긴 본문 문제를 검토해 프로젝트 화면·탐색·기록 가독성을 개선하고 PR #9로 배포했음.\n\n주요 변경\n- 홈의 중복 카드 섹션을 제거하고 Hero의 실제 화면 비중을 높였음.\n- 대표 탐색을 최대 4개·프로젝트당 120px로 줄이고 클릭·역스크롤·모바일 넘기기를 유지함.\n- 이미지형·텍스트형 카드와 Grid/List를 구분하고 개발일지 프로젝트·버전·월 검색 및 원문 펼쳐보기를 추가함.\n- 소개를 경험과 실제 사례로 연결하고 관리자 검색·이미지 대표 화면 안내·모바일 조작을 개선함.",
+        "reason": "검은 배경·큰 제목·비슷한 카드 반복을 줄이고 프로젝트의 개성과 실제 구현 결과가 더 잘 보이게 하도록 요청받음.",
+        "testResult": "작업 당시 단위 검사 36개, PC·모바일 Chromium 회귀 검사, 전체 타입·일정 앱 검사와 빌드 통과를 확인했음. PR 브라우저 CI는 Chromium 설치에서 지연됐으며 사용자 승인 후 병합한 운영 Pages 배포는 성공했음. 이번 기록 정리에서 기능 검사를 다시 실행하지 않았음.",
+        "nextSteps": "Figma는 MCP 한도와 워크 브라우저 연결 오류로 원본 비교하지 못했음. 실제 아이폰 Safari 확인은 남아 있음.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "c4750ba856721576d56206f825776acb11fa161531895c60d761a3cb7d5e2a99",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/f4aad991fd4c7cb521cfb50f57df1feb413ceb17",
+            "https://github.com/minho-nim/MinLab/commit/e61466aa2f60a28581bfba8ec21195a046594160"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-1792485558773",
+      "record": {
+        "id": "codex:proj-1792485558773:2026-11-11-minlab-third-project-first-review:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "실제 화면 검토를 반영한 프로젝트 중심 3차 개선",
+        "prompt": "MinLab은 실제 제작한 웹앱·게임과 개발 과정을 소개하는 포트폴리오입니다. 첨부한 실제 화면과 현재 구현을 비교해 차콜 블랙·절제된 세이지 그린을 유지하면서 3차 UI/UX 개선을 진행하세요. Hero의 실제 프로젝트 화면을 키우고 중복 섹션과 과도한 여백을 줄이세요. 이미지가 있는 카드는 실제 UI를 크게, 없는 카드는 빈 이미지 영역 없이 텍스트 중심으로 구성하세요. Grid와 List는 각각의 탐색 방식에 맞게 구분하세요.\n\n대표 탐색의 좌측 목록·우측 미리보기를 유지하되 작은 휠 입력, 역스크롤, 클릭과 모바일 터치가 자연스럽게 이어지도록 개선하세요. 개발일지는 프로젝트·날짜·버전으로 빠르게 찾고 핵심 변경부터 읽되 이유·검증·다음 작업과 원문을 모두 펼쳐볼 수 있게 하세요. 소개는 확인된 경험과 실제 프로젝트 사례로 연결하고 관리자 등록·수정·삭제·이미지·백업 기능을 보존하세요. MINOVA 표시를 일관되게 정리하되 기존 ID·기록·URL과 사용자 데이터는 유지하세요.\n\n기존 기록·프롬프트를 삭제하거나 재작성하지 말고, 확인되지 않은 경력·성과·가짜 화면을 만들지 마세요. MINOFFI·Supabase 연동은 추가하지 마세요. PC·모바일, 데이터 보존과 회귀를 검증하고 전후 화면을 준비해 별도 브랜치의 검토용 PR로 제출하세요. 운영 배포는 별도 승인 후 진행하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MinLab",
+          "fingerprint": "4910b918e3d66a64484343eb43896cc6feb34e34b0b23c5e97b02460b64901fb",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/commit/f4aad991fd4c7cb521cfb50f57df1feb413ceb17",
+            "https://github.com/minho-nim/MinLab/commit/e61466aa2f60a28581bfba8ec21195a046594160"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
       "kind": "log",
       "projectId": "proj-crossroads-ai-verdict",
       "record": {
@@ -78,6 +170,172 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-11-11T23:13:34+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-archive-connection:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "Crossroads를 MINOVA 이름과 저장소로 연결",
+        "prompt": "MINOVA는 기존 Crossroads: AI Verdict를 이어가는 한국어 스토리 카드 게임입니다. 사용자에게 보이는 프로젝트명, 게임 화면·브라우저 제목·공유 설명·README와 관련 표시를 MINOVA로 통일하세요. 저장소 이름 변경 후 원격 주소와 기존 GitHub Pages 배포 방식도 새 저장소와 연결하세요.\n\n기존 게임 저장 데이터와 진행 상태를 유지하고, MinLab에서는 새 프로젝트를 중복 생성하지 말고 기존 Crossroads 프로젝트 ID와 개발일지를 이어서 사용하세요. 공개 이름과 이전 주소만 갱신하고 사용자가 직접 바꾼 이름·주소는 보존하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "d0f54e53ee79d57acfe9af7bb4f79330187589a517b93dc696ac66b431d616b2",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA",
+            "https://github.com/minho-nim/MINOVA/blob/main/README.md"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:13:34+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-clean-neon-design",
+        "date": "2026-11-11",
+        "title": "네온 분위기를 유지한 인물·선택 화면 정돈",
+        "version": "1.3.0",
+        "content": "작업 목적\n사용자 요청에 따라 MINOVA의 네온 분위기를 유지한 인물·선택 화면 정돈을 진행하고 같은 변경 묶음으로 GitHub와 Pages에 반영했음.\n\n주요 변경\n- 배경·테두리·광원 강조를 줄이고 색감을 정돈함.\n- 인물 카드·패널의 여백과 모서리를 통일하고 대사 가독성과 선택 버튼 크기를 개선함.\n- 작은 화면의 시작·게임 배치를 조정함.",
+        "reason": "현재 네온 분위기를 유지하면서 더 깔끔한 디자인으로 바꾸도록 요청받음.",
+        "testResult": "대화 완료 보고에서 검사 7개·타입 검사·빌드 및 브라우저 확인 통과를 확인함. 진행 오류 작업은 혼합 플레이 경로 20개 확인도 보고됐음. 이번 정리에서는 재실행하지 않았음.",
+        "nextSteps": "새 시나리오와 실제 휴대폰 플레이는 후속 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "9957b43ef77b3c815efd757f3f919b28becef88e653971d60a252c748d669ad1",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA/commit/b568ff9d53d9615ed7dd2d6fe2353a8e6b85181d",
+            "https://github.com/minho-nim/MINOVA/commit/742bbf2a0a099b763caaebd4fcb429e677894921"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-clean-neon-design:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "네온 분위기를 유지한 인물·선택 화면 정돈",
+        "prompt": "MINOVA는 인물의 입장과 도시의 정책을 읽고 결정하는 스토리 카드 게임입니다. 현재의 어두운 도시·네온 분위기는 유지하면서 배경·테두리·광원 강조를 줄이고 화면을 더 깔끔하게 정돈하세요. 인물 카드와 패널의 여백·모서리·강조색을 통일하고 대사와 선택 버튼이 잘 읽히도록 조정하세요. 모바일 배치를 개별 확인하고 게임 수치·이야기 분기·저장 기능은 유지하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "54f19c86c3d00dd3b7528cccc14d8e9b9e2ced96637eaf4b1d82906f9038d447",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA/commit/b568ff9d53d9615ed7dd2d6fe2353a8e6b85181d",
+            "https://github.com/minho-nim/MINOVA/commit/742bbf2a0a099b763caaebd4fcb429e677894921"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-concrete-dialogue",
+        "date": "2026-11-11",
+        "title": "장식 문구를 줄이고 초반 대사·선택지 구체화",
+        "version": "1.3.0",
+        "content": "작업 목적\n사용자 요청에 따라 MINOVA의 장식 문구를 줄이고 초반 대사·선택지 구체화을 진행하고 같은 변경 묶음으로 GitHub와 Pages에 반영했음.\n\n주요 변경\n- 장식용 영어·실제 진행과 무관한 고정 숫자·반복 홍보 문구를 줄였음.\n- 인물 6명의 소개 대사와 초반 8개 안건의 대사·선택지·결과를 상황 중심으로 수정함.\n- 설정 화면의 개발 용어를 플레이어가 이해할 설명으로 바꾸고 게임 수치·분기를 유지함.",
+        "reason": "AI가 만든 듯한 추상적인 홍보·명언형 대사 대신 인물과 사건이 드러나는 문구로 바꾸도록 요청받음.",
+        "testResult": "대화 완료 보고에서 검사 7개·타입 검사·빌드 및 브라우저 확인 통과를 확인함. 진행 오류 작업은 혼합 플레이 경로 20개 확인도 보고됐음. 이번 정리에서는 재실행하지 않았음.",
+        "nextSteps": "새 시나리오와 실제 휴대폰 플레이는 후속 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "8cae1fc525f12c3bcf2dbc7b06a5ecb1e52f88c5675288e196ce3e794d1a832f",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA/commit/b568ff9d53d9615ed7dd2d6fe2353a8e6b85181d",
+            "https://github.com/minho-nim/MINOVA/commit/742bbf2a0a099b763caaebd4fcb429e677894921"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-concrete-dialogue:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "장식 문구를 줄이고 초반 대사·선택지 구체화",
+        "prompt": "MINOVA는 서로 다른 인물의 사정과 도시 정책 사이에서 선택하는 한국어 카드 게임입니다. 장식용 영어와 실제 진행에 연결되지 않은 숫자를 정리하고 반복되는 추상적인 홍보 문구를 줄이세요. 인물 소개는 각자의 상황이 드러나는 말투로, 초반 안건의 대사·선택지·결과는 실제 사건과 구체적인 행동이 보이도록 다듬으세요.\n\n설정에서는 개발자 용어 대신 플레이어가 이해할 수 있는 설명을 사용하세요. 게임 수치와 분기·기존 진행 데이터는 바꾸지 말고 수정한 문구와 모바일·PC 읽기 흐름을 확인하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "500f60dd3d4f75a8c5f6635386b233ed6b8108457fc451d8e10a015ac7214cbb",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA/commit/b568ff9d53d9615ed7dd2d6fe2353a8e6b85181d",
+            "https://github.com/minho-nim/MINOVA/commit/742bbf2a0a099b763caaebd4fcb429e677894921"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-story-progression",
+        "date": "2026-11-11",
+        "title": "막 전환·엔딩과 이어하기 진행 오류 수정",
+        "version": "1.3.0",
+        "content": "작업 목적\n사용자 요청에 따라 MINOVA의 막 전환·엔딩과 이어하기 진행 오류 수정을 진행하고 같은 변경 묶음으로 GitHub와 Pages에 반영했음.\n\n주요 변경\n- ACT I 이전 단계에서 뒤쪽 카드가 섞이는 문제와 ACT I→ACT II 전환을 수정함.\n- 감독관 교체 뒤 에필로그·ACT II 엔딩·새 게임 연결을 보완함.\n- 저장 후 이어하기와 일부 이전 저장 데이터 복구를 개선함.",
+        "reason": "처음부터 엔딩까지 끊기지 않는 플레이 흐름을 우선 완성하도록 요청받음.",
+        "testResult": "대화 완료 보고에서 검사 7개·타입 검사·빌드 및 브라우저 확인 통과를 확인함. 진행 오류 작업은 혼합 플레이 경로 20개 확인도 보고됐음. 이번 정리에서는 재실행하지 않았음.",
+        "nextSteps": "새 시나리오와 실제 휴대폰 플레이는 후속 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "b2fbe6268a7fd2924fc5c7d28470cd96df0c4760027f9be6d7571f5d20155b55",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA/commit/b568ff9d53d9615ed7dd2d6fe2353a8e6b85181d",
+            "https://github.com/minho-nim/MINOVA/commit/742bbf2a0a099b763caaebd4fcb429e677894921"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-crossroads-ai-verdict",
+      "record": {
+        "id": "codex:proj-crossroads-ai-verdict:2026-11-11-minova-story-progression:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "막 전환·엔딩과 이어하기 진행 오류 수정",
+        "prompt": "MINOVA는 도시 운영 AI의 정책을 승인하거나 거부하며 이야기를 진행하는 한국어 카드 게임입니다. 처음부터 엔딩까지 플레이 흐름을 점검하고 카드 반복·잘못된 막의 카드 노출·장 전환·엔딩 조건·저장 복구 오류를 수정하세요. ACT I을 마친 뒤 ACT II가 정상 시작되고, 감독관 교체 뒤에도 에필로그를 읽은 후 엔딩과 새 게임으로 이어지게 하세요. 기존 선택 결과·지표·진행 저장을 보존하고 새로고침 후 이어하기와 이전 저장 데이터 복구를 검증하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/MINOVA",
+          "fingerprint": "822ebaa8c69178ab176a56b9ab05392f28534a6701d57195b0477bd6a4f927b7",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MINOVA/commit/b568ff9d53d9615ed7dd2d6fe2353a8e6b85181d",
+            "https://github.com/minho-nim/MINOVA/commit/742bbf2a0a099b763caaebd4fcb429e677894921"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
         }
       }
     },
@@ -236,6 +494,320 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-11-11T23:13:34+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-character-direction-research",
+        "date": "2026-11-11",
+        "title": "4등신 캐릭터 시안·모델 재검토와 대체 에셋 조사",
+        "version": "",
+        "content": "작업 목적\n미눔의 4등신 캐릭터 시안·모델 재검토와 대체 에셋 조사 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- A/B 외형·걷기·앉기·눕기·인사·미리보기의 로컬 개선 후 비율과 외형을 다시 검토함.\n- 사용자가 4등신의 단순하고 귀여운 게임 아바타 방향을 선택하고 남녀 정면·측면 시안을 검토함.\n- 직접 제작한 남자 모델의 1차 연결을 시도했지만 외형 재검토 요청으로 해당 수정은 보관·적용 제외로 보고됐음.\n- 대체 에셋은 외형·무료 여부·배포 조건을 조사하는 후보 단계이며 최종 다운로드·적용·배포 완료로 보지 않음.",
+        "reason": "실사에 가까운 모델과 기존 자체 모델의 외형이 원하는 시안과 달라 캐릭터를 처음부터 다시 잡도록 요청받음.",
+        "testResult": "초기 로컬 개선은 빌드·검사 89개·브라우저 검사 4개 통과로 보고됐음. 이후 1차 남자 모델은 빌드만 확인하고 환경 연결 중단으로 자세 변형·모바일 검증이 미완료였음. 최종 대체 에셋 적용은 확인되지 않았음.",
+        "nextSteps": "원본 에셋 확보·배포 조건·최종 외형 선택과 리깅·생활 동작 검증이 남아 있음. 미배포 탐색 작업임.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "0742ce25ba55c47bd91bbe111795437ec2bfad3bb2fdc2801d0c7feb56072372",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-character-direction-research:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "4등신 캐릭터 시안·모델 재검토와 대체 에셋 조사",
+        "prompt": "미눔의 캐릭터는 현실적인 사람을 축소한 모델보다 단순하고 귀여운 4등신 게임 아바타를 목표로 합니다. 얼굴·몸 비율부터 다시 잡고 둥근 얼굴·단순한 표정, 덩어리감 있는 헤어와 일상복이 어울리는 남녀 캐릭터를 정면·측면 시안으로 먼저 보여 주세요. 사용자가 승인한 시안과 실제 모델의 차이를 비교하고 외형이 맞지 않는 자체 모델을 계속 다듬는 대신 다른 에셋 후보도 검토하세요.\n\n기성 에셋은 외형·무료 여부·라이선스·파일 호환성과 웹 배포 조건을 확인하고 승인받은 것만 적용하세요. 걷기·앉기·눕기와 가구 정렬·모바일 성능은 실제 앱에서 확인하세요. 미확보 모델·미검증 동작·후보 검토를 구현 완료처럼 보고하지 말고 기존 시안과 수정 이력을 보존하세요. 별도 요청 전에는 푸시·배포하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "ed9d83abd922aec89c748d4b5173e85a141d183bdfff23ddfeed1ca1193ac5e1",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-durable-storage-editing-local",
+        "date": "2026-11-11",
+        "title": "IndexedDB·백업과 실행 취소·복제·벽 정렬 로컬 개발",
+        "version": "1.2.0",
+        "content": "작업 목적\n미눔의 IndexedDB·백업과 실행 취소·복제·벽 정렬 로컬 개발 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 큰 파일과 집 데이터를 위한 IndexedDB 저장·오류 재시도·백업/복원을 추가함.\n- 인테리어 실행 취소·다시 실행·가구 복제·벽 정렬을 구현함.\n- 모바일 메뉴 겹침과 로딩 중 터치 차단을 보완하고 로컬 커밋까지만 진행했음.",
+        "reason": "비슷한 앱 비교 후 저장 안정성과 실수 복구·반복 배치 기능을 먼저 개선하도록 요청받음.",
+        "testResult": "대화 완료 보고에서 빌드·검사 74개와 Chromium 모바일 에뮬레이션 3개 시나리오 통과, 로컬 커밋 b839636을 확인함. 이번 정리에서는 재실행하지 않았음.",
+        "nextSteps": "원격 미업로드·미배포 상태였으며 실제 휴대폰과 Supabase 연동은 미검증임.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "bbf2a23e1f49a85a493c80986ee690073189f8efda6826dba8492764a19add12",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-durable-storage-editing-local:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "IndexedDB·백업과 실행 취소·복제·벽 정렬 로컬 개발",
+        "prompt": "미눔은 사진·모델과 가구 배치를 오래 보관해야 하는 3D 생활 공간 앱입니다. 비슷한 앱의 편집·저장 기능을 비교한 결과를 바탕으로 큰 파일 보관과 저장 안정성을 먼저 개선하세요. IndexedDB 저장, 실패 안내·재시도, 집 데이터 내보내기·가져오기를 제공하고 인테리어 실행 취소·다시 실행·복제·벽 정렬을 연결하세요. 기존 집·사진·모델·배치 데이터와 확정 전 취소는 보존하세요.\n\n모바일 메뉴 겹침과 로딩 레이어의 터치 충돌도 정리하세요. Supabase와 실제 2인 동기화는 나중에 연결하며, 이번에는 개발·검증·로컬 커밋까지만 진행하고 푸시·배포하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "b26eceef1aff000d5b51db0a4194a7022fe340f1e9dca0ea1637c707e54399a3",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-furniture-touch-placement",
+        "date": "2026-11-11",
+        "title": "가구 터치 드래그·회전과 배치 확정·취소",
+        "version": "1.1.0",
+        "content": "작업 목적\n미눔의 가구 터치 드래그·회전과 배치 확정·취소 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 조감도→인테리어 편집에서 가구를 터치·드래그해 이동하게 함.\n- 좌우 45도 회전과 벽·가구 충돌의 초록·빨간 안내를 연결함.\n- 잘못된 배치는 확정하지 못하고 확정 전에는 원래 데이터를 유지하며 취소로 복귀하게 함.",
+        "reason": "슬라이더 중심 배치보다 가구를 직접 잡아 옮기는 모바일 조작으로 개선하도록 요청받음.",
+        "testResult": "당시 빌드·검사 38개와 최신 배포 반영 확인을 보고했음. 실제 모바일 드래그는 미검증이었음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "5cf740726916d418b03595d212044d5fe4e1d352560a3921f18db142703c8eab",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/91a922a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-furniture-touch-placement:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "가구 터치 드래그·회전과 배치 확정·취소",
+        "prompt": "미눔의 인테리어 편집에서 슬라이더만으로 가구를 움직이는 불편을 개선하세요. 조감도 보기에서 인테리어 하기로 진입한 뒤 가구를 터치해 선택하고 바닥 위로 드래그해 옮기게 하세요. 좌우 회전 버튼과 위치·크기 세부 조정은 함께 제공하세요.\n\n벽·다른 가구와 겹치는 배치는 빨간 표시로 알리고 확정을 막으세요. 드래그 중에는 영구 데이터를 바꾸지 말고 확정 때 저장하며 취소하면 원래 배치를 유지하세요. 가구를 잡은 동안 카메라 회전과 충돌하지 않게 입력을 구분하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "871fc5140821804f817686da5325fcf1ee8b2e5e1e18b3dc94b6875162c5672d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/91a922a"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-interior-finish",
+        "date": "2026-11-11",
+        "title": "소파·침대·주방과 창문·채광의 실내 완성도 개선",
+        "version": "1.0.1",
+        "content": "작업 목적\n미눔의 소파·침대·주방과 창문·채광의 실내 완성도 개선 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 소파 쿠션·봉제선과 침대 베개·이불 형태를 보완함.\n- 싱크볼·수전·쿡탑·상부장과 창의 실제 개구부·커튼·외부 풍경·채광을 추가함.\n- 기존 사용자 사진·모델·배치와 외벽 충돌 규칙을 유지함.",
+        "reason": "단순한 소파·침대·주방과 창문·채광을 다듬어 승인 시안의 실내 분위기에 가깝게 만들도록 요청받음.",
+        "testResult": "대화 완료 보고에서 빌드·검사 29개와 배포 모델 파일 응답 확인을 보고했음. 브라우저 시각 품질과 모바일 성능은 미검증이었음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "21d91cca056ea767d567e66287250d24b6732ff9f7ebf2140205c4262749d470",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/233ee1d"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-interior-finish:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "소파·침대·주방과 창문·채광의 실내 완성도 개선",
+        "prompt": "미눔의 집은 실제로 걸어 다니는 3D 공간입니다. 단순한 소파·침대·주방과 창문·채광을 다듬어 제공한 시안의 실내 분위기에 가깝게 개선하세요. 쿠션·침구·주방 설비와 창틀·커튼·창밖 풍경을 실제 오브젝트로 구성하고 자연스러운 비율·재질·조명을 맞추세요.\n\n기존 사용자 사진·GLB·가구 치수·배치는 보존하고, 창이 생겨도 외벽 충돌과 집의 기본 동선은 유지하세요. 모델 재사용과 그림자 품질을 모바일 비용에 맞춰 조정하며, 목표 수준에 못 미치는 그래픽과 미검증 성능을 완료로 보고하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "37bc70befe806054f98825fd7fb4051c2bc1f97e05a3f222d46c3d32fd55b25d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/233ee1d"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-living-room-local",
+        "date": "2026-11-11",
+        "title": "거실 재질·수납장·생활 소품과 첫 시점 로컬 개선",
+        "version": "1.2.0",
+        "content": "작업 목적\n미눔의 거실 재질·수납장·생활 소품과 첫 시점 로컬 개선 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 밝은 오크 마루·무광 재질·채광과 수납장 문짝·손잡이·생활 소품을 다듬음.\n- TV와 소품이 가구 이동·삭제를 따르게 연결하고 첫 시점을 소파·창 방향으로 바꿈.\n- 개발과 로컬 커밋까지만 완료하고 푸시·배포하지 않았음.",
+        "reason": "저장·편집 다음 단계로 집의 시각적 통일과 생활감을 높이는 개선을 진행하도록 요청받음.",
+        "testResult": "당시 완료 보고에서 빌드·검사 74개 및 PC·모바일 에뮬레이션 확인을 보고했음. 실기기 성능은 미검증이었음.",
+        "nextSteps": "원격 미업로드·미배포 상태의 개발 결과로 기록함. 실제 모바일 성능은 추가 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "d114cdb0253abf719b55993ce3068475110c619904e808eab4400afc0209f00c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-living-room-local:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "거실 재질·수납장·생활 소품과 첫 시점 로컬 개선",
+        "prompt": "미눔은 실제 집처럼 둘러보고 가구를 이동할 수 있는 3D 공간입니다. 거실을 기준 공간으로 잡고 마루 나뭇결·재질의 크기·모서리·조명을 일관되게 맞추세요. 수납장 문짝·손잡이와 책·도자기·벽 액자 같은 생활 소품을 다듬고 TV·소품이 원래 가구의 이동·삭제를 따르게 하세요. 첫 시점은 소파와 창이 보이도록 정리하되 기존 사용자 가구·배치는 보존하세요. 실기기 성능을 확인하지 않았으면 미검증으로 남기고 별도 요청 전에는 푸시·배포하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "d35beb0c7340ce7f76bf38cb23f9ec1c15c00551ce74ca333a6b68befe31ca5b",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-mobile-gesture-isolation",
+        "date": "2026-11-11",
+        "title": "모바일 시야 드래그와 바깥 페이지 스크롤 충돌 개선",
+        "version": "1.0.2",
+        "content": "작업 목적\n미눔의 모바일 시야 드래그와 바깥 페이지 스크롤 충돌 개선 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 게임 화면을 드래그할 때 바깥 페이지가 내려가는 동작을 억제함.\n- 가구·설정 패널의 네이티브 내부 스크롤은 유지함.\n- 왼손 이동·오른손 시야 입력을 분리하고 터치 취소·화면 전환 때 입력을 초기화함.\n- 이용 버튼을 오른손 쪽으로 옮겼음.",
+        "reason": "시점을 드래그하면 바깥 화면이 내려가는 모바일 조작 불편을 해결하도록 요청받음.",
+        "testResult": "완료 보고에서 검사 35개와 배포 반영 확인을 보고했음. 실제 휴대폰 조작은 미검증이었음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "dcea27e2209aab23d35a8926d73bdf5862bd7713a68ecd81d09e5cbab607995e",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/47038b7"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-mobile-gesture-isolation:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "모바일 시야 드래그와 바깥 페이지 스크롤 충돌 개선",
+        "prompt": "미눔의 모바일 조작은 왼손 조이스틱 이동과 오른손 드래그 시야 회전으로 구성됩니다. 시야를 돌릴 때 바깥 페이지가 내려가거나 당겨지는 문제를 해결하세요. 게임 캔버스의 입력과 가구·설정 패널의 내부 스크롤을 구분해 패널 목록은 계속 스크롤할 수 있게 하세요.\n\n두 손가락 입력 소유권을 분리하고 손을 떼거나 터치가 취소되거나 화면이 전환되면 이동·시야 입력을 초기화하세요. 이용 버튼과 감도를 엄지 조작에 맞게 정리하고 실기기에서 확인하지 못한 브라우저 제스처는 미검증으로 보고하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "c6f478b39de54bdeffb94cf8488b81cb17a5550b98c66a44bff04373ba11cea9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/47038b7"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-photo-model-local",
+        "date": "2026-11-11",
+        "title": "사진 가구 등록·GLB 미리보기와 크기·방향 보정 로컬 개발",
+        "version": "1.2.0",
+        "content": "작업 목적\n미눔의 사진 가구 등록·GLB 미리보기와 크기·방향 보정 로컬 개발 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 촬영·앨범 선택과 원본 사진 미리보기를 개선함.\n- 사진만 보관한 같은 가구에 나중에 GLB를 연결하고 3D 미리보기 회전·확대와 cm/m 치수·방향 보정을 추가함.\n- 파일 오류·배치 충돌의 저장 차단을 보완했으며 로컬 커밋까지만 진행했음.",
+        "reason": "사진 보관→모델 연결→크기 보정→배치의 실제 흐름을 다듬도록 요청받음.",
+        "testResult": "대화 완료 보고에서 빌드·검사 50개 통과와 로컬 커밋 5770f7b를 확인함. 원격 README에는 아직 반영되지 않은 로컬 개발 기록이며 이번 정리에서 코드를 검증하지 않았음.",
+        "nextSteps": "GitHub 미업로드·미배포 상태였음. 원본 작업공간의 로컬 변경 보존과 실기기·온라인 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "2000658ac24726aed1a3c77fac10044be8dad2d68b43bf639463254efd8b1986",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-11-minoom-photo-model-local:prompt:request-group-1",
+        "date": "2026-11-11",
+        "title": "사진 가구 등록·GLB 미리보기와 크기·방향 보정 로컬 개발",
+        "prompt": "미눔은 실제 가구 사진과 3D 모델을 분리해 보관하는 집 꾸미기 앱입니다. 모바일 촬영·앨범과 PC 사진 업로드, 원본 사진 미리보기를 다듬고 사진만 저장한 가구에 나중에 GLB를 연결하게 하세요. 같은 가구 ID와 기존 배치를 유지하면서 모델의 앞뒤 방향과 cm/m 치수를 보정하고 회전·확대 미리보기를 제공하세요. 파일 오류나 충돌한 배치의 저장은 막고 자동 사진→3D 기능은 추가하지 마세요. Supabase 연결은 뒤로 미루고 개발·검증·로컬 커밋까지만 진행하며 별도 요청 전에는 GitHub 푸시·배포하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "281ad91d743315b3a989de7a0b7b96b861c953b15378f86e5d45fd2009cc1af8",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
         }
       }
     },
@@ -654,6 +1226,248 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-11-10T02:56:17.808Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-cc0-assets-provenance",
+        "date": "2026-11-10",
+        "title": "승인한 무료 가구·재질과 사진·모델 연결 구조",
+        "version": "1.0.0",
+        "content": "작업 목적\n미눔의 승인한 무료 가구·재질과 사진·모델 연결 구조 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 승인한 CC0 가구 2개와 PBR 재질 3개를 적용함.\n- 원본 사진·가구 ID·모델·치수·배치를 분리해 나중에 모델을 교체할 수 있게 함.\n- 기존 사용자 사진·모델·배치를 유지하고 에셋 출처·라이선스를 문서화함.",
+        "reason": "가구·재질부터 품질을 높이되 나중에 직접 촬영한 가구의 모델을 연결할 수 있게 해 달라는 요청을 반영함.",
+        "testResult": "작업 완료 보고에서 빌드·검사 11개 통과를 확인함. 당시 실제 브라우저·모바일 조작은 미검증이었음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "5ad19740d8b6d46c7287cd1b2ca5a02b977b14c92d15bed2a4ea8bb301c1a586",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/80bdc38"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-cc0-assets-provenance:prompt:request-group-1",
+        "date": "2026-11-10",
+        "title": "승인한 무료 가구·재질과 사진·모델 연결 구조",
+        "prompt": "미눔은 사진으로 모은 가구를 3D 집에 배치하는 공간 앱입니다. 가구와 재질을 우선 개선할 무료 에셋 후보를 찾고 외형·출처·라이선스·용량·적용 대상을 정리한 뒤 승인받은 것만 적용하세요. 가구 모델과 재질은 모바일 웹에서 다룰 수 있는 크기로 준비하고 기존 사용자 가구와 배치를 보존하세요.\n\n가구의 원본 사진·ID·3D 모델·치수·배치를 분리해, 사진만 등록한 뒤 나중에 만든 GLB를 같은 가구에 연결하고 기존 배치에도 반영할 수 있게 하세요. 자동 사진→3D 생성은 후속 기능으로 남기고 이미 작동하는 것처럼 표시하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "e2ad4efd22463505d8f5345f4671de1020c978c4554d4486d55738a6fc2aad37",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/80bdc38"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-first-pages-release",
+        "date": "2026-11-10",
+        "title": "기존 저장소 하나로 GitHub Pages 첫 공개 연결",
+        "version": "1.0.0",
+        "content": "작업 목적\n미눔의 기존 저장소 하나로 GitHub Pages 첫 공개 연결 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 미눔 이름과 화면 제목을 통일하고 전용 저장소에 코드를 보관함.\n- 저장소를 여러 개 만들지 않고 같은 minoom 저장소의 gh-pages에 실행 파일을 연결함.\n- 사용자가 공개·Pages 설정을 마친 뒤 github.io 주소와 주요 파일의 정상 응답을 확인했음.",
+        "reason": "기존 저장소 하나를 사용하고 설치 없이 볼 수 있는 github.io 실행 주소를 제공하도록 요청받음.",
+        "testResult": "당시 배포 완료 보고에서 페이지와 주요 파일의 HTTP 200 응답을 확인함. 실제 두 계정 연동은 미연결 상태였음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "0d17e4a987a823fa517d42d80411728fa94a1c8bb0f2a1368571fbd6b73f8f70",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/8370b5d",
+            "https://github.com/minho-nim/minoom/commit/b1ef99f",
+            "https://github.com/minho-nim/minoom/commit/31e8b3c"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-first-pages-release:prompt:request-group-1",
+        "date": "2026-11-10",
+        "title": "기존 저장소 하나로 GitHub Pages 첫 공개 연결",
+        "prompt": "미눔은 브라우저에서 체험할 수 있는 3D 투룸 앱입니다. 앱과 README·브라우저 제목의 이름을 minoom미눔으로 통일하고 전용 GitHub 저장소에 코드를 보관하세요. 저장소를 여러 개 만들지 말고 기존 minoom 저장소 하나에서 원본 소스와 실행 파일 브랜치를 구분해 GitHub Pages 주소로 제공하세요.\n\n하위 경로에서도 모델·재질·JS·CSS가 정상 로드되게 구성하고 저장 데이터와 기존 커밋을 보존하세요. 공개 범위 변경과 배포에 필요한 설정은 승인된 범위에서 진행하고, 업로드와 실제 배포 완료를 구분해 확인 결과를 보고하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "2451c6efad8571c09f04e43b8a728f3979437f6fd62281105b82e373c35d216b",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/8370b5d",
+            "https://github.com/minho-nim/minoom/commit/b1ef99f",
+            "https://github.com/minho-nim/minoom/commit/31e8b3c"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-fps-overview",
+        "date": "2026-11-10",
+        "title": "FPS 시야와 조감도·인테리어 편집 모드 분리",
+        "version": "1.0.0",
+        "content": "작업 목적\n미눔의 FPS 시야와 조감도·인테리어 편집 모드 분리 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- PC는 화면 클릭 후 마우스 잠금·WASD, ESC 해제로 조작하도록 정리함.\n- 모바일 조이스틱·화면 드래그와 PC 대체 드래그 경로를 유지함.\n- 조감도 보기 안에서 인테리어 하기로 진입하고 편집 종료 시 조감도로 복귀하게 함.\n- 마우스 잠금 실패를 모두 미지원으로 표시하지 않고 원인별 안내·재시도·새 탭·드래그 선택을 제공함.",
+        "reason": "시야 조작을 FPS처럼 만들고 집 전체 보기와 실제 편집을 구분하며 부정확한 잠금 실패 안내를 고치도록 요청받음.",
+        "testResult": "관련 완료 보고에서 빌드·입력 규칙 검사 통과를 확인함. 실제 브라우저 Pointer Lock 성공과 휴대폰 조작은 당시 미검증이었음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "c9364316b39c608fa1e0af02dbf5d4ec5d5eb1e18c655bdd4c0353c2213dea78",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/e706b96",
+            "https://github.com/minho-nim/minoom/commit/3591464",
+            "https://github.com/minho-nim/minoom/commit/2647d02"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-fps-overview:prompt:request-group-1",
+        "date": "2026-11-10",
+        "title": "FPS 시야와 조감도·인테리어 편집 모드 분리",
+        "prompt": "미눔은 사용자가 집 안을 직접 돌아다니는 3D 웹앱입니다. PC에서는 화면 클릭 후 FPS처럼 마우스를 움직여 시야를 돌리고 WASD로 이동하며 ESC로 잠금을 해제하도록 구성하세요. 모바일은 조이스틱과 화면 드래그를 유지하세요. 마우스 잠금 실패를 모두 브라우저 미지원이라고 표시하지 말고 재시도·새 탭·대체 드래그로 이어갈 수 있게 하세요.\n\n집 전체를 보는 기능의 이름은 조감도 보기로 하고, 그 안에서 인테리어 하기를 선택해 편집하게 하세요. 편집 종료 후에는 조감도로 돌아가고 둘러보기로 생활 모드에 복귀하도록 연결하세요. 모드 변경으로 이동 입력이 남지 않게 하고 기존 집·가구 저장 데이터는 유지하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "a2abdeea1fc4b5224669295c01e2ef3c166389f543178ef0733bb3ffaa0baf4d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/e706b96",
+            "https://github.com/minho-nim/minoom/commit/3591464",
+            "https://github.com/minho-nim/minoom/commit/2647d02"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-rounded-ui",
+        "date": "2026-11-10",
+        "title": "승인 시안의 둥근 메뉴·가구 패널과 자동 닫힘 안내",
+        "version": "1.0.0",
+        "content": "작업 목적\n미눔의 승인 시안의 둥근 메뉴·가구 패널과 자동 닫힘 안내 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 크림색 둥근 메뉴·가구 카드, 살구색 행동 버튼과 연두색 선택 표시를 적용함.\n- PC 플로팅 가구 패널과 모바일 하단 메뉴·패널을 정리함.\n- 안내를 약 4.5초 뒤 아래로 사라지게 하고 반복 알림으로 타이머가 재시작되지 않게 보완함.\n- 장식 문구·영문·고정 시간 표시를 줄였으며 시안의 인테리어 그림을 실제 3D 배경으로 대체하지 않았음.",
+        "reason": "AI가 만든 듯한 장식을 줄이면서 둥글고 귀여운 승인 시안의 UI와 자연스럽게 닫히는 안내를 적용하도록 요청받음.",
+        "testResult": "최종 시안 적용 보고에서 빌드·검사 21개 통과를 확인함. 당시 실제 브라우저 화면 검증은 미완료였음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "13522a1954e89bc5ecca580f6aaf38701bac96f4073c8124bfbb75ab3a14dd32",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/092e83e",
+            "https://github.com/minho-nim/minoom/commit/2647d02",
+            "https://github.com/minho-nim/minoom/commit/759df1c"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-rounded-ui:prompt:request-group-1",
+        "date": "2026-11-10",
+        "title": "승인 시안의 둥근 메뉴·가구 패널과 자동 닫힘 안내",
+        "prompt": "미눔은 실제 3D 집을 조작하는 생활 공간 앱입니다. 불필요한 감성 문구·영문 장식·고정 시간 표시를 줄이고 사용자가 승인한 둥근 크림색 메뉴·가구 카드, 살구색 주요 버튼과 연두색 선택 표시를 적용하세요. PC 가구 패널과 모바일 하단 메뉴를 화면별로 정리하고 기존 가구 등록·편집과 생활 상호작용을 유지하세요.\n\n안내와 팝업은 내용을 보여 준 뒤 자연스럽게 아래로 사라지게 하세요. 반복 안내 때문에 닫힘이 계속 미뤄지지 않게 하고 필요한 조작은 설정에서 다시 찾을 수 있게 하세요. 생성한 UI 시안을 집 배경으로 붙이지 말고 실제 Three.js 공간을 유지하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "1e8a1afe04f82aff798c9808c35f9d928fdb5ee17269460b447e9218f87c848a",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/092e83e",
+            "https://github.com/minho-nim/minoom/commit/2647d02",
+            "https://github.com/minho-nim/minoom/commit/759df1c"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-two-room-mvp",
+        "date": "2026-11-10",
+        "title": "직접 걷는 3D 투룸과 가구 컬렉션 초기 구현",
+        "version": "0.1.0",
+        "content": "작업 목적\n미눔의 직접 걷는 3D 투룸과 가구 컬렉션 초기 구현 과정을 사용자 요청·완료 보고와 README에 따라 정리함.\n\n주요 변경\n- 독립된 두 방과 거실·주방·욕실·현관, 이동·벽·가구 충돌과 생활 상호작용을 구성함.\n- 사진·GLB 가구 등록·수정·삭제와 인테리어 편집·배치 검증·로컬 저장을 구현함.\n- 온라인 인증·초대·동기화 연결 코드와 설정 문서를 준비했으나 실제 두 계정 연결은 미검증 상태였음.\n- 초기 SD 캐릭터·그래픽은 부분 구현이며 정식 3인칭·자동 사진→3D는 미구현으로 구분함.",
+        "reason": "두 사람이 같은 투룸을 걸어 다니고 가구를 꾸미며 머무는 실행 가능한 웹앱을 만들도록 요청받음.",
+        "testResult": "최초 완료 보고에서 TypeScript·Vite 빌드와 검사 5개 통과를 확인함. 당시 브라우저 렌더링·실제 온라인·모바일 조작은 미검증이었으며 이번 정리에서 재실행하지 않았음.",
+        "nextSteps": "실제 두 계정 온라인 연동과 휴대폰 실기기 조작·성능은 별도 확인이 필요함.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "4a4385a2546177e79abd1438a91cd4172abe1b33361d34a88f6a65d0ae78fab4",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/78656e9"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minoom",
+      "record": {
+        "id": "codex:proj-minoom:2026-11-10-minoom-two-room-mvp:prompt:request-group-1",
+        "date": "2026-11-10",
+        "title": "직접 걷는 3D 투룸과 가구 컬렉션 초기 구현",
+        "prompt": "미눔은 두 사람이 같은 3D 투룸을 직접 돌아다니고 가구를 꾸미며 머무는 웹앱입니다. 기존 MinLab·AI Office와 독립된 React·TypeScript·Vite 및 Three.js 기반 프로젝트로 실행 가능한 초기 버전을 구현하세요. 한국 소형 투룸의 독립된 두 방과 생활 공간·벽·문·창·가구를 구성하고 PC 1인칭 이동과 모바일 터치 이동, 충돌 및 앉기·눕기·문·조명 상호작용을 연결하세요.\n\n사진 가구 컬렉션과 GLB 연결, 이동·회전·크기 조절·충돌 안내·확정·취소·저장을 구현하세요. 사진만 보관한 항목과 실제 3D 모델을 구분하고 사진에서 정밀 모델이 자동 생성된다고 표시하지 마세요. 두 계정 인증·초대·실시간 접속·위치·배치 동기화를 위한 Supabase 연결 구조와 설정 절차를 준비하되, 환경이 없으면 로컬 데모가 작동하게 하고 온라인 미연결 상태를 명확히 표시하세요. 기존 앱·배포 환경을 바꾸거나 유료 서비스·에셋을 임의로 도입하지 마세요. 구현·부분 구현·미구현과 실제 통합 검증 여부를 나눠 보고하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoom",
+          "fingerprint": "6dad1324c7ffb578a3801221fd3c28c02f6dfceb1088cadc6c00b7a7b349be34",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minoom/commit/78656e9"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
         }
       }
     },
@@ -1796,6 +2610,138 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-11-11T00:01:44.163Z"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minlab-ai-office",
+      "record": {
+        "id": "codex:proj-minlab-ai-office:2026-11-03-ai-office-current-docs",
+        "date": "2026-11-03",
+        "title": "현재 기준 문서 축소와 과거 기록 보관",
+        "version": "",
+        "content": "작업 목적\nAI Office 문서의 중복과 오래된 설명을 줄이고 현재 작업 규칙·흐름·남은 일을 구분해 정리했음.\n\n주요 변경\n- 현재 기준으로 읽는 문서를 줄이고 상세·과거 자료는 링크와 보관 폴더로 분리함.\n- 변경 이력은 한곳으로 모으고 기존 원문·라이선스·출처 문서는 보존함.\n- 공통 규칙은 CLAUDE.md에 유지하고 Codex의 AGENTS.md에서 먼저 읽도록 연결함.",
+        "reason": "여러 AI가 중복 문서로 토큰을 쓰거나 과거 상태를 현재 기준으로 오해하지 않게 정리하도록 요청받음.",
+        "testResult": "초기 완료 보고는 문서 링크·타입·빌드 통과와 환경 제한에 의한 검사 1건 실패를 구분했음. 이후 안정성 변경과 함께 PR #199가 반영됐음. 이번 정리에서는 원본 앱 검사를 실행하지 않았음.",
+        "nextSteps": "현재 상태 문서와 변경 이력이 다시 중복되지 않게 유지할 필요가 있음.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoffia",
+          "fingerprint": "0e0cb82be933a807198dbdc45379e12c9cfa1ba94b5e802ff42635c6bac3cfba",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minlab-ai-office",
+      "record": {
+        "id": "codex:proj-minlab-ai-office:2026-11-03-ai-office-current-docs:prompt:request-group-1",
+        "date": "2026-11-03",
+        "title": "현재 기준 문서 축소와 과거 기록 보관",
+        "prompt": "MinLab AI Office는 여러 AI의 업무와 승인·검토를 관리하는 개인용 앱입니다. 현재 README·작업 규칙·인수인계·흐름·변경 이력에서 중복되거나 오래된 설명을 찾아, AI가 먼저 읽을 현재 기준 문서를 짧게 정리하세요. 규칙·흐름·남은 일의 역할을 나누고 상세 내용은 링크로 연결하세요. 과거 원문과 라이선스·출처는 삭제하지 말고 보관 폴더에 유지하세요.\n\n공통 작업 규칙은 CLAUDE.md 한곳에서 관리하고 AGENTS.md에는 Codex가 해당 문서를 먼저 읽도록 안내하세요. 다른 AI도 같은 현재 기준을 찾을 수 있게 링크를 확인하고, 문서 정리를 이유로 동작·승인 절차·보안 설정을 바꾸지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoffia",
+          "fingerprint": "dddfaf121433f4ad37d524ea5ed1d069b5861e5c295fb2e87973dadea262a997",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minlab-ai-office",
+      "record": {
+        "id": "codex:proj-minlab-ai-office:2026-11-03-ai-office-execution-stability",
+        "date": "2026-11-03",
+        "title": "기획 버전 확인·중복 실행 방지와 채점 재시도 보완",
+        "version": "0.5.32",
+        "content": "작업 목적\n사용자가 검토 후 우선 개선을 요청한 기획·실행·채점의 상태 불일치 문제를 정리하고 PR #199의 반영 결과를 기록함.\n\n주요 변경\n- 생성 중 기획이 바뀔 때 이전 응답이 새 기획과 섞이지 않도록 버전 확인을 보강함.\n- 여러 기기에서 같은 계획을 중복 실행하는 문제를 막는 처리를 개선함.\n- 채점 통신 실패 뒤 재시도하지 못하는 흐름을 보완함.\n- 앱 코드 반영과 별도 서버 적용·배포 단계를 구분해 인수인계했음.",
+        "reason": "기획 변경·동시 요청·일시적인 오류가 있어도 업무 상태와 AI 실행이 일관되게 이어지도록 요청받음.",
+        "testResult": "당시 PR #199 검증·병합과 앱 배포 성공 보고를 확인함. 서버 적용은 별도로 인계된 범위로 구분하며 이번 정리에서 운영 연동을 다시 검증하지 않았음.",
+        "nextSteps": "실제 다중 기기와 일시적 통신 오류에서의 동작은 현재 운영 상태에 맞춰 후속 확인할 필요가 있음.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoffia",
+          "fingerprint": "e7033d536cfb0fc5d2a7cc6b4526aea9ef1d20acc6ae0167859716ca6668906e",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minlab-ai-office",
+      "record": {
+        "id": "codex:proj-minlab-ai-office:2026-11-03-ai-office-execution-stability:prompt:request-group-1",
+        "date": "2026-11-03",
+        "title": "기획 버전 확인·중복 실행 방지와 채점 재시도 보완",
+        "prompt": "MinLab AI Office는 기획서와 AI 실행 결과를 연결해 업무를 관리하는 개인용 앱입니다. 기획 생성 중 다른 기기에서 새 버전을 승인해도 이전 기획의 결과가 새 기획에 연결되지 않도록 버전을 확인하세요. 같은 계획을 여러 기기에서 동시에 요청하더라도 중복 AI 호출이 발생하지 않게 처리하고, 일시적인 채점 실패 뒤에는 다시 시도할 수 있게 개선하세요.\n\n기존 승인 단계와 감사 기록을 유지하고 코드·앱 배포와 별도 서버 반영 상태를 구분하세요. 다른 AI가 이어서 적용할 수 있게 완료한 수정·검증·남은 작업을 정리하되 비밀값이나 내부 인증정보를 문서·공개 기록에 포함하지 마세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoffia",
+          "fingerprint": "7acb7a5f7b26b0b89cfff8ef4b90b67e8050991dad1e1a370b5d38ad7ebcbf04",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minlab-ai-office",
+      "record": {
+        "id": "codex:proj-minlab-ai-office:2026-11-03-ai-office-plan-assignment-handoff",
+        "date": "2026-11-03",
+        "title": "계획·배정 저장 일관성과 업무 추적·인수인계 개선",
+        "version": "0.5.32",
+        "content": "작업 목적\n계획만 저장되거나 외부 업무 추적을 잃을 수 있는 흐름을 개선하고 GitHub 반영·서버 인수인계·앱 배포를 구분해 진행했음.\n\n주요 변경\n- 계획과 작업 배정이 함께 성공·실패하도록 저장 일관성을 보완함.\n- 업무 위임 뒤 연결 정보 저장에 실패한 경우 성공으로 처리하지 않도록 개선함.\n- 지정한 대상이 없을 때 임의의 다른 대상으로 보내지 않게 보완함.\n- 미완료 수정과 서버 반영 항목을 인수인계로 구분하고 PR #200 병합 후 앱 배포를 진행했음.",
+        "reason": "계획 저장·작업 배정·외부 추적 사이의 누락을 해결하고 다른 AI가 서버 적용을 이어받을 수 있게 정리하도록 요청받음.",
+        "testResult": "대화 완료 보고에서 검사 303개·빌드·DB 검증 통과와 PR #200 병합을 확인함. 이후 앱 배포 성공 보고도 확인했음. 이번 기록 정리에서는 소스·서버 검사를 실행하지 않았음.",
+        "nextSteps": "앱과 서버 반영 여부를 계속 구분해 운영 기록을 유지할 필요가 있음.",
+        "createdAt": "2026-11-11T23:59:33+09:00",
+        "source": {
+          "repository": "minho-nim/minoffia",
+          "fingerprint": "bace17fd9f3ad815aed2618a0e061c2d54912c5b34860f5ce709b09f42df4759",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minlab-ai-office",
+      "record": {
+        "id": "codex:proj-minlab-ai-office:2026-11-03-ai-office-plan-assignment-handoff:prompt:request-group-1",
+        "date": "2026-11-03",
+        "title": "계획·배정 저장 일관성과 업무 추적·인수인계 개선",
+        "prompt": "MinLab AI Office는 계획을 저장하고 여러 AI에 작업을 배정하는 업무 관리 앱입니다. 계획은 있는데 실행할 작업은 없는 상태가 남지 않도록 계획과 배정을 함께 저장하고 함께 성공·실패하게 개선하세요. 외부 업무를 만든 뒤 추적 정보를 저장하지 못하면 성공으로 응답하지 말고 복구할 수 있게 하세요. 지정한 팀이나 대상이 없으면 다른 곳으로 보내지 말고 중단·안내하세요.\n\n사용자가 맡긴 범위의 코드·검증·GitHub 반영을 마친 뒤 별도 서버 적용 항목은 다른 AI가 이어받을 수 있도록 정리하세요. 미완료 패치와 완료 변경, 병합과 앱 배포를 구분하고, 서버 적용 전 필요한 선행 조건을 명확하게 남기세요. 기존 승인 흐름과 기록은 보존하세요.",
+        "outcome": "관련 사용자 요청을 작업 목적별로 묶어 재사용 가능한 지시문으로 정리함.",
+        "source": {
+          "repository": "minho-nim/minoffia",
+          "fingerprint": "74b03586ef0bdc5bc877c08cc2a88a14ac237551edbb378bc0ea914a2b380a15",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-11T23:59:33+09:00"
         }
       }
     },

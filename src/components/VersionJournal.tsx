@@ -27,7 +27,7 @@ export function LogContent({
       </p>
       <h3>{log.title || log.task || "개발 기록"}</h3>
       <div className="log-highlights">
-        <h4>핵심 변경</h4>
+        <h4>주요 변경</h4>
         <ul>
           {logHighlights(log).map((line, i) => (
             <li key={i}>{line}</li>
@@ -35,9 +35,9 @@ export function LogContent({
         </ul>
       </div>
       <details className="log-original" open={expanded || undefined}>
-        <summary>전체 기록과 검증 결과 펼쳐보기</summary>
+        <summary>작업 내용 자세히 보기</summary>
         {[
-          ["변경 내용 원문", log.content || log.task],
+          ["작업 내용", log.content || log.task],
           ["수정 이유", log.reason || log.issues],
           ["해결 방법", log.solution],
           ["테스트 결과", log.testResult],
@@ -117,10 +117,9 @@ export function VersionJournal({
     <section className="version-journal">
       <header className="page-heading">
         <p className="eyebrow">개발일지</p>
-        <h1>만들고 개선한 기록</h1>
+        <h1>개발일지 모아보기</h1>
         <p>
-          프로젝트를 고르고, 바뀐 점부터 읽어보세요. 모든 원문은 기록 안에
-          보관되어 있습니다.
+          프로젝트별로 추가한 기능과 수정한 내용, 테스트 결과를 볼 수 있습니다.
         </p>
       </header>
       <div className="journal-filters">

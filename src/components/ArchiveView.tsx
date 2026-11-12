@@ -47,7 +47,8 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         <p className="eyebrow">프로젝트 아카이브</p>
         <h1>전체 프로젝트</h1>
         <p>
-          작은 실험부터 실제 사용하는 도구까지. 프로젝트와 그 과정을 탐색하세요.
+          웹앱, 게임, 업무용 도구를 모았습니다. 이름이나 기술로 검색할 수
+          있습니다.
         </p>
       </header>
       <div className="archive-toolbar">

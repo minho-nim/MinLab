@@ -27,7 +27,7 @@ export function ProjectNavigator({
     <section className="project-connections" aria-label="프로젝트 간 이동">
       {related.length > 0 && (
         <div className="related-projects">
-          <p className="eyebrow">함께 살펴볼 프로젝트</p>
+          <p className="eyebrow">관련 프로젝트</p>
           <div>
             {related.map((p) => (
               <a
@@ -52,13 +52,13 @@ export function ProjectNavigator({
             <span className="eyebrow">다음 프로젝트 / {next.category}</span>
             <h2>{next.name}</h2>
             <p>{next.description}</p>
-            <span className="text-link">다음 프로젝트 살펴보기 ↗</span>
+            <span className="text-link">다음 프로젝트 보기 ↗</span>
           </div>
           {mediaFor(next).length > 0 && <ProjectMedia project={next} />}
         </a>
       ) : (
         <a className="next-project" href={lastArchive()}>
-          <span className="eyebrow">모든 프로젝트를 살펴보셨습니다.</span>
+          <span className="eyebrow">마지막 프로젝트입니다.</span>
           <strong>전체 아카이브로 돌아가기 ↗</strong>
         </a>
       )}

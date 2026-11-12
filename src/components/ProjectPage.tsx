@@ -73,10 +73,10 @@ export function ProjectPage({
         className="problem-solution detail-reading-section project-chapter-target"
       >
         <p className="eyebrow">제작 배경과 해결 방식</p>
-        <h2>문제에서 출발해, 제품으로.</h2>
+        <h2>만들게 된 이유</h2>
         {background ? (
           <>
-            <small>{background.date} · 실제 개발 기록</small>
+            <small>{background.date} · 개발일지</small>
             <p>{background.reason || background.issues}</p>
             {background.solution && <p>{background.solution}</p>}
           </>
@@ -90,7 +90,7 @@ export function ProjectPage({
       >
         <header>
           <p className="eyebrow">개발 과정</p>
-          <h2>아이디어가 발전해 온 과정.</h2>
+          <h2>버전별 개발일지</h2>
         </header>
         <DevelopmentJourney project={project} linkedLogId={linkedLogId} />
         <div className="project-actions">
@@ -117,18 +117,18 @@ export function ProjectPage({
         className="detail-reading-section project-chapter-target"
       >
         <p className="eyebrow">결과와 다음 작업</p>
-        <h2>기록으로 확인하는 변화.</h2>
+        <h2>테스트 결과와 남은 작업</h2>
         {logs.find((l) => l.testResult) ? (
           <>
-            <h3>가장 최근에 기록된 검증 결과</h3>
+            <h3>최근 테스트 결과</h3>
             <p>{logs.find((l) => l.testResult)?.testResult}</p>
           </>
         ) : (
-          <p>별도로 기록된 검증 결과가 없습니다.</p>
+          <p>아직 등록된 테스트 결과가 없습니다.</p>
         )}
         {logs.find((l) => l.nextSteps) && (
           <>
-            <h3>기록된 다음 작업</h3>
+            <h3>다음에 할 일</h3>
             <p>{logs.find((l) => l.nextSteps)?.nextSteps}</p>
           </>
         )}

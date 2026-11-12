@@ -4,25 +4,25 @@ export const capabilities = [
   {
     id: "planning",
     name: "기획 및 문제 정의",
-    description: "필요한 기능과 사용자 문제를 정리한 기록을 살펴보세요.",
+    description: "요구사항을 정리하고 기능을 설계한 기록입니다.",
     match: /요구사항|문제 정의|기획|요구|설계/,
   },
   {
     id: "development",
     name: "구현 및 개발",
-    description: "직접 구현한 기능과 개발 과정을 확인하세요.",
+    description: "기능을 추가하거나 수정한 기록입니다.",
     match: /구현|개발|추가|연동/,
   },
   {
     id: "experience",
     name: "UX/UI 설계",
-    description: "화면 구성과 사용 흐름을 개선한 사례입니다.",
+    description: "화면 구성과 사용 흐름을 손본 기록입니다.",
     match: /UX|UI|화면|사용성|레이아웃/i,
   },
   {
     id: "validation",
     name: "검증 및 개선",
-    description: "테스트 결과와 수정 근거가 남아 있는 기록입니다.",
+    description: "오류를 고치고 테스트한 기록입니다.",
     match: /테스트|검증|오류|수정/,
   },
 ] as const;

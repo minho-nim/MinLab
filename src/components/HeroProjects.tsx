@@ -29,7 +29,7 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
   };
   return (
     <>
-      <div className="hero-project-cloud" aria-label="실제 프로젝트 화면 모음">
+      <div className="hero-project-cloud" aria-label="프로젝트 화면 미리보기">
         {projects.map((p, i) => (
           <a
             key={p.id}

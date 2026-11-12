@@ -150,7 +150,7 @@ const fs = require("node:fs/promises");
     );
     await m
       .getByText(
-        "연결된 개발 기록을 찾을 수 없습니다. 아래에서 남아 있는 기록을 확인하세요.",
+        "이 개발일지를 찾을 수 없습니다. 아래 목록에서 다른 기록을 선택해 주세요.",
         { exact: true },
       )
       .waitFor();

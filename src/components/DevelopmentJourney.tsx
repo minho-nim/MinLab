@@ -79,16 +79,16 @@ export function DevelopmentJourney({
   if (!log)
     return (
       <p className="muted-copy">
-        {linkedLogId ? "연결된 개발 기록을 찾을 수 없습니다. " : ""}등록된
-        개발일지가 없습니다.
+        {linkedLogId ? "이 개발일지를 찾을 수 없습니다. " : ""}등록된 개발일지가
+        없습니다.
       </p>
     );
   return (
     <div className="development-journey">
       {linkedLogId && !linked && (
         <p className="record-link-missing" role="status">
-          연결된 개발 기록을 찾을 수 없습니다. 아래에서 남아 있는 기록을
-          확인하세요.
+          이 개발일지를 찾을 수 없습니다. 아래 목록에서 다른 기록을 선택해
+          주세요.
         </p>
       )}
       <div className="journey-desktop">
@@ -138,7 +138,7 @@ export function DevelopmentJourney({
               >
                 {item.id === linked?.id && (
                   <p className="record-link-label">
-                    {project.name} · 연결된 개발 기록
+                    {project.name} · 선택한 개발일지
                   </p>
                 )}
                 <LogContent log={item} expanded={item.id === linked?.id} />
@@ -168,7 +168,7 @@ export function DevelopmentJourney({
                 </label>
                 {comparison && item.id === compareAt && (
                   <div className="version-comparison">
-                    <p>기록 원문 비교 · 추가/삭제를 추정하지 않습니다.</p>
+                    <p>선택한 두 기록을 나란히 봅니다.</p>
                     {fields.map(([name, get]) => (
                       <section key={name}>
                         <h4>{name}</h4>
@@ -208,7 +208,7 @@ export function DevelopmentJourney({
             <summary>
               {l.id === linked?.id && (
                 <span className="record-link-label">
-                  {project.name} · 연결된 개발 기록
+                  {project.name} · 선택한 개발일지
                 </span>
               )}
               <small>

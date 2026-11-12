@@ -36,7 +36,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(base);
-    await page.getByRole("heading", { name: /아이디어를 현실로/ }).waitFor();
+    await page.getByRole("heading", { name: /필요한 걸 만들고/ }).waitFor();
     assert.equal(
       await page.getByRole("button", { name: "안내 닫기" }).count(),
       0,

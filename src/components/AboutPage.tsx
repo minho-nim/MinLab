@@ -6,7 +6,7 @@ import { safeRead, safeWrite } from "../utils/archiveQuery";
 import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
 const introKey = "minlab_about_intro_v1";
 const defaultIntro =
-  "통신·데이터센터 프로젝트 관리 경험을 바탕으로, 일상과 현장의 문제를 웹앱과 게임으로 풀어갑니다. AI를 기획·개발·검증에 활용하며 실제로 만든 결과와 개선 과정을 기록합니다.";
+  "통신·데이터센터 구축 프로젝트에서 일정과 공정, 품질, 사업 관리를 맡아왔습니다. 개인 프로젝트로 웹앱과 게임을 만들고, 개발할 때는 AI의 도움을 받습니다.";
 export function AboutPage({
   projects,
   editing = false,
@@ -77,23 +77,21 @@ export function AboutPage({
   const experiences = [
     {
       label: "현장 경험",
-      title: "현장에서 문제를 발견합니다.",
-      description:
-        "통신·데이터센터 프로젝트 관리 경험. 반복되는 업무와 복잡한 정보를 정리하는 데서 출발합니다.",
+      title: "통신·데이터센터 프로젝트를 관리했습니다.",
+      description: "일정과 공정, 품질, 사업 관리를 맡았습니다.",
       match: (p: Project) => /업무|자동화/.test(p.category),
     },
     {
-      label: "독립 개발",
-      title: "직접 만들며 답을 찾아갑니다.",
-      description:
-        "독립적인 웹앱·게임 개발. 필요한 기능을 작게 구현하고 사용 흐름을 다듬습니다.",
+      label: "개인 프로젝트",
+      title: "일할 때나 일상에서 쓸 도구를 만듭니다.",
+      description: "필요한 기능부터 만들고, 사용하면서 불편한 부분을 고칩니다.",
       match: (p: Project) => /게임|건강|운동|일정/.test(p.category),
     },
     {
       label: "AI 활용",
-      title: "AI와 함께 시도하고, 기록합니다.",
+      title: "개발할 때 AI의 도움을 받습니다.",
       description:
-        "기획부터 개발과 검증까지 AI를 활용합니다. 프로젝트별 개발일지와 작업 프롬프트에 실제 과정을 남깁니다.",
+        "기획을 정리하고 코드를 작성하거나 테스트할 때 활용합니다. 작업 내용과 사용한 프롬프트를 함께 남깁니다.",
       match: (p: Project) =>
         p.workLogs.length > 0 || Boolean(p.promptHistory?.length),
     },
@@ -103,9 +101,9 @@ export function AboutPage({
       <header className="page-heading">
         <p className="eyebrow">소개</p>
         <h1>
-          만든 것들이
+          해온 일과
           <br />
-          <em>나를 설명합니다.</em>
+          <em>만들고 있는 것들.</em>
         </h1>
         {editing ? (
           <div className="about-editor">
@@ -237,7 +235,7 @@ export function AboutPage({
                         <p>{p.description}</p>
                         <small>
                           {p.workLogs.length
-                            ? `${p.workLogs.length}개의 실제 개발 기록`
+                            ? `${p.workLogs.length}개의 개발일지`
                             : p.category}
                         </small>
                       </div>
@@ -250,8 +248,8 @@ export function AboutPage({
       </section>
       <section className="capability-explorer">
         <header>
-          <p className="eyebrow">프로젝트로 살펴보는 역량</p>
-          <h2>작업의 근거를 확인하세요.</h2>
+          <p className="eyebrow">작업 분야</p>
+          <h2>분야별로 모은 작업 기록</h2>
         </header>
         <div className="capability-layout">
           <nav aria-label="역량 선택">
@@ -282,7 +280,7 @@ export function AboutPage({
               id="capability-evidence"
               className="capability-evidence"
               role="region"
-              aria-label={capabilities[capability].name + "의 실제 개발 기록"}
+              aria-label={capabilities[capability].name + " 관련 개발일지"}
             >
               {evidence.map(({ project: p, log, excerpt }) => (
                 <article key={p.id} data-evidence-log={log.id}>
@@ -295,7 +293,7 @@ export function AboutPage({
                   </small>
                   {excerpt.label !== "수정 제목" && (
                     <div className="evidence-excerpt">
-                      <small>{excerpt.label} · 원문 일부</small>
+                      <small>{excerpt.label}</small>
                       <blockquote>{excerpt.text}</blockquote>
                     </div>
                   )}
@@ -308,24 +306,19 @@ export function AboutPage({
                       logId: log.id,
                     })}
                   >
-                    근거가 된 개발일지 읽기 ↗
+                    이 개발일지 읽기 ↗
                   </a>
                 </article>
               ))}
-              {!evidence.length && (
-                <p>연결할 수 있는 개발 기록이 아직 없습니다.</p>
-              )}
+              {!evidence.length && <p>이 분야에 등록된 개발일지가 없습니다.</p>}
             </div>
           </div>
         </div>
       </section>
       <div className="about-next">
-        <p>
-          현장의 문제를 발견하는 경험에서, 직접 만들고 개선하는 기록으로
-          이어갑니다.
-        </p>
+        <p>프로젝트별로 만든 기능과 수정한 내용을 정리했습니다.</p>
         <a className="primary-link" href="#/development-log">
-          실제 개발 과정 읽어보기 ↗
+          개발일지 보기 ↗
         </a>
         <a
           className="text-link"

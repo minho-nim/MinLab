@@ -183,7 +183,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
       <header className="section-heading">
         <div>
           <p className="eyebrow">기능 쇼케이스</p>
-          <h2>화면으로 살펴보세요.</h2>
+          <h2>주요 화면과 기능</h2>
         </div>
         <span>
           {String(active + 1).padStart(2, "0")} /{" "}

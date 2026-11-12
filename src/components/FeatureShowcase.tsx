@@ -208,7 +208,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
             <span>{project.name} · 화면 미리보기</span>
           </div>
           {scene.screen >= 0 ? (
-            <ProjectMedia project={project} index={scene.screen} />
+            <ProjectMedia project={project} index={scene.screen} zoomable />
           ) : (
             <div className="scene-no-image">
               <strong>{scene.name}</strong>

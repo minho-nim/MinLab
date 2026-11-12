@@ -143,7 +143,7 @@ export function DevelopmentJourney({
                 )}
                 <LogContent log={item} expanded={item.id === linked?.id} />
                 {itemScreen >= 0 && (
-                  <ProjectMedia project={project} index={itemScreen} />
+                  <ProjectMedia project={project} index={itemScreen} zoomable />
                 )}
                 <label className="log-select">
                   다른 기록과 비교

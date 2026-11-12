@@ -1,0 +1,242 @@
+/* Product screens behave as a small, tangible collection of work. */
+.motion-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-ink-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.motion-control:hover:not(:disabled),
+.motion-control:focus-visible {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.motion-control:disabled {
+  cursor: default;
+}
+.project-first-hero .hero-foot {
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.full-menu > .motion-control {
+  margin-top: 24px;
+}
+.project-media {
+  isolation: isolate;
+}
+.project-media > .media-current {
+  transform-origin: center;
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.project-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at var(--light-x, 50%) var(--light-y, 50%),
+    rgb(210 230 214 / 16%),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 220ms;
+}
+.project-media > .media-outgoing,
+.project-media > .media-held {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.project-media > .media-held {
+  opacity: 0.7;
+}
+.project-media > .media-outgoing {
+  z-index: 1;
+  animation: screen-leave 500ms ease-out both;
+}
+.project-media > .media-current.image-arrived {
+  animation: screen-present 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.project-media > .media-expand {
+  z-index: 3;
+}
+.media-loading {
+  z-index: 2;
+}
+.viewer-screen {
+  animation: screen-present 360ms ease-out both;
+}
+@keyframes screen-present {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 6% 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+@keyframes screen-leave {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .project-media[data-media-interacting="true"] > .media-current {
+    transform: perspective(1000px) rotateX(var(--media-rx, 0deg))
+      rotateY(var(--media-ry, 0deg))
+      translate3d(var(--media-x, 0px), var(--media-y, 0px), 0) scale(1.045);
+    will-change: transform;
+  }
+  .project-media[data-media-interacting="true"]::after {
+    opacity: 1;
+  }
+  .archive-project:focus-visible .media-current {
+    transform: scale(1.035);
+  }
+}
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .hero-project {
+    animation: screen-drift 6s ease-in-out infinite alternate;
+    animation-delay: calc(var(--screen-order, 0) * -1.2s);
+    animation-play-state: paused;
+  }
+  .hero-project:has(
+    .project-media[data-media-visible="true"][data-media-state="ready"]
+  ) {
+    animation-play-state: running;
+  }
+  .hero-project:has(.project-media[data-media-interacting="true"]),
+  .project-first-hero[data-handoff="active"] .hero-project,
+  html[data-motion-hidden="true"] .hero-project {
+    animation-play-state: paused !important;
+  }
+  .hero-project .media-current.image-arrived {
+    animation: screen-unfold 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--screen-order, 0) * 70ms);
+  }
+}
+@keyframes screen-drift {
+  from {
+    translate: 0 -7px;
+  }
+  to {
+    translate: 0 9px;
+  }
+}
+@keyframes screen-unfold {
+  from {
+    opacity: 0.3;
+    clip-path: inset(10% 0 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+.hero-handoff .media-current {
+  animation: none !important;
+  transform: none !important;
+}
+.hero-handoff::after {
+  display: none;
+}
+html[data-visual-motion="paused"] .hero-project,
+html[data-visual-motion="paused"] .image-arrived,
+html[data-visual-motion="paused"] .media-outgoing,
+html[data-visual-motion="paused"] .viewer-screen,
+html[data-visual-motion="paused"] .media-viewer[open] {
+  animation: none !important;
+}
+html[data-visual-motion="paused"] .hero-project,
+html[data-visual-motion="paused"] .project-first-hero h1 span {
+  translate: none !important;
+  transform: none !important;
+}
+html[data-visual-motion="paused"] .project-media > .media-current {
+  transform: none !important;
+  transition: none;
+}
+html[data-visual-motion="paused"] .project-media::after {
+  opacity: 0;
+}
+html[data-visual-motion="paused"] .media-outgoing {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-project,
+  .image-arrived,
+  .viewer-screen,
+  .media-outgoing {
+    animation: none !important;
+  }
+  .project-media > .media-current {
+    transform: none !important;
+    transition: none;
+  }
+  .media-outgoing {
+    display: none;
+  }
+  .project-media::after {
+    display: none;
+  }
+}
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hero-project[data-card-interacting="true"] {
+    z-index: 2;
+    transform: perspective(1200px)
+      translate(
+        calc(var(--px) * var(--depth, 10px)),
+        calc(var(--py) * var(--depth, 10px))
+      )
+      rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg));
+  }
+  .hero-project[data-card-interacting="true"] .media-current {
+    transform: translate3d(var(--media-x, 0px), var(--media-y, 0px), 0)
+      scale(1.035);
+  }
+  .hero-project[data-card-interacting="true"] .hero-project-visual {
+    box-shadow: 0 18px 36px rgb(0 0 0 / 30%);
+  }
+}
+.hero-mobile-featured {
+  touch-action: pan-y pinch-zoom;
+}
+.hero-swipe-hint {
+  margin: 10px 0;
+  color: var(--color-muted);
+  font-size: 11px;
+  text-align: right;
+}
+
+/* Reflow the real archive items; no overlay blocks controls during a change. */
+.project-collection[data-collection-moving="true"] {
+  overflow: clip;
+  overflow-clip-margin: 4px;
+}
+.archive-hover-preview {
+  left: 0;
+  top: 0;
+  transform: translate3d(var(--preview-x, 0px), var(--preview-y, 0px), 0);
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-visual-motion="paused"] .archive-hover-preview {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .archive-hover-preview {
+    transition: none;
+  }
+}

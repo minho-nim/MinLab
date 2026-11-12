@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ArrowUpRight, Grid2X2, List, Search } from "lucide-react";
 import type { Project } from "../types";
 import {
@@ -13,25 +13,68 @@ import {
 } from "../utils/archiveQuery";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
+import { useCollectionMotion } from "../utils/useCollectionMotion";
 export function ArchiveView({ projects }: { projects: Project[] }) {
   const [filtersOpen, setFiltersOpen] = useState(
     () => safeRead("minlab_archive_filters_open") === "true",
   );
   const [hovered, setHovered] = useState<Project | null>(null);
   const preview = useRef<HTMLDivElement>(null);
+  const cursor = useRef({ x: 0, y: 0 });
   const [query, setQuery] = useState<ArchiveQuery>(() => {
     const value = readArchiveQuery(location.hash);
     if (!new URLSearchParams(location.hash.split("?")[1]).has("layout"))
       value.layout = safeRead("minlab_archive_layout", "grid");
     return value;
   });
+  const collection = useCollectionMotion(query);
+  const positionPreview = (x: number, y: number) => {
+    cursor.current = { x, y };
+    const node = preview.current;
+    if (!node) return;
+    node.style.setProperty(
+      "--preview-x",
+      Math.max(8, Math.min(innerWidth - node.offsetWidth - 8, x + 24)) + "px",
+    );
+    node.style.setProperty(
+      "--preview-y",
+      Math.max(8, Math.min(innerHeight - node.offsetHeight - 8, y + 24)) + "px",
+    );
+  };
+  useLayoutEffect(() => {
+    const node = preview.current;
+    if (!hovered || !node) return;
+    const firstPosition = !node.style.getPropertyValue("--preview-x");
+    if (firstPosition) node.style.transition = "none";
+    positionPreview(cursor.current.x, cursor.current.y);
+    if (firstPosition) {
+      node.getBoundingClientRect();
+      node.style.removeProperty("transition");
+    }
+  }, [hovered]);
+  useEffect(() => {
+    const dismiss = () => setHovered(null);
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === "Tab" || event.key === "Escape") dismiss();
+    };
+    window.addEventListener("resize", dismiss);
+    window.addEventListener("blur", dismiss);
+    window.addEventListener("keydown", keyboard);
+    return () => {
+      window.removeEventListener("resize", dismiss);
+      window.removeEventListener("blur", dismiss);
+      window.removeEventListener("keydown", keyboard);
+    };
+  }, []);
   useEffect(() => {
     const restore = () => setQuery(readArchiveQuery(location.hash));
     window.addEventListener("hashchange", restore);
     return () => window.removeEventListener("hashchange", restore);
   }, []);
-  const change = (patch: Partial<ArchiveQuery>) => {
+  const change = (patch: Partial<ArchiveQuery>, animate = true) => {
     const next = { ...query, ...patch };
+    collection.capture(animate);
+    setHovered(null);
     setQuery(next);
     history.replaceState(null, "", archiveHash(next));
     safeWrite("minlab_archive_layout", next.layout);
@@ -47,7 +90,8 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         <p className="eyebrow">프로젝트 아카이브</p>
         <h1>전체 프로젝트</h1>
         <p>
-          작은 실험부터 실제 사용하는 도구까지. 프로젝트와 그 과정을 탐색하세요.
+          웹앱, 게임, 업무용 도구를 모았습니다. 이름이나 기술로 검색할 수
+          있습니다.
         </p>
       </header>
       <div className="archive-toolbar">
@@ -58,7 +102,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
             aria-label="프로젝트 검색"
             placeholder="이름, 설명, 기술 태그로 검색"
             value={query.q}
-            onChange={(e) => change({ q: e.target.value })}
+            onChange={(e) => change({ q: e.target.value }, false)}
           />
         </label>
         <div className="view-switch" aria-label="보기 방식">
@@ -177,7 +221,10 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
           </button>
         </div>
       ) : (
-        <div className={"project-collection " + query.layout}>
+        <div
+          ref={collection.root}
+          className={"project-collection " + query.layout}
+        >
           {query.layout === "list" && (
             <div className="archive-list-head">
               <span>프로젝트</span>
@@ -188,22 +235,23 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
           )}
           {filtered.map((p) => (
             <a
+              data-collection-key={p.id}
               className={
                 "archive-project " +
                 (!mediaFor(p).length ? "text-project" : "image-project")
               }
               onPointerEnter={(e) => {
-                if (query.layout === "list" && e.pointerType === "mouse")
+                if (query.layout === "list" && e.pointerType === "mouse") {
+                  positionPreview(e.clientX, e.clientY);
                   setHovered(p);
+                }
               }}
               onPointerLeave={() => setHovered(null)}
               onPointerMove={(e) => {
-                if (preview.current) {
-                  preview.current.style.left =
-                    Math.min(innerWidth - 290, e.clientX + 24) + "px";
-                  preview.current.style.top =
-                    Math.max(8, Math.min(innerHeight - 220, e.clientY + 24)) +
-                    "px";
+                if (e.pointerType === "mouse") {
+                  positionPreview(e.clientX, e.clientY);
+                  if (query.layout === "list" && hovered?.id !== p.id)
+                    setHovered(p);
                 }
               }}
               key={p.id}

@@ -10,6 +10,9 @@ import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { HeroProjects } from "./HeroProjects";
 import { selectHomeProjects } from "../utils/homeProjects";
+import { useHeroHandoff } from "../utils/useHeroHandoff";
+import { motionAllowed } from "../utils/visualMotion";
+import { MotionControl } from "./MotionControl";
 export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const section = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -96,7 +99,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
         <div className="section-heading">
           <div>
             <p className="eyebrow">프로젝트 탐색</p>
-            <h2>직접 만든 결과를 살펴보세요.</h2>
+            <h2>만든 프로젝트</h2>
           </div>
           <a className="text-link" href="#/">
             전체 아카이브 <ArrowUpRight size={16} />
@@ -144,7 +147,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
                 className="showcase-image"
                 aria-label={project.name + " 상세 보기"}
               >
-                <ProjectMedia key={project.id} project={project} />
+                <ProjectMedia project={project} />
               </a>
             )}
             <div className="preview-copy" key={project.id}>
@@ -164,7 +167,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
                   className="primary-link"
                   href={routeHash({ view: "project", projectId: project.id })}
                 >
-                  프로젝트 살펴보기 <ArrowUpRight size={16} />
+                  프로젝트 보기 <ArrowUpRight size={16} />
                 </a>
                 <span>
                   {String(index + 1).padStart(2, "0")} /{" "}
@@ -178,7 +181,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           <div>
             <i style={{ width: `${((index + 1) / count) * 100}%` }} />
           </div>
-          <span>목록을 누르거나 스크롤로 탐색 · 모바일은 좌우로 넘기기</span>
+          <span>스크롤로 둘러보기 · 모바일은 좌우로 넘기기</span>
           <a
             className="text-link"
             href="#development-process"
@@ -216,6 +219,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
 }
 export function HomePage({ projects }: { projects: Project[] }) {
   const hero = useRef<HTMLElement>(null);
+  useHeroHandoff(hero);
   const hasScreen = (p: Project) => mediaFor(p).length > 0;
   const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 4);
   const featured = selectHomeProjects(projects, hasScreen, 6);
@@ -249,11 +253,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
         className="home-hero project-first-hero"
         ref={hero}
         onPointerMove={(e) => {
-          if (
-            e.pointerType !== "mouse" ||
-            matchMedia("(prefers-reduced-motion:reduce)").matches
-          )
-            return;
+          if (e.pointerType !== "mouse" || !motionAllowed()) return;
           const r = e.currentTarget.getBoundingClientRect();
           e.currentTarget.style.setProperty(
             "--px",
@@ -271,17 +271,17 @@ export function HomePage({ projects }: { projects: Project[] }) {
       >
         <div className="hero-introduction">
           <div className="hero-copy">
-            <p className="eyebrow">MinLab · 직접 만든 앱과 게임</p>
+            <p className="eyebrow">MinLab · 개인 프로젝트</p>
             <h1>
-              <span>아이디어를 현실로,</span>
-              <span>경험을 결과물로.</span>
+              <span>필요한 걸 만들고,</span>
+              <span>하나씩 고칩니다.</span>
             </h1>
           </div>
           <div className="hero-support">
             <p>
-              기획에서 개발, 테스트와 개선까지.
+              웹앱과 게임을 만들고 있습니다.
               <br />
-              직접 만든 프로젝트와 그 과정을 기록합니다.
+              만들면서 바꾼 점도 함께 적어두었습니다.
             </p>
             <a className="text-link" href="#/">
               전체 {projects.length}개 프로젝트 둘러보기 ↗
@@ -290,10 +290,11 @@ export function HomePage({ projects }: { projects: Project[] }) {
         </div>
         <HeroProjects projects={images} />
         <div className="hero-foot">
+          <MotionControl />
           <span>
             {images.length
-              ? `${images.length}개의 실제 화면에서 시작하세요.`
-              : "전체 프로젝트에서 살펴보세요."}
+              ? `대표 프로젝트 ${images.length}개`
+              : "전체 프로젝트 목록을 열어보세요."}
           </span>
           <a
             href="#selected-work"
@@ -306,7 +307,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
               });
             }}
           >
-            프로젝트 탐색으로 <ArrowDown size={15} />
+            프로젝트 둘러보기 <ArrowDown size={15} />
           </a>
         </div>
       </section>
@@ -316,15 +317,15 @@ export function HomePage({ projects }: { projects: Project[] }) {
         className="home-process process-journal-entry"
       >
         <div>
-          <p className="eyebrow">결과 뒤에 남겨진 과정</p>
+          <p className="eyebrow">개발일지</p>
           <h2>
-            왜 만들고,
+            만들면서
             <br />
-            어떻게 바꿨는지.
+            바꾼 것들.
           </h2>
-          <p>실제 개발일지와 작업 프롬프트에서 확인하세요.</p>
+          <p>추가한 기능, 고친 문제, 테스트한 내용을 남겼습니다.</p>
           <a className="primary-link" href="#/development-log">
-            개발 과정 읽어보기 ↗
+            개발일지 보기 ↗
           </a>
         </div>
         <div className="recent-process-notes">

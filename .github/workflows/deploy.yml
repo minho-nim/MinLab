@@ -42,6 +42,9 @@ jobs:
           node --import tsx --test src/data/projectCatalog.test.ts src/utils/archive.test.ts src/utils/backupSnapshot.test.ts src/utils/projectLinkMigration.test.ts src/utils/riskAssessmentProject.test.ts
 
       - name: Build project
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
 
       - name: Create 404 fallback for SPA

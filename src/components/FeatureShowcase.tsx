@@ -165,18 +165,25 @@ export function FeatureShowcase({ project }: { project: Project }) {
   };
   if (!scenes.length)
     return (
-      <section className="showcase-empty">
+      <section
+        id="project-showcase"
+        className="showcase-empty project-chapter-target"
+      >
         <h2>프로젝트 화면</h2>
         <p>등록된 화면과 기능 설명이 없습니다.</p>
       </section>
     );
   const scene = scenes[active] || scenes[0];
   return (
-    <section className="feature-showcase" aria-label="기능 쇼케이스">
+    <section
+      id="project-showcase"
+      className="feature-showcase project-chapter-target"
+      aria-label="기능 쇼케이스"
+    >
       <header className="section-heading">
         <div>
           <p className="eyebrow">기능 쇼케이스</p>
-          <h2>화면으로 살펴보세요.</h2>
+          <h2>주요 화면과 기능</h2>
         </div>
         <span>
           {String(active + 1).padStart(2, "0")} /{" "}
@@ -201,7 +208,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
             <span>{project.name} · 화면 미리보기</span>
           </div>
           {scene.screen >= 0 ? (
-            <ProjectMedia project={project} index={scene.screen} />
+            <ProjectMedia project={project} index={scene.screen} zoomable />
           ) : (
             <div className="scene-no-image">
               <strong>{scene.name}</strong>

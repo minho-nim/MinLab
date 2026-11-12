@@ -36,7 +36,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(base);
-    await page.getByRole("heading", { name: /아이디어를 현실로/ }).waitFor();
+    await page.getByRole("heading", { name: /필요한 걸 만들고/ }).waitFor();
     assert.equal(
       await page.getByRole("button", { name: "안내 닫기" }).count(),
       0,
@@ -300,7 +300,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .click();
     assert.equal(
       await page
-        .locator(".browser-showcase img")
+        .locator(".browser-showcase img.media-current")
         .evaluate((el) => getComputedStyle(el).objectFit),
       "contain",
     );
@@ -394,7 +394,9 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.waitForTimeout(700);
     assert.ok(
       (
-        await page.locator(".browser-showcase img").getAttribute("src")
+        await page
+          .locator(".browser-showcase img.media-current")
+          .getAttribute("src")
       ).includes("musclemap-map"),
     );
     await page.locator(".journey-versions button").nth(1).click();
@@ -403,11 +405,16 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       1,
     );
     await page
+      .locator(".journey-record")
+      .nth(1)
       .getByRole("combobox", { name: "개발 기록 비교" })
       .selectOption({ index: 1 });
     assert.equal(await page.locator(".version-comparison section").count(), 5);
     const lastProject = before.filter((p) => p.visible !== false).at(-1);
     await page.goto(base + "#/projects/" + lastProject.id);
+    await page
+      .getByRole("heading", { name: lastProject.name, exact: true, level: 1 })
+      .waitFor();
     assert.equal(
       await page.locator(".next-project").getAttribute("href"),
       await page.evaluate(
@@ -554,13 +561,20 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
           "true",
         );
         const pinned = await p.locator(".browser-showcase").boundingBox();
+        const pinnedTop = await p
+          .locator(".browser-showcase")
+          .evaluate((node) => parseFloat(getComputedStyle(node).top));
+        const chapters = await p.locator(".project-chapters").boundingBox();
         assert.ok(
-          pinned.y >= 70 && pinned.y < 100,
-          "selected mobile scene stays visible below navigation",
+          Math.abs(pinned.y - pinnedTop) < 3 &&
+            pinned.y >= chapters.y + chapters.height + 8,
+          "selected mobile scene stays pinned below chapter navigation",
         );
         assert.ok(
           (
-            await p.locator(".browser-showcase img").getAttribute("src")
+            await p
+              .locator(".browser-showcase img.media-current")
+              .getAttribute("src")
           ).includes("musclemap-map"),
         );
       }

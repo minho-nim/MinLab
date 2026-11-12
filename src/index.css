@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./portfolio.css";
 @import "./experience.css";
+@import "./motion.css";
 /* Agent skills and review artifacts are not application UI sources. */
 @source not "../.agents";
 @source not "../docs/unslop";

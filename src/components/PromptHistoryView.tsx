@@ -98,7 +98,7 @@ export function PromptHistoryView({
             프롬프트 기록
           </h1>
           <p className="mt-1 text-xs text-muted">
-            프로젝트의 맥락과 요구를 담은 프롬프트
+            프로젝트별 작업 요청을 모았습니다.
           </p>
         </div>
         {!readOnly && (
@@ -274,7 +274,7 @@ export function PromptHistoryView({
             open={readOnly ? undefined : true}
             className="prompt-original"
           >
-            <summary>프롬프트 원문과 결과 보기</summary>
+            <summary>프롬프트와 결과 보기</summary>
             <div className="mt-4 space-y-4 border-t border-line pt-4 text-xs">
               {prompt.prompt.split(/\n\s*\n/).map((block, index) => {
                 const [heading, ...lines] = block.split("\n");

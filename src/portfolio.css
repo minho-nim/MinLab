@@ -95,6 +95,7 @@ em {
   backdrop-filter: blur(12px);
 }
 .smart-header > div {
+  /* Preserve document height when the header hides; scroll restoration stays stable. */
   display: flex;
   align-items: center;
   gap: 24px;
@@ -103,9 +104,6 @@ em {
   margin: auto;
   padding: 0 40px;
   transition: height 0.2s;
-}
-.smart-header.compact > div {
-  height: 58px;
 }
 .brand {
   font-size: 23px;
@@ -375,6 +373,22 @@ em {
   height: 100%;
   object-fit: contain;
   object-position: center;
+}
+.project-media[data-media-state="loading"] img.media-current {
+  opacity: 0;
+}
+.media-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+.hero-thumbnail-image .media-loading {
+  display: none;
 }
 .media-empty {
   height: 100%;

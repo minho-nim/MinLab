@@ -1,32 +1,96 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, lazy } from "react";
+import { flushSync } from "react-dom";
+import { routeMotion } from "./utils/routeMotion";
+import { revealLinkedRecord } from "./utils/linkedRecord";
+import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
 import { Project, WorkLog, NavigationTab } from "./types";
 import { loadProjects, saveProjects } from "./utils/storage";
 import { SmartHeader } from "./components/SmartHeader";
-import { MediaLibrary } from "./components/MediaLibrary";
 import { HomePage } from "./components/HomePage";
 import { ArchiveView } from "./components/ArchiveView";
 import { AboutPage } from "./components/AboutPage";
 import { VersionJournal } from "./components/VersionJournal";
-import { ProjectDetail } from "./components/ProjectDetail";
 import { ProjectPage } from "./components/ProjectPage";
 import { PromptHistoryView } from "./components/PromptHistoryView";
 import { parseRoute, routeHash, type ArchiveRoute } from "./utils/navigation";
-import { ProjectModal } from "./components/ProjectModal";
-import { WorkLogModal } from "./components/WorkLogModal";
-import { DevelopmentLogView } from "./components/DevelopmentLogView";
-import { JsonBackupModal } from "./components/JsonBackupModal";
-import { DeleteConfirmModal } from "./components/DeleteConfirmModal";
 import { Toast, ToastMessage } from "./components/Toast";
 import { contentChanges, draftKey, storeDraft } from "./utils/contentDraft";
 import { parseImportJson } from "./utils/storage";
 import { safeRead } from "./utils/archiveQuery";
 import { Info, X, Download } from "lucide-react";
 
+import { DeferredEditor } from "./components/DeferredEditor";
+
+const RemoteStudio = lazy(() =>
+  import("./components/RemoteStudio").then((module) => ({
+    default: module.RemoteStudio,
+  })),
+);
+const MediaLibrary = lazy(() =>
+  import("./components/MediaLibrary").then((module) => ({
+    default: module.MediaLibrary,
+  })),
+);
+const ProjectDetail = lazy(() =>
+  import("./components/ProjectDetail").then((module) => ({
+    default: module.ProjectDetail,
+  })),
+);
+const ProjectModal = lazy(() =>
+  import("./components/ProjectModal").then((module) => ({
+    default: module.ProjectModal,
+  })),
+);
+const WorkLogModal = lazy(() =>
+  import("./components/WorkLogModal").then((module) => ({
+    default: module.WorkLogModal,
+  })),
+);
+const DevelopmentLogView = lazy(() =>
+  import("./components/DevelopmentLogView").then((module) => ({
+    default: module.DevelopmentLogView,
+  })),
+);
+const JsonBackupModal = lazy(() =>
+  import("./components/JsonBackupModal").then((module) => ({
+    default: module.JsonBackupModal,
+  })),
+);
+const DeleteConfirmModal = lazy(() =>
+  import("./components/DeleteConfirmModal").then((module) => ({
+    default: module.DeleteConfirmModal,
+  })),
+);
+
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
   const [published, setPublished] = useState<Project[]>(() => projects);
   const [review, setReview] = useState(false);
   const [recovery, setRecovery] = useState<Project[] | null>(null);
+  const [remoteAdmin, setRemoteAdmin] = useState(false);
+  const [remoteAbout, setRemoteAbout] = useState<string | null>(null);
+  const [aboutDraft, setAboutDraft] = useState<string | null>(
+    () => safeRead("minlab_about_intro_v1_draft") || null,
+  );
+  useEffect(() => {
+    if (!remoteConfigured) return;
+    let live = true;
+    readRemoteSnapshot()
+      .then((value) => {
+        if (!live || !value) return;
+        setPublished(value.content);
+        setRemoteAbout(value.about);
+        if (!safeRead(draftKey)) setProjects(value.content);
+        if (!safeRead("minlab_about_intro_v1_draft"))
+          setAboutDraft(value.about);
+      })
+      .catch(() => {
+        /* Static data remains readable during a backend outage. */
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
   const dragIndex = React.useRef<number | null>(null);
   useEffect(() => {
     const saved = safeRead(draftKey);
@@ -60,6 +124,14 @@ export default function App() {
   };
   const setSelectedProjectId = (id: string | null) =>
     navigate(id ? { view: "project", projectId: id } : { view: "archive" });
+  useEffect(() => {
+    if (
+      remoteConfigured &&
+      !remoteAdmin &&
+      (route.view === "manage" || (route.view === "records" && route.editing))
+    )
+      navigate({ view: "admin" });
+  }, [remoteAdmin, route]);
   const manageRecords = route.view === "records" && !!route.editing;
   const setManageRecords = (editing: boolean) => {
     if (route.view === "records")
@@ -93,34 +165,83 @@ export default function App() {
       }
     };
     let frame = 0;
-    const update = () => {
+    let navigationId = 0;
+    let requestedRecord: string | undefined;
+    const motion = routeMotion();
+    const captureRecord = (event: MouseEvent) => {
+      requestedRecord = undefined;
+      if (
+        event.button ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      const link = (event.target as Element).closest<HTMLAnchorElement>(
+        "a[data-record-link]",
+      );
+      if (link && link.target !== "_blank")
+        requestedRecord = link.dataset.recordLink;
+    };
+    const update = (event?: HashChangeEvent) => {
+      const navigation = ++navigationId;
+      const explicitRecord = requestedRecord;
+      requestedRecord = undefined;
       restoring = true;
       try {
-        sessionStorage.setItem("minlab_scroll:" + current, String(position));
+        const previous = event?.oldURL
+          ? new URL(event.oldURL).hash || "#/home"
+          : current;
+        sessionStorage.setItem("minlab_scroll:" + previous, String(position));
       } catch {}
       current = window.location.hash || "#/home";
-      setRoute(parseRoute(current));
-
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          let top = 0;
-          try {
-            top =
-              Number(sessionStorage.getItem("minlab_scroll:" + current)) || 0;
-          } catch {}
-          window.scrollTo({ top, behavior: "instant" });
-          position = window.scrollY;
-          restoring = false;
-        }),
+      const nextRoute = parseRoute(current);
+      void motion.run(
+        () =>
+          new Promise<void>((resolve) => {
+            if (navigation !== navigationId) return resolve();
+            flushSync(() => setRoute(nextRoute));
+            frame = window.setTimeout(() => {
+              if (navigation !== navigationId) return resolve();
+              let top = 0;
+              let saved: string | null = null;
+              try {
+                saved = sessionStorage.getItem("minlab_scroll:" + current);
+                top = Number(saved) || 0;
+              } catch {}
+              window.scrollTo({ top, behavior: "instant" });
+              if (
+                nextRoute.view === "project" &&
+                nextRoute.logId &&
+                (saved === null || explicitRecord === nextRoute.logId)
+              )
+                revealLinkedRecord(nextRoute.logId);
+              position = window.scrollY;
+              restoring = false;
+              resolve();
+            }, 0);
+          }),
+        nextRoute.view === "project" ? nextRoute.projectId : undefined,
       );
     };
     window.addEventListener("hashchange", update);
+    document.addEventListener("click", captureRecord, true);
     window.addEventListener("scroll", save, { passive: true });
+    const initial = parseRoute(current);
+    const initialHash = current;
+    if (initial.view === "project" && initial.logId)
+      frame = window.setTimeout(() => {
+        if (navigationId || current !== initialHash) return;
+        revealLinkedRecord(initial.logId!);
+        position = window.scrollY;
+      }, 0);
     return () => {
       history.scrollRestoration = priorRestoration;
-      cancelAnimationFrame(frame);
+      clearTimeout(frame);
+      motion.dispose();
       window.removeEventListener("hashchange", update);
+      document.removeEventListener("click", captureRecord, true);
       window.removeEventListener("scroll", save);
     };
   }, []);
@@ -409,27 +530,30 @@ export default function App() {
               selectedProject
             }
             projects={published}
+            linkedLogId={route.view === "project" ? route.logId : undefined}
           />
         ) : selectedProject ? (
           /* Project Detail Page */
           <div className="managed-project">
-            <ProjectDetail
-              project={selectedProject}
-              onBack={() => navigate({ view: "admin" })}
-              onUpdateProject={handleUpdateProject}
-              onOpenEditProjectModal={(p) => {
-                setEditingProject(p);
-                setIsProjectModalOpen(true);
-              }}
-              onRequestDelete={() => handleRequestDelete(selectedProject)}
-              onOpenAddWorkLogModal={(p, existing) =>
-                handleOpenWorkLogModal(p.id, existing)
-              }
-              onNavigateToDevLog={(projectId) =>
-                handleViewLogsForProject(projectId)
-              }
-              showToast={showToast}
-            />
+            <DeferredEditor>
+              <ProjectDetail
+                project={selectedProject}
+                onBack={() => navigate({ view: "admin" })}
+                onUpdateProject={handleUpdateProject}
+                onOpenEditProjectModal={(p) => {
+                  setEditingProject(p);
+                  setIsProjectModalOpen(true);
+                }}
+                onRequestDelete={() => handleRequestDelete(selectedProject)}
+                onOpenAddWorkLogModal={(p, existing) =>
+                  handleOpenWorkLogModal(p.id, existing)
+                }
+                onNavigateToDevLog={(projectId) =>
+                  handleViewLogsForProject(projectId)
+                }
+                showToast={showToast}
+              />
+            </DeferredEditor>
           </div>
         ) : selectedProjectId ? (
           <div className="py-16 text-center text-sm text-muted">
@@ -444,7 +568,10 @@ export default function App() {
         ) : route.view === "home" ? (
           <HomePage projects={published.filter((p) => p.visible !== false)} />
         ) : route.view === "about" ? (
-          <AboutPage projects={published.filter((p) => p.visible !== false)} />
+          <AboutPage
+            projects={published.filter((p) => p.visible !== false)}
+            introOverride={remoteAbout}
+          />
         ) : route.view === "archive" ? (
           <ArchiveView
             projects={published.filter((p) => p.visible !== false)}
@@ -455,306 +582,342 @@ export default function App() {
               <p className="eyebrow">관리자</p>
               <h1>기록을 관리합니다.</h1>
               <p>
-                이 브라우저에 저장되는 편집 공간입니다. 운영 사이트의 원본
-                데이터를 직접 변경하지 않습니다.
+                {remoteConfigured
+                  ? "관리자 로그인 후 서버 초안 저장과 공개 반영을 관리합니다."
+                  : "이 브라우저에 저장되는 편집 공간입니다. 운영 사이트의 원본 데이터를 직접 변경하지 않습니다."}
               </p>
             </header>
-            <section className="draft-review" aria-label="초안 관리">
-              <p>
-                편집 내용은 초안으로만 저장됩니다. 적용하면 이 브라우저의 방문자
-                화면이 바뀝니다. 운영 사이트 배포는 승인된 파일 반영으로 별도
-                진행합니다.
-              </p>
-              <button
-                className="primary-link"
-                disabled={!hasDraft}
-                onClick={() => setReview(!review)}
-              >
-                변경 사항 검토 {hasDraft ? "· 초안 있음" : ""}
-              </button>
-              {review && (
-                <div>
-                  <p>
-                    추가 {changes.added.length}개 · 수정{" "}
-                    {changes.changed.length}개 · 제거 {changes.removed.length}개
-                    ·{" "}
-                    {changes.reordered
-                      ? "표시 순서 변경 있음"
-                      : "표시 순서 유지"}
-                  </p>
-                  {[...changes.added, ...changes.changed].map((p) => (
-                    <details key={p.id}>
-                      <summary>{p.name} · 수정 내용 확인</summary>
-                      <div className="draft-diff">
-                        <pre>
-                          {JSON.stringify(
-                            published.find((b) => b.id === p.id) || {},
-                            null,
-                            2,
-                          )}
-                        </pre>
-                        <pre>{JSON.stringify(p, null, 2)}</pre>
-                      </div>
-                    </details>
-                  ))}
-                  {changes.removed.map((p) => (
-                    <p key={p.id}>제거 예정: {p.name}</p>
-                  ))}
-                  <button
-                    className="primary-link"
-                    onClick={() => {
-                      if (
-                        !window.confirm(
-                          "검토한 초안을 이 브라우저의 방문자 화면에 적용할까요?",
-                        )
-                      )
-                        return;
-                      if (!saveProjects(projects)) {
-                        showToast(
-                          "적용하지 못했습니다. 초안은 유지됩니다.",
-                          "error",
-                        );
-                        return;
-                      }
-                      setPublished(projects);
-                      setReview(false);
-                      try {
-                        localStorage.removeItem(draftKey);
-                      } catch {}
-                      showToast(
-                        "이 브라우저에 적용했습니다. 운영 사이트에는 배포되지 않았습니다.",
-                        "success",
-                      );
-                    }}
-                  >
-                    승인하고 이 브라우저에 적용
-                  </button>
-                </div>
-              )}
-              {hasDraft && (
-                <button
-                  className="text-link"
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "저장한 초안을 버리고 현재 적용된 데이터로 돌아갈까요?",
-                      )
-                    ) {
-                      setProjects(published);
-                      setReview(false);
-                      try {
-                        localStorage.removeItem(draftKey);
-                      } catch {}
-                    }
+            {remoteConfigured && (
+              <DeferredEditor>
+                <RemoteStudio
+                  projects={projects}
+                  onAuth={setRemoteAdmin}
+                  about={aboutDraft}
+                  onLoad={(value, about) => {
+                    if (!updateProjectsState(value)) return false;
+                    setAboutDraft(about);
+                    return true;
                   }}
-                >
-                  초안 버리기
-                </button>
-              )}
-              {recovery && (
-                <button
-                  className="text-link"
-                  onClick={() => {
-                    updateProjectsState(recovery);
-                    setRecovery(null);
+                  onPublish={(value, about) => {
+                    setPublished(value);
+                    setRemoteAbout(about);
                   }}
-                >
-                  마지막 삭제 되돌리기
-                </button>
-              )}
-              <button
-                className="text-link"
-                onClick={() => {
-                  const saved = safeRead("minlab_before_delete_v2");
-                  if (saved) {
-                    const result = parseImportJson(saved);
-                    if (
-                      result.success &&
-                      result.projects &&
-                      confirm("삭제 전 상태를 초안으로 복구할까요?")
-                    )
-                      updateProjectsState(result.projects);
-                  }
-                }}
-              >
-                삭제 전 백업 복구
-              </button>
-            </section>
-            <div className="admin-metrics">
-              <div>
-                <span>프로젝트</span>
-                <strong>{projects.length}</strong>
-              </div>
-              <div>
-                <span>개발일지</span>
-                <strong>{totalLogsCount}</strong>
-              </div>
-              <div>
-                <span>프롬프트</span>
-                <strong>
-                  {projects.reduce(
-                    (n, p) => n + (p.promptHistory?.length || 0),
-                    0,
-                  )}
-                </strong>
-              </div>
-            </div>
-            <nav className="admin-tabs" aria-label="관리자 메뉴">
-              <button
-                aria-pressed={adminSection === "projects"}
-                onClick={() => setAdminSection("projects")}
-              >
-                프로젝트
-              </button>
-              <a href="#/development-log?edit=1">기록 관리</a>
-              <button
-                aria-pressed={adminSection === "about"}
-                onClick={() => setAdminSection("about")}
-              >
-                소개 편집
-              </button>
-              <button
-                aria-pressed={adminSection === "media"}
-                onClick={() => setAdminSection("media")}
-              >
-                프로젝트 이미지
-              </button>
-              <button onClick={() => setIsBackupModalOpen(true)}>
-                백업·복원
-              </button>
-            </nav>
-            {adminSection === "about" ? (
-              <AboutPage editing projects={projects} />
-            ) : adminSection === "media" ? (
-              <MediaLibrary
-                projects={projects}
-                onEdit={(p) => {
-                  setEditingProject(p);
-                  setIsProjectModalOpen(true);
-                }}
-              />
-            ) : (
+                />
+              </DeferredEditor>
+            )}
+            {(!remoteConfigured || remoteAdmin) && (
               <>
-                <div className="section-heading">
-                  <h2>프로젝트 관리</h2>
+                <section className="draft-review" aria-label="초안 관리">
+                  <p>
+                    편집 내용은 초안으로만 저장됩니다. 적용하면 이 브라우저의
+                    방문자 화면이 바뀝니다. 운영 사이트 배포는 승인된 파일
+                    반영으로 별도 진행합니다.
+                  </p>
                   <button
                     className="primary-link"
-                    onClick={() => {
-                      setEditingProject(null);
-                      setIsProjectModalOpen(true);
-                    }}
+                    disabled={!hasDraft}
+                    onClick={() => setReview(!review)}
                   >
-                    + 프로젝트 등록
+                    변경 사항 검토 {hasDraft ? "· 초안 있음" : ""}
                   </button>
-                </div>
-                <label className="admin-search">
-                  프로젝트 검색
-                  <input
-                    type="search"
-                    aria-label="관리할 프로젝트 검색"
-                    placeholder="이름, 설명, 분야로 검색"
-                    value={adminSearch}
-                    onChange={(e) => setAdminSearch(e.target.value)}
-                  />
-                </label>
-                <p className="result-count" role="status">
-                  {
-                    projects.filter((p) =>
-                      [p.name, p.description, p.category]
-                        .join(" ")
-                        .toLowerCase()
-                        .includes(adminSearch.toLowerCase()),
-                    ).length
-                  }
-                  개 표시 / 전체 {projects.length}개
-                </p>
-                <div className="admin-projects">
-                  {projects.map((p, index) =>
-                    ![p.name, p.description, p.category]
-                      .join(" ")
-                      .toLowerCase()
-                      .includes(adminSearch.toLowerCase()) ? null : (
-                      <article
-                        key={p.id}
-                        draggable
-                        onDragStart={() => {
-                          dragIndex.current = index;
-                        }}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          const from = dragIndex.current;
-                          if (from === null || from === index) return;
-                          const ordered = [...projects];
-                          const [item] = ordered.splice(from, 1);
-                          ordered.splice(index, 0, item);
-                          updateProjectsState(ordered);
-                          dragIndex.current = null;
+                  {review && (
+                    <div>
+                      <p>
+                        추가 {changes.added.length}개 · 수정{" "}
+                        {changes.changed.length}개 · 제거{" "}
+                        {changes.removed.length}개 ·{" "}
+                        {changes.reordered
+                          ? "표시 순서 변경 있음"
+                          : "표시 순서 유지"}
+                      </p>
+                      {[...changes.added, ...changes.changed].map((p) => (
+                        <details key={p.id}>
+                          <summary>{p.name} · 수정 내용 확인</summary>
+                          <div className="draft-diff">
+                            <pre>
+                              {JSON.stringify(
+                                published.find((b) => b.id === p.id) || {},
+                                null,
+                                2,
+                              )}
+                            </pre>
+                            <pre>{JSON.stringify(p, null, 2)}</pre>
+                          </div>
+                        </details>
+                      ))}
+                      {changes.removed.map((p) => (
+                        <p key={p.id}>제거 예정: {p.name}</p>
+                      ))}
+                      <button
+                        className="primary-link"
+                        onClick={() => {
+                          if (
+                            !window.confirm(
+                              "검토한 초안을 이 브라우저의 방문자 화면에 적용할까요?",
+                            )
+                          )
+                            return;
+                          if (!saveProjects(projects)) {
+                            showToast(
+                              "적용하지 못했습니다. 초안은 유지됩니다.",
+                              "error",
+                            );
+                            return;
+                          }
+                          setPublished(projects);
+                          setReview(false);
+                          try {
+                            localStorage.removeItem(draftKey);
+                          } catch {}
+                          showToast(
+                            "이 브라우저에 적용했습니다. 운영 사이트에는 배포되지 않았습니다.",
+                            "success",
+                          );
                         }}
                       >
-                        <a
-                          href={routeHash({ view: "manage", projectId: p.id })}
-                        >
-                          <strong>{p.name}</strong>
-                          <span>
-                            {p.category} / {p.status}
-                          </span>
-                        </a>
-                        <a
-                          className="text-link"
-                          href={routeHash({ view: "project", projectId: p.id })}
-                        >
-                          공개 화면 ↗
-                        </a>
-                        <button
-                          disabled={index === 0}
-                          aria-label={p.name + " 표시순 올리기"}
-                          onClick={() => {
-                            const ordered = [...projects];
-                            [ordered[index - 1], ordered[index]] = [
-                              ordered[index],
-                              ordered[index - 1],
-                            ];
-                            updateProjectsState(ordered);
-                          }}
-                        >
-                          ↑
-                        </button>
-                        <button
-                          disabled={index === projects.length - 1}
-                          aria-label={p.name + " 표시순 내리기"}
-                          onClick={() => {
-                            const ordered = [...projects];
-                            [ordered[index], ordered[index + 1]] = [
-                              ordered[index + 1],
-                              ordered[index],
-                            ];
-                            updateProjectsState(ordered);
-                          }}
-                        >
-                          ↓
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingProject(p);
-                            setIsProjectModalOpen(true);
-                          }}
-                        >
-                          수정
-                        </button>
-                        <button onClick={() => handleRequestDelete(p)}>
-                          삭제
-                        </button>
-                      </article>
-                    ),
+                        승인하고 이 브라우저에 적용
+                      </button>
+                    </div>
                   )}
+                  {hasDraft && (
+                    <button
+                      className="text-link"
+                      onClick={() => {
+                        if (
+                          confirm(
+                            "저장한 초안을 버리고 현재 적용된 데이터로 돌아갈까요?",
+                          )
+                        ) {
+                          setProjects(published);
+                          setReview(false);
+                          try {
+                            localStorage.removeItem(draftKey);
+                          } catch {}
+                        }
+                      }}
+                    >
+                      초안 버리기
+                    </button>
+                  )}
+                  {recovery && (
+                    <button
+                      className="text-link"
+                      onClick={() => {
+                        updateProjectsState(recovery);
+                        setRecovery(null);
+                      }}
+                    >
+                      마지막 삭제 되돌리기
+                    </button>
+                  )}
+                  <button
+                    className="text-link"
+                    onClick={() => {
+                      const saved = safeRead("minlab_before_delete_v2");
+                      if (saved) {
+                        const result = parseImportJson(saved);
+                        if (
+                          result.success &&
+                          result.projects &&
+                          confirm("삭제 전 상태를 초안으로 복구할까요?")
+                        )
+                          updateProjectsState(result.projects);
+                      }
+                    }}
+                  >
+                    삭제 전 백업 복구
+                  </button>
+                </section>
+                <div className="admin-metrics">
+                  <div>
+                    <span>프로젝트</span>
+                    <strong>{projects.length}</strong>
+                  </div>
+                  <div>
+                    <span>개발일지</span>
+                    <strong>{totalLogsCount}</strong>
+                  </div>
+                  <div>
+                    <span>프롬프트</span>
+                    <strong>
+                      {projects.reduce(
+                        (n, p) => n + (p.promptHistory?.length || 0),
+                        0,
+                      )}
+                    </strong>
+                  </div>
                 </div>
+                <nav className="admin-tabs" aria-label="관리자 메뉴">
+                  <button
+                    aria-pressed={adminSection === "projects"}
+                    onClick={() => setAdminSection("projects")}
+                  >
+                    프로젝트
+                  </button>
+                  <a href="#/development-log?edit=1">기록 관리</a>
+                  <button
+                    aria-pressed={adminSection === "about"}
+                    onClick={() => setAdminSection("about")}
+                  >
+                    소개 편집
+                  </button>
+                  <button
+                    aria-pressed={adminSection === "media"}
+                    onClick={() => setAdminSection("media")}
+                  >
+                    프로젝트 이미지
+                  </button>
+                  <button onClick={() => setIsBackupModalOpen(true)}>
+                    백업·복원
+                  </button>
+                </nav>
+                {adminSection === "about" ? (
+                  <AboutPage
+                    editing
+                    projects={projects}
+                    introOverride={aboutDraft}
+                    onDraft={setAboutDraft}
+                  />
+                ) : adminSection === "media" ? (
+                  <DeferredEditor>
+                    <MediaLibrary
+                      projects={projects}
+                      onEdit={(p) => {
+                        setEditingProject(p);
+                        setIsProjectModalOpen(true);
+                      }}
+                    />
+                  </DeferredEditor>
+                ) : (
+                  <>
+                    <div className="section-heading">
+                      <h2>프로젝트 관리</h2>
+                      <button
+                        className="primary-link"
+                        onClick={() => {
+                          setEditingProject(null);
+                          setIsProjectModalOpen(true);
+                        }}
+                      >
+                        + 프로젝트 등록
+                      </button>
+                    </div>
+                    <label className="admin-search">
+                      프로젝트 검색
+                      <input
+                        type="search"
+                        aria-label="관리할 프로젝트 검색"
+                        placeholder="이름, 설명, 분야로 검색"
+                        value={adminSearch}
+                        onChange={(e) => setAdminSearch(e.target.value)}
+                      />
+                    </label>
+                    <p className="result-count" role="status">
+                      {
+                        projects.filter((p) =>
+                          [p.name, p.description, p.category]
+                            .join(" ")
+                            .toLowerCase()
+                            .includes(adminSearch.toLowerCase()),
+                        ).length
+                      }
+                      개 표시 / 전체 {projects.length}개
+                    </p>
+                    <div className="admin-projects">
+                      {projects.map((p, index) =>
+                        ![p.name, p.description, p.category]
+                          .join(" ")
+                          .toLowerCase()
+                          .includes(adminSearch.toLowerCase()) ? null : (
+                          <article
+                            key={p.id}
+                            draggable
+                            onDragStart={() => {
+                              dragIndex.current = index;
+                            }}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              const from = dragIndex.current;
+                              if (from === null || from === index) return;
+                              const ordered = [...projects];
+                              const [item] = ordered.splice(from, 1);
+                              ordered.splice(index, 0, item);
+                              updateProjectsState(ordered);
+                              dragIndex.current = null;
+                            }}
+                          >
+                            <a
+                              href={routeHash({
+                                view: "manage",
+                                projectId: p.id,
+                              })}
+                            >
+                              <strong>{p.name}</strong>
+                              <span>
+                                {p.category} / {p.status}
+                              </span>
+                            </a>
+                            <a
+                              className="text-link"
+                              href={routeHash({
+                                view: "project",
+                                projectId: p.id,
+                              })}
+                            >
+                              공개 화면 ↗
+                            </a>
+                            <button
+                              disabled={index === 0}
+                              aria-label={p.name + " 표시순 올리기"}
+                              onClick={() => {
+                                const ordered = [...projects];
+                                [ordered[index - 1], ordered[index]] = [
+                                  ordered[index],
+                                  ordered[index - 1],
+                                ];
+                                updateProjectsState(ordered);
+                              }}
+                            >
+                              ↑
+                            </button>
+                            <button
+                              disabled={index === projects.length - 1}
+                              aria-label={p.name + " 표시순 내리기"}
+                              onClick={() => {
+                                const ordered = [...projects];
+                                [ordered[index], ordered[index + 1]] = [
+                                  ordered[index + 1],
+                                  ordered[index],
+                                ];
+                                updateProjectsState(ordered);
+                              }}
+                            >
+                              ↓
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingProject(p);
+                                setIsProjectModalOpen(true);
+                              }}
+                            >
+                              수정
+                            </button>
+                            <button onClick={() => handleRequestDelete(p)}>
+                              삭제
+                            </button>
+                          </article>
+                        ),
+                      )}
+                    </div>
+                  </>
+                )}
+                <p className="admin-future">
+                  프로젝트 편집 내용과 이미지는 이 브라우저에 저장됩니다. 백업
+                  파일을 내려받아 보관하세요.
+                </p>
               </>
             )}
-            <p className="admin-future">
-              프로젝트 편집 내용과 이미지는 이 브라우저에 저장됩니다. 백업
-              파일을 내려받아 보관하세요.
-            </p>
           </section>
         ) : currentTab === "development-log" ? (
           /* 2. Development Log View: 날짜별 개발 기록과 수정 이력 조회 및 프로젝트별 필터링 */
@@ -851,24 +1014,26 @@ export default function App() {
                 }
               />
             ) : (
-              <DevelopmentLogView
-                projects={projects}
-                selectedProjectIdFilter={devLogProjectIdFilter}
-                onSelectProjectIdFilter={(id) =>
-                  navigate({
-                    view: "records",
-                    projectId: id || undefined,
-                    editing: manageRecords || undefined,
-                  })
-                }
-                onOpenAddLogModal={(defId, existing) =>
-                  handleOpenWorkLogModal(defId, existing)
-                }
-                onRequestDeleteLog={(log, pId) =>
-                  handleRequestDeleteLog(log, pId)
-                }
-                onNavigateToProject={(pId) => setSelectedProjectId(pId)}
-              />
+              <DeferredEditor>
+                <DevelopmentLogView
+                  projects={projects}
+                  selectedProjectIdFilter={devLogProjectIdFilter}
+                  onSelectProjectIdFilter={(id) =>
+                    navigate({
+                      view: "records",
+                      projectId: id || undefined,
+                      editing: manageRecords || undefined,
+                    })
+                  }
+                  onOpenAddLogModal={(defId, existing) =>
+                    handleOpenWorkLogModal(defId, existing)
+                  }
+                  onRequestDeleteLog={(log, pId) =>
+                    handleRequestDeleteLog(log, pId)
+                  }
+                  onNavigateToProject={(pId) => setSelectedProjectId(pId)}
+                />
+              </DeferredEditor>
             )}
           </div>
         ) : null}
@@ -911,86 +1076,111 @@ export default function App() {
 
       {/* Modals */}
       {/* 1. Project Add / Edit Modal */}
-      <ProjectModal
-        isOpen={isProjectModalOpen}
-        onClose={() => {
-          setIsProjectModalOpen(false);
-          setEditingProject(null);
-        }}
-        onSave={handleSaveProject}
-        initialProject={editingProject}
-        allProjects={projects}
-      />
+      <DeferredEditor
+        active={isProjectModalOpen}
+        onCancel={() => setIsProjectModalOpen(false)}
+      >
+        <ProjectModal
+          isOpen={isProjectModalOpen}
+          onClose={() => {
+            setIsProjectModalOpen(false);
+            setEditingProject(null);
+          }}
+          onSave={handleSaveProject}
+          initialProject={editingProject}
+          allProjects={projects}
+        />
+      </DeferredEditor>
 
       {/* 2. Project Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={projectToDelete !== null}
-        title="프로젝트 삭제 확인"
-        itemName={projectToDelete ? projectToDelete.name : ""}
-        warningText={
-          projectToDelete
-            ? `삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
-            : "삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다."
-        }
-        confirmText="삭제"
-        onClose={() => setProjectToDelete(null)}
-        onConfirm={handleConfirmDelete}
-      />
+      <DeferredEditor
+        active={projectToDelete !== null}
+        onCancel={() => setProjectToDelete(null)}
+      >
+        <DeleteConfirmModal
+          isOpen={projectToDelete !== null}
+          title="프로젝트 삭제 확인"
+          itemName={projectToDelete ? projectToDelete.name : ""}
+          warningText={
+            projectToDelete
+              ? `삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
+              : "삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다."
+          }
+          confirmText="삭제"
+          onClose={() => setProjectToDelete(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      </DeferredEditor>
 
       {/* 3. Work Log Add / Edit Modal */}
-      <WorkLogModal
-        isOpen={isWorkLogModalOpen}
-        onClose={() => {
-          setIsWorkLogModalOpen(false);
-          setWorkLogDefaultProjectId(null);
-          setEditingWorkLog(null);
-        }}
-        onSave={handleSaveWorkLog}
-        initialLog={editingWorkLog}
-        projects={projects}
-        defaultProjectId={workLogDefaultProjectId}
-      />
+      <DeferredEditor
+        active={isWorkLogModalOpen}
+        onCancel={() => setIsWorkLogModalOpen(false)}
+      >
+        <WorkLogModal
+          isOpen={isWorkLogModalOpen}
+          onClose={() => {
+            setIsWorkLogModalOpen(false);
+            setWorkLogDefaultProjectId(null);
+            setEditingWorkLog(null);
+          }}
+          onSave={handleSaveWorkLog}
+          initialLog={editingWorkLog}
+          projects={projects}
+          defaultProjectId={workLogDefaultProjectId}
+        />
+      </DeferredEditor>
 
       {/* 4. Work Log Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={logToDeleteInfo !== null}
-        title="개발 기록 삭제 확인"
-        itemName={
-          logToDeleteInfo
-            ? logToDeleteInfo.log.title ||
-              logToDeleteInfo.log.task ||
-              `${logToDeleteInfo.log.date} 기록`
-            : ""
-        }
-        description={
-          logToDeleteInfo
-            ? `내용: "${logToDeleteInfo.log.content || logToDeleteInfo.log.task || ""}"`
-            : undefined
-        }
-        warningText="해당 개발 기록(날짜, 버전, 변경 사항, 수정 이유, 테스트 결과, 다음 작업 등)이 영구 삭제됩니다."
-        confirmText="삭제"
-        onClose={() => setLogToDeleteInfo(null)}
-        onConfirm={handleConfirmDeleteLog}
-      />
+      <DeferredEditor
+        active={logToDeleteInfo !== null}
+        onCancel={() => setLogToDeleteInfo(null)}
+      >
+        <DeleteConfirmModal
+          isOpen={logToDeleteInfo !== null}
+          title="개발 기록 삭제 확인"
+          itemName={
+            logToDeleteInfo
+              ? logToDeleteInfo.log.title ||
+                logToDeleteInfo.log.task ||
+                `${logToDeleteInfo.log.date} 기록`
+              : ""
+          }
+          description={
+            logToDeleteInfo
+              ? `내용: "${logToDeleteInfo.log.content || logToDeleteInfo.log.task || ""}"`
+              : undefined
+          }
+          warningText="해당 개발 기록(날짜, 버전, 변경 사항, 수정 이유, 테스트 결과, 다음 작업 등)이 영구 삭제됩니다."
+          confirmText="삭제"
+          onClose={() => setLogToDeleteInfo(null)}
+          onConfirm={handleConfirmDeleteLog}
+        />
+      </DeferredEditor>
 
       {/* 5. JSON Backup / Restore Modal */}
-      <JsonBackupModal
-        isOpen={isBackupModalOpen}
-        onClose={() => setIsBackupModalOpen(false)}
-        projects={projects}
-        onRestore={(restoredProjects) => {
-          const saved = updateProjectsState(restoredProjects);
-          if (
-            saved &&
-            selectedProjectId &&
-            !restoredProjects.some((p) => p.id === selectedProjectId)
-          ) {
-            setSelectedProjectId(null);
-          }
-          return saved;
-        }}
-        showToast={showToast}
-      />
+      <DeferredEditor
+        active={isBackupModalOpen}
+        onCancel={() => setIsBackupModalOpen(false)}
+      >
+        <JsonBackupModal
+          isOpen={isBackupModalOpen}
+          onClose={() => setIsBackupModalOpen(false)}
+          projects={projects}
+          onRestore={(restoredProjects) => {
+            const saved = updateProjectsState(restoredProjects);
+            if (
+              saved &&
+              selectedProjectId &&
+              !restoredProjects.some((p) => p.id === selectedProjectId)
+            ) {
+              setSelectedProjectId(null);
+            }
+            return saved;
+          }}
+          showToast={showToast}
+        />
+      </DeferredEditor>
     </div>
   );
 }

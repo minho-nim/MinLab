@@ -1192,5 +1192,143 @@
     transform: scale(0.97);
   }
 }
-.remote-studio { min-width: 0; overflow-wrap: anywhere; }
-.remote-studio input { min-width: 0; width: 100%; }
+.remote-studio {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.remote-studio input {
+  min-width: 0;
+  width: 100%;
+}
+
+/* The chapter menu stays separate from project switching and global navigation. */
+.project-story {
+  --project-reading-top: 136px;
+}
+.project-chapter-target {
+  /* The document already reserves 90px of scroll padding. */
+  scroll-margin-top: calc(var(--project-reading-top) - 90px);
+}
+.project-story .journey-record {
+  scroll-margin-top: calc(var(--project-reading-top) - 90px);
+}
+.project-story .journey-versions {
+  max-height: calc(100dvh - var(--project-reading-top) - 24px);
+}
+.project-chapters {
+  position: sticky;
+  top: 76px;
+  z-index: 25;
+  margin: 0 0 20px;
+  background: var(--color-canvas);
+  border-block: 1px solid var(--color-line-strong);
+}
+.chapter-caption {
+  display: none;
+}
+.chapter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.chapter-toggle > span {
+  color: var(--color-muted);
+}
+.chapter-toggle strong {
+  flex: 1;
+  font-weight: 500;
+}
+.chapter-toggle svg {
+  transition: rotate 0.2s;
+}
+.chapter-toggle[aria-expanded="true"] svg {
+  rotate: 180deg;
+}
+.chapter-list {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  max-height: min(60dvh, 320px);
+  overflow: auto;
+  padding: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+}
+.chapter-list[hidden] {
+  display: none;
+}
+.chapter-list button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--color-muted);
+  border-inline-start: 1px solid transparent;
+}
+.chapter-list button:hover {
+  color: var(--color-ink);
+  background: var(--color-surface-alt);
+}
+.chapter-list [aria-current="location"] {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  font-weight: 600;
+}
+@media (max-width: 1199px) {
+  .project-story .browser-showcase,
+  .project-story .journey-versions {
+    top: var(--project-reading-top);
+  }
+}
+@media (max-width: 639px) {
+  .project-story {
+    --project-reading-top: 124px;
+  }
+  .project-chapters {
+    top: 64px;
+  }
+}
+@media (min-width: 1200px) {
+  .project-story {
+    --project-reading-top: 116px;
+    padding-inline-end: 164px;
+  }
+  .project-chapters {
+    position: fixed;
+    top: 140px;
+    right: max(40px, calc((100vw - var(--page-width)) / 2 + 40px));
+    width: 128px;
+    margin: 0;
+    border: 0;
+    z-index: 20;
+  }
+  .chapter-toggle {
+    display: none;
+  }
+  .chapter-caption {
+    display: block;
+    padding: 0 12px 16px;
+    font-size: 12px;
+    color: var(--color-muted);
+  }
+  .chapter-list {
+    position: static;
+    max-height: calc(100dvh - 190px);
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chapter-toggle svg {
+    transition: none;
+  }
+}

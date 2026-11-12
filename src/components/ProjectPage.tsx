@@ -1,6 +1,7 @@
 import { ProjectNavigator } from "./ProjectNavigator";
 import { FeatureShowcase } from "./FeatureShowcase";
 import { DevelopmentJourney } from "./DevelopmentJourney";
+import { ProjectChapters } from "./ProjectChapters";
 import type { Project } from "../types";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { lastArchive } from "../utils/archiveQuery";
@@ -21,12 +22,16 @@ export function ProjectPage({
     .find((item) => item.reason || item.issues);
   return (
     <div className="project-story">
+      <ProjectChapters />
       <div className="project-breadcrumb">
         <a className="text-link" href={lastArchive()}>
           <ArrowLeft size={15} /> 프로젝트 / {project.name}
         </a>
       </div>
-      <header className="project-intro">
+      <header
+        id="project-overview"
+        className="project-intro project-chapter-target"
+      >
         <p className="eyebrow">
           {project.category} / {project.status}
         </p>
@@ -61,7 +66,10 @@ export function ProjectPage({
         </div>
       </header>
       <FeatureShowcase project={project} />
-      <section className="problem-solution detail-reading-section">
+      <section
+        id="project-problem"
+        className="problem-solution detail-reading-section project-chapter-target"
+      >
         <p className="eyebrow">제작 배경과 해결 방식</p>
         <h2>문제에서 출발해, 제품으로.</h2>
         {background ? (
@@ -74,7 +82,10 @@ export function ProjectPage({
           <p>제작 배경은 아직 기록되지 않았습니다.</p>
         )}
       </section>
-      <section className="detail-development">
+      <section
+        id="project-development"
+        className="detail-development project-chapter-target"
+      >
         <header>
           <p className="eyebrow">개발 과정</p>
           <h2>아이디어가 발전해 온 과정.</h2>
@@ -99,7 +110,10 @@ export function ProjectPage({
           </a>
         </div>
       </section>
-      <section className="detail-reading-section">
+      <section
+        id="project-result"
+        className="detail-reading-section project-chapter-target"
+      >
         <p className="eyebrow">결과와 다음 작업</p>
         <h2>기록으로 확인하는 변화.</h2>
         {logs.find((l) => l.testResult) ? (

@@ -559,9 +559,14 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
           "true",
         );
         const pinned = await p.locator(".browser-showcase").boundingBox();
+        const pinnedTop = await p
+          .locator(".browser-showcase")
+          .evaluate((node) => parseFloat(getComputedStyle(node).top));
+        const chapters = await p.locator(".project-chapters").boundingBox();
         assert.ok(
-          pinned.y >= 70 && pinned.y < 100,
-          "selected mobile scene stays visible below navigation",
+          Math.abs(pinned.y - pinnedTop) < 3 &&
+            pinned.y >= chapters.y + chapters.height + 8,
+          "selected mobile scene stays pinned below chapter navigation",
         );
         assert.ok(
           (

@@ -12,7 +12,13 @@ export function logHighlights(log: WorkLog): string[] {
     .filter((line) => line && !["작업 목적", "주요 변경"].includes(line))
     .slice(0, 3);
 }
-export function LogContent({ log }: { log: WorkLog }) {
+export function LogContent({
+  log,
+  expanded = false,
+}: {
+  log: WorkLog;
+  expanded?: boolean;
+}) {
   return (
     <div className="log-content">
       <p className="eyebrow">
@@ -28,7 +34,7 @@ export function LogContent({ log }: { log: WorkLog }) {
           ))}
         </ul>
       </div>
-      <details className="log-original">
+      <details className="log-original" open={expanded || undefined}>
         <summary>전체 기록과 검증 결과 펼쳐보기</summary>
         {[
           ["변경 내용 원문", log.content || log.task],

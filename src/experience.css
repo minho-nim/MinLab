@@ -1332,3 +1332,39 @@
     transition: none;
   }
 }
+.evidence-excerpt {
+  margin: 16px 0 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+}
+.evidence-excerpt blockquote {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--color-ink-secondary);
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.record-link-label {
+  display: block;
+  color: var(--color-accent);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.journey-record[data-linked="true"],
+.journey-mobile > details[data-linked="true"] {
+  outline: 1px solid var(--color-accent-line);
+  outline-offset: 3px;
+}
+.journey-mobile > details[data-linked="true"] {
+  scroll-margin-top: calc(var(--project-reading-top) - 90px);
+}
+.record-link-missing {
+  margin-bottom: 24px;
+  line-height: 1.8;
+  color: var(--color-muted);
+}

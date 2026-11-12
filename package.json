@@ -17,6 +17,7 @@
     "test:browser": "node scripts/test-portfolio.cjs",
     "test:motion": "node scripts/test-motion.cjs",
     "test:chapters": "node scripts/test-chapters.cjs",
+    "test:capabilities": "node scripts/test-capability-links.cjs",
     "test:remote": "node scripts/test-remote-studio.cjs",
     "test:schedule": "node --import tsx --test apps/work-schedule/src/utils/*.test.ts"
   },

@@ -95,6 +95,7 @@ em {
   backdrop-filter: blur(12px);
 }
 .smart-header > div {
+  /* Preserve document height when the header hides; scroll restoration stays stable. */
   display: flex;
   align-items: center;
   gap: 24px;
@@ -103,9 +104,6 @@ em {
   margin: auto;
   padding: 0 40px;
   transition: height 0.2s;
-}
-.smart-header.compact > div {
-  height: 58px;
 }
 .brand {
   font-size: 23px;

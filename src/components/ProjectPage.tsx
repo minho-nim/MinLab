@@ -10,9 +10,11 @@ import { routeHash } from "../utils/navigation";
 export function ProjectPage({
   project,
   projects = [],
+  linkedLogId,
 }: {
   project: Project;
   projects?: Project[];
+  linkedLogId?: string;
 }) {
   const logs = [...project.workLogs].sort((a, b) =>
     b.date.localeCompare(a.date),
@@ -90,7 +92,7 @@ export function ProjectPage({
           <p className="eyebrow">개발 과정</p>
           <h2>아이디어가 발전해 온 과정.</h2>
         </header>
-        <DevelopmentJourney project={project} />
+        <DevelopmentJourney project={project} linkedLogId={linkedLogId} />
         <div className="project-actions">
           <a
             className="text-link"

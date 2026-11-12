@@ -3,6 +3,7 @@ import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { safeRead, safeWrite } from "../utils/archiveQuery";
+import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
 const introKey = "minlab_about_intro_v1";
 const defaultIntro =
   "통신·데이터센터 프로젝트 관리 경험을 바탕으로, 일상과 현장의 문제를 웹앱과 게임으로 풀어갑니다. AI를 기획·개발·검증에 활용하며 실제로 만든 결과와 개선 과정을 기록합니다.";
@@ -26,7 +27,34 @@ export function AboutPage({
   useEffect(() => {
     if (introOverride != null) setIntro(introOverride);
   }, [introOverride]);
-  const [capability, setCapability] = useState(0);
+  const [capability, setCapability] = useState(() =>
+    Math.max(
+      0,
+      capabilities.findIndex(
+        (item) =>
+          !editing &&
+          item.id ===
+            new URLSearchParams(location.hash.split("?")[1]).get("capability"),
+      ),
+    ),
+  );
+  useEffect(() => {
+    if (editing) return;
+    const restore = () => {
+      if (location.hash.split("?")[0] !== "#/about") return;
+      const id = new URLSearchParams(location.hash.split("?")[1]).get(
+        "capability",
+      );
+      setCapability(
+        Math.max(
+          0,
+          capabilities.findIndex((item) => item.id === id),
+        ),
+      );
+    };
+    addEventListener("hashchange", restore);
+    return () => removeEventListener("hashchange", restore);
+  }, [editing]);
   const journey = useRef<HTMLElement>(null);
   const [stage, setStage] = useState(0);
   useEffect(() => {
@@ -43,38 +71,7 @@ export function AboutPage({
       .forEach((n) => o.observe(n));
     return () => o.disconnect();
   }, []);
-  const capabilities = [
-    {
-      name: "기획 및 문제 정의",
-      description: "필요한 기능과 사용자 문제를 정리한 기록을 살펴보세요.",
-      match: /요구사항|문제 정의|기획|요구|설계/,
-    },
-    {
-      name: "구현 및 개발",
-      description: "직접 구현한 기능과 개발 과정을 확인하세요.",
-      match: /구현|개발|추가|연동/,
-    },
-    {
-      name: "UX/UI 설계",
-      description: "화면 구성과 사용 흐름을 개선한 사례입니다.",
-      match: /UX|UI|화면|사용성|레이아웃/,
-    },
-    {
-      name: "검증 및 개선",
-      description: "테스트 결과와 수정 근거가 남아 있는 기록입니다.",
-      match: /테스트|검증|오류|수정/,
-    },
-  ];
-  const evidence = projects
-    .flatMap((p) => {
-      const log = p.workLogs.find((l) =>
-        capabilities[capability].match.test(
-          [l.title, l.content, l.reason, l.testResult].join(" "),
-        ),
-      );
-      return log ? [{ project: p, log }] : [];
-    })
-    .slice(0, 3);
+  const evidence = capabilityEvidence(projects, capability);
   const [introReview, setIntroReview] = useState(false);
   const [saved, setSaved] = useState(false);
   const experiences = [
@@ -262,7 +259,17 @@ export function AboutPage({
               <button
                 key={c.name}
                 aria-pressed={capability === i}
-                onClick={() => setCapability(i)}
+                aria-controls="capability-evidence"
+                onClick={() => {
+                  setCapability(i);
+                  if (!editing)
+                    history.replaceState(
+                      null,
+                      "",
+                      "#/about?" +
+                        new URLSearchParams({ capability: c.id }).toString(),
+                    );
+                }}
               >
                 {c.name} ↗
               </button>
@@ -271,9 +278,14 @@ export function AboutPage({
           <div>
             <h3>{capabilities[capability].name}</h3>
             <p>{capabilities[capability].description}</p>
-            <div className="capability-evidence">
-              {evidence.map(({ project: p, log }) => (
-                <article key={p.id}>
+            <div
+              id="capability-evidence"
+              className="capability-evidence"
+              role="region"
+              aria-label={capabilities[capability].name + "의 실제 개발 기록"}
+            >
+              {evidence.map(({ project: p, log, excerpt }) => (
+                <article key={p.id} data-evidence-log={log.id}>
                   <a href={routeHash({ view: "project", projectId: p.id })}>
                     <strong>{p.name} ↗</strong>
                   </a>
@@ -281,9 +293,20 @@ export function AboutPage({
                   <small>
                     {log.date} · {log.version || "버전 미지정"}
                   </small>
+                  {excerpt.label !== "수정 제목" && (
+                    <div className="evidence-excerpt">
+                      <small>{excerpt.label} · 원문 일부</small>
+                      <blockquote>{excerpt.text}</blockquote>
+                    </div>
+                  )}
                   <a
                     className="text-link"
-                    href={routeHash({ view: "records", projectId: p.id })}
+                    data-record-link={log.id}
+                    href={routeHash({
+                      view: "project",
+                      projectId: p.id,
+                      logId: log.id,
+                    })}
                   >
                     근거가 된 개발일지 읽기 ↗
                   </a>

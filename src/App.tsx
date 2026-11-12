@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { routeMotion } from "./utils/routeMotion";
+import { revealLinkedRecord } from "./utils/linkedRecord";
 import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
 import { RemoteStudio } from "./components/RemoteStudio";
 import { Project, WorkLog, NavigationTab } from "./types";
@@ -130,12 +131,34 @@ export default function App() {
     };
     let frame = 0;
     let navigationId = 0;
+    let requestedRecord: string | undefined;
     const motion = routeMotion();
-    const update = () => {
+    const captureRecord = (event: MouseEvent) => {
+      requestedRecord = undefined;
+      if (
+        event.button ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      const link = (event.target as Element).closest<HTMLAnchorElement>(
+        "a[data-record-link]",
+      );
+      if (link && link.target !== "_blank")
+        requestedRecord = link.dataset.recordLink;
+    };
+    const update = (event?: HashChangeEvent) => {
       const navigation = ++navigationId;
+      const explicitRecord = requestedRecord;
+      requestedRecord = undefined;
       restoring = true;
       try {
-        sessionStorage.setItem("minlab_scroll:" + current, String(position));
+        const previous = event?.oldURL
+          ? new URL(event.oldURL).hash || "#/home"
+          : current;
+        sessionStorage.setItem("minlab_scroll:" + previous, String(position));
       } catch {}
       current = window.location.hash || "#/home";
       const nextRoute = parseRoute(current);
@@ -147,12 +170,18 @@ export default function App() {
             frame = window.setTimeout(() => {
               if (navigation !== navigationId) return resolve();
               let top = 0;
+              let saved: string | null = null;
               try {
-                top =
-                  Number(sessionStorage.getItem("minlab_scroll:" + current)) ||
-                  0;
+                saved = sessionStorage.getItem("minlab_scroll:" + current);
+                top = Number(saved) || 0;
               } catch {}
               window.scrollTo({ top, behavior: "instant" });
+              if (
+                nextRoute.view === "project" &&
+                nextRoute.logId &&
+                (saved === null || explicitRecord === nextRoute.logId)
+              )
+                revealLinkedRecord(nextRoute.logId);
               position = window.scrollY;
               restoring = false;
               resolve();
@@ -162,12 +191,22 @@ export default function App() {
       );
     };
     window.addEventListener("hashchange", update);
+    document.addEventListener("click", captureRecord, true);
     window.addEventListener("scroll", save, { passive: true });
+    const initial = parseRoute(current);
+    const initialHash = current;
+    if (initial.view === "project" && initial.logId)
+      frame = window.setTimeout(() => {
+        if (navigationId || current !== initialHash) return;
+        revealLinkedRecord(initial.logId!);
+        position = window.scrollY;
+      }, 0);
     return () => {
       history.scrollRestoration = priorRestoration;
       clearTimeout(frame);
       motion.dispose();
       window.removeEventListener("hashchange", update);
+      document.removeEventListener("click", captureRecord, true);
       window.removeEventListener("scroll", save);
     };
   }, []);
@@ -456,6 +495,7 @@ export default function App() {
               selectedProject
             }
             projects={published}
+            linkedLogId={route.view === "project" ? route.logId : undefined}
           />
         ) : selectedProject ? (
           /* Project Detail Page */

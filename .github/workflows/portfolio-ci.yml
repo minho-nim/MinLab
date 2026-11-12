@@ -26,6 +26,7 @@ jobs:
           npm run test:browser
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:motion
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:chapters
+          MINLAB_TEST_URL=http://localhost:3000/ npm run test:capabilities
           VITE_SUPABASE_URL=https://minlab-test.supabase.co VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_test npx vite --host 127.0.0.1 --port 3014 --strictPort > /tmp/minlab-remote-vite.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3014/ > /dev/null && break; sleep 1; done
           npm run test:remote

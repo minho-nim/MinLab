@@ -9,13 +9,23 @@ const fields: [string, (l: WorkLog) => string | undefined][] = [
   ["테스트 결과", (l) => l.testResult],
   ["다음 작업", (l) => l.nextSteps],
 ];
-export function DevelopmentJourney({ project }: { project: Project }) {
+export function DevelopmentJourney({
+  project,
+  linkedLogId,
+}: {
+  project: Project;
+  linkedLogId?: string;
+}) {
   const logs = [...project.workLogs].sort(
     (a, b) =>
       b.date.localeCompare(a.date) ||
       String(b.createdAt || "").localeCompare(String(a.createdAt || "")),
   );
-  const [selected, setSelected] = useState(logs[0]?.id || "");
+  const linked = logs.find((item) => item.id === linkedLogId);
+  const [selected, setSelected] = useState(linked?.id || logs[0]?.id || "");
+  useEffect(() => {
+    if (linked) setSelected(linked.id);
+  }, [linked?.id]);
   const [compare, setCompare] = useState("");
   const [compareAt, setCompareAt] = useState(logs[0]?.id || "");
   const index = logs.findIndex((l) => l.id === selected);
@@ -66,9 +76,21 @@ export function DevelopmentJourney({ project }: { project: Project }) {
         behavior: "instant",
       });
   }, [selected]);
-  if (!log) return <p className="muted-copy">등록된 개발일지가 없습니다.</p>;
+  if (!log)
+    return (
+      <p className="muted-copy">
+        {linkedLogId ? "연결된 개발 기록을 찾을 수 없습니다. " : ""}등록된
+        개발일지가 없습니다.
+      </p>
+    );
   return (
     <div className="development-journey">
+      {linkedLogId && !linked && (
+        <p className="record-link-missing" role="status">
+          연결된 개발 기록을 찾을 수 없습니다. 아래에서 남아 있는 기록을
+          확인하세요.
+        </p>
+      )}
       <div className="journey-desktop">
         <nav
           className="journey-versions"
@@ -107,13 +129,19 @@ export function DevelopmentJourney({ project }: { project: Project }) {
                 className="journey-record"
                 key={item.id}
                 data-log={item.id}
+                data-linked={item.id === linked?.id ? "true" : undefined}
                 aria-label={(item.version || item.date) + " 개발 기록"}
                 ref={(node) => {
                   if (node) records.current.set(item.id, node);
                   else records.current.delete(item.id);
                 }}
               >
-                <LogContent log={item} />
+                {item.id === linked?.id && (
+                  <p className="record-link-label">
+                    {project.name} · 연결된 개발 기록
+                  </p>
+                )}
+                <LogContent log={item} expanded={item.id === linked?.id} />
                 {itemScreen >= 0 && (
                   <ProjectMedia project={project} index={itemScreen} />
                 )}
@@ -169,14 +197,26 @@ export function DevelopmentJourney({ project }: { project: Project }) {
       </div>
       <div className="journey-mobile">
         {logs.map((l, i) => (
-          <details key={l.id} data-log={l.id} open={i === 0 ? true : undefined}>
+          <details
+            key={l.id}
+            data-log={l.id}
+            data-linked={l.id === linked?.id ? "true" : undefined}
+            open={
+              l.id === linked?.id || (!linked && i === 0) ? true : undefined
+            }
+          >
             <summary>
+              {l.id === linked?.id && (
+                <span className="record-link-label">
+                  {project.name} · 연결된 개발 기록
+                </span>
+              )}
               <small>
                 {l.date} · {l.version || "버전 미지정"}
               </small>
               <strong>{l.title || l.task || "개발 기록"}</strong>
             </summary>
-            <LogContent log={l} />
+            <LogContent log={l} expanded={l.id === linked?.id} />
           </details>
         ))}
       </div>

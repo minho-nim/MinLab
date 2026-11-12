@@ -220,3 +220,23 @@ html[data-visual-motion="paused"] .media-outgoing {
   font-size: 11px;
   text-align: right;
 }
+
+/* Reflow the real archive items; no overlay blocks controls during a change. */
+.project-collection[data-collection-moving="true"] {
+  overflow: clip;
+  overflow-clip-margin: 4px;
+}
+.archive-hover-preview {
+  left: 0;
+  top: 0;
+  transform: translate3d(var(--preview-x, 0px), var(--preview-y, 0px), 0);
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-visual-motion="paused"] .archive-hover-preview {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .archive-hover-preview {
+    transition: none;
+  }
+}

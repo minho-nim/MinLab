@@ -24,6 +24,9 @@ jobs:
           npm run dev > /tmp/minlab-vite.log 2>&1 &
           for i in $(seq 1 30); do curl -fsS http://localhost:3000/ > /dev/null && break; sleep 1; done
           npm run test:browser
+          npx vite preview --host 127.0.0.1 --port 3018 --strictPort --base=/MinLab/ > /tmp/minlab-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3018/MinLab/ > /dev/null && break; sleep 1; done
+          npm run test:loading
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:motion
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:chapters
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:capabilities

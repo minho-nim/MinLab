@@ -1,31 +1,66 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, lazy } from "react";
 import { flushSync } from "react-dom";
 import { routeMotion } from "./utils/routeMotion";
 import { revealLinkedRecord } from "./utils/linkedRecord";
 import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
-import { RemoteStudio } from "./components/RemoteStudio";
 import { Project, WorkLog, NavigationTab } from "./types";
 import { loadProjects, saveProjects } from "./utils/storage";
 import { SmartHeader } from "./components/SmartHeader";
-import { MediaLibrary } from "./components/MediaLibrary";
 import { HomePage } from "./components/HomePage";
 import { ArchiveView } from "./components/ArchiveView";
 import { AboutPage } from "./components/AboutPage";
 import { VersionJournal } from "./components/VersionJournal";
-import { ProjectDetail } from "./components/ProjectDetail";
 import { ProjectPage } from "./components/ProjectPage";
 import { PromptHistoryView } from "./components/PromptHistoryView";
 import { parseRoute, routeHash, type ArchiveRoute } from "./utils/navigation";
-import { ProjectModal } from "./components/ProjectModal";
-import { WorkLogModal } from "./components/WorkLogModal";
-import { DevelopmentLogView } from "./components/DevelopmentLogView";
-import { JsonBackupModal } from "./components/JsonBackupModal";
-import { DeleteConfirmModal } from "./components/DeleteConfirmModal";
 import { Toast, ToastMessage } from "./components/Toast";
 import { contentChanges, draftKey, storeDraft } from "./utils/contentDraft";
 import { parseImportJson } from "./utils/storage";
 import { safeRead } from "./utils/archiveQuery";
 import { Info, X, Download } from "lucide-react";
+
+import { DeferredEditor } from "./components/DeferredEditor";
+
+const RemoteStudio = lazy(() =>
+  import("./components/RemoteStudio").then((module) => ({
+    default: module.RemoteStudio,
+  })),
+);
+const MediaLibrary = lazy(() =>
+  import("./components/MediaLibrary").then((module) => ({
+    default: module.MediaLibrary,
+  })),
+);
+const ProjectDetail = lazy(() =>
+  import("./components/ProjectDetail").then((module) => ({
+    default: module.ProjectDetail,
+  })),
+);
+const ProjectModal = lazy(() =>
+  import("./components/ProjectModal").then((module) => ({
+    default: module.ProjectModal,
+  })),
+);
+const WorkLogModal = lazy(() =>
+  import("./components/WorkLogModal").then((module) => ({
+    default: module.WorkLogModal,
+  })),
+);
+const DevelopmentLogView = lazy(() =>
+  import("./components/DevelopmentLogView").then((module) => ({
+    default: module.DevelopmentLogView,
+  })),
+);
+const JsonBackupModal = lazy(() =>
+  import("./components/JsonBackupModal").then((module) => ({
+    default: module.JsonBackupModal,
+  })),
+);
+const DeleteConfirmModal = lazy(() =>
+  import("./components/DeleteConfirmModal").then((module) => ({
+    default: module.DeleteConfirmModal,
+  })),
+);
 
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
@@ -500,23 +535,25 @@ export default function App() {
         ) : selectedProject ? (
           /* Project Detail Page */
           <div className="managed-project">
-            <ProjectDetail
-              project={selectedProject}
-              onBack={() => navigate({ view: "admin" })}
-              onUpdateProject={handleUpdateProject}
-              onOpenEditProjectModal={(p) => {
-                setEditingProject(p);
-                setIsProjectModalOpen(true);
-              }}
-              onRequestDelete={() => handleRequestDelete(selectedProject)}
-              onOpenAddWorkLogModal={(p, existing) =>
-                handleOpenWorkLogModal(p.id, existing)
-              }
-              onNavigateToDevLog={(projectId) =>
-                handleViewLogsForProject(projectId)
-              }
-              showToast={showToast}
-            />
+            <DeferredEditor>
+              <ProjectDetail
+                project={selectedProject}
+                onBack={() => navigate({ view: "admin" })}
+                onUpdateProject={handleUpdateProject}
+                onOpenEditProjectModal={(p) => {
+                  setEditingProject(p);
+                  setIsProjectModalOpen(true);
+                }}
+                onRequestDelete={() => handleRequestDelete(selectedProject)}
+                onOpenAddWorkLogModal={(p, existing) =>
+                  handleOpenWorkLogModal(p.id, existing)
+                }
+                onNavigateToDevLog={(projectId) =>
+                  handleViewLogsForProject(projectId)
+                }
+                showToast={showToast}
+              />
+            </DeferredEditor>
           </div>
         ) : selectedProjectId ? (
           <div className="py-16 text-center text-sm text-muted">
@@ -551,20 +588,22 @@ export default function App() {
               </p>
             </header>
             {remoteConfigured && (
-              <RemoteStudio
-                projects={projects}
-                onAuth={setRemoteAdmin}
-                about={aboutDraft}
-                onLoad={(value, about) => {
-                  if (!updateProjectsState(value)) return false;
-                  setAboutDraft(about);
-                  return true;
-                }}
-                onPublish={(value, about) => {
-                  setPublished(value);
-                  setRemoteAbout(about);
-                }}
-              />
+              <DeferredEditor>
+                <RemoteStudio
+                  projects={projects}
+                  onAuth={setRemoteAdmin}
+                  about={aboutDraft}
+                  onLoad={(value, about) => {
+                    if (!updateProjectsState(value)) return false;
+                    setAboutDraft(about);
+                    return true;
+                  }}
+                  onPublish={(value, about) => {
+                    setPublished(value);
+                    setRemoteAbout(about);
+                  }}
+                />
+              </DeferredEditor>
             )}
             {(!remoteConfigured || remoteAdmin) && (
               <>
@@ -740,13 +779,15 @@ export default function App() {
                     onDraft={setAboutDraft}
                   />
                 ) : adminSection === "media" ? (
-                  <MediaLibrary
-                    projects={projects}
-                    onEdit={(p) => {
-                      setEditingProject(p);
-                      setIsProjectModalOpen(true);
-                    }}
-                  />
+                  <DeferredEditor>
+                    <MediaLibrary
+                      projects={projects}
+                      onEdit={(p) => {
+                        setEditingProject(p);
+                        setIsProjectModalOpen(true);
+                      }}
+                    />
+                  </DeferredEditor>
                 ) : (
                   <>
                     <div className="section-heading">
@@ -973,24 +1014,26 @@ export default function App() {
                 }
               />
             ) : (
-              <DevelopmentLogView
-                projects={projects}
-                selectedProjectIdFilter={devLogProjectIdFilter}
-                onSelectProjectIdFilter={(id) =>
-                  navigate({
-                    view: "records",
-                    projectId: id || undefined,
-                    editing: manageRecords || undefined,
-                  })
-                }
-                onOpenAddLogModal={(defId, existing) =>
-                  handleOpenWorkLogModal(defId, existing)
-                }
-                onRequestDeleteLog={(log, pId) =>
-                  handleRequestDeleteLog(log, pId)
-                }
-                onNavigateToProject={(pId) => setSelectedProjectId(pId)}
-              />
+              <DeferredEditor>
+                <DevelopmentLogView
+                  projects={projects}
+                  selectedProjectIdFilter={devLogProjectIdFilter}
+                  onSelectProjectIdFilter={(id) =>
+                    navigate({
+                      view: "records",
+                      projectId: id || undefined,
+                      editing: manageRecords || undefined,
+                    })
+                  }
+                  onOpenAddLogModal={(defId, existing) =>
+                    handleOpenWorkLogModal(defId, existing)
+                  }
+                  onRequestDeleteLog={(log, pId) =>
+                    handleRequestDeleteLog(log, pId)
+                  }
+                  onNavigateToProject={(pId) => setSelectedProjectId(pId)}
+                />
+              </DeferredEditor>
             )}
           </div>
         ) : null}
@@ -1033,86 +1076,111 @@ export default function App() {
 
       {/* Modals */}
       {/* 1. Project Add / Edit Modal */}
-      <ProjectModal
-        isOpen={isProjectModalOpen}
-        onClose={() => {
-          setIsProjectModalOpen(false);
-          setEditingProject(null);
-        }}
-        onSave={handleSaveProject}
-        initialProject={editingProject}
-        allProjects={projects}
-      />
+      <DeferredEditor
+        active={isProjectModalOpen}
+        onCancel={() => setIsProjectModalOpen(false)}
+      >
+        <ProjectModal
+          isOpen={isProjectModalOpen}
+          onClose={() => {
+            setIsProjectModalOpen(false);
+            setEditingProject(null);
+          }}
+          onSave={handleSaveProject}
+          initialProject={editingProject}
+          allProjects={projects}
+        />
+      </DeferredEditor>
 
       {/* 2. Project Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={projectToDelete !== null}
-        title="프로젝트 삭제 확인"
-        itemName={projectToDelete ? projectToDelete.name : ""}
-        warningText={
-          projectToDelete
-            ? `삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
-            : "삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다."
-        }
-        confirmText="삭제"
-        onClose={() => setProjectToDelete(null)}
-        onConfirm={handleConfirmDelete}
-      />
+      <DeferredEditor
+        active={projectToDelete !== null}
+        onCancel={() => setProjectToDelete(null)}
+      >
+        <DeleteConfirmModal
+          isOpen={projectToDelete !== null}
+          title="프로젝트 삭제 확인"
+          itemName={projectToDelete ? projectToDelete.name : ""}
+          warningText={
+            projectToDelete
+              ? `삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다. 등록된 기능(${projectToDelete.keyFeatures?.length || 0}개), 개발 기록(${projectToDelete.workLogs?.length || 0}건), 프롬프트 기록이 함께 삭제됩니다.`
+              : "삭제 후 초안 검토에서 반영하며, 관리자에서 삭제 전 백업을 복구할 수 있습니다."
+          }
+          confirmText="삭제"
+          onClose={() => setProjectToDelete(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      </DeferredEditor>
 
       {/* 3. Work Log Add / Edit Modal */}
-      <WorkLogModal
-        isOpen={isWorkLogModalOpen}
-        onClose={() => {
-          setIsWorkLogModalOpen(false);
-          setWorkLogDefaultProjectId(null);
-          setEditingWorkLog(null);
-        }}
-        onSave={handleSaveWorkLog}
-        initialLog={editingWorkLog}
-        projects={projects}
-        defaultProjectId={workLogDefaultProjectId}
-      />
+      <DeferredEditor
+        active={isWorkLogModalOpen}
+        onCancel={() => setIsWorkLogModalOpen(false)}
+      >
+        <WorkLogModal
+          isOpen={isWorkLogModalOpen}
+          onClose={() => {
+            setIsWorkLogModalOpen(false);
+            setWorkLogDefaultProjectId(null);
+            setEditingWorkLog(null);
+          }}
+          onSave={handleSaveWorkLog}
+          initialLog={editingWorkLog}
+          projects={projects}
+          defaultProjectId={workLogDefaultProjectId}
+        />
+      </DeferredEditor>
 
       {/* 4. Work Log Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={logToDeleteInfo !== null}
-        title="개발 기록 삭제 확인"
-        itemName={
-          logToDeleteInfo
-            ? logToDeleteInfo.log.title ||
-              logToDeleteInfo.log.task ||
-              `${logToDeleteInfo.log.date} 기록`
-            : ""
-        }
-        description={
-          logToDeleteInfo
-            ? `내용: "${logToDeleteInfo.log.content || logToDeleteInfo.log.task || ""}"`
-            : undefined
-        }
-        warningText="해당 개발 기록(날짜, 버전, 변경 사항, 수정 이유, 테스트 결과, 다음 작업 등)이 영구 삭제됩니다."
-        confirmText="삭제"
-        onClose={() => setLogToDeleteInfo(null)}
-        onConfirm={handleConfirmDeleteLog}
-      />
+      <DeferredEditor
+        active={logToDeleteInfo !== null}
+        onCancel={() => setLogToDeleteInfo(null)}
+      >
+        <DeleteConfirmModal
+          isOpen={logToDeleteInfo !== null}
+          title="개발 기록 삭제 확인"
+          itemName={
+            logToDeleteInfo
+              ? logToDeleteInfo.log.title ||
+                logToDeleteInfo.log.task ||
+                `${logToDeleteInfo.log.date} 기록`
+              : ""
+          }
+          description={
+            logToDeleteInfo
+              ? `내용: "${logToDeleteInfo.log.content || logToDeleteInfo.log.task || ""}"`
+              : undefined
+          }
+          warningText="해당 개발 기록(날짜, 버전, 변경 사항, 수정 이유, 테스트 결과, 다음 작업 등)이 영구 삭제됩니다."
+          confirmText="삭제"
+          onClose={() => setLogToDeleteInfo(null)}
+          onConfirm={handleConfirmDeleteLog}
+        />
+      </DeferredEditor>
 
       {/* 5. JSON Backup / Restore Modal */}
-      <JsonBackupModal
-        isOpen={isBackupModalOpen}
-        onClose={() => setIsBackupModalOpen(false)}
-        projects={projects}
-        onRestore={(restoredProjects) => {
-          const saved = updateProjectsState(restoredProjects);
-          if (
-            saved &&
-            selectedProjectId &&
-            !restoredProjects.some((p) => p.id === selectedProjectId)
-          ) {
-            setSelectedProjectId(null);
-          }
-          return saved;
-        }}
-        showToast={showToast}
-      />
+      <DeferredEditor
+        active={isBackupModalOpen}
+        onCancel={() => setIsBackupModalOpen(false)}
+      >
+        <JsonBackupModal
+          isOpen={isBackupModalOpen}
+          onClose={() => setIsBackupModalOpen(false)}
+          projects={projects}
+          onRestore={(restoredProjects) => {
+            const saved = updateProjectsState(restoredProjects);
+            if (
+              saved &&
+              selectedProjectId &&
+              !restoredProjects.some((p) => p.id === selectedProjectId)
+            ) {
+              setSelectedProjectId(null);
+            }
+            return saved;
+          }}
+          showToast={showToast}
+        />
+      </DeferredEditor>
     </div>
   );
 }

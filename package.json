@@ -15,6 +15,7 @@
     "test:links": "tsx --test src/utils/projectLinkMigration.test.ts",
     "test": "node --import tsx --test src/data/*.test.ts src/utils/*.test.ts",
     "test:browser": "node scripts/test-portfolio.cjs",
+    "test:loading": "node scripts/test-deferred-editors.cjs",
     "test:motion": "node scripts/test-motion.cjs",
     "test:chapters": "node scripts/test-chapters.cjs",
     "test:capabilities": "node scripts/test-capability-links.cjs",

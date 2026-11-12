@@ -1,3 +1,4 @@
+import { motionAllowed } from "./visualMotion";
 type Transition = {
   finished: Promise<void>;
   ready: Promise<void>;
@@ -56,7 +57,7 @@ export function routeMotion() {
       const doc = document as MotionDocument;
       const allowed =
         !!doc.startViewTransition &&
-        !matchMedia("(prefers-reduced-motion:reduce)").matches;
+        motionAllowed();
       const outgoing = source;
       const isNext = nextProject;
       source = null;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia } from "./ProjectMedia";
@@ -17,6 +17,8 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
   const [selectedId, setSelectedId] = useState(projects[0]?.id || "");
   const nav = useRef<HTMLElement>(null);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
   const index = Math.max(
     0,
     projects.findIndex((p) => p.id === selectedId),
@@ -42,6 +44,7 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
       {projects.map((p, i) => (
         <a
           key={p.id}
+          style={{ "--screen-order": i } as CSSProperties}
           className={
             "hero-project hero-project-" +
             i +
@@ -68,6 +71,40 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
         className="hero-mobile-featured"
         href={routeHash({ view: "project", projectId: selected.id })}
         aria-label={selected.name + " 프로젝트 살펴보기"}
+        onPointerDown={() => {
+          swiped.current = false;
+        }}
+        onTouchStart={(event) => {
+          swiped.current = false;
+          touch.current =
+            event.touches.length === 1
+              ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+              : null;
+        }}
+        onTouchMove={(event) => {
+          if (event.touches.length > 1) touch.current = null;
+        }}
+        onTouchCancel={() => {
+          touch.current = null;
+        }}
+        onTouchEnd={(event) => {
+          const point = touch.current;
+          touch.current = null;
+          if (!point || event.touches.length) return;
+          const dx = point.x - event.changedTouches[0].clientX;
+          const dy = point.y - event.changedTouches[0].clientY;
+          if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+            if (event.cancelable) event.preventDefault();
+            swiped.current = true;
+            choose(index + (dx > 0 ? 1 : -1));
+          }
+        }}
+        onClick={(event) => {
+          if (swiped.current && event.detail !== 0) {
+            event.preventDefault();
+            swiped.current = false;
+          }
+        }}
       >
         <ProjectMedia project={selected} eager priority />
         <div className="hero-mobile-caption">
@@ -78,6 +115,7 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
           <span aria-hidden="true">살펴보기 ↗</span>
         </div>
       </a>
+      <p className="hero-swipe-hint">좌우로 넘겨 다른 프로젝트 보기</p>
       <nav
         className="hero-thumbnail-track"
         ref={nav}

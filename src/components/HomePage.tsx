@@ -11,6 +11,8 @@ import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { HeroProjects } from "./HeroProjects";
 import { selectHomeProjects } from "../utils/homeProjects";
 import { useHeroHandoff } from "../utils/useHeroHandoff";
+import { motionAllowed } from "../utils/visualMotion";
+import { MotionControl } from "./MotionControl";
 export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const section = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -145,7 +147,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
                 className="showcase-image"
                 aria-label={project.name + " 상세 보기"}
               >
-                <ProjectMedia key={project.id} project={project} />
+                <ProjectMedia project={project} />
               </a>
             )}
             <div className="preview-copy" key={project.id}>
@@ -251,11 +253,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
         className="home-hero project-first-hero"
         ref={hero}
         onPointerMove={(e) => {
-          if (
-            e.pointerType !== "mouse" ||
-            matchMedia("(prefers-reduced-motion:reduce)").matches
-          )
-            return;
+          if (e.pointerType !== "mouse" || !motionAllowed()) return;
           const r = e.currentTarget.getBoundingClientRect();
           e.currentTarget.style.setProperty(
             "--px",
@@ -292,6 +290,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
         </div>
         <HeroProjects projects={images} />
         <div className="hero-foot">
+          <MotionControl />
           <span>
             {images.length
               ? `대표 프로젝트 ${images.length}개`

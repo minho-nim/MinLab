@@ -179,6 +179,7 @@ export function MediaViewer({
             )}
             <img
               key={screen.src}
+              className="viewer-screen"
               src={screen.src}
               alt={name + " — " + screen.label}
               decoding="async"

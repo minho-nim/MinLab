@@ -17,6 +17,7 @@
     "test:browser": "node scripts/test-portfolio.cjs",
     "test:loading": "node scripts/test-deferred-editors.cjs",
     "test:media": "node scripts/test-media-experience.cjs",
+    "test:image-motion": "node scripts/test-image-motion.cjs",
     "test:motion": "node scripts/test-motion.cjs",
     "test:chapters": "node scripts/test-chapters.cjs",
     "test:capabilities": "node scripts/test-capability-links.cjs",

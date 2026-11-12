@@ -1,4 +1,5 @@
 import { useEffect, type RefObject } from "react";
+import { motionAllowed, motionPreferenceEvent } from "./visualMotion";
 
 // The first real screen travels into the explorer. Native scroll stays in control.
 export function useHeroHandoff(hero: RefObject<HTMLElement | null>) {
@@ -27,7 +28,7 @@ export function useHeroHandoff(hero: RefObject<HTMLElement | null>) {
     const update = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        if (!desktop.matches) return reset();
+        if (!desktop.matches || !motionAllowed()) return reset();
         sources = [
           ...root.querySelectorAll<HTMLElement>(".hero-project .project-media"),
         ];
@@ -88,6 +89,7 @@ export function useHeroHandoff(hero: RefObject<HTMLElement | null>) {
     };
     addEventListener("scroll", update, { passive: true });
     addEventListener("resize", update);
+    addEventListener(motionPreferenceEvent, update);
     desktop.addEventListener("change", update);
     update();
     return () => {
@@ -95,6 +97,7 @@ export function useHeroHandoff(hero: RefObject<HTMLElement | null>) {
       reset();
       removeEventListener("scroll", update);
       removeEventListener("resize", update);
+      removeEventListener(motionPreferenceEvent, update);
       desktop.removeEventListener("change", update);
     };
   }, [hero]);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
+import { MotionControl } from "./MotionControl";
 export function SmartHeader({ view }: { view: string }) {
   const [open, setOpen] = useState(false);
   const [compact, setCompact] = useState(false);
@@ -104,6 +105,7 @@ export function SmartHeader({ view }: { view: string }) {
             </a>
           ))}
         </nav>
+        <MotionControl />
       </dialog>
     </>
   );

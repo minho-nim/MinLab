@@ -300,7 +300,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .click();
     assert.equal(
       await page
-        .locator(".browser-showcase img")
+        .locator(".browser-showcase img.media-current")
         .evaluate((el) => getComputedStyle(el).objectFit),
       "contain",
     );
@@ -394,7 +394,9 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     await page.waitForTimeout(700);
     assert.ok(
       (
-        await page.locator(".browser-showcase img").getAttribute("src")
+        await page
+          .locator(".browser-showcase img.media-current")
+          .getAttribute("src")
       ).includes("musclemap-map"),
     );
     await page.locator(".journey-versions button").nth(1).click();
@@ -570,7 +572,9 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
         );
         assert.ok(
           (
-            await p.locator(".browser-showcase img").getAttribute("src")
+            await p
+              .locator(".browser-showcase img.media-current")
+              .getAttribute("src")
           ).includes("musclemap-map"),
         );
       }

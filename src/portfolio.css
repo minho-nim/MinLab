@@ -374,7 +374,7 @@ em {
   object-fit: contain;
   object-position: center;
 }
-.project-media[data-media-state="loading"] img {
+.project-media[data-media-state="loading"] img.media-current {
   opacity: 0;
 }
 .media-loading {

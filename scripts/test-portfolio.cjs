@@ -403,11 +403,16 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       1,
     );
     await page
+      .locator(".journey-record")
+      .nth(1)
       .getByRole("combobox", { name: "개발 기록 비교" })
       .selectOption({ index: 1 });
     assert.equal(await page.locator(".version-comparison section").count(), 5);
     const lastProject = before.filter((p) => p.visible !== false).at(-1);
     await page.goto(base + "#/projects/" + lastProject.id);
+    await page
+      .getByRole("heading", { name: lastProject.name, exact: true, level: 1 })
+      .waitFor();
     assert.equal(
       await page.locator(".next-project").getAttribute("href"),
       await page.evaluate(

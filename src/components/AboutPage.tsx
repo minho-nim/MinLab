@@ -9,9 +9,13 @@ const defaultIntro =
 export function AboutPage({
   projects,
   editing = false,
+  introOverride,
+  onDraft,
 }: {
   projects: Project[];
   editing?: boolean;
+  introOverride?: string | null;
+  onDraft?: (value: string) => void;
 }) {
   const [intro, setIntro] = useState(() =>
     safeRead(
@@ -19,6 +23,9 @@ export function AboutPage({
       safeRead(introKey, defaultIntro),
     ),
   );
+  useEffect(() => {
+    if (introOverride != null) setIntro(introOverride);
+  }, [introOverride]);
   const [capability, setCapability] = useState(0);
   const journey = useRef<HTMLElement>(null);
   const [stage, setStage] = useState(0);
@@ -119,6 +126,7 @@ export function AboutPage({
               onClick={() => {
                 safeWrite(introKey + "_draft", intro);
                 setSaved(safeRead(introKey + "_draft") === intro);
+                if (safeRead(introKey + "_draft") === intro) onDraft?.(intro);
               }}
             >
               소개 초안 저장 ↗

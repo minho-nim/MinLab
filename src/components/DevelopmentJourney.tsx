@@ -17,33 +17,64 @@ export function DevelopmentJourney({ project }: { project: Project }) {
   );
   const [selected, setSelected] = useState(logs[0]?.id || "");
   const [compare, setCompare] = useState("");
+  const [compareAt, setCompareAt] = useState(logs[0]?.id || "");
   const index = logs.findIndex((l) => l.id === selected);
   const log = logs[index] || logs[0];
-  const older = logs.filter((l) => l.id !== log?.id);
   const comparison = logs.find((l) => l.id === compare);
-  const panel = useRef<HTMLDivElement>(null);
+  const versions = useRef<HTMLElement>(null);
+  const records = useRef(new Map<string, HTMLElement>());
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries)
-          if (e.isIntersecting)
-            setSelected((e.target as HTMLElement).dataset.log || "");
-      },
-      { rootMargin: "-20% 0px -60% 0px", threshold: 0 },
-    );
-    panel.current
-      ?.querySelectorAll("[data-log]")
-      .forEach((n) => observer.observe(n));
-    return () => observer.disconnect();
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (!matchMedia("(min-width:900px)").matches) return;
+        const nodes = [...records.current.values()];
+        if (!nodes.length) return;
+        const anchor = 150;
+        const bounds = nodes.map((node) => ({
+          node,
+          rect: node.getBoundingClientRect(),
+        }));
+        if (
+          bounds[0].rect.top > innerHeight ||
+          bounds.at(-1)!.rect.bottom < anchor
+        )
+          return;
+        const current =
+          bounds.find(
+            (item) => item.rect.top <= anchor && item.rect.bottom > anchor,
+          ) || bounds.find((item) => item.rect.top >= anchor);
+        if (current) setSelected(current.node.dataset.log || "");
+      });
+    };
+    addEventListener("scroll", update, { passive: true });
+    addEventListener("resize", update);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      removeEventListener("scroll", update);
+      removeEventListener("resize", update);
+    };
   }, [project.id]);
+  useEffect(() => {
+    const nav = versions.current;
+    const button = nav?.querySelector<HTMLElement>('[aria-current="true"]');
+    if (nav && button)
+      nav.scrollTo({
+        top: button.offsetTop - nav.offsetTop - 12,
+        behavior: "instant",
+      });
+  }, [selected]);
   if (!log) return <p className="muted-copy">등록된 개발일지가 없습니다.</p>;
-  const screen = mediaFor(project).findIndex(
-    (s) => s.version && s.version === log.version,
-  );
   return (
     <div className="development-journey">
       <div className="journey-desktop">
-        <nav className="journey-versions" aria-label="개발 버전 선택">
+        <nav
+          className="journey-versions"
+          ref={versions}
+          aria-label="개발 버전 선택"
+        >
           {logs.map((l, i) => (
             <button
               key={l.id}
@@ -51,6 +82,11 @@ export function DevelopmentJourney({ project }: { project: Project }) {
               onClick={() => {
                 setSelected(l.id);
                 setCompare("");
+                requestAnimationFrame(() =>
+                  records.current
+                    .get(l.id)
+                    ?.scrollIntoView({ block: "start", behavior: "instant" }),
+                );
               }}
             >
               <small>
@@ -61,52 +97,77 @@ export function DevelopmentJourney({ project }: { project: Project }) {
             </button>
           ))}
         </nav>
-        <div className="journey-record" key={log.id}>
-          <LogContent log={log} />
-          {screen >= 0 && <ProjectMedia project={project} index={screen} />}
-          <label className="log-select">
-            다른 기록과 비교
-            <select
-              aria-label="개발 기록 비교"
-              value={compare}
-              onChange={(e) => setCompare(e.target.value)}
-            >
-              <option value="">비교할 기록 선택</option>
-              {older.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.date} / {l.version || "버전 미지정"} /{" "}
-                  {l.title || "개발 기록"}
-                </option>
-              ))}
-            </select>
-          </label>
-          {comparison && (
-            <div className="version-comparison">
-              <p>기록 원문 비교 · 추가/삭제를 추정하지 않습니다.</p>
-              {fields.map(([name, get]) => (
-                <section key={name}>
-                  <h4>{name}</h4>
-                  <div>
-                    <article>
-                      <small>
-                        {comparison.date} · {comparison.version}
-                      </small>
-                      <p>{get(comparison) || "기록 없음"}</p>
-                    </article>
-                    <article>
-                      <small>
-                        {log.date} · {log.version}
-                      </small>
-                      <p>{get(log) || "기록 없음"}</p>
-                    </article>
+        <div className="journey-records">
+          {logs.map((item) => {
+            const itemScreen = mediaFor(project).findIndex(
+              (s) => s.version && s.version === item.version,
+            );
+            return (
+              <article
+                className="journey-record"
+                key={item.id}
+                data-log={item.id}
+                aria-label={(item.version || item.date) + " 개발 기록"}
+                ref={(node) => {
+                  if (node) records.current.set(item.id, node);
+                  else records.current.delete(item.id);
+                }}
+              >
+                <LogContent log={item} />
+                {itemScreen >= 0 && (
+                  <ProjectMedia project={project} index={itemScreen} />
+                )}
+                <label className="log-select">
+                  다른 기록과 비교
+                  <select
+                    aria-label="개발 기록 비교"
+                    value={item.id === compareAt ? compare : ""}
+                    onChange={(e) => {
+                      setCompare(e.target.value);
+                      setCompareAt(item.id);
+                    }}
+                  >
+                    <option value="">비교할 기록 선택</option>
+                    {logs
+                      .filter((l) => l.id !== item.id)
+                      .map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.date} / {l.version || "버전 미지정"} /{" "}
+                          {l.title || "개발 기록"}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+                {comparison && item.id === compareAt && (
+                  <div className="version-comparison">
+                    <p>기록 원문 비교 · 추가/삭제를 추정하지 않습니다.</p>
+                    {fields.map(([name, get]) => (
+                      <section key={name}>
+                        <h4>{name}</h4>
+                        <div>
+                          <article>
+                            <small>
+                              {comparison.date} · {comparison.version}
+                            </small>
+                            <p>{get(comparison) || "기록 없음"}</p>
+                          </article>
+                          <article>
+                            <small>
+                              {item.date} · {item.version}
+                            </small>
+                            <p>{get(item) || "기록 없음"}</p>
+                          </article>
+                        </div>
+                      </section>
+                    ))}
                   </div>
-                </section>
-              ))}
-            </div>
-          )}
+                )}
+              </article>
+            );
+          })}
         </div>
       </div>
-      <div className="journey-mobile" ref={panel}>
+      <div className="journey-mobile">
         {logs.map((l, i) => (
           <details key={l.id} data-log={l.id} open={i === 0 ? true : undefined}>
             <summary>

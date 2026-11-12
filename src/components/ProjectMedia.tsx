@@ -17,6 +17,7 @@ export function ProjectMedia({
   const [failed, setFailed] = useState("");
   return (
     <div
+      data-project-media={project.id}
       className={
         "project-media " +
         (!media || failed === media.src ? "without-image" : "")

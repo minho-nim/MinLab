@@ -10,6 +10,7 @@ import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { HeroProjects } from "./HeroProjects";
 import { selectHomeProjects } from "../utils/homeProjects";
+import { useHeroHandoff } from "../utils/useHeroHandoff";
 export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const section = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -216,6 +217,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
 }
 export function HomePage({ projects }: { projects: Project[] }) {
   const hero = useRef<HTMLElement>(null);
+  useHeroHandoff(hero);
   const hasScreen = (p: Project) => mediaFor(p).length > 0;
   const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 4);
   const featured = selectHomeProjects(projects, hasScreen, 6);

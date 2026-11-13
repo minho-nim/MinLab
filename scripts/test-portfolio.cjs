@@ -409,7 +409,12 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .nth(1)
       .getByRole("combobox", { name: "개발 기록 비교" })
       .selectOption({ index: 1 });
-    assert.equal(await page.locator(".version-comparison section").count(), 5);
+    assert.equal(
+      await page
+        .locator(".journey-desktop .version-comparison section")
+        .count(),
+      5,
+    );
     const lastProject = before.filter((p) => p.visible !== false).at(-1);
     await page.goto(base + "#/projects/" + lastProject.id);
     await page

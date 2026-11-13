@@ -186,7 +186,7 @@ html[data-visual-motion="paused"] .media-outgoing {
     transform: none !important;
     transition: none;
   }
-  .media-outgoing {
+  .project-media > .media-outgoing {
     display: none;
   }
   .project-media::after {

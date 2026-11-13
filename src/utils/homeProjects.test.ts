@@ -86,7 +86,7 @@ test("the four requested main projects lead the home without changing stored ord
     ids,
   );
   assert.equal(JSON.stringify(projects), before);
-  projects.find((p) => p.id === ids[0]).visible = false;
+  projects.find((p) => p.id === ids[0])!.visible = false;
   assert.ok(
     !selectHomeProjects(projects, () => true, 4).some((p) => p.id === ids[0]),
   );

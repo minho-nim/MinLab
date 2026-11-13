@@ -10,22 +10,27 @@
 
 @theme {
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --color-canvas: #121715;
-  --color-surface: #1C2420;
-  --color-surface-alt: #232e28;
-  --color-ink: #f0f0e8;
-  --color-ink-secondary: #c0c9c2;
-  --color-muted: #a0afa4;
-  --color-line: #303c34;
-  --color-line-strong: #506354;
-  --color-accent: #B8D2BB;
-  --color-accent-hover: #cee4d0;
-  --color-accent-soft: #27392b;
-  --color-accent-line: #526e56;
+  --color-canvas: #EDE5D2;
+  --color-surface: #E3DAC5;
+  --color-surface-alt: #DAD0B9;
+  --color-ink: #194D38;
+  --color-ink-secondary: #314C3D;
+  --color-muted: #586454;
+  --color-line: #C6C5AF;
+  --color-line-strong: #6C806A;
+  --color-accent: #194D38;
+  --color-accent-hover: #246548;
+  --color-accent-soft: #D8DFC9;
+  --color-accent-line: #8DA48B;
+  --color-on-accent: #FFF8E8;
+  --color-tomato: #F2462E;
+  --color-action: #C53725;
+  --color-action-hover: #A92E20;
+  --color-header: #ede5d2f5;
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -52,8 +57,8 @@
 
 .project-cover {
   isolation: isolate;
-  background-color: #e9efff;
-  background-image: linear-gradient(90deg, #B8D2BB0b 1px, transparent 1px), linear-gradient(#B8D2BB0b 1px, transparent 1px);
+  background-color: #E3DAC5;
+  background-image: linear-gradient(90deg, #194D380b 1px, transparent 1px), linear-gradient(#194D380b 1px, transparent 1px);
   background-size: 28px 28px;
 }
 .project-cover-orbit {
@@ -62,7 +67,7 @@
   height: 190px;
   right: -22px;
   top: 22px;
-  border: 1px solid #B8D2BB2b;
+  border: 1px solid #194D382b;
   border-radius: 50%;
   transform: rotate(-25deg) scaleX(0.7);
 }
@@ -70,10 +75,10 @@
   content: "";
   position: absolute;
   inset: 20px;
-  border: 1px solid #B8D2BB2b;
+  border: 1px solid #194D382b;
   border-radius: inherit;
 }
-.project-cover-orbit::after { inset: 42px; background: #B8D2BB0a; }
+.project-cover-orbit::after { inset: 42px; background: #194D380a; }
 
 #work-logs-section, #prompt-history { scroll-margin-top: 170px; }
 @media (min-width: 768px) {
@@ -86,7 +91,7 @@
 ::-webkit-scrollbar-track { background: var(--color-canvas); }
 ::-webkit-scrollbar-thumb { border: 2px solid var(--color-canvas); border-radius: 999px; background: var(--color-line-strong); }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-muted); }
-::selection { background: var(--color-accent-line); color: var(--color-ink); }
+::selection { background: #194D38; color: #FFF8E8; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

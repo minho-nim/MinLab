@@ -72,8 +72,8 @@ export function ProjectPage({
         id="project-problem"
         className="problem-solution detail-reading-section project-chapter-target"
       >
-        <p className="eyebrow">제작 배경과 해결 방식</p>
-        <h2>만들게 된 이유</h2>
+        <p className="eyebrow">바꾸고 싶었던 것</p>
+        <h2>왜 만들었나</h2>
         {background ? (
           <>
             <small>{background.date} · 개발일지</small>
@@ -81,7 +81,7 @@ export function ProjectPage({
             {background.solution && <p>{background.solution}</p>}
           </>
         ) : (
-          <p>제작 배경은 아직 기록되지 않았습니다.</p>
+          <p>왜 만들었는지는 아직 적지 않았습니다.</p>
         )}
       </section>
       <section
@@ -89,7 +89,7 @@ export function ProjectPage({
         className="detail-development project-chapter-target"
       >
         <header>
-          <p className="eyebrow">개발 과정</p>
+          <p className="eyebrow">만들며 고친 것</p>
           <h2>버전별 개발일지</h2>
         </header>
         <DevelopmentJourney project={project} linkedLogId={linkedLogId} />

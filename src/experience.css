@@ -56,10 +56,6 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  transform: translate(
-    calc(var(--px) * var(--depth, 10px)),
-    calc(var(--py) * var(--depth, 10px))
-  );
   transition: transform 0.35s ease;
 }
 .hero-project-0 {

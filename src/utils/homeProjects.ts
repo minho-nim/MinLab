@@ -1,5 +1,12 @@
 import type { Project } from "../types";
 
+export const primaryProjectIds = [
+  "proj-minlab-ai-office",
+  "proj-minially",
+  "proj-1792978415000",
+  "proj-crossroads-ai-verdict",
+] as const;
+
 /** Preserve stored order as the tie-breaker; never change archive order or data. */
 export function selectHomeProjects(
   projects: Project[],
@@ -23,6 +30,8 @@ export function selectHomeProjects(
       categories.add(p.category.trim());
     }
   };
+  for (const id of primaryProjectIds)
+    add(eligible.find((project) => project.id === id));
   const first = eligible.find(hasScreen) || eligible[0];
   add(first);
   if (first)

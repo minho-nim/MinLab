@@ -9,6 +9,22 @@ export interface ResolvedMedia {
   section?: number;
 }
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
+  "proj-minlab-ai-office": [
+    {
+      id: "minoffia-intro",
+      src: "media/minoffia-intro.svg",
+      label: "프로젝트 소개 카드",
+      fit: "contain",
+    },
+  ],
+  "proj-minially": [
+    {
+      id: "minially-icon",
+      src: "media/minially-icon.png",
+      label: "미니어리 앱 아이콘",
+      fit: "contain",
+    },
+  ],
   "proj-snake-race": [
     {
       id: "minsnakey-sample",

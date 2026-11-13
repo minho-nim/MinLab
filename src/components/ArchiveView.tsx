@@ -11,6 +11,11 @@ import {
   safeWrite,
   type ArchiveQuery,
 } from "../utils/archiveQuery";
+import {
+  projectGroups,
+  projectGroup,
+  groupLabel,
+} from "../utils/projectGroups";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { useCollectionMotion } from "../utils/useCollectionMotion";
@@ -85,7 +90,8 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
   };
   const selected = [
     { key: "q", label: "검색", value: query.q },
-    { key: "category", label: "분야", value: query.category },
+    { key: "group", label: "분류", value: groupLabel(query.group) },
+    { key: "category", label: "세부분야", value: query.category },
     { key: "status", label: "상태", value: query.status },
     { key: "tag", label: "태그", value: query.tag },
     {
@@ -174,13 +180,21 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         </div>
       </div>
       <nav ref={categories} className="category-bar" aria-label="프로젝트 분야">
-        {["", ...options(projects.map((p) => p.category))].map((c) => (
+        {[
+          { id: "", label: "전체" },
+          ...projectGroups.filter((group) =>
+            projects.some((p) => projectGroup(p.category) === group.id),
+          ),
+        ].map((c) => (
           <button
-            key={c}
-            aria-pressed={query.category === c}
-            onClick={() => change({ category: c })}
+            key={c.id}
+            aria-pressed={
+              (query.group ||
+                (query.category ? projectGroup(query.category) : "")) === c.id
+            }
+            onClick={() => change({ group: c.id, category: "" })}
           >
-            {c || "전체"}
+            {c.label}
           </button>
         ))}
       </nav>
@@ -205,13 +219,13 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         </summary>
         <div className="archive-filters">
           <label>
-            분야
+            세부분야
             <select
               aria-label="카테고리 필터"
               value={query.category}
-              onChange={(e) => change({ category: e.target.value })}
+              onChange={(e) => change({ category: e.target.value, group: "" })}
             >
-              <option value="">전체 분야</option>
+              <option value="">전체 세부분야</option>
               {options(projects.map((p) => p.category)).map((v) => (
                 <option key={v}>{v}</option>
               ))}

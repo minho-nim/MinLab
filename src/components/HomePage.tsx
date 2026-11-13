@@ -222,7 +222,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
   useHeroHandoff(hero);
   const hasScreen = (p: Project) => mediaFor(p).length > 0;
   const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 4);
-  const featured = selectHomeProjects(projects, hasScreen, 6);
+  const featured = selectHomeProjects(projects, hasScreen, 4);
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -249,26 +249,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
   }, []);
   return (
     <>
-      <section
-        className="home-hero project-first-hero"
-        ref={hero}
-        onPointerMove={(e) => {
-          if (e.pointerType !== "mouse" || !motionAllowed()) return;
-          const r = e.currentTarget.getBoundingClientRect();
-          e.currentTarget.style.setProperty(
-            "--px",
-            String((e.clientX - r.left) / r.width - 0.5),
-          );
-          e.currentTarget.style.setProperty(
-            "--py",
-            String((e.clientY - r.top) / r.height - 0.5),
-          );
-        }}
-        onPointerLeave={(e) => {
-          e.currentTarget.style.setProperty("--px", "0");
-          e.currentTarget.style.setProperty("--py", "0");
-        }}
-      >
+      <section className="home-hero project-first-hero" ref={hero}>
         <div className="hero-introduction">
           <div className="hero-copy">
             <p className="eyebrow">MinLab · 개인 프로젝트</p>
@@ -279,9 +260,9 @@ export function HomePage({ projects }: { projects: Project[] }) {
           </div>
           <div className="hero-support">
             <p>
-              웹앱과 게임을 만들고 있습니다.
+              AI와 대화하며 웹앱과 게임을 만들고 있습니다.
               <br />
-              만들면서 바꾼 점도 함께 적어두었습니다.
+              직접 써 보며 고친 내용도 함께 적었습니다.
             </p>
             <a className="text-link" href="#/">
               전체 {projects.length}개 프로젝트 둘러보기 ↗

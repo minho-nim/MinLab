@@ -66,3 +66,28 @@ test("missing screens or games do not create placeholders or duplicate projects"
     [],
   );
 });
+test("the four requested main projects lead the home without changing stored order or hidden choices", () => {
+  const ids = [
+    "proj-minlab-ai-office",
+    "proj-minially",
+    "proj-1792978415000",
+    "proj-crossroads-ai-verdict",
+  ];
+  const projects = [
+    app("other", "게임", true),
+    ...ids
+      .slice()
+      .reverse()
+      .map((id) => app(id, "생활", true)),
+  ];
+  const before = JSON.stringify(projects);
+  assert.deepEqual(
+    selectHomeProjects(projects, () => true, 4).map((p) => p.id),
+    ids,
+  );
+  assert.equal(JSON.stringify(projects), before);
+  projects.find((p) => p.id === ids[0]).visible = false;
+  assert.ok(
+    !selectHomeProjects(projects, () => true, 4).some((p) => p.id === ids[0]),
+  );
+});

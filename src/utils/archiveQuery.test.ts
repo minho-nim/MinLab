@@ -10,6 +10,7 @@ import { parseRoute, routeHash } from "./navigation";
 import { catalogProjects } from "../data/projectCatalog";
 test("search, tags, combined filters and view mode survive encoded URL roundtrip", () => {
   const query = {
+    ...defaultQuery,
     q: "React & 한글?",
     category: "업무 자동화",
     status: "개발 중",
@@ -32,7 +33,7 @@ test("search covers description, name, tags; filters combine without mutating or
     ),
   );
   assert.ok(
-    queryProjects(projects, { ...defaultQuery, q: "반복 입력" }).some(
+    queryProjects(projects, { ...defaultQuery, q: "자주 쓰는 문구" }).some(
       (p) => p.id === "proj-minially",
     ),
   );
@@ -65,4 +66,23 @@ test("search covers description, name, tags; filters combine without mutating or
 test("home, about, admin and existing project routes remain linkable", () => {
   for (const view of ["home", "about", "admin"] as const)
     assert.deepEqual(parseRoute(routeHash({ view })), { view });
+});
+test("broad groups combine categories while legacy category links keep their exact meaning", () => {
+  const projects = catalogProjects();
+  const before = JSON.stringify(projects);
+  const games = queryProjects(projects, { ...defaultQuery, group: "games" });
+  assert.ok(games.some((p) => p.id === "proj-crossroads-ai-verdict"));
+  assert.ok(games.some((p) => p.id === "proj-snake-race"));
+  assert.ok(!games.some((p) => p.id === "proj-minially"));
+  const legacy = readArchiveQuery(
+    "#/?category=" + encodeURIComponent("스토리 게임"),
+  );
+  assert.equal(legacy.group, "");
+  assert.ok(
+    queryProjects(projects, legacy).every((p) => p.category === "스토리 게임"),
+  );
+  assert.equal(readArchiveQuery("#/?group=invalid").group, "");
+  const grouped = { ...defaultQuery, group: "life", q: "달력", layout: "list" };
+  assert.deepEqual(readArchiveQuery(archiveHash(grouped)), grouped);
+  assert.equal(JSON.stringify(projects), before);
 });

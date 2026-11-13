@@ -82,6 +82,32 @@ const moving = (page) =>
       );
       assert.ok((await page.locator(".archive-project").count()) > 0);
       assert.ok((await page.locator(".archive-project").count()) < count);
+      const searchChoice = page.getByRole("button", {
+        name: "검색: MuscleMap 해제",
+        exact: true,
+      });
+      const sortChoice = page.getByRole("button", {
+        name: "정렬: 이름순 해제",
+        exact: true,
+      });
+      await searchChoice.click();
+      assert.equal(await page.locator(".archive-project").count(), count);
+      assert.ok(page.url().includes("sort=name"));
+      assert.equal(
+        await sortChoice.evaluate((el) => el === document.activeElement),
+        true,
+      );
+      await sortChoice.click();
+      assert.equal(await page.locator(".active-filter-bar").count(), 0);
+      assert.equal(
+        await page
+          .getByRole("searchbox", { name: "프로젝트 검색" })
+          .evaluate((el) => el === document.activeElement),
+        true,
+      );
+      await page
+        .getByRole("searchbox", { name: "프로젝트 검색" })
+        .fill("MuscleMap");
       await page
         .getByRole("searchbox", { name: "프로젝트 검색" })
         .fill("결과없음_동작검사");

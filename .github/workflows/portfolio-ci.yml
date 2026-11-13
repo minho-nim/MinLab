@@ -31,6 +31,7 @@ jobs:
           npm run test:image-motion
           npm run test:archive-motion
           npm run test:showcase
+          npm run test:records
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:motion
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:chapters
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:capabilities

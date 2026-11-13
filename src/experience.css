@@ -1831,3 +1831,63 @@ textarea::placeholder {
   color: var(--color-muted);
   opacity: 1;
 }
+
+/* Visual screen navigation: image, name and selected outline stay together. */
+.media-viewer-track button {
+  padding: 6px;
+  gap: 10px;
+  max-width: 240px;
+  text-align: left;
+}
+.media-viewer-track .viewer-thumbnail {
+  display: block;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 48px;
+  background: var(--color-surface-alt);
+  overflow: hidden;
+}
+.viewer-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.media-viewer-track .viewer-thumbnail-label {
+  min-width: 0;
+  color: var(--color-ink);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.viewer-thumbnail-label small {
+  display: block;
+  color: var(--color-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.media-viewer-track button[aria-pressed="true"] {
+  box-shadow: inset 0 -3px 0 var(--color-accent);
+}
+.media-viewer-controls > button[aria-pressed="true"] {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+@media (hover: hover) {
+  .media-viewer-track button:hover,
+  .media-viewer-header > button:hover,
+  .media-viewer-controls > button:not(:disabled):not([aria-pressed="true"]):hover,
+  .media-expand:hover {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+}
+@media (max-width: 599px) {
+  .media-viewer-track button { max-width: 190px; }
+  .media-viewer-track .viewer-thumbnail {
+    flex-basis: 56px;
+    width: 56px;
+    height: 38px;
+  }
+}

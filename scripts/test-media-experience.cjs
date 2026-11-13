@@ -97,20 +97,20 @@ const sameSize = (a, b) => {
         .getByRole("button")
         .first()
         .click();
-      const first = await viewer.locator("img").getAttribute("src");
+      const first = await viewer.locator(".media-viewer-stage img").getAttribute("src");
       await viewer
         .getByRole("button", { name: "다음 화면", exact: true })
         .click();
-      const second = await viewer.locator("img").getAttribute("src");
+      const second = await viewer.locator(".media-viewer-stage img").getAttribute("src");
       assert.notEqual(second, first);
       await page.keyboard.press("ArrowLeft");
       await page.waitForFunction(
         (src) =>
-          document.querySelector(".media-viewer img")?.getAttribute("src") ===
+          document.querySelector(".media-viewer-stage img")?.getAttribute("src") ===
           src,
         first,
       );
-      assert.equal(await viewer.locator("img").getAttribute("src"), first);
+      assert.equal(await viewer.locator(".media-viewer-stage img").getAttribute("src"), first);
       const stage = viewer.locator(".media-viewer-stage");
       if (width < 900) {
         const bounds = await stage.boundingBox();
@@ -131,12 +131,12 @@ const sameSize = (a, b) => {
         await cdp.detach();
         await page.waitForFunction(
           (src) =>
-            document.querySelector(".media-viewer img")?.getAttribute("src") ===
+            document.querySelector(".media-viewer-stage img")?.getAttribute("src") ===
             src,
           second,
         );
         assert.equal(
-          await viewer.locator("img").getAttribute("src"),
+          await viewer.locator(".media-viewer-stage img").getAttribute("src"),
           second,
           "horizontal swipe selects another screen",
         );
@@ -179,7 +179,7 @@ const sameSize = (a, b) => {
         .getByRole("button")
         .first()
         .click();
-      assert.equal(await viewer.locator("img").getAttribute("src"), first);
+      assert.equal(await viewer.locator(".media-viewer-stage img").getAttribute("src"), first);
       await page.screenshot({ path: `${evidence}/viewer-${width}.png` });
       assert.ok(
         await viewer.evaluate((el) => el.contains(document.activeElement)),
@@ -306,7 +306,7 @@ const sameSize = (a, b) => {
     await viewer
       .getByRole("button", { name: "이전 화면", exact: true })
       .click();
-    await viewer.locator("img").waitFor();
+    await viewer.locator(".media-viewer-stage img").waitFor();
     await page.keyboard.press("Escape");
     await viewer.waitFor({ state: "detached" });
     await page.close();

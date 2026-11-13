@@ -87,6 +87,9 @@ export function MediaViewer({
         if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
           event.preventDefault();
           select(index + (event.key === "ArrowRight" ? 1 : -1));
+        } else if (event.key === "Home" || event.key === "End") {
+          event.preventDefault();
+          select(event.key === "Home" ? 0 : screens.length - 1);
         }
       }}
     >
@@ -232,8 +235,22 @@ export function MediaViewer({
             aria-pressed={index === i}
             onClick={() => select(i)}
           >
-            <span>{String(i + 1).padStart(2, "0")}</span>
-            {item.label}
+            <span className="viewer-thumbnail" aria-hidden="true">
+              <img
+                src={item.src}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                onError={(event) => {
+                  event.currentTarget.style.visibility = "hidden";
+                }}
+              />
+            </span>
+            <span className="viewer-thumbnail-label">
+              <small>{String(i + 1).padStart(2, "0")}</small>
+              {item.label}
+            </span>
           </button>
         ))}
       </nav>

@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
-import { ArrowUpRight, Grid2X2, List, Search } from "lucide-react";
+import { ArrowUpRight, Grid2X2, List, Search, X } from "lucide-react";
 import type { Project } from "../types";
 import {
   projectTags,
@@ -20,6 +20,10 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
   );
   const [hovered, setHovered] = useState<Project | null>(null);
   const preview = useRef<HTMLDivElement>(null);
+  const search = useRef<HTMLInputElement>(null);
+  const activeFilters = useRef<HTMLDivElement>(null);
+  const categories = useRef<HTMLElement>(null);
+  const filterFocus = useRef<string | null>(null);
   const cursor = useRef({ x: 0, y: 0 });
   const [query, setQuery] = useState<ArchiveQuery>(() => {
     const value = readArchiveQuery(location.hash);
@@ -79,6 +83,52 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
     history.replaceState(null, "", archiveHash(next));
     safeWrite("minlab_archive_layout", next.layout);
   };
+  const selected = [
+    { key: "q", label: "검색", value: query.q },
+    { key: "category", label: "분야", value: query.category },
+    { key: "status", label: "상태", value: query.status },
+    { key: "tag", label: "태그", value: query.tag },
+    {
+      key: "sort",
+      label: "정렬",
+      value:
+        query.sort === "name"
+          ? "이름순"
+          : query.sort === "latest"
+            ? "최신 수정순"
+            : "",
+    },
+  ].filter((item) => item.value);
+  useLayoutEffect(() => {
+    if (filterFocus.current === null) return;
+    const key = filterFocus.current;
+    filterFocus.current = null;
+    const target = activeFilters.current?.querySelector<HTMLButtonElement>(
+      `[data-filter-key="${key}"]`,
+    );
+    (target || search.current)?.focus({ preventScroll: true });
+  }, [query]);
+  useLayoutEffect(() => {
+    const strip = categories.current;
+    const selected = strip?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!strip || !selected || strip.scrollWidth <= strip.clientWidth) return;
+    const area = strip.getBoundingClientRect();
+    const button = selected.getBoundingClientRect();
+    if (button.left < area.left || button.right > area.right)
+      strip.scrollBy({
+        left: button.left - area.left - 8,
+        behavior: "instant",
+      });
+  }, [query.category]);
+  const removeFilter = (key: string, index: number) => {
+    filterFocus.current =
+      selected[index + 1]?.key || selected[index - 1]?.key || "";
+    change({ [key]: defaultQuery[key as keyof ArchiveQuery] });
+  };
+  const clearFilters = () => {
+    filterFocus.current = "";
+    change({ ...defaultQuery, layout: query.layout });
+  };
   const filtered = queryProjects(projects, query);
   const options = (values: string[]) =>
     [...new Set(values.filter(Boolean))].sort((a, b) =>
@@ -98,6 +148,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         <label className="archive-search">
           <Search size={18} />
           <input
+            ref={search}
             type="search"
             aria-label="프로젝트 검색"
             placeholder="이름, 설명, 기술 태그로 검색"
@@ -122,7 +173,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
           </button>
         </div>
       </div>
-      <nav className="category-bar" aria-label="프로젝트 분야">
+      <nav ref={categories} className="category-bar" aria-label="프로젝트 분야">
         {["", ...options(projects.map((p) => p.category))].map((c) => (
           <button
             key={c}
@@ -144,7 +195,14 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
           );
         }}
       >
-        <summary>상세 필터 및 정렬</summary>
+        <summary>
+          상세 필터 및 정렬
+          {!!selected.filter((item) => item.key !== "q").length && (
+            <span className="filter-active-count">
+              {selected.filter((item) => item.key !== "q").length}개 적용 중
+            </span>
+          )}
+        </summary>
         <div className="archive-filters">
           <label>
             분야
@@ -197,15 +255,43 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
               <option value="name">이름순</option>
             </select>
           </label>
-          <button
-            className="text-link"
-            onClick={() => change({ ...defaultQuery, layout: query.layout })}
-          >
+          <button className="text-link" onClick={clearFilters}>
             초기화 ↗
           </button>
         </div>
       </details>
-      <p className="result-count" role="status">
+      {!!selected.length && (
+        <div
+          ref={activeFilters}
+          className="active-filter-bar"
+          role="group"
+          aria-label="적용한 탐색 조건"
+        >
+          {selected.map((item, index) => (
+            <button
+              key={item.key}
+              data-filter-key={item.key}
+              className="active-filter-chip"
+              aria-label={`${item.label}: ${item.value} 해제`}
+              onClick={() => removeFilter(item.key, index)}
+            >
+              <span>
+                {item.label} <strong>{item.value}</strong>
+              </span>
+              <X size={14} aria-hidden="true" />
+            </button>
+          ))}
+          <button className="filter-clear" onClick={clearFilters}>
+            조건 초기화
+          </button>
+        </div>
+      )}
+      <p
+        className="result-count"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {String(filtered.length).padStart(2, "0")}개의 프로젝트{" "}
         <span>/ 전체 {projects.length}개</span>
       </p>
@@ -213,10 +299,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
         <div className="empty-state">
           <h2>검색 결과가 없습니다.</h2>
           <p>검색어를 바꾸거나 필터를 초기화해 보세요.</p>
-          <button
-            className="primary-link"
-            onClick={() => change({ ...defaultQuery, layout: query.layout })}
-          >
+          <button className="primary-link" onClick={clearFilters}>
             전체 프로젝트 보기 ↗
           </button>
         </div>

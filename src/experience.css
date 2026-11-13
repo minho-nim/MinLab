@@ -2019,3 +2019,9 @@ html[data-visual-motion="paused"] .next-project-showcase .text-link { transition
 }
 .next-project-showcase:not(:has(> .project-media)) { grid-template-columns: 1fr; }
 .next-project-showcase p { max-width: 68ch; }
+.project-before-after { margin: 28px 0 12px; }
+.project-before-after dl { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 20px 0; border-top: 1px solid var(--color-line); }
+.project-before-after dl > div { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.project-before-after dt { font-size: 12px; color: var(--color-muted); padding-top: 3px; }
+.project-before-after dd { font-size: 14px; line-height: 1.8; }
+@media (max-width: 599px) { .project-before-after dl { grid-template-columns: 1fr; gap: 12px; } }

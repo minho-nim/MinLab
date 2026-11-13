@@ -26,7 +26,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
       .map((s) => ({
         id: s.id,
         name: s.label,
-        description: "",
+        description: s.description || "",
         screen: screens.indexOf(s),
       })),
     ...featureScenes,

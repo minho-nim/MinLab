@@ -3,6 +3,7 @@ export interface ResolvedMedia {
   id: string;
   src: string;
   label: string;
+  description?: string;
   featureId?: string;
   version?: string;
   fit: "contain" | "cover";
@@ -11,17 +12,80 @@ export interface ResolvedMedia {
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
   "proj-minlab-ai-office": [
     {
-      id: "minoffia-intro",
-      src: "media/minoffia-intro.svg",
-      label: "프로젝트 소개 카드",
+      id: "minoffia-portfolio-0",
+      src: "media/minoffia-portfolio-0.webp",
+      label: "사무실과 대화창 · 예시 데이터",
+      description:
+        "방마다 맡은 일이 다른 AI들이 보입니다. 캐릭터 위치와 말풍선은 업무 상태를 나타냅니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoffia-portfolio-1",
+      src: "media/minoffia-portfolio-1.webp",
+      label: "휴대폰에서 요청하기 · 예시 데이터",
+      description:
+        "대화로 할 일을 적고 답을 확인합니다. 화면은 체험 모드의 예시 데이터입니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoffia-portfolio-2",
+      src: "media/minoffia-portfolio-2.webp",
+      label: "접수와 스킬 선택 · 예시 데이터",
+      description: "접수한 일에 사용할 작업 설명서(스킬)를 고릅니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoffia-portfolio-3",
+      src: "media/minoffia-portfolio-3.webp",
+      label: "업무 보드 · 예시 데이터",
+      description: "맡긴 일을 상태별로 모아 보고, 사람이 확인할 일을 찾습니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoffia-portfolio-4",
+      src: "media/minoffia-portfolio-4.webp",
+      label: "AI 팀 상태 · 예시 데이터",
+      description:
+        "역할을 나눈 AI들의 상태를 확인합니다. 배정과 실제 실행은 구분해서 봅니다.",
       fit: "contain",
     },
   ],
   "proj-minially": [
     {
-      id: "minially-icon",
-      src: "media/minially-icon.png",
-      label: "미니어리 앱 아이콘",
+      id: "minially-portfolio-0",
+      src: "media/minially-portfolio-0.webp",
+      label: "PC 달력 · 예시 데이터",
+      description: "넓은 화면에서는 날짜별 일정과 시간을 함께 봅니다.",
+      fit: "contain",
+    },
+    {
+      id: "minially-portfolio-1",
+      src: "media/minially-portfolio-1.webp",
+      label: "휴대폰 달력 · 예시 데이터",
+      description:
+        "날짜에 붙은 일정 이름을 보고, 날짜를 눌러 그날 일을 엽니다.",
+      fit: "contain",
+    },
+    {
+      id: "minially-portfolio-2",
+      src: "media/minially-portfolio-2.webp",
+      label: "하루 일정과 할 일 · 예시 데이터",
+      description: "선택한 날짜의 일정과 할 일을 카테고리별로 모아 봅니다.",
+      fit: "contain",
+    },
+    {
+      id: "minially-portfolio-3",
+      src: "media/minially-portfolio-3.webp",
+      label: "자주 쓰는 문구 · 예시 데이터",
+      description:
+        "입력창에서 프리셋을 눌러 제목을 넣습니다. 넣은 제목은 다시 고칠 수 있습니다.",
+      fit: "contain",
+    },
+    {
+      id: "minially-portfolio-4",
+      src: "media/minially-portfolio-4.webp",
+      label: "할 일 목록 · 예시 데이터",
+      description: "할 일은 하루 단위로 보고, 끝내면 완료로 표시합니다.",
       fit: "contain",
     },
   ],

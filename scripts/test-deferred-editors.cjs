@@ -29,7 +29,7 @@ const projectAsset = /\/assets\/ProjectModal-[^/]+\.js$/;
         if (request.resourceType() === "script") requests.push(request.url());
       });
       page.on("pageerror", (error) => errors.push(error.message));
-      await page.goto(base);
+      await page.goto(base + "#/home");
       await page.getByRole("heading", { name: /필요한 걸 만들고/ }).waitFor();
       assert.ok(
         requests.some((url) => /\/assets\/.*\.js/.test(url)),

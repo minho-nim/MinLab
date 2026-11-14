@@ -280,6 +280,8 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/image-motion";
         .locator(".hero-mobile-featured .media-outgoing")
         .waitFor({ state: "detached" });
       await mobile.screenshot({ path: `${evidence}/home-390-${reduced}.png` });
+      await mobile.locator(".hero-thumbnail-track button").nth(2).click();
+      await mobile.locator(".hero-mobile-featured").scrollIntoViewIfNeeded();
       const link = await mobile.locator(".hero-mobile-featured").boundingBox();
       await cdp.send("Input.dispatchTouchEvent", {
         type: "touchStart",

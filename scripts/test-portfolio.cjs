@@ -36,6 +36,15 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto(base);
+    await page
+      .getByRole("heading", { name: "MinLab 둘러보기", exact: true })
+      .waitFor();
+    assert.equal(await page.locator(".smart-header").count(), 0);
+    assert.equal(await page.locator("dialog[open]").count(), 0);
+    await page
+      .getByRole("navigation", { name: "메인 화면 탐색" })
+      .getByRole("link", { name: "홈", exact: true })
+      .click();
     await page.getByRole("heading", { name: /필요한 걸 만들고/ }).waitFor();
     assert.equal(
       await page.getByRole("button", { name: "안내 닫기" }).count(),
@@ -77,7 +86,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     assert.equal(await page.locator(".text-project .project-media").count(), 0);
     const count = await page.locator(".archive-project").count();
     assert.ok(count > 0);
-    const last = page.locator(".archive-project").last();
+    const last = page.locator('.archive-project[href^="#/projects/"]').last();
     await last.scrollIntoViewIfNeeded();
     await page.waitForTimeout(100);
     const previousScroll = await page.evaluate(() => scrollY);
@@ -399,6 +408,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
           .getAttribute("src")
       ).includes("musclemap-map"),
     );
+    await page.locator(".project-records-disclosure > summary").click();
     await page.locator(".journey-versions button").nth(1).click();
     assert.equal(
       await page.locator(".journey-versions [aria-current=true]").count(),

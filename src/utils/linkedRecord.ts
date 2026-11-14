@@ -10,6 +10,10 @@ export function revealLinkedRecord(logId: string) {
   ].find((node) => node.dataset.log === logId);
   const node = target || document.getElementById("project-development");
   if (!node) return;
+  const records = node.closest<HTMLDetailsElement>(
+    ".project-records-disclosure",
+  );
+  if (records) records.open = true;
   if (target instanceof HTMLDetailsElement) target.open = true;
   target
     ?.querySelectorAll<HTMLDetailsElement>(".log-original")

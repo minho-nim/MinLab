@@ -1,3 +1,7 @@
+import {
+  projectDestination,
+  projectLinkLabel,
+} from "../utils/projectDestinations";
 import { projectStories } from "../data/projectStories";
 import { ProjectNavigator } from "./ProjectNavigator";
 import { FeatureShowcase } from "./FeatureShowcase";
@@ -47,6 +51,11 @@ export function ProjectPage({
           ))}
         </div>
         <div className="project-actions">
+          {story && (
+            <a className="primary-link" {...projectDestination(project.id)}>
+              {projectLinkLabel(project.id)} <ArrowUpRight size={17} />
+            </a>
+          )}
           {project.liveUrl?.trim() && (
             <a
               className="primary-link"
@@ -79,27 +88,13 @@ export function ProjectPage({
         {story ? (
           <>
             <p>{story.problem}</p>
-            <div className="project-before-after">
-              {story.changes.map((change) => (
-                <dl key={change.before}>
-                  <div>
-                    <dt>전</dt>
-                    <dd>{change.before}</dd>
-                  </div>
-                  <div>
-                    <dt>후</dt>
-                    <dd>{change.after}</dd>
-                  </div>
-                </dl>
-              ))}
-            </div>
             <a
               className="text-link"
               href={story.url}
               target="_blank"
               rel="noopener noreferrer"
             >
-              작업 과정 더 보기 <ArrowUpRight size={15} />
+              포트폴리오에서 작업 과정 보기 <ArrowUpRight size={15} />
             </a>
           </>
         ) : background ? (
@@ -120,7 +115,14 @@ export function ProjectPage({
           <p className="eyebrow">만들며 고친 것</p>
           <h2>버전별 개발일지</h2>
         </header>
-        <DevelopmentJourney project={project} linkedLogId={linkedLogId} />
+        <details
+          key={project.id + (linkedLogId || "")}
+          className="project-records-disclosure"
+          open={linkedLogId ? true : undefined}
+        >
+          <summary>개발 기록 {logs.length}개 보기</summary>
+          <DevelopmentJourney project={project} linkedLogId={linkedLogId} />
+        </details>
         <div className="project-actions">
           <a
             className="text-link"

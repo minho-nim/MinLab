@@ -43,7 +43,7 @@ export function SmartHeader({ view }: { view: string }) {
         className={"smart-header " + (compact ? "compact" : "")}
       >
         <div>
-          <a href="#/home" className="brand" aria-label="MinLab 홈">
+          <a href="#/start" className="brand" aria-label="MinLab 메인">
             MinLab<span>.</span>
           </a>
           <span className="header-subtitle">프로젝트 아카이브</span>
@@ -88,7 +88,7 @@ export function SmartHeader({ view }: { view: string }) {
         onClose={() => setOpen(false)}
       >
         <div className="menu-top">
-          <a className="brand" href="#/home" onClick={() => setOpen(false)}>
+          <a className="brand" href="#/start" onClick={() => setOpen(false)}>
             MinLab.
           </a>
           <button aria-label="전체 메뉴 닫기" onClick={() => setOpen(false)}>

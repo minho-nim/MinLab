@@ -6,6 +6,7 @@ import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
 import { Project, WorkLog, NavigationTab } from "./types";
 import { loadProjects, saveProjects } from "./utils/storage";
 import { SmartHeader } from "./components/SmartHeader";
+import { EntryLanding } from "./components/EntryLanding";
 import { HomePage } from "./components/HomePage";
 import { ArchiveView } from "./components/ArchiveView";
 import { AboutPage } from "./components/AboutPage";
@@ -106,7 +107,7 @@ export default function App() {
     changes.changed.length > 0 ||
     changes.reordered;
   const [route, setRoute] = useState<ArchiveRoute>(() =>
-    parseRoute(window.location.hash || "#/home"),
+    parseRoute(window.location.hash || "#/start"),
   );
   const selectedProjectId =
     route.view === "project" || route.view === "manage"
@@ -144,18 +145,18 @@ export default function App() {
     const priorRestoration = history.scrollRestoration;
     history.scrollRestoration = "manual";
     let restoring = false;
-    let current = window.location.hash || "#/home";
+    let current = window.location.hash || "#/start";
     let position = window.scrollY;
     const save = () => {
       if (
         restoring ||
-        (window.location.hash || "#/home").split("?")[0] !==
+        (window.location.hash || "#/start").split("?")[0] !==
           current.split("?")[0]
       )
         return;
       position = window.scrollY;
       // Filter edits replace the current URL without a hashchange event.
-      current = window.location.hash || "#/home";
+      current = window.location.hash || "#/start";
       try {
         sessionStorage.setItem("minlab_scroll:" + current, String(position));
         if (parseRoute(current).view === "archive")
@@ -191,13 +192,13 @@ export default function App() {
       restoring = true;
       try {
         const previous = event?.oldURL
-          ? new URL(event.oldURL).hash || "#/home"
+          ? new URL(event.oldURL).hash || "#/start"
           : current;
         sessionStorage.setItem("minlab_scroll:" + previous, String(position));
         if (parseRoute(previous).view === "archive")
           sessionStorage.setItem("minlab_last_archive", previous);
       } catch {}
-      current = window.location.hash || "#/home";
+      current = window.location.hash || "#/start";
       const nextRoute = parseRoute(current);
       void motion.run(
         () =>
@@ -481,7 +482,9 @@ export default function App() {
       {/* Toast Notifications */}
       <Toast toasts={toasts} onDismiss={handleDismissToast} />
 
-      <SmartHeader view={route.view === "project" ? "archive" : route.view} />
+      {route.view !== "landing" && (
+        <SmartHeader view={route.view === "project" ? "archive" : route.view} />
+      )}
 
       {/* Storage & Data Preservation Notice Banner */}
       {showStorageNotice &&
@@ -522,7 +525,11 @@ export default function App() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9"
+        className={
+          route.view === "landing"
+            ? "entry-root flex-1 w-full"
+            : "flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9"
+        }
       >
         {selectedProject && route.view === "project" ? (
           <ProjectPage
@@ -567,6 +574,8 @@ export default function App() {
               아카이브로 돌아가기
             </a>
           </div>
+        ) : route.view === "landing" ? (
+          <EntryLanding />
         ) : route.view === "home" ? (
           <HomePage projects={published.filter((p) => p.visible !== false)} />
         ) : route.view === "about" ? (
@@ -1042,39 +1051,41 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-line py-6 text-xs text-muted bg-canvas">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-ink">MinLab</span>
-            <span>·</span>
-            <span>AI 활용 · 프로젝트 · 개발일지</span>
-          </div>
+      {route.view !== "landing" && (
+        <footer className="mt-auto border-t border-line py-6 text-xs text-muted bg-canvas">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-ink">MinLab</span>
+              <span>·</span>
+              <span>AI 활용 · 프로젝트 · 개발일지</span>
+            </div>
 
-          <div className="flex items-center gap-3 text-[11px] text-muted">
-            {(route.view === "admin" ||
-              route.view === "manage" ||
-              manageRecords) && (
-              <button
-                onClick={() => setIsBackupModalOpen(true)}
-                className="hover:text-accent transition-colors"
+            <div className="flex items-center gap-3 text-[11px] text-muted">
+              {(route.view === "admin" ||
+                route.view === "manage" ||
+                manageRecords) && (
+                <button
+                  onClick={() => setIsBackupModalOpen(true)}
+                  className="hover:text-accent transition-colors"
+                >
+                  JSON 데이터 백업·복원
+                </button>
+              )}
+              <span>·</span>
+
+              <span>·</span>
+              <a
+                href="https://github.com/minho-nim/MinLab"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-ink transition-colors"
               >
-                JSON 데이터 백업·복원
-              </button>
-            )}
-            <span>·</span>
-
-            <span>·</span>
-            <a
-              href="https://github.com/minho-nim/MinLab"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-ink transition-colors"
-            >
-              GitHub 저장소
-            </a>
+                GitHub 저장소
+              </a>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
 
       {/* Modals */}
       {/* 1. Project Add / Edit Modal */}

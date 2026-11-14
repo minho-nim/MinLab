@@ -68,3 +68,40 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published portfolio
+        env:
+          DEPLOYMENT_URL: ${{ steps.deployment.outputs.page_url }}
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const base = new URL(process.env.DEPLOYMENT_URL);
+          base.pathname = base.pathname.replace(/\/?$/, '/');
+          let lastError;
+          for (let attempt = 0; attempt < 12; attempt++) {
+            try {
+              const request = async (path) => {
+                const url = new URL(path, base);
+                url.searchParams.set('deploy', process.env.DEPLOY_SHA);
+                const response = await fetch(url);
+                assert.ok(response.ok, `${response.status} ${url.pathname}`);
+                return response;
+              };
+              const html = await (await request('./')).text();
+              assert.match(html, /<title>MinLab/);
+              const script = html.match(/<script[^>]+src="([^"]+)"/);
+              assert.ok(script, 'Entry script is missing');
+              const code = await (await request(script[1])).text();
+              assert.ok(code.includes('https://minho-nim.github.io/Valumin/'), 'The new launch URL is not published yet');
+              for (const path of ['media/minova-choice.webp', 'media/valumin-overview.webp', 'media/schedule-matching.jpg'])
+                assert.match((await request(path)).headers.get('content-type'), /^image\//);
+              assert.match(await (await request('apps/work-schedule/')).text(), /<script/);
+              console.log(`공개 포트폴리오 검증 통과: ${base.href}`);
+              process.exit(0);
+            } catch (error) {
+              lastError = error;
+              if (attempt < 11) await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+          }
+          throw lastError;
+          JS

@@ -224,7 +224,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
   "proj-1792978415000": [
     {
       id: "worthit-demo",
-      src: "media/valumin-overview.webp",
+      src: "media/valumin-overview.webp?v=822c28b",
       label: "소비와 목표 살펴보기",
       description: "",
       action: "샘플 체험에서 물건·구독·회원권의 가격과 현재 단가를 봅니다.",
@@ -236,7 +236,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
     },
     {
       id: "valumin-register",
-      src: "media/valumin-register.webp",
+      src: "media/valumin-register.webp?v=822c28b",
       label: "내 사용 목표로 등록하기",
       description: "",
       action: "소비 이름·가격과 기록 방식을 정하고 만족할 사용량을 입력합니다.",
@@ -249,7 +249,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
     },
     {
       id: "valumin-usage",
-      src: "media/valumin-usage.webp",
+      src: "media/valumin-usage.webp?v=822c28b",
       label: "쓸 때마다 기록하기",
       description: "",
       action: "항목의 +1회 사용을 눌러 사용 횟수를 추가합니다.",
@@ -261,7 +261,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
     },
     {
       id: "valumin-detail",
-      src: "media/valumin-detail.webp",
+      src: "media/valumin-detail.webp?v=822c28b",
       label: "단가와 목표 확인하기",
       description: "",
       action: "소비 항목의 상세보기를 열어 사용 기록과 목표를 확인합니다.",

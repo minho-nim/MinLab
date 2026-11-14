@@ -16,11 +16,11 @@ The captures show the app, not a reconstructed MinLab mockup. The introductory f
 
 ## Valumin
 
-Source: `minho-nim/Valumin` at `822c28b422867aa0f08ed3d05f0a2a4c4c354950`, captured 2026-11-14. This is the actual production build of [Valumin PR #9](https://github.com/minho-nim/Valumin/pull/9), not a claim that the production deployment has already changed.
+Source: `minho-nim/Valumin` at `822c28b422867aa0f08ed3d05f0a2a4c4c354950`, captured 2026-11-14. This is the actual production build of [Valumin PR #9](https://github.com/minho-nim/Valumin/pull/9), captured before production release; the later deployment-path correction does not alter the pictured UI.
 
 `valumin-overview.webp`, `valumin-register.webp`, `valumin-usage.webp`, `valumin-detail.webp` show the source app at `/worthit/?mode=demo`, using its built-in sample data. The actual app now renders Valumin in this reviewed source. PNG screenshots at 1200×1000 were encoded as WebP without painting or replacing text. The captures verify opening the registration form, adding a sample use and viewing item details; they do not prove submitting a new item or every calculation boundary.
 
-Separate checks used an actual backup exported by the prior app at `d4b36093bb3d23f13d5b796e55ada70d055606b1`. Import, restore, export and reload preserved its item/usage/billing arrays. Demo actions left personal storage unchanged. Actual PNG and PDF receipt downloads used Valumin filenames, and the PDF Creator was Valumin. Header/title/install guide/manifest, empty data and invalid backup states were checked at 400/1400px. Real installed iOS/Android name refresh, offline reentry and OS clipboard/sharing were not tested. Legacy storage keys, PWA identity, `/worthit/` URL and JSON version remain unchanged.
+Separate checks used an actual backup exported by the prior app at `d4b36093bb3d23f13d5b796e55ada70d055606b1`. Import, restore, export and reload preserved its item/usage/billing arrays. Demo actions left personal storage unchanged. Actual PNG and PDF receipt downloads used Valumin filenames, and the PDF Creator was Valumin. Header/title/install guide/manifest, empty data and invalid backup states were checked at 400/1400px. Real installed iOS/Android name refresh, offline reentry and OS clipboard/sharing were not tested. Legacy storage keys, PWA identity (`/worthit/`) and JSON version remain unchanged. The actual Pages repository publishes at `/Valumin/`, so build/start/scope/fallback and public launch links use `/Valumin/`; the old Pages bookmark is not guaranteed to redirect.
 
 | File                  | SHA-256                                                          |
 | --------------------- | ---------------------------------------------------------------- |

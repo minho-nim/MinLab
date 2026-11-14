@@ -27,6 +27,8 @@ test("public Valumin naming changes presentation only and retains historical rec
   const p = {
     ...catalogProjects().find((p) => p.id === "proj-1792978415000")!,
     name: "WorthIt",
+    liveUrl: "https://minho-nim.github.io/worthit/?mode=demo",
+    previewUrl: "https://custom.example/my-app/",
     workLogs: [
       {
         id: "history",
@@ -40,6 +42,9 @@ test("public Valumin naming changes presentation only and retains historical rec
   const view = publicProject(p);
   assert.equal(view.name, "Valumin");
   assert.equal(view.englishName, "Valumin");
+  assert.equal(view.liveUrl, "https://minho-nim.github.io/Valumin/?mode=demo");
+  assert.equal(view.previewUrl, p.previewUrl);
+  assert.equal(publicProject({ ...p, liveUrl: "" }).liveUrl, "");
   assert.equal(view.workLogs, p.workLogs);
   assert.equal(JSON.stringify(p), before);
   assert.equal(

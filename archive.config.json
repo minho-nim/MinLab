@@ -61,7 +61,7 @@
       "name": "Valumin",
       "description": "구매한 물건과 구독을 얼마나 썼는지 기록하고, 한 번 쓸 때 드는 비용을 확인하는 앱",
       "category": "소비 관리",
-      "appUrl": "https://minho-nim.github.io/worthit/",
+      "appUrl": "https://minho-nim.github.io/Valumin/",
       "techStack": [
         "React",
         "TypeScript",

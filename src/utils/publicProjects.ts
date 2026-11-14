@@ -2,6 +2,22 @@ import type { Project } from "../types";
 import snapshot from "../data/archiveSnapshot.json";
 import config from "../../archive.config.json";
 
+function valuminLaunchUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    if (
+      url.origin === "https://minho-nim.github.io" &&
+      /^\/worthit\/?$/.test(url.pathname)
+    ) {
+      url.pathname = "/Valumin/";
+      return url.href;
+    }
+  } catch {
+    /* Keep blank and custom values unchanged. */
+  }
+  return value;
+}
+
 /** Presentation-only corrections: original JSON, IDs and historical records remain untouched. */
 export function publicProject(project: Project): Project {
   const legacy = snapshot.find((p) => p.id === project.id);
@@ -23,6 +39,11 @@ export function publicProject(project: Project): Project {
     name,
     englishName: valumin || name !== project.name ? name : project.englishName,
     description,
+    liveUrl: valumin ? valuminLaunchUrl(project.liveUrl) : project.liveUrl,
+    previewUrl:
+      valumin && project.previewUrl
+        ? valuminLaunchUrl(project.previewUrl)
+        : project.previewUrl,
   };
 }
 

@@ -3,19 +3,25 @@ import type { Project } from "../types";
 export const primaryProjectIds = [
   "proj-minlab-ai-office",
   "proj-minially",
-  "proj-1792978415000",
+] as const;
+
+export const portfolioProjectIds = [
+  ...primaryProjectIds,
   "proj-crossroads-ai-verdict",
+  "proj-1792978415000",
+  "proj-snake-race",
+  "proj-musclemap",
 ] as const;
 
 /** Lead visitor navigation with the main projects; keep all other saved positions. */
 export function orderPortfolioProjects(projects: Project[]): Project[] {
   const rank = new Map<string, number>(
-    primaryProjectIds.map((id, index) => [id, index]),
+    portfolioProjectIds.map((id, index) => [id, index]),
   );
   return [...projects].sort(
     (a, b) =>
-      (rank.get(a.id) ?? primaryProjectIds.length) -
-      (rank.get(b.id) ?? primaryProjectIds.length),
+      (rank.get(a.id) ?? portfolioProjectIds.length) -
+      (rank.get(b.id) ?? portfolioProjectIds.length),
   );
 }
 
@@ -42,7 +48,7 @@ export function selectHomeProjects(
       categories.add(p.category.trim());
     }
   };
-  for (const id of primaryProjectIds)
+  for (const id of portfolioProjectIds)
     add(eligible.find((project) => project.id === id));
   const first = eligible.find(hasScreen) || eligible[0];
   add(first);

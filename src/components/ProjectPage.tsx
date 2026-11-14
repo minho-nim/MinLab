@@ -3,6 +3,11 @@ import {
   projectLinkLabel,
 } from "../utils/projectDestinations";
 import { projectStories } from "../data/projectStories";
+import {
+  ProjectPurpose,
+  ProjectMaking,
+  ProjectScope,
+} from "./ProjectCaseContent";
 import { ProjectNavigator } from "./ProjectNavigator";
 import { FeatureShowcase } from "./FeatureShowcase";
 import { DevelopmentJourney } from "./DevelopmentJourney";
@@ -25,11 +30,8 @@ export function ProjectPage({
   const logs = [...project.workLogs].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
-  const background = [...logs]
-    .reverse()
-    .find((item) => item.reason || item.issues);
   return (
-    <div className="project-story">
+    <div className="project-story" data-project-id={project.id}>
       <ProjectChapters />
       <div className="project-breadcrumb">
         <a className="text-link" href={lastArchive()}>
@@ -40,11 +42,23 @@ export function ProjectPage({
         id="project-overview"
         className="project-intro project-chapter-target"
       >
-        <p className="eyebrow">
-          {project.category} / {project.status}
-        </p>
+        <p className="eyebrow">{project.category}</p>
         <h1>{project.name}</h1>
         <p>{project.description}</p>
+        <dl className="project-availability">
+          <div>
+            <dt>개발 상태</dt>
+            <dd>{project.status}</dd>
+          </div>
+          <div>
+            <dt>이용 경로</dt>
+            <dd>
+              {project.liveUrl?.trim()
+                ? "앱 실행 링크 제공 · 검증 범위는 아래에서 확인"
+                : "등록된 앱 실행 링크 없음"}
+            </dd>
+          </div>
+        </dl>
         <div className="project-tags">
           {project.techStack.map((t) => (
             <span key={t}>{t}</span>
@@ -58,12 +72,12 @@ export function ProjectPage({
           )}
           {project.liveUrl?.trim() && (
             <a
-              className="primary-link"
+              className={story ? "text-link" : "primary-link"}
               href={project.liveUrl}
               target="_blank"
               rel="noreferrer"
             >
-              앱 실행하기 <ArrowUpRight size={17} />
+              앱 실행 · 새 탭 <ArrowUpRight size={17} />
             </a>
           )}
           {project.githubUrl && (
@@ -73,46 +87,20 @@ export function ProjectPage({
               target="_blank"
               rel="noreferrer"
             >
-              GitHub <ArrowUpRight size={16} />
+              GitHub · 새 탭 <ArrowUpRight size={16} />
             </a>
           )}
         </div>
       </header>
       <FeatureShowcase project={project} />
-      <section
-        id="project-problem"
-        className="problem-solution detail-reading-section project-chapter-target"
-      >
-        <p className="eyebrow">바꾸고 싶었던 것</p>
-        <h2>왜 만들었나</h2>
-        {story ? (
-          <>
-            <p>{story.problem}</p>
-            <a
-              className="text-link"
-              href={story.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              포트폴리오에서 작업 과정 보기 <ArrowUpRight size={15} />
-            </a>
-          </>
-        ) : background ? (
-          <>
-            <small>{background.date} · 개발일지</small>
-            <p>{background.reason || background.issues}</p>
-            {background.solution && <p>{background.solution}</p>}
-          </>
-        ) : (
-          <p>왜 만들었는지는 아직 적지 않았습니다.</p>
-        )}
-      </section>
+      <ProjectPurpose project={project} />
       <section
         id="project-development"
         className="detail-development project-chapter-target"
       >
+        <ProjectMaking project={project} />
         <header>
-          <p className="eyebrow">만들며 고친 것</p>
+          <p className="eyebrow">원본 기록</p>
           <h2>버전별 개발일지</h2>
         </header>
         <details
@@ -146,22 +134,8 @@ export function ProjectPage({
         id="project-result"
         className="detail-reading-section project-chapter-target"
       >
-        <p className="eyebrow">결과와 다음 작업</p>
-        <h2>테스트 결과와 남은 작업</h2>
-        {logs.find((l) => l.testResult) ? (
-          <>
-            <h3>최근 테스트 결과</h3>
-            <p>{logs.find((l) => l.testResult)?.testResult}</p>
-          </>
-        ) : (
-          <p>아직 등록된 테스트 결과가 없습니다.</p>
-        )}
-        {logs.find((l) => l.nextSteps) && (
-          <>
-            <h3>다음에 할 일</h3>
-            <p>{logs.find((l) => l.nextSteps)?.nextSteps}</p>
-          </>
-        )}
+        <h2>구현한 것과 남은 확인</h2>
+        <ProjectScope project={project} />
         {project.changelog.length > 0 && (
           <details>
             <summary>기존 변경 이력 {project.changelog.length}개</summary>
@@ -178,12 +152,12 @@ export function ProjectPage({
         <div className="project-actions">
           {project.liveUrl?.trim() && (
             <a
-              className="primary-link"
+              className={story ? "text-link" : "primary-link"}
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              앱 실행하기 ↗
+              앱 실행 · 새 탭 ↗
             </a>
           )}
           {project.githubUrl && (
@@ -193,7 +167,7 @@ export function ProjectPage({
               target="_blank"
               rel="noopener noreferrer"
             >
-              GitHub ↗
+              GitHub · 새 탭 ↗
             </a>
           )}
         </div>

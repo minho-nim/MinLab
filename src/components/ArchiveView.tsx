@@ -1,4 +1,7 @@
-import { projectDestination } from "../utils/projectDestinations";
+import {
+  projectDestination,
+  projectLinkLabel,
+} from "../utils/projectDestinations";
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ArrowUpRight, Grid2X2, List, Search, X } from "lucide-react";
 import type { Project } from "../types";
@@ -359,7 +362,12 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
               )}
               {query.layout === "list" && (
                 <div className="archive-list-row">
-                  <strong>{p.name} ↗</strong>
+                  <strong>
+                    {p.name} ↗
+                    <small className="project-destination">
+                      {projectLinkLabel(p.id)}
+                    </small>
+                  </strong>
                   <span>{p.category}</span>
                   <span>{p.status}</span>
                   <time>{p.updatedAt?.slice(0, 10) || "미등록"}</time>
@@ -383,7 +391,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
                       ? `개발 기록 ${p.workLogs.length}`
                       : "프로젝트 소개"}
                   </span>
-                  <span>살펴보기 ↗</span>
+                  <span>{projectLinkLabel(p.id)} ↗</span>
                 </div>
                 <div className="project-tags">
                   <span>{p.status}</span>

@@ -301,7 +301,7 @@ test("updated public project names and Minially URL keep custom text, IDs and re
   );
   assert.equal(
     result.find((p) => p.id === "proj-1792978415000")!.name,
-    "벨류민 (Valumin)",
+    "Valumin",
   );
   assert.equal(
     result.find((p) => p.id === "proj-minially")!.liveUrl,

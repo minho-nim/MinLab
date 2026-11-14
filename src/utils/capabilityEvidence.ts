@@ -1,5 +1,9 @@
+import {
+  capabilityNarratives,
+  type CapabilityNarrative,
+} from "../data/capabilityNarratives";
 import type { Project, WorkLog } from "../types";
-import { orderPortfolioProjects, primaryProjectIds } from "./homeProjects";
+import { primaryProjectIds } from "./homeProjects";
 
 export const capabilities = [
   {
@@ -28,6 +32,12 @@ export const capabilities = [
   },
 ] as const;
 
+export interface CapabilityEvidence {
+  project: Project;
+  log: WorkLog;
+  excerpt: { label: string; text: string };
+  narrative?: CapabilityNarrative;
+}
 export function capabilityEvidence(projects: Project[], index: number) {
   const capability = capabilities[index] || capabilities[0];
   const source = (log: WorkLog) =>
@@ -44,9 +54,24 @@ export function capabilityEvidence(projects: Project[], index: number) {
           .map((line) => ({ label: label!, text: line.trim() })),
       )
       .find((item) => item.text && capability.match.test(item.text));
-  const matches = orderPortfolioProjects(projects)
+  const matches = projects
     .filter((p) => p.visible !== false && !p.archived)
-    .flatMap((project) => {
+    .flatMap<CapabilityEvidence>((project) => {
+      const narrative = capabilityNarratives[project.id]?.[capability.id];
+      const proof =
+        narrative && project.workLogs.find((log) => log.id === narrative.logId);
+      if (proof)
+        return [
+          {
+            project,
+            log: proof,
+            excerpt: {
+              label: "근거 기록",
+              text: proof.content || proof.task || proof.title || "",
+            },
+            narrative,
+          },
+        ];
       const logs = [...project.workLogs].sort(
         (a, b) =>
           b.date.localeCompare(a.date) ||
@@ -54,7 +79,7 @@ export function capabilityEvidence(projects: Project[], index: number) {
       );
       for (const log of logs) {
         const excerpt = source(log);
-        if (excerpt) return [{ project, log, excerpt }];
+        if (excerpt) return [{ project, log, excerpt, narrative: undefined }];
       }
       return [];
     });

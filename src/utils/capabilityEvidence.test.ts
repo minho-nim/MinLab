@@ -107,7 +107,7 @@ test("capabilities explain matching main projects first without filling their sp
   const before = JSON.stringify(data);
   assert.deepEqual(
     capabilityEvidence(data, 2).map((e) => e.project.id),
-    ids.slice(0, 2),
+    [ids[1], ids[0]],
   );
   assert.equal(JSON.stringify(data), before);
   assert.deepEqual(

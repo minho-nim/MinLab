@@ -7,11 +7,13 @@ export function MediaViewer({
   screens,
   initialIndex,
   onClose,
+  returnFocus,
 }: {
   name: string;
   screens: ResolvedMedia[];
   initialIndex: number;
   onClose: () => void;
+  returnFocus?: HTMLElement | null;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -33,7 +35,8 @@ export function MediaViewer({
   const index = Math.max(0, Math.min(active, screens.length - 1));
   const screen = screens[index];
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
+    const previous =
+      returnFocus || (document.activeElement as HTMLElement | null);
     const overflow = document.body.style.overflow;
     const node = dialog.current;
     node?.showModal();
@@ -193,14 +196,21 @@ export function MediaViewer({
           </>
         )}
       </div>
-      <div className="media-viewer-controls">
-        <button
-          disabled={index === 0}
-          onClick={() => select(index - 1)}
-          aria-label="이전 화면"
-        >
-          <ArrowLeft size={20} />
-        </button>
+      <div
+        className={
+          "media-viewer-controls" +
+          (screens.length === 1 ? " single-screen" : "")
+        }
+      >
+        {screens.length > 1 && (
+          <button
+            disabled={index === 0}
+            onClick={() => select(index - 1)}
+            aria-label="이전 화면"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        )}
         <p aria-live="polite" aria-atomic="true">
           <span>
             {String(index + 1).padStart(2, "0")} /{" "}
@@ -208,13 +218,15 @@ export function MediaViewer({
           </span>
           {screen.label}
         </p>
-        <button
-          disabled={index === screens.length - 1}
-          onClick={() => select(index + 1)}
-          aria-label="다음 화면"
-        >
-          <ArrowRight size={20} />
-        </button>
+        {screens.length > 1 && (
+          <button
+            disabled={index === screens.length - 1}
+            onClick={() => select(index + 1)}
+            aria-label="다음 화면"
+          >
+            <ArrowRight size={20} />
+          </button>
+        )}
         <button
           disabled={failed === screen.src || loaded !== screen.src}
           onClick={() => setZoomed(!zoomed)}
@@ -224,40 +236,45 @@ export function MediaViewer({
           {zoomed ? <ZoomOut size={20} /> : <ZoomIn size={20} />}
         </button>
       </div>
-      <nav
-        ref={track}
-        className="media-viewer-track"
-        aria-label="미리보기 화면 선택"
-      >
-        {screens.map((item, i) => (
-          <button
-            key={item.id}
-            aria-pressed={index === i}
-            onClick={() => select(i)}
-          >
-            <span className="viewer-thumbnail" aria-hidden="true">
-              <img
-                src={item.src}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-                onError={(event) => {
-                  event.currentTarget.style.visibility = "hidden";
-                }}
-              />
-            </span>
-            <span className="viewer-thumbnail-label">
-              <small>{String(i + 1).padStart(2, "0")}</small>
-              {item.label}
-            </span>
-          </button>
-        ))}
-      </nav>
+      {screen.notice && <p className="media-viewer-caption">{screen.notice}</p>}
+      {screens.length > 1 && (
+        <nav
+          ref={track}
+          className="media-viewer-track"
+          aria-label="미리보기 화면 선택"
+        >
+          {screens.map((item, i) => (
+            <button
+              key={item.id}
+              aria-pressed={index === i}
+              onClick={() => select(i)}
+            >
+              <span className="viewer-thumbnail" aria-hidden="true">
+                <img
+                  src={item.src}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                  onError={(event) => {
+                    event.currentTarget.style.visibility = "hidden";
+                  }}
+                />
+              </span>
+              <span className="viewer-thumbnail-label">
+                <small>{String(i + 1).padStart(2, "0")}</small>
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </nav>
+      )}
       <p className="media-viewer-help">
         {zoomed
           ? "스크롤·드래그로 자세히 보기"
-          : "좌우 키 또는 스와이프로 넘기기"}{" "}
+          : screens.length > 1
+            ? "좌우 키 또는 스와이프로 넘기기"
+            : "확대해서 자세히 보기"}{" "}
         · Esc로 닫기
       </p>
     </dialog>

@@ -14,14 +14,28 @@ export const portfolioProjectIds = [
 ] as const;
 
 /** Lead visitor navigation with the main projects; keep all other saved positions. */
-export function orderPortfolioProjects(projects: Project[]): Project[] {
-  const rank = new Map<string, number>(
-    portfolioProjectIds.map((id, index) => [id, index]),
-  );
+export const portfolioOrderKey = "minlab_portfolio_order_v1";
+export function parsePortfolioOrder(value: string): string[] | undefined {
+  try {
+    const ids = JSON.parse(value);
+    return Array.isArray(ids) &&
+      ids.every((id) => typeof id === "string") &&
+      new Set(ids).size === ids.length
+      ? ids
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+export function orderPortfolioProjects(
+  projects: Project[],
+  explicitOrder?: string[],
+): Project[] {
+  const order = explicitOrder ?? portfolioProjectIds;
+  const rank = new Map<string, number>(order.map((id, index) => [id, index]));
   return [...projects].sort(
     (a, b) =>
-      (rank.get(a.id) ?? portfolioProjectIds.length) -
-      (rank.get(b.id) ?? portfolioProjectIds.length),
+      (rank.get(a.id) ?? order.length) - (rank.get(b.id) ?? order.length),
   );
 }
 
@@ -30,6 +44,7 @@ export function selectHomeProjects(
   projects: Project[],
   hasScreen: (project: Project) => boolean,
   limit: number,
+  preserveOrder = false,
 ): Project[] {
   const eligible = projects.filter(
     (p) =>
@@ -37,6 +52,7 @@ export function selectHomeProjects(
       !p.archived &&
       (hasScreen(p) || Boolean(p.liveUrl?.trim())),
   );
+  if (preserveOrder) return eligible.slice(0, Math.max(0, limit));
   const chosen: Project[] = [];
   const used = new Set<string>();
   const categories = new Set<string>();

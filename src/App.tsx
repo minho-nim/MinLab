@@ -1,6 +1,11 @@
 import React, { useState, useMemo, useEffect, lazy } from "react";
 import { flushSync } from "react-dom";
-import { orderPortfolioProjects } from "./utils/homeProjects";
+import { publicProject } from "./utils/publicProjects";
+import {
+  orderPortfolioProjects,
+  parsePortfolioOrder,
+  portfolioOrderKey,
+} from "./utils/homeProjects";
 import { routeMotion } from "./utils/routeMotion";
 import { revealLinkedRecord } from "./utils/linkedRecord";
 import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
@@ -18,7 +23,7 @@ import { parseRoute, routeHash, type ArchiveRoute } from "./utils/navigation";
 import { Toast, ToastMessage } from "./components/Toast";
 import { contentChanges, draftKey, storeDraft } from "./utils/contentDraft";
 import { parseImportJson } from "./utils/storage";
-import { safeRead } from "./utils/archiveQuery";
+import { safeRead, safeWrite } from "./utils/archiveQuery";
 import { Info, X, Download } from "lucide-react";
 
 import { DeferredEditor } from "./components/DeferredEditor";
@@ -67,9 +72,16 @@ const DeleteConfirmModal = lazy(() =>
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
   const [published, setPublished] = useState<Project[]>(() => projects);
+  const [portfolioOrder, setPortfolioOrder] = useState(() =>
+    parsePortfolioOrder(safeRead(portfolioOrderKey)),
+  );
   const visitorProjects = useMemo(
-    () => orderPortfolioProjects(published.filter((p) => p.visible !== false)),
-    [published],
+    () =>
+      orderPortfolioProjects(
+        published.filter((p) => p.visible !== false),
+        portfolioOrder,
+      ).map(publicProject),
+    [published, portfolioOrder],
   );
   const [review, setReview] = useState(false);
   const [recovery, setRecovery] = useState<Project[] | null>(null);
@@ -85,6 +97,7 @@ export default function App() {
       .then((value) => {
         if (!live || !value) return;
         setPublished(value.content);
+        setPortfolioOrder(value.content.map((p) => p.id));
         setRemoteAbout(value.about);
         if (!safeRead(draftKey)) setProjects(value.content);
         if (!safeRead("minlab_about_intro_v1_draft"))
@@ -540,7 +553,7 @@ export default function App() {
           <ProjectPage
             key={selectedProject.id}
             project={
-              published.find((p) => p.id === selectedProject.id) ||
+              visitorProjects.find((p) => p.id === selectedProject.id) ||
               selectedProject
             }
             projects={visitorProjects}
@@ -611,6 +624,7 @@ export default function App() {
                   }}
                   onPublish={(value, about) => {
                     setPublished(value);
+                    setPortfolioOrder(value.map((p) => p.id));
                     setRemoteAbout(about);
                   }}
                 />
@@ -676,6 +690,9 @@ export default function App() {
                             return;
                           }
                           setPublished(projects);
+                          const order = projects.map((p) => p.id);
+                          setPortfolioOrder(order);
+                          safeWrite(portfolioOrderKey, JSON.stringify(order));
                           setReview(false);
                           try {
                             localStorage.removeItem(draftKey);
@@ -1071,9 +1088,6 @@ export default function App() {
                   JSON 데이터 백업·복원
                 </button>
               )}
-              <span>·</span>
-
-              <span>·</span>
               <a
                 href="https://github.com/minho-nim/MinLab"
                 target="_blank"

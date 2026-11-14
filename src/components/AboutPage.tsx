@@ -1,4 +1,7 @@
-import { projectDestination } from "../utils/projectDestinations";
+import {
+  projectDestination,
+  projectLinkLabel,
+} from "../utils/projectDestinations";
 import { useState, useEffect, useRef } from "react";
 import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
@@ -79,8 +82,9 @@ export function AboutPage({
     {
       label: "현장 경험",
       title: "통신·데이터센터 프로젝트를 관리했습니다.",
-      description: "일정과 공정, 품질, 사업 관리를 맡았습니다.",
-      match: (p: Project) => /업무|자동화/.test(p.category),
+      description:
+        "일정과 공정, 품질, 사업 관리를 맡았습니다. 반복해서 옮기던 문서 정보를 정리하는 업무 자동화 도구로 연결했습니다.",
+      match: (p: Project) => p.id === "risk-assessment-workplan-automation",
     },
     {
       label: "개인 프로젝트",
@@ -92,7 +96,7 @@ export function AboutPage({
       label: "AI 활용",
       title: "개발할 때 AI의 도움을 받습니다.",
       description:
-        "기획을 정리하고 코드를 작성하거나 테스트할 때 활용합니다. 작업 내용과 사용한 프롬프트를 함께 남깁니다.",
+        "AI에게 개발 도움을 받으면서도 업무 구조와 승인 기준은 직접 정합니다. Minoffia에서는 이 요청·역할 분담·검토 과정을 하나의 흐름으로 확장했습니다.",
       match: (p: Project) =>
         p.workLogs.length > 0 || Boolean(p.promptHistory?.length),
     },
@@ -230,6 +234,7 @@ export function AboutPage({
                       {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
                       <div>
                         <strong>{p.name} ↗</strong>
+                        <small>{projectLinkLabel(p.id)}</small>
                         <p>{p.description}</p>
                         <small>
                           {p.workLogs.length
@@ -283,19 +288,34 @@ export function AboutPage({
               role="region"
               aria-label={capabilities[capability].name + " 관련 개발일지"}
             >
-              {evidence.map(({ project: p, log, excerpt }) => (
+              {evidence.map(({ project: p, log, excerpt, narrative }) => (
                 <article key={p.id} data-evidence-log={log.id}>
                   <a {...projectDestination(p.id)}>
                     <strong>{p.name} ↗</strong>
+                    <small>{projectLinkLabel(p.id)}</small>
                   </a>
                   <p>{p.description}</p>
+                  {narrative && (
+                    <dl className="capability-narrative">
+                      {[
+                        ["다룬 문제", narrative.problem],
+                        ["정한 기준", narrative.criterion],
+                        ["구현·검토", narrative.work],
+                      ].map(([label, text]) => (
+                        <div key={label}>
+                          <dt>{label}</dt>
+                          <dd>{text}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
                   <p className="capability-record-title">
                     {log.title || log.task || "개발 기록"}
                   </p>
                   <small>
                     {log.date} · {log.version || "버전 미지정"}
                   </small>
-                  {excerpt.label !== "수정 제목" && (
+                  {!narrative && excerpt.label !== "수정 제목" && (
                     <div className="evidence-excerpt">
                       <small>{excerpt.label}</small>
                       <blockquote>{excerpt.text}</blockquote>

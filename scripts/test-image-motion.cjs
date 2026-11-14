@@ -280,8 +280,19 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/image-motion";
         .locator(".hero-mobile-featured .media-outgoing")
         .waitFor({ state: "detached" });
       await mobile.screenshot({ path: `${evidence}/home-390-${reduced}.png` });
-      await mobile.locator(".hero-thumbnail-track button").nth(2).click();
       await mobile.locator(".hero-mobile-featured").scrollIntoViewIfNeeded();
+      const destination = await mobile
+        .locator(".hero-mobile-featured")
+        .getAttribute("href");
+      await mobile
+        .context()
+        .route(destination, (route) =>
+          route.fulfill({
+            contentType: "text/html",
+            body: "<title>Portfolio link fixture</title>",
+          }),
+        );
+      const opened = mobile.waitForEvent("popup");
       const link = await mobile.locator(".hero-mobile-featured").boundingBox();
       await cdp.send("Input.dispatchTouchEvent", {
         type: "touchStart",
@@ -294,22 +305,19 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/image-motion";
         type: "touchEnd",
         touchPoints: [],
       });
-      await mobile
-        .locator(".project-story")
-        .waitFor()
-        .catch(() => {
-          throw new Error(
-            "Tap after swipe did not reach detail: " +
-              reduced +
-              " " +
-              mobile.url(),
-          );
-        });
-      assert.notEqual(
+      const portfolio = await opened;
+      await portfolio.waitForURL(destination);
+      assert.equal(
         mobile.url(),
         homeUrl,
-        "a subsequent deliberate tap still opens the project",
+        "the original portfolio stays on the home page",
       );
+      assert.equal(
+        portfolio.url(),
+        destination,
+        "a deliberate tap opens the selected dedicated portfolio in a new tab",
+      );
+      await portfolio.close();
       await cdp.detach();
       await mobile.close();
     }

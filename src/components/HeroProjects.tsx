@@ -43,7 +43,13 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
     if (focus) buttons.current[next]?.focus({ preventScroll: true });
   };
   return !mobile ? (
-    <div className="hero-project-cloud" aria-label="프로젝트 화면 미리보기">
+    <div
+      className={
+        "hero-project-cloud" +
+        (projects.length === 2 ? " hero-project-pair" : "")
+      }
+      aria-label="프로젝트 화면 미리보기"
+    >
       {projects.map((p, i) => (
         <a
           key={p.id}

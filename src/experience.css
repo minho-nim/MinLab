@@ -2069,3 +2069,15 @@ html[data-visual-motion="paused"] .next-project-showcase .text-link { transition
   font-size: 17px;
 }
 .project-records-disclosure[open] > summary { margin-bottom: 24px; }
+
+/* Two representative projects share the stage at equal size. */
+.hero-project-cloud.hero-project-pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 380px);
+}
+.hero-project-pair .hero-project {
+  grid-column: auto;
+  grid-row: auto;
+  transform: none;
+  translate: none;
+}

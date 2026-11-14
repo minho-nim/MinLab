@@ -156,8 +156,8 @@ const fs = require("node:fs/promises");
     await page.waitForTimeout(120);
     assert.equal(await page.locator(".hero-handoff").count(), 0);
     await page.evaluate(() => (document.startViewTransition = undefined));
-    await page.goto(base + "#/home");
-    await page.locator('.hero-project[href^="#/projects/"]').first().click();
+    await page.goto(base + "#/");
+    await page.locator('.archive-project[href^="#/projects/"]').first().click();
     await page.locator(".project-story").waitFor();
     assert.deepEqual(errors, []);
     console.log(

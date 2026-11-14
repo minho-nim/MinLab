@@ -248,7 +248,8 @@ export function AboutPage({
         <header>
           <h2>메인 프로젝트에서 한 일</h2>
           <p>
-            네 프로젝트를 만들며 기획하고, 구현하고, 고친 내용을 모았습니다.
+            미노피아와 미니어리를 만들며 기획하고, 구현하고, 고친 내용을
+            모았습니다.
           </p>
         </header>
         <div className="capability-layout">

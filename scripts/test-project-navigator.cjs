@@ -31,8 +31,10 @@ const evidence =
       const mainIds = [
         "proj-minlab-ai-office",
         "proj-minially",
-        "proj-1792978415000",
         "proj-crossroads-ai-verdict",
+        "proj-1792978415000",
+        "proj-snake-race",
+        "proj-musclemap",
       ];
       const visible = [
         ...mainIds.map((id) => source.find((p) => p.id === id)).filter(Boolean),

@@ -561,7 +561,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
           "true",
           "touch swipe advances one project",
         );
-        await p.getByRole("button", { name: "다음 대표 프로젝트" }).click();
+        await p.getByRole("button", { name: "다음 프로젝트" }).click();
         assert.equal(
           await p.locator(".explorer-index [aria-current]").count(),
           1,

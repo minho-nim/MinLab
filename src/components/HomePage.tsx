@@ -110,7 +110,7 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           </a>
         </div>
         <div className="explorer-layout">
-          <nav className="explorer-index" aria-label="대표 프로젝트 선택">
+          <nav className="explorer-index" aria-label="프로젝트 선택">
             {projects.map((p, i) => (
               <button
                 key={p.id}
@@ -199,14 +199,14 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           </a>
           <div className="explorer-controls">
             <button
-              aria-label="이전 대표 프로젝트"
+              aria-label="이전 프로젝트"
               disabled={index === 0}
               onClick={() => select(index - 1)}
             >
               <ChevronLeft size={20} />
             </button>
             <button
-              aria-label="다음 대표 프로젝트"
+              aria-label="다음 프로젝트"
               disabled={index === count - 1}
               onClick={() => select(index + 1)}
             >
@@ -222,8 +222,8 @@ export function HomePage({ projects }: { projects: Project[] }) {
   const hero = useRef<HTMLElement>(null);
   useHeroHandoff(hero);
   const hasScreen = (p: Project) => mediaFor(p).length > 0;
-  const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 4);
-  const featured = selectHomeProjects(projects, hasScreen, 4);
+  const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 2);
+  const featured = selectHomeProjects(projects, hasScreen, 6);
   useEffect(() => {
     let frame = 0;
     const update = () => {

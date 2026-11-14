@@ -6,7 +6,7 @@ import { safeRead, safeWrite } from "../utils/archiveQuery";
 import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
 const introKey = "minlab_about_intro_v1";
 const defaultIntro =
-  "통신·데이터센터 구축 프로젝트에서 일정과 공정, 품질, 사업 관리를 맡아왔습니다. 개인 프로젝트로 웹앱과 게임을 만들고, 개발할 때는 AI의 도움을 받습니다.";
+  "통신·데이터센터 구축 프로젝트에서 일정과 공정, 품질, 사업 관리를 맡아왔습니다. 개인 프로젝트는 AI와 대화하며 만듭니다. 직접 써 보고 필요한 기능을 더하거나 불편한 부분을 고칩니다.";
 export function AboutPage({
   projects,
   editing = false,

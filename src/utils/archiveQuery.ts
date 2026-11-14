@@ -1,7 +1,9 @@
+import { projectGroups, projectGroup } from "./projectGroups";
 import type { Project } from "../types";
 export interface ArchiveQuery {
   q: string;
   category: string;
+  group: string;
   status: string;
   tag: string;
   sort: string;
@@ -10,6 +12,7 @@ export interface ArchiveQuery {
 export const defaultQuery: ArchiveQuery = {
   q: "",
   category: "",
+  group: "",
   status: "",
   tag: "",
   sort: "manual",
@@ -20,6 +23,9 @@ export function readArchiveQuery(hash: string): ArchiveQuery {
   return {
     q: params.get("q") || "",
     category: params.get("category") || "",
+    group: projectGroups.some((group) => group.id === params.get("group"))
+      ? params.get("group")!
+      : "",
     status: params.get("status") || "",
     tag: params.get("tag") || "",
     sort: ["latest", "name"].includes(params.get("sort") || "")
@@ -48,6 +54,7 @@ export function queryProjects(projects: Project[], query: ArchiveQuery) {
   const result = projects.filter(
     (p) =>
       (!query.category || p.category === query.category) &&
+      (!query.group || projectGroup(p.category) === query.group) &&
       (!query.status || p.status === query.status) &&
       (!query.tag || projectTags(p).includes(query.tag)) &&
       (!needle ||

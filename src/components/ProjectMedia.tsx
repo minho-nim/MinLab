@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "../types";
 import { resolveProjectMedia, type ResolvedMedia } from "../utils/projectMedia";
-import { useMediaMotion } from "../utils/visualMotion";
 import { Maximize2 } from "lucide-react";
 import { MediaViewer } from "./MediaViewer";
 export function mediaFor(project: Project) {
@@ -55,7 +54,6 @@ export function ProjectMedia({
   }, [requested, media?.src]);
   const broken = !!media && failed === media.src;
   const ready = !!media && loaded === media.src;
-  useMediaMotion(container, ready);
   return (
     <>
       <div

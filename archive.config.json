@@ -57,9 +57,9 @@
     },
     {
       "id": "proj-1792978415000",
-      "repository": "minho-nim/worthit",
-      "name": "WorthIt",
-      "description": "구매한 물건·구독·멤버십의 사용 횟수와 기간을 기록해 회당 사용 단가와 목표 달성률을 확인하는 소비 가치 추적 웹앱",
+      "repository": "minho-nim/Valumin",
+      "name": "벨류민 (Valumin)",
+      "description": "구매한 물건과 구독을 얼마나 썼는지 기록하고, 한 번 쓸 때 드는 비용을 확인하는 앱",
       "category": "소비 관리",
       "appUrl": "https://minho-nim.github.io/worthit/",
       "techStack": [
@@ -86,9 +86,9 @@
       "id": "proj-minially",
       "repository": "minho-nim/minially",
       "name": "미니어리 (Minially)",
-      "description": "일정·할 일·프로젝트를 관리하고 자주 쓰는 문구로 반복 입력을 줄이는 개인 플래너",
+      "description": "달력, 할 일, 자주 쓰는 문구를 한곳에서 관리하는 앱",
       "category": "일정 관리",
-      "appUrl": "https://minho-nim.github.io/minially/",
+      "appUrl": "https://minially.pages.dev/",
       "techStack": [
         "React",
         "TypeScript",
@@ -158,8 +158,8 @@
     {
       "id": "proj-minlab-ai-office",
       "repository": "minho-nim/minoffia",
-      "name": "MinLab AI Office",
-      "description": "여러 AI의 프로젝트 업무와 기획·결과·배포 승인을 한곳에서 관리하는 개인용 도트 사무실",
+      "name": "미노피아 (Minoffia)",
+      "description": "여러 AI에 맡긴 일을 모아 보고, 기획과 결과를 확인한 뒤 승인하는 앱",
       "category": "AI 업무 관리",
       "appUrl": "https://minlab-ai-office.pages.dev/",
       "techStack": [

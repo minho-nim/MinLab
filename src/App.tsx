@@ -194,6 +194,8 @@ export default function App() {
           ? new URL(event.oldURL).hash || "#/home"
           : current;
         sessionStorage.setItem("minlab_scroll:" + previous, String(position));
+        if (parseRoute(previous).view === "archive")
+          sessionStorage.setItem("minlab_last_archive", previous);
       } catch {}
       current = window.location.hash || "#/home";
       const nextRoute = parseRoute(current);

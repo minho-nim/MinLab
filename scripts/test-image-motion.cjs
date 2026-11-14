@@ -36,49 +36,52 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/image-motion";
     let original = await page.evaluate(() =>
       localStorage.getItem("minlab_projects_data_v2"),
     );
-    const driftBefore = await page
-      .locator(".hero-main-image")
-      .evaluate((el) => getComputedStyle(el).translate);
+    const card = page.locator(".hero-main-image");
+    const before = await card.evaluate((el) => getComputedStyle(el).translate);
     await page.waitForTimeout(300);
-    assert.notEqual(
-      await page
-        .locator(".hero-main-image")
-        .evaluate((el) => getComputedStyle(el).translate),
-      driftBefore,
-      "visible product screens drift",
+    assert.equal(
+      await card.evaluate((el) => getComputedStyle(el).translate),
+      before,
+      "screens do not drift automatically",
+    );
+    assert.equal(
+      await card.evaluate((el) => getComputedStyle(el).animationName),
+      "none",
     );
     const box = await media.boundingBox();
     await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.25);
-    await page.waitForFunction(
-      () =>
-        document.querySelector(".hero-main-image .project-media")?.dataset
-          .mediaInteracting === "true",
+    await page.waitForTimeout(400);
+    const transform = () =>
+      media.locator(".media-current").evaluate((el) => {
+        const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+        return [m.a, m.b, m.c, m.d, m.e, m.f, m.is2D];
+      });
+    const zoom = await transform();
+    assert.ok(Math.abs(zoom[0] - 1.02) < 0.002);
+    assert.deepEqual(
+      zoom.slice(1),
+      [0, 0, zoom[0], 0, 0, true],
+      "hover is a flat centered scale, with no rotation or cursor-follow translation",
     );
-    await page.waitForTimeout(250);
-    assert.notEqual(
+    await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.75);
+    await page.waitForTimeout(300);
+    assert.deepEqual(
+      await transform(),
+      zoom,
+      "moving inside the screen does not change the effect",
+    );
+    assert.equal(
+      await media.evaluate((el) => getComputedStyle(el, "::after").content),
+      "none",
+    );
+    await page.screenshot({ path: evidence + "/home-hover-1440.png" });
+    await page.mouse.move(12, 12);
+    await page.waitForTimeout(350);
+    assert.equal(
       await media
         .locator(".media-current")
         .evaluate((el) => getComputedStyle(el).transform),
       "none",
-      "pointer gives the real screen depth",
-    );
-    assert.equal(
-      await page
-        .locator(".hero-main-image")
-        .evaluate((el) => getComputedStyle(el).animationPlayState),
-      "paused",
-      "drift holds still while inspecting a screen",
-    );
-    assert.equal(
-      await media.evaluate((el) => getComputedStyle(el, "::after").opacity),
-      "1",
-    );
-    await page.screenshot({ path: evidence + "/home-depth-1440.png" });
-    await page.mouse.move(12, 12);
-    await page.waitForFunction(
-      () =>
-        !document.querySelector(".hero-main-image .project-media")?.dataset
-          .mediaInteracting,
     );
     await page
       .getByRole("button", { name: "움직임 멈추기", exact: true })
@@ -152,17 +155,12 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/image-motion";
     await page.evaluate(() =>
       scrollTo(0, document.documentElement.scrollHeight),
     );
-    await page.waitForFunction(
-      () =>
-        document.querySelector(".hero-main-image .project-media")?.dataset
-          .mediaVisible === "false",
-    );
     assert.equal(
       await page
         .locator(".hero-main-image")
-        .evaluate((el) => getComputedStyle(el).animationPlayState),
-      "paused",
-      "offscreen loops stop",
+        .evaluate((el) => getComputedStyle(el).animationName),
+      "none",
+      "there is no offscreen animation loop",
     );
     await page.goto(base + "#/projects/proj-musclemap");
     await page.locator(".scene-tabs button").first().click();
@@ -314,7 +312,7 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/image-motion";
       await mobile.close();
     }
     console.log(
-      "PASS: live depth/light, bounded visible drift, project/feature crossfades, pause persistence, offscreen stop, touch/reduced-motion and unchanged records.",
+      "PASS: stable screens, flat hover-only scale, project/feature crossfades, pause persistence, offscreen stop, touch/reduced-motion and unchanged records.",
     );
   } finally {
     await browser.close();

@@ -26,7 +26,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
       .map((s) => ({
         id: s.id,
         name: s.label,
-        description: "",
+        description: s.description || "",
         screen: screens.indexOf(s),
       })),
     ...featureScenes,
@@ -205,8 +205,8 @@ export function FeatureShowcase({ project }: { project: Project }) {
     >
       <header className="section-heading">
         <div>
-          <p className="eyebrow">기능 쇼케이스</p>
-          <h2>주요 화면과 기능</h2>
+          <p className="eyebrow">앱 화면과 기능</p>
+          <h2>어떻게 쓰나</h2>
         </div>
         <span>
           {String(active + 1).padStart(2, "0")} /{" "}

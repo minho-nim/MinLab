@@ -1,3 +1,4 @@
+import { projectStories } from "../data/projectStories";
 import { ProjectNavigator } from "./ProjectNavigator";
 import { FeatureShowcase } from "./FeatureShowcase";
 import { DevelopmentJourney } from "./DevelopmentJourney";
@@ -16,6 +17,7 @@ export function ProjectPage({
   projects?: Project[];
   linkedLogId?: string;
 }) {
+  const story = projectStories[project.id];
   const logs = [...project.workLogs].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
@@ -72,16 +74,42 @@ export function ProjectPage({
         id="project-problem"
         className="problem-solution detail-reading-section project-chapter-target"
       >
-        <p className="eyebrow">제작 배경과 해결 방식</p>
-        <h2>만들게 된 이유</h2>
-        {background ? (
+        <p className="eyebrow">바꾸고 싶었던 것</p>
+        <h2>왜 만들었나</h2>
+        {story ? (
+          <>
+            <p>{story.problem}</p>
+            <div className="project-before-after">
+              {story.changes.map((change) => (
+                <dl key={change.before}>
+                  <div>
+                    <dt>전</dt>
+                    <dd>{change.before}</dd>
+                  </div>
+                  <div>
+                    <dt>후</dt>
+                    <dd>{change.after}</dd>
+                  </div>
+                </dl>
+              ))}
+            </div>
+            <a
+              className="text-link"
+              href={story.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              작업 과정 더 보기 <ArrowUpRight size={15} />
+            </a>
+          </>
+        ) : background ? (
           <>
             <small>{background.date} · 개발일지</small>
             <p>{background.reason || background.issues}</p>
             {background.solution && <p>{background.solution}</p>}
           </>
         ) : (
-          <p>제작 배경은 아직 기록되지 않았습니다.</p>
+          <p>왜 만들었는지는 아직 적지 않았습니다.</p>
         )}
       </section>
       <section
@@ -89,7 +117,7 @@ export function ProjectPage({
         className="detail-development project-chapter-target"
       >
         <header>
-          <p className="eyebrow">개발 과정</p>
+          <p className="eyebrow">만들며 고친 것</p>
           <h2>버전별 개발일지</h2>
         </header>
         <DevelopmentJourney project={project} linkedLogId={linkedLogId} />

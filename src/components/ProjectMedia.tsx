@@ -26,6 +26,7 @@ export function ProjectMedia({
   const [failed, setFailed] = useState("");
   const [loaded, setLoaded] = useState("");
   const [viewer, setViewer] = useState(false);
+  const opener = useRef<HTMLButtonElement>(null);
   const lastScreen = useRef<ResolvedMedia | null>(null);
   const [outgoing, setOutgoing] = useState<ResolvedMedia | null>(null);
   useEffect(() => {
@@ -137,8 +138,10 @@ export function ProjectMedia({
             </small>
           </div>
         )}
-        {zoomable && media && ready && !broken && (
+        {zoomable && media && !broken && (
           <button
+            ref={opener}
+            disabled={!ready && !viewer}
             className="media-expand"
             aria-label={project.name + " 화면 크게 보기"}
             onClick={() => setViewer(true)}
@@ -153,6 +156,7 @@ export function ProjectMedia({
           name={project.name}
           screens={screens}
           initialIndex={Math.max(0, screens.indexOf(media))}
+          returnFocus={opener.current}
           onClose={() => setViewer(false)}
         />
       )}

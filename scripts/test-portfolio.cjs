@@ -431,7 +431,9 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .getAttribute("data-project-id");
     assert.ok(lastProjectId, "the final visitor project has a stable identity");
     await page.goto(base + "#/projects/" + encodeURIComponent(lastProjectId));
-    await page.locator(".project-story").waitFor();
+    await page
+      .locator(`.project-story[data-project-id="${lastProjectId}"]`)
+      .waitFor();
     assert.equal(
       await page.locator(".next-project").getAttribute("href"),
       await page.evaluate(

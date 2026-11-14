@@ -59,7 +59,8 @@ export function FeatureShowcase({ project }: { project: Project }) {
           container.current?.querySelectorAll<HTMLElement>("[data-scene]") ||
             [],
         );
-        if (!nodes.length) return;
+        if (!nodes.length || document.querySelector(".media-viewer[open]"))
+          return;
         const previewElement = container.current?.previousElementSibling;
         const preview = previewElement?.getBoundingClientRect();
         const previewTop = previewElement

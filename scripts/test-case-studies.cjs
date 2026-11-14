@@ -123,6 +123,11 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/case-studies";
       await p.keyboard.press("ArrowRight");
       await p.keyboard.press("Escape");
       await dialog.waitFor({ state: "detached" });
+      await p.waitForFunction(
+        () =>
+          document.activeElement ===
+          document.querySelector(".browser-showcase .media-expand"),
+      );
       assert.equal(
         await p
           .locator(".browser-showcase .media-expand")

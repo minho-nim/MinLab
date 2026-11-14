@@ -7,11 +7,13 @@ export function MediaViewer({
   screens,
   initialIndex,
   onClose,
+  returnFocus,
 }: {
   name: string;
   screens: ResolvedMedia[];
   initialIndex: number;
   onClose: () => void;
+  returnFocus?: HTMLElement | null;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -33,7 +35,8 @@ export function MediaViewer({
   const index = Math.max(0, Math.min(active, screens.length - 1));
   const screen = screens[index];
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
+    const previous =
+      returnFocus || (document.activeElement as HTMLElement | null);
     const overflow = document.body.style.overflow;
     const node = dialog.current;
     node?.showModal();

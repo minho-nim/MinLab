@@ -31,7 +31,7 @@ export function ProjectPage({
     b.date.localeCompare(a.date),
   );
   return (
-    <div className="project-story">
+    <div className="project-story" data-project-id={project.id}>
       <ProjectChapters />
       <div className="project-breadcrumb">
         <a className="text-link" href={lastArchive()}>

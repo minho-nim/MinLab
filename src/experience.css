@@ -343,6 +343,17 @@
 .browser-showcase .project-media[data-zoomable] > .media-expand {
   bottom: 6px;
 }
+/* Short phones need a readable screen without a fixed preview covering the text. */
+@media (max-width: 899px) and (max-height: 700px) {
+  .project-story .browser-showcase {
+    position: static;
+    top: auto;
+  }
+  .project-story .browser-showcase .project-media {
+    height: min(120vw, 440px);
+    max-height: none;
+  }
+}
 .scene-controls {
   display: flex;
   justify-content: space-between;

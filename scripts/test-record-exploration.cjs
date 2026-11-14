@@ -46,6 +46,7 @@ const recordNode = (page, width, id) =>
             .sort((a, b) => b.workLogs.length - a.workLogs.length)[0],
       );
       await page.goto(base + "#/projects/" + encodeURIComponent(project.id));
+      await page.locator(".project-records-disclosure > summary").click();
       const search = page.getByRole("searchbox", { name: "개발일지 검색" });
       await search.waitFor();
       const saved = digest(
@@ -222,6 +223,7 @@ const recordNode = (page, width, id) =>
     });
     await page.goto(base + "#/projects/" + encodeURIComponent(id));
     await page.reload();
+    await page.locator(".project-records-disclosure > summary").click();
     const source = page.locator(
       '.journey-mobile>details[data-log="journey-equal-a"]',
     );

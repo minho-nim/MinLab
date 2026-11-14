@@ -1,3 +1,7 @@
+import {
+  projectDestination,
+  projectLinkLabel,
+} from "../utils/projectDestinations";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDown,
@@ -143,9 +147,9 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           >
             {mediaFor(project).length > 0 && (
               <a
-                href={routeHash({ view: "project", projectId: project.id })}
+                {...projectDestination(project.id)}
                 className="showcase-image"
-                aria-label={project.name + " 상세 보기"}
+                aria-label={project.name + " " + projectLinkLabel(project.id)}
               >
                 <ProjectMedia project={project} />
               </a>
@@ -163,11 +167,8 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
                 · {project.techStack.slice(0, 2).join(" · ")}
               </p>
               <div className="preview-bottom">
-                <a
-                  className="primary-link"
-                  href={routeHash({ view: "project", projectId: project.id })}
-                >
-                  프로젝트 보기 <ArrowUpRight size={16} />
+                <a className="primary-link" {...projectDestination(project.id)}>
+                  {projectLinkLabel(project.id)} <ArrowUpRight size={16} />
                 </a>
                 <span>
                   {String(index + 1).padStart(2, "0")} /{" "}

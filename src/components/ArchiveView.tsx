@@ -1,3 +1,4 @@
+import { projectDestination } from "../utils/projectDestinations";
 import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { ArrowUpRight, Grid2X2, List, Search, X } from "lucide-react";
 import type { Project } from "../types";
@@ -16,7 +17,6 @@ import {
   projectGroup,
   groupLabel,
 } from "../utils/projectGroups";
-import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { useCollectionMotion } from "../utils/useCollectionMotion";
 export function ArchiveView({ projects }: { projects: Project[] }) {
@@ -352,7 +352,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
                 }
               }}
               key={p.id}
-              href={routeHash({ view: "project", projectId: p.id })}
+              {...projectDestination(p.id)}
             >
               {query.layout === "grid" && mediaFor(p).length > 0 && (
                 <ProjectMedia project={p} />

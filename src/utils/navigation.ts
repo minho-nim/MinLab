@@ -1,6 +1,6 @@
 export type ArchiveRoute =
   | { view: "archive" }
-  | { view: "home" | "about" | "admin" }
+  | { view: "home" | "about" | "admin" | "landing" }
   | { view: "project"; projectId: string; logId?: string }
   | { view: "manage"; projectId: string }
   | {
@@ -12,6 +12,7 @@ export type ArchiveRoute =
 
 export function routeHash(route: ArchiveRoute): string {
   if (route.view === "archive") return "#/";
+  if (route.view === "landing") return "#/start";
   if (route.view === "home" || route.view === "about" || route.view === "admin")
     return "#/" + route.view;
   if (route.view === "project" || route.view === "manage") {
@@ -36,6 +37,7 @@ export function routeHash(route: ArchiveRoute): string {
 
 export function parseRoute(hash: string): ArchiveRoute {
   const [path, query] = hash.replace(/^#/, "").split("?");
+  if (!path || path === "/start") return { view: "landing" };
   if (path === "/home" || path === "/about" || path === "/admin")
     return { view: path.slice(1) as "home" | "about" | "admin" };
   const match = /^\/projects\/([^/]+)(\/manage)?$/.exec(path);

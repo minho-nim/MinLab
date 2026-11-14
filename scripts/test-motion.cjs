@@ -71,6 +71,12 @@ const fs = require("node:fs/promises");
         return native(update);
       };
     });
+    await page.locator(".explorer-index button").nth(2).click();
+    await page.waitForFunction(
+      (expected) => Math.abs(scrollY - expected) < 2,
+      end + 240,
+    );
+    const departureScroll = await page.evaluate(() => scrollY);
     await page.locator(".showcase-image").click();
     await page.locator(".project-story").waitFor();
     await page.waitForTimeout(700);
@@ -99,10 +105,11 @@ const fs = require("node:fs/promises");
     await page.locator("#selected-work").waitFor();
     await page.waitForTimeout(450);
     assert.ok(
-      Math.abs((await page.evaluate(() => scrollY)) - end) < 40,
+      Math.abs((await page.evaluate(() => scrollY)) - departureScroll) < 40,
       "back restores explorer scroll",
     );
     await page.goto(base + "#/projects/proj-musclemap");
+    await page.locator(".project-records-disclosure > summary").click();
     await page.locator(".journey-record").first().waitFor();
     await page.locator(".journey-record").nth(1).scrollIntoViewIfNeeded();
     await page
@@ -150,7 +157,7 @@ const fs = require("node:fs/promises");
     assert.equal(await page.locator(".hero-handoff").count(), 0);
     await page.evaluate(() => (document.startViewTransition = undefined));
     await page.goto(base + "#/home");
-    await page.locator(".hero-project").first().click();
+    await page.locator('.hero-project[href^="#/projects/"]').first().click();
     await page.locator(".project-story").waitFor();
     assert.deepEqual(errors, []);
     console.log(

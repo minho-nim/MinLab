@@ -1,6 +1,9 @@
+import {
+  projectDestination,
+  projectLinkLabel,
+} from "../utils/projectDestinations";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Project } from "../types";
-import { routeHash } from "../utils/navigation";
 import { ProjectMedia } from "./ProjectMedia";
 
 export function HeroProjects({ projects }: { projects: Project[] }) {
@@ -50,8 +53,8 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
             i +
             (i === 0 ? " hero-main-image" : "")
           }
-          href={routeHash({ view: "project", projectId: p.id })}
-          aria-label={p.name + " 프로젝트 살펴보기"}
+          {...projectDestination(p.id)}
+          aria-label={p.name + " " + projectLinkLabel(p.id)}
         >
           <div className="hero-project-visual">
             <ProjectMedia project={p} eager={i === 0} priority={i === 0} />
@@ -69,8 +72,8 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
       <a
         id="hero-mobile-preview"
         className="hero-mobile-featured"
-        href={routeHash({ view: "project", projectId: selected.id })}
-        aria-label={selected.name + " 프로젝트 살펴보기"}
+        {...projectDestination(selected.id)}
+        aria-label={selected.name + " " + projectLinkLabel(selected.id)}
         onPointerDown={() => {
           swiped.current = false;
         }}
@@ -112,7 +115,7 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
             <strong>{selected.name}</strong>
             <span>{selected.category}</span>
           </div>
-          <span aria-hidden="true">살펴보기 ↗</span>
+          <span aria-hidden="true">{projectLinkLabel(selected.id)} ↗</span>
         </div>
       </a>
       <p className="hero-swipe-hint">좌우로 넘겨 다른 프로젝트 보기</p>

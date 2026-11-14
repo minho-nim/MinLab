@@ -80,6 +80,10 @@ export function ProjectChapters() {
   const select = (id: string) => {
     const node = document.getElementById(id);
     if (!node) return;
+    const records = node.querySelector<HTMLDetailsElement>(
+      ".project-records-disclosure",
+    );
+    if (records) records.open = true;
     setExpanded(false);
     const heading = node.querySelector<HTMLElement>("h1,h2") || node;
     heading.tabIndex = -1;

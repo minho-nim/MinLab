@@ -1,8 +1,8 @@
+import { projectDestination } from "../utils/projectDestinations";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { motionAllowed } from "../utils/visualMotion";
 import type { Project } from "../types";
-import { routeHash } from "../utils/navigation";
 import { lastArchive } from "../utils/archiveQuery";
 import { relatedProjects, nextProject } from "../utils/projectRelations";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
@@ -76,10 +76,7 @@ export function ProjectNavigator({
           <p className="eyebrow">관련 프로젝트</p>
           <div>
             {related.map((p) => (
-              <a
-                href={routeHash({ view: "project", projectId: p.id })}
-                key={p.id}
-              >
+              <a {...projectDestination(p.id)} key={p.id}>
                 {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
                 <small>{p.category}</small>
                 <h3>{p.name} ↗</h3>
@@ -92,7 +89,7 @@ export function ProjectNavigator({
       {next ? (
         <a
           className="next-project next-project-showcase"
-          href={routeHash({ view: "project", projectId: next.id })}
+          {...projectDestination(next.id)}
         >
           <div>
             <span className="eyebrow">다음 프로젝트 / {next.category}</span>
@@ -189,7 +186,7 @@ export function ProjectNavigator({
             <a
               aria-current={p.id === project.id ? "page" : undefined}
               key={p.id}
-              href={routeHash({ view: "project", projectId: p.id })}
+              {...projectDestination(p.id)}
             >
               <div className="mini-project-image">
                 {mediaFor(p).length > 0 ? (

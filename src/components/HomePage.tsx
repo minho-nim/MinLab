@@ -13,7 +13,7 @@ import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { HeroProjects } from "./HeroProjects";
-import { selectHomeProjects } from "../utils/homeProjects";
+import { selectHomeProjects, primaryProjectIds } from "../utils/homeProjects";
 import { useHeroHandoff } from "../utils/useHeroHandoff";
 import { motionAllowed } from "../utils/visualMotion";
 import { MotionControl } from "./MotionControl";
@@ -222,7 +222,14 @@ export function HomePage({ projects }: { projects: Project[] }) {
   const hero = useRef<HTMLElement>(null);
   useHeroHandoff(hero);
   const hasScreen = (p: Project) => mediaFor(p).length > 0;
-  const images = selectHomeProjects(projects.filter(hasScreen), hasScreen, 2);
+  const representatives = projects.filter((p) =>
+    primaryProjectIds.some((id) => id === p.id),
+  );
+  const images = selectHomeProjects(
+    representatives.filter(hasScreen),
+    hasScreen,
+    2,
+  );
   const featured = selectHomeProjects(projects, hasScreen, 6);
   useEffect(() => {
     let frame = 0;

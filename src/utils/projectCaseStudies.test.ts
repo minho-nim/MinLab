@@ -46,7 +46,10 @@ test("public Valumin naming changes presentation only and retains historical rec
     parseImportJson(JSON.stringify([p])).projects![0].workLogs[0].title,
     p.workLogs[0].title,
   );
-  assert.ok(bundledScreens[p.id].some((s) => s.notice?.includes("WorthIt")));
+  assert.ok(bundledScreens[p.id].every((s) => !s.notice?.includes("WorthIt")));
+  assert.ok(
+    bundledScreens[p.id].some((s) => s.notice?.includes("예시 데이터")),
+  );
 });
 test("only known default public copy is shortened; custom descriptions and project IDs survive", () => {
   const original = snapshot.find((p) => p.id === "proj-1792485558773")!;

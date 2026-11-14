@@ -158,11 +158,9 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/case-studies";
         .getByRole("heading", { name: "Valumin", exact: true, level: 1 })
         .waitFor();
       assert.equal(await p.locator(".scene-tabs button").count(), 4);
-      assert.ok(
-        (await p.locator(".scene-notice").allTextContents()).some((t) =>
-          t.includes("WorthIt"),
-        ),
-      );
+      const valuminNotices = await p.locator(".scene-notice").allTextContents();
+      assert.ok(valuminNotices.every((text) => !text.includes("WorthIt")));
+      assert.ok(valuminNotices.some((text) => text.includes("예시 데이터")));
       if (width === 390 || width === 1440) {
         await p.goto(base + "#/projects/risk-assessment-workplan-automation");
         await p

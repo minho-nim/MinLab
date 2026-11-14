@@ -231,8 +231,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       outcome: "항목마다 다른 사용 기준과 내가 정한 목표를 비교합니다.",
       rationale:
         "구매가만 보지 않고 얼마나 썼는지를 함께 돌아보도록 구성했습니다.",
-      notice:
-        "예시 데이터입니다. 원본 앱 UI에는 이전 명칭 WorthIt이 남아 있습니다.",
+      notice: "실제 저장소와 분리된 예시 데이터 화면입니다.",
       fit: "contain",
     },
     {
@@ -257,8 +256,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       outcome: "누적 사용량과 현재 사용 단가가 함께 갱신됩니다.",
       rationale:
         "나중에 한꺼번에 기억해서 적기보다 실제 사용 시점에 간단히 남기게 하려는 흐름입니다.",
-      notice:
-        "실제 저장소와 분리된 샘플 체험입니다. 원본의 WorthIt 표기를 보존했습니다.",
+      notice: "실제 저장소와 분리된 샘플 체험의 사용 기록 화면입니다.",
       fit: "contain",
     },
     {

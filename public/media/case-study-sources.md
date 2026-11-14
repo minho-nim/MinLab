@@ -16,9 +16,18 @@ The captures show the app, not a reconstructed MinLab mockup. The introductory f
 
 ## Valumin
 
-Source: `minho-nim/Valumin` at `d4b36093bb3d23f13d5b796e55ada70d055606b1`, inspected 2026-11-14.
+Source: `minho-nim/Valumin` at `822c28b422867aa0f08ed3d05f0a2a4c4c354950`, captured 2026-11-14. This is the actual production build of [Valumin PR #9](https://github.com/minho-nim/Valumin/pull/9), not a claim that the production deployment has already changed.
 
-`valumin-overview.webp`, `valumin-register.webp`, `valumin-usage.webp`, `valumin-detail.webp` show the source app at `/worthit/?mode=demo`, using its built-in sample data. The source still renders **WorthIt** in the header and other areas. That historical name was not removed from the screenshots. MinLab calls the project **Valumin** and labels the discrepancy. Original-repository changes are required to rename the actual app UI. The captures verify opening the registration form, adding a sample use and viewing an item's details; they do not prove submission of a new item or all calculation boundaries.
+`valumin-overview.webp`, `valumin-register.webp`, `valumin-usage.webp`, `valumin-detail.webp` show the source app at `/worthit/?mode=demo`, using its built-in sample data. The actual app now renders Valumin in this reviewed source. PNG screenshots at 1200×1000 were encoded as WebP without painting or replacing text. The captures verify opening the registration form, adding a sample use and viewing item details; they do not prove submitting a new item or every calculation boundary.
+
+Separate checks used an actual backup exported by the prior app at `d4b36093bb3d23f13d5b796e55ada70d055606b1`. Import, restore, export and reload preserved its item/usage/billing arrays. Demo actions left personal storage unchanged. Actual PNG and PDF receipt downloads used Valumin filenames, and the PDF Creator was Valumin. Header/title/install guide/manifest, empty data and invalid backup states were checked at 400/1400px. Real installed iOS/Android name refresh, offline reentry and OS clipboard/sharing were not tested. Legacy storage keys, PWA identity, `/worthit/` URL and JSON version remain unchanged.
+
+| File                  | SHA-256                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| valumin-overview.webp | 474325d252072e4623ad6c5b76f82ad5f76aeaf3eedc74ffb5d5fcbd487ff248 |
+| valumin-register.webp | c9a18027b10544fd8461769a22a9d3418c5beaae5b6695d6de670507c02d37fe |
+| valumin-usage.webp    | 91248282ce0d43492e18e36dfc7027a9465314adbac199dd21a0bd22beedc89c |
+| valumin-detail.webp   | 1677ec3f1ac030b9759301cac5661bb16d430c902afed6c7186d775127b3fb73 |
 
 ## Existing Minoffia and Minially captures
 

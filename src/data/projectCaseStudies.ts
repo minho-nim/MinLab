@@ -25,7 +25,7 @@ const minoffiaSource =
 const miniallySource =
   "https://github.com/minho-nim/minially/blob/9f43f240917470f5cce37101f482b5bc68a455a4/";
 const valuminSource =
-  "https://github.com/minho-nim/Valumin/blob/d4b36093bb3d23f13d5b796e55ada70d055606b1/";
+  "https://github.com/minho-nim/Valumin/blob/822c28b422867aa0f08ed3d05f0a2a4c4c354950/";
 export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
   "proj-crossroads-ai-verdict": {
     audience:
@@ -191,9 +191,9 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
     implementation:
       "소비 등록·사용 기록·사용 단가·목표 비교·백업이 구현돼 있습니다. 샘플 체험은 메모리에서 동작하고 실제 저장소와 분리됩니다. 계정이나 기기 간 자동 동기화는 없습니다.",
     verification:
-      "2026-11-14 원본 앱의 체험 모드를 실행해 등록 양식, 사용 횟수 추가와 항목 상세를 확인했습니다. 캡처에는 원본 앱의 이전 명칭 WorthIt이 그대로 남아 있습니다. 이 이름을 이미지에서 덮어쓰지 않았습니다.",
+      "2026-11-14 Valumin으로 이름을 정리한 실제 빌드에서 등록 양식·사용 횟수 추가·항목 상세를 확인하고 촬영했습니다. 이전 앱이 내보낸 백업을 복원·재다운로드·새로고침해 기록이 유지되는지 비교했습니다. 영수증 PNG·PDF 다운로드도 확인했습니다.",
     remaining:
-      "Valumin으로의 실제 앱 헤더·설치 안내·내보내기 문구 변경은 원본 저장소에서 처리해야 합니다. 이번에는 실제 기기의 설치·오프라인 실행·모든 계산 경계값을 검증하지 않았습니다.",
+      "이번 등록 화면 촬영은 양식을 여는 단계까지입니다. 새 항목 저장·모든 계산 경계값·실제 기기의 설치 이름 갱신과 오프라인 실행은 추가 확인이 필요합니다. 운영 반영은 별도입니다.",
     process: [
       {
         title: "본전의 기준을 사용자가 정하도록",
@@ -207,6 +207,17 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
           "기존 개발 기록과 현재 계산·등록 코드를 대조했습니다. 이번에는 예시 항목의 사용 횟수 추가와 상세 표시를 확인했으며 모든 계산식을 새로 검증한 것은 아닙니다.",
         logId: "codex:proj-1792978415000:2026-10-26-worthit-personal-goals",
         sourceUrl: valuminSource + "README.md",
+      },
+      {
+        title: "이름이 바뀌어도 기록을 이어 쓰도록",
+        problem:
+          "앱 이름과 함께 저장 위치나 백업 구조까지 바꾸면 이전 기록이 보이지 않을 수 있습니다.",
+        criterion: "보이는 이름과 데이터를 보관하는 기준을 분리했습니다.",
+        change:
+          "헤더·설치 안내·영수증 이름은 Valumin으로 맞추고 기존 주소·저장 키·설치 ID와 백업 구조는 유지했습니다.",
+        result:
+          "이전 앱이 만든 예시 백업을 수정본에서 읽고 복원·다시 내려받았습니다. 소비·사용 기록·결제 기간이 같았고 새로고침 뒤에도 유지됐습니다. 데모 조작은 개인 저장 데이터에 영향을 주지 않았습니다.",
+        sourceUrl: "https://github.com/minho-nim/Valumin/pull/9",
       },
     ],
     sources: [

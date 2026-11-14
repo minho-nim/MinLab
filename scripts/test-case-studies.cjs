@@ -163,6 +163,57 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/case-studies";
           t.includes("WorthIt"),
         ),
       );
+      if (width === 390 || width === 1440) {
+        await p.goto(base + "#/projects/risk-assessment-workplan-automation");
+        await p
+          .locator(
+            '.project-story[data-project-id="risk-assessment-workplan-automation"]',
+          )
+          .waitFor();
+        assert.equal(await p.locator(".scene-tabs button").count(), 5);
+        for (const [index, name] of [
+          "import",
+          "matching",
+          "document",
+          "calendar",
+        ].entries()) {
+          await p
+            .getByRole("combobox", { name: "미리보기 기능 선택" })
+            .selectOption(String(index));
+          await p.waitForFunction(
+            (i) =>
+              document.querySelector(".scene-stories .is-active")?.dataset
+                .scene === String(i),
+            index,
+          );
+          assert.ok(
+            (
+              await p
+                .locator(".browser-showcase img.media-current")
+                .getAttribute("src")
+            ).includes(`schedule-${name}.jpg`),
+          );
+          assert.equal(
+            await p.locator(".scene-stories .is-active .scene-flow dt").count(),
+            3,
+          );
+        }
+        await p.waitForFunction(
+          () =>
+            document.querySelector(".browser-showcase .project-media")?.dataset
+              .mediaState === "ready",
+        );
+        await p.screenshot({ path: `${evidence}/schedule-${width}.png` });
+        await p
+          .getByRole("combobox", { name: "미리보기 기능 선택" })
+          .selectOption("4");
+        await p.locator(".scene-no-image").waitFor();
+        assert.equal(
+          await p.locator(".browser-showcase img").count(),
+          0,
+          "Export has no new capture; never reuse an unrelated screen",
+        );
+      }
       await p.goto(base + "#/about");
       await p.locator(".about-timeline article").first().waitFor();
       assert.ok(

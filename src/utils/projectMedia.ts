@@ -14,6 +14,69 @@ export interface ResolvedMedia {
   section?: number;
 }
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
+  "risk-assessment-workplan-automation": [
+    {
+      id: "schedule-import",
+      src: "media/schedule-import.jpg",
+      label: "Excel·Word 파일 등록",
+      description:
+        "계약 목록 한 개와 작업계획서 두 개를 선택한 실제 앱 화면입니다.",
+      action: "계약 목록 Excel을 열고 분석할 Word 문서를 추가합니다.",
+      outcome: "불러온 계약과 선택한 문서를 확인한 뒤 분석을 시작합니다.",
+      rationale:
+        "어떤 파일을 기준으로 매칭할지 실행 전에 확인하기 위한 단계입니다.",
+      notice:
+        "예시 데이터로 촬영했습니다. 회사 계약·문서·개인 정보는 사용하지 않았습니다.",
+      fit: "contain",
+    },
+    {
+      id: "schedule-matching",
+      src: "media/schedule-matching.jpg",
+      label: "계약 매칭 결과",
+      featureId: "feature-0",
+      description:
+        "계약이 맞는 문서와 목록에서 찾지 못한 문서를 함께 보여줍니다.",
+      action: "추출한 계약번호·계약명과 매칭 결과를 대조합니다.",
+      outcome: "연결된 계약과 매칭 실패 이유를 나누어 확인합니다.",
+      rationale:
+        "이름이 비슷하다는 이유만으로 잘못된 계약에 일정을 붙이지 않도록 했습니다.",
+      notice:
+        "화면의 성공·실패 수치는 예시 문서 두 개의 결과입니다. 실제 업무의 정확도나 성과 수치가 아닙니다.",
+      fit: "contain",
+    },
+    {
+      id: "schedule-document",
+      src: "media/schedule-document.jpg",
+      label: "작업자와 원문 대조",
+      featureId: "feature-1",
+      description:
+        "작업 상세에서 업로드한 Word 원문을 열어 추출한 정보와 비교합니다.",
+      action:
+        "일정 상세의 원본 DOCX 미리보기를 열어 역할·회사·작업자 이름을 읽습니다.",
+      outcome:
+        "자동 추출된 값을 원문과 대조할 수 있습니다. 비어 있는 연락처는 그대로 둡니다.",
+      rationale:
+        "자동으로 읽은 내용을 사람이 다시 확인하고, 문서에 없는 정보를 임의로 채우지 않기 위한 구성입니다.",
+      notice:
+        "이름·회사·작업번호는 모두 예시입니다. 회사 업로드용 등록자·참여자 계정과 현장 작업자는 별개입니다.",
+      fit: "contain",
+    },
+    {
+      id: "schedule-calendar",
+      src: "media/schedule-calendar.jpg",
+      label: "날짜별 일정 조회",
+      description: "계약이 확인된 예시 작업을 월간 달력에서 조회한 화면입니다.",
+      action:
+        "통합 공사 일정표에서 월과 계약을 고르고 달력으로 작업을 확인합니다.",
+      outcome:
+        "매칭에 성공하고 날짜가 있는 작업이 달력에 나타납니다. 실패한 문서는 일정에 섞이지 않습니다.",
+      rationale:
+        "문서 분석 결과를 확인한 뒤 실제 일정 조회로 이어지도록 했습니다.",
+      notice:
+        "예시 데이터 화면입니다. 회사 시스템으로 일정 Excel을 올리는 과정까지 검증한 것은 아닙니다.",
+      fit: "contain",
+    },
+  ],
   "proj-minlab-ai-office": [
     {
       id: "minoffia-portfolio-0",

@@ -56,15 +56,6 @@ async function capture(page, name) {
   });
   await fs.writeFile(`${evidence}/${name}.jpg`, image);
   const sha256 = createHash("sha256").update(image).digest("hex");
-  // Optional one-off transport through the connected GitHub log reader. Synthetic data only.
-  if (process.env.MINLAB_CAPTURE_LOG === "1") {
-    const encoded = image.toString("base64");
-    console.log(`MINLAB_SCREEN ${name} ${image.length} ${sha256}`);
-    for (let i = 0; i < encoded.length; i += 8000)
-      console.log(
-        `MINLAB_SCREEN_CHUNK ${name} ${i / 8000} ${encoded.slice(i, i + 8000)}`,
-      );
-  }
   return { name, sha256, bytes: image.length };
 }
 (async () => {

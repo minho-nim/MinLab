@@ -227,7 +227,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
     implementation:
       "MinLab 안의 공사 일정 웹앱에 파일 선택·DOCX/Excel 분석·계약 매칭·일정 조회·Excel 생성 코드가 있습니다. 파일은 브라우저에서 처리하며 실제 작업자와 회사 업로드용 계정을 구분합니다.",
     verification:
-      "현재 앱 코드와 기존 개발 기록을 대조했습니다. 기존 기록의 실제 문서 확인 결과는 당시 결과입니다. 이번 로컬 환경에서는 원본 SheetJS 패키지 다운로드가 차단돼 실제 파일 분석 화면을 새로 촬영하지 못했습니다.",
+      "2026-11-14 CI의 실제 빌드 앱에 예시 Excel·DOCX를 넣어 계약 매칭 성공·실패, 작업자 추출, 원문 미리보기와 달력 표시를 확인했습니다. 이 과정에서 문서를 보내는 업로드 요청은 발생하지 않았습니다. 기존 기록의 회사 문서 확인 결과와 이번 예시 문서 검증은 구분합니다.",
     remaining:
       "회사별 문서 양식 차이, 계약 매칭의 예외, 실제 업무 데이터로 만든 Excel의 업로드 결과는 별도 확인이 필요합니다. 민감한 원본 문서를 소개 이미지로 사용하지 않습니다.",
     process: [
@@ -240,15 +240,32 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
         change:
           "병합된 표와 열 제목을 기준으로 작업자를 읽고 회사 업로드 계정은 별도 입력으로 분리했습니다.",
         result:
-          "기존 기록에는 실제 문서의 작업자 추출 확인이 남아 있습니다. 이번에는 코드·기록을 대조했으며 새 실제 문서 분석은 수행하지 않았습니다.",
+          "이번 예시 Word 표의 역할·회사·작업자 이름이 매칭 목록에 나타나는 것을 확인했습니다. 빈 연락처는 채우지 않았습니다. 회사의 실제 문서를 새로 분석한 것은 아닙니다.",
         logId:
           "codex:risk-assessment-workplan-automation:2026-10-26-schedule-upload-and-worker-parser",
+      },
+      {
+        title: "계약을 찾지 못하면 이유를 남기기",
+        problem:
+          "문서에서 읽은 계약이 목록에 없거나 같은 이름의 후보가 여러 개이면 잘못 연결될 수 있습니다.",
+        criterion:
+          "계약번호나 이름으로 후보를 좁힌 뒤 한 개가 남을 때만 성공으로 처리합니다.",
+        change:
+          "목록 없음·문서 정보 없음·일치 항목 없음·여러 후보를 구분해 실패 이유를 표시합니다.",
+        result:
+          "예시 문서에서 일치하는 계약과 일치하지 않는 계약을 각각 확인했습니다. 달력에는 성공한 작업만 나타났습니다. 후보 중복에 관한 기존 자동 검사도 CI에서 통과했습니다.",
+        sourceUrl:
+          "https://github.com/minho-nim/MinLab/blob/e0d1d33963362ba4e72f14183dbdaa7c19def2a0/apps/work-schedule/src/utils/docxTables.test.ts",
       },
     ],
     sources: [
       {
         label: "공사 일정 앱 구성",
         url: "https://github.com/minho-nim/MinLab/tree/main/apps/work-schedule",
+      },
+      {
+        label: "예시 문서 브라우저 검증",
+        url: "https://github.com/minho-nim/MinLab/actions/runs/43600686913",
       },
     ],
   },

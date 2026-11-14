@@ -26,4 +26,18 @@ See `portfolio-sources.md`. They are examples supplied by the source portfolios.
 
 ## Work-schedule tool
 
-No fabricated replacement screenshot was supplied. The current local environment denied the official SheetJS 0.20.3 download with HTTP 403. Code and prior records were inspected, but a new end-to-end Excel/DOCX browser capture was not produced. No private company files were used.
+Source: this repository at `e0d1d33963362ba4e72f14183dbdaa7c19def2a0`, captured 2026-11-14 by [CI #38](https://github.com/minho-nim/MinLab/actions/runs/43600686913). The official dependency installed successfully there, although the local environment still rejects its download. `scripts/test-schedule-browser.cjs` opened the actual production build at `/MinLab/apps/work-schedule/` in Chromium at 1440×1000 and supplied synthetic Excel and DOCX files through the real file inputs. It did not inject parsed records or reconstruct the app.
+
+- `schedule-import.jpg`: one synthetic contract and two selected Word documents, before analysis.
+- `schedule-matching.jpg`: one matching contract and one unmatched contract with its explanation. These counts describe the fixture, not production accuracy.
+- `schedule-document.jpg`: the real original-DOCX preview, including synthetic roles/company/names and intentionally blank phone numbers.
+- `schedule-calendar.jpg`: the one matched, dated task in the calendar. The unmatched document is excluded.
+
+The test also verified no document-upload requests. Company-system import, real company templates, original-app mobile usability and the Excel export UI were not exercised by this browser test. Existing export unit tests remain separate. No private company documents or accounts were used. These JPEGs are unchanged browser captures, not edited or painted screenshots.
+
+| File                  | SHA-256                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| schedule-import.jpg   | c0a0a5fd42adcc2717ba0bf014ee4f20ecbda86510d67d89ebd441f05290095c |
+| schedule-matching.jpg | c3352fbe3b57c343cdc753d5839e47de8404fb26d49058117ae8e2d3b79142cb |
+| schedule-document.jpg | 6d22be85083c0c4d920fcec98ff547187c913837f388134f22f0c4838050b45d |
+| schedule-calendar.jpg | 036072baf4a8f8deae31fddfafa19a552bdc68a73c5d8fff32e31761e877fc58 |

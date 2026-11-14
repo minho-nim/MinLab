@@ -26,22 +26,21 @@ export function FeatureShowcase({ project }: { project: Project }) {
     ),
   }));
   const scenes = [
-    ...screens
-      .filter(
-        (s) => !featureScenes.some((f) => f.screen === screens.indexOf(s)),
-      )
-      .map((s) => ({
-        id: s.id,
-        name: s.label,
-        description: s.description || "",
+    ...screens.map((s, screen) => {
+      const feature = featureScenes.find((f) => f.screen === screen);
+      return {
+        id: feature?.id || s.id,
+        name: feature?.name || s.label,
+        description: feature?.description || s.description || "",
         action: s.action,
         outcome: s.outcome,
         rationale: s.rationale,
         notice: s.notice,
-        status: undefined,
-        screen: screens.indexOf(s),
-      })),
-    ...featureScenes,
+        status: feature?.status,
+        screen,
+      };
+    }),
+    ...featureScenes.filter((feature) => feature.screen < 0),
   ];
   const [active, setActive] = useState(0);
   const container = useRef<HTMLDivElement>(null);

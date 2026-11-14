@@ -267,6 +267,7 @@ const sameSize = (a, b) => {
       '.archive-project[href$="/media-check-0"] .project-media',
     );
     await first.waitFor();
+    await first.scrollIntoViewIfNeeded();
     const firstSize = await first.boundingBox();
     assert.ok(
       !requested.includes(11),

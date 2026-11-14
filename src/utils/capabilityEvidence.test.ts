@@ -89,3 +89,32 @@ test("deep links round-trip exact project/record IDs and leave old routes compat
   });
   assert.deepEqual(parseRoute("#/projects/%E0%A4"), { view: "archive" });
 });
+
+test("capabilities explain matching main projects first without filling their space with unrelated projects", () => {
+  const ids = [
+    "proj-minlab-ai-office",
+    "proj-minially",
+    "proj-1792978415000",
+    "proj-crossroads-ai-verdict",
+  ];
+  const data = [
+    project("other", [log("other-log", "화면 설계")]),
+    ...ids
+      .slice()
+      .reverse()
+      .map((id) => project(id, [log(id + "-log", "화면 설계")])),
+  ];
+  const before = JSON.stringify(data);
+  assert.deepEqual(
+    capabilityEvidence(data, 2).map((e) => e.project.id),
+    ids,
+  );
+  assert.equal(JSON.stringify(data), before);
+  assert.deepEqual(
+    capabilityEvidence(
+      [data[0], project(ids[0], [log("unmatched", "자료 정리")])],
+      2,
+    ).map((e) => e.project.id),
+    ["other"],
+  );
+});

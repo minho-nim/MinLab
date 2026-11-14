@@ -1,4 +1,4 @@
-/* Native links and visible source order remain the navigation contract. */
+/* Native links follow the main-first visitor order without rewriting source data. */
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -27,7 +27,17 @@ const evidence =
       const saved = await page.evaluate(() =>
         localStorage.getItem("minlab_projects_data_v2"),
       );
-      const visible = JSON.parse(saved).filter((p) => p.visible !== false);
+      const source = JSON.parse(saved).filter((p) => p.visible !== false);
+      const mainIds = [
+        "proj-minlab-ai-office",
+        "proj-minially",
+        "proj-1792978415000",
+        "proj-crossroads-ai-verdict",
+      ];
+      const visible = [
+        ...mainIds.map((id) => source.find((p) => p.id === id)).filter(Boolean),
+        ...source.filter((p) => !mainIds.includes(p.id)),
+      ];
       const middle = visible[Math.floor(visible.length / 2)];
       await page
         .locator(
@@ -75,8 +85,11 @@ const evidence =
         () => document.querySelector(".mini-project-track").scrollLeft > 0,
       );
       await page.screenshot({ path: `${evidence}/rail-${width}.png` });
-      const target = await links.first().getAttribute("href");
-      await links.first().focus();
+      const destination = track
+        .locator(':scope>a[href^="#/projects/"]')
+        .first();
+      const target = await destination.getAttribute("href");
+      await destination.focus();
       await page.keyboard.press("Enter");
       await page.waitForURL((url) => url.hash === target);
       await page.goBack();

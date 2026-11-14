@@ -1,3 +1,4 @@
+import { projectDestination } from "../utils/projectDestinations";
 import { useState, useEffect, useRef } from "react";
 import type { Project } from "../types";
 import { routeHash } from "../utils/navigation";
@@ -225,10 +226,7 @@ export function AboutPage({
                   .filter(item.match)
                   .slice(0, 2)
                   .map((p) => (
-                    <a
-                      href={routeHash({ view: "project", projectId: p.id })}
-                      key={p.id}
-                    >
+                    <a {...projectDestination(p.id)} key={p.id}>
                       {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
                       <div>
                         <strong>{p.name} ↗</strong>
@@ -248,8 +246,10 @@ export function AboutPage({
       </section>
       <section className="capability-explorer">
         <header>
-          <p className="eyebrow">작업 분야</p>
-          <h2>분야별로 모은 작업 기록</h2>
+          <h2>메인 프로젝트에서 한 일</h2>
+          <p>
+            네 프로젝트를 만들며 기획하고, 구현하고, 고친 내용을 모았습니다.
+          </p>
         </header>
         <div className="capability-layout">
           <nav aria-label="역량 선택">
@@ -284,10 +284,13 @@ export function AboutPage({
             >
               {evidence.map(({ project: p, log, excerpt }) => (
                 <article key={p.id} data-evidence-log={log.id}>
-                  <a href={routeHash({ view: "project", projectId: p.id })}>
+                  <a {...projectDestination(p.id)}>
                     <strong>{p.name} ↗</strong>
                   </a>
-                  <p>{log.title || log.task || "개발 기록"}</p>
+                  <p>{p.description}</p>
+                  <p className="capability-record-title">
+                    {log.title || log.task || "개발 기록"}
+                  </p>
                   <small>
                     {log.date} · {log.version || "버전 미지정"}
                   </small>

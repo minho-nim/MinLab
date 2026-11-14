@@ -1,4 +1,5 @@
 import type { Project, WorkLog } from "../types";
+import { orderPortfolioProjects, primaryProjectIds } from "./homeProjects";
 
 export const capabilities = [
   {
@@ -43,7 +44,7 @@ export function capabilityEvidence(projects: Project[], index: number) {
           .map((line) => ({ label: label!, text: line.trim() })),
       )
       .find((item) => item.text && capability.match.test(item.text));
-  return projects
+  const matches = orderPortfolioProjects(projects)
     .filter((p) => p.visible !== false && !p.archived)
     .flatMap((project) => {
       const logs = [...project.workLogs].sort(
@@ -56,6 +57,9 @@ export function capabilityEvidence(projects: Project[], index: number) {
         if (excerpt) return [{ project, log, excerpt }];
       }
       return [];
-    })
-    .slice(0, 3);
+    });
+  const main = matches.filter(({ project }) =>
+    primaryProjectIds.some((id) => id === project.id),
+  );
+  return main.length ? main : matches.slice(0, 3);
 }

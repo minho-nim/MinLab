@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { catalogProjects } from "../data/projectCatalog";
-import { selectHomeProjects } from "./homeProjects";
+import { selectHomeProjects, orderPortfolioProjects } from "./homeProjects";
 const base = catalogProjects()[0];
 const app = (id: string, category: string, screen = false) => ({
   ...base,
@@ -90,4 +90,32 @@ test("the four requested main projects lead the home without changing stored ord
   assert.ok(
     !selectHomeProjects(projects, () => true, 4).some((p) => p.id === ids[0]),
   );
+});
+
+test("visitor order starts with the four main projects and preserves all other positions and source data", () => {
+  const projects = [
+    app("other-one", "생활"),
+    app("proj-crossroads-ai-verdict", "게임"),
+    app("proj-minially", "일정"),
+    app("other-two", "업무"),
+    app("proj-1792978415000", "소비"),
+    app("proj-minlab-ai-office", "AI"),
+  ];
+  const before = JSON.stringify(projects);
+  assert.deepEqual(
+    orderPortfolioProjects(projects).map((p) => p.id),
+    [
+      "proj-minlab-ai-office",
+      "proj-minially",
+      "proj-1792978415000",
+      "proj-crossroads-ai-verdict",
+      "other-one",
+      "other-two",
+    ],
+  );
+  assert.equal(JSON.stringify(projects), before);
+  assert.deepEqual(orderPortfolioProjects([projects[0], projects[3]]), [
+    projects[0],
+    projects[3],
+  ]);
 });

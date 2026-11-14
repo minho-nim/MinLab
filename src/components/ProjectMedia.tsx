@@ -59,6 +59,7 @@ export function ProjectMedia({
       <div
         ref={container}
         data-project-media={project.id}
+        data-zoomable={zoomable || undefined}
         data-media-state={
           !media || broken ? "empty" : ready ? "ready" : "loading"
         }

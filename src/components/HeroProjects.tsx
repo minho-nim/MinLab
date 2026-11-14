@@ -64,11 +64,10 @@ export function HeroProjects({ projects }: { projects: Project[] }) {
         >
           <div className="hero-project-visual">
             <ProjectMedia project={p} eager={i === 0} priority={i === 0} />
-            <p className="hero-project-description">{p.description}</p>
           </div>
           <div className="hero-project-label">
             <strong>{p.name}</strong>
-            <span>{p.category} ↗</span>
+            <span>{projectLinkLabel(p.id)} ↗</span>
           </div>
         </a>
       ))}

@@ -1,19 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import type { Project } from "../types";
 import { mediaFor, ProjectMedia } from "./ProjectMedia";
+import { publicFeature } from "../utils/publicProjects";
+import { projectCaseStudies } from "../data/projectCaseStudies";
 import { motionAllowed } from "../utils/visualMotion";
 
 export function FeatureShowcase({ project }: { project: Project }) {
   const screens = mediaFor(project);
   const features = project.keyFeatures.map((f, i) =>
     typeof f === "string"
-      ? { id: "feature-" + i, name: f, description: "" }
-      : f,
+      ? { id: "feature-" + i, name: f, description: "", status: undefined }
+      : publicFeature(project.id, f),
   );
   const featureScenes = features.map((f) => ({
     id: f.id,
     name: f.name,
     description: f.description || "",
+    action: undefined,
+    outcome: undefined,
+    rationale: undefined,
+    notice: undefined,
+    status: f.status,
     screen: screens.findIndex(
       (s) => s.featureId === f.id || s.label === f.name,
     ),
@@ -27,6 +34,11 @@ export function FeatureShowcase({ project }: { project: Project }) {
         id: s.id,
         name: s.label,
         description: s.description || "",
+        action: s.action,
+        outcome: s.outcome,
+        rationale: s.rationale,
+        notice: s.notice,
+        status: undefined,
         screen: screens.indexOf(s),
       })),
     ...featureScenes,
@@ -193,7 +205,21 @@ export function FeatureShowcase({ project }: { project: Project }) {
         className="showcase-empty project-chapter-target"
       >
         <h2>프로젝트 화면</h2>
-        <p>등록된 화면과 기능 설명이 없습니다.</p>
+        {projectCaseStudies[project.id] ? (
+          <>
+            <ol className="project-use-flow">
+              {projectCaseStudies[project.id].flow.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+            <p>
+              아직 소개에 연결한 실제 화면은 없습니다. 사용 흐름은 확인한 자료를
+              바탕으로 정리했습니다.
+            </p>
+          </>
+        ) : (
+          <p>등록된 화면과 기능 설명이 없습니다.</p>
+        )}
       </section>
     );
   const scene = scenes[active] || scenes[0];
@@ -213,36 +239,38 @@ export function FeatureShowcase({ project }: { project: Project }) {
           {String(scenes.length).padStart(2, "0")}
         </span>
       </header>
-      <nav ref={tabs} className="scene-tabs" aria-label="기능 직접 선택">
-        {scenes.map((s, i) => (
-          <button
-            key={s.id}
-            aria-pressed={i === active}
-            tabIndex={i === active ? 0 : -1}
-            onClick={() => choose(i)}
-            onKeyDown={(event) => {
-              const next =
-                event.key === "ArrowRight"
-                  ? Math.min(scenes.length - 1, i + 1)
-                  : event.key === "ArrowLeft"
-                    ? Math.max(0, i - 1)
-                    : event.key === "Home"
-                      ? 0
-                      : event.key === "End"
-                        ? scenes.length - 1
-                        : null;
-              if (next === null) return;
-              event.preventDefault();
-              choose(next);
-              tabs.current
-                ?.querySelectorAll("button")
-                [next]?.focus({ preventScroll: true });
-            }}
-          >
-            {s.name}
-          </button>
-        ))}
-      </nav>
+      {scenes.length > 1 && (
+        <nav ref={tabs} className="scene-tabs" aria-label="기능 직접 선택">
+          {scenes.map((s, i) => (
+            <button
+              key={s.id}
+              aria-pressed={i === active}
+              tabIndex={i === active ? 0 : -1}
+              onClick={() => choose(i)}
+              onKeyDown={(event) => {
+                const next =
+                  event.key === "ArrowRight"
+                    ? Math.min(scenes.length - 1, i + 1)
+                    : event.key === "ArrowLeft"
+                      ? Math.max(0, i - 1)
+                      : event.key === "Home"
+                        ? 0
+                        : event.key === "End"
+                          ? scenes.length - 1
+                          : null;
+                if (next === null) return;
+                event.preventDefault();
+                choose(next);
+                tabs.current
+                  ?.querySelectorAll("button")
+                  [next]?.focus({ preventScroll: true });
+              }}
+            >
+              {s.name}
+            </button>
+          ))}
+        </nav>
+      )}
       <div className="feature-showcase-layout">
         <div className="browser-showcase">
           <div className="window-bar">
@@ -291,39 +319,48 @@ export function FeatureShowcase({ project }: { project: Project }) {
               </div>
             )}
           </div>
-          <div className="scene-controls">
-            <button disabled={active === 0} onClick={() => choose(active - 1)}>
-              ← 이전 기능
-            </button>
-            <label className="scene-current">
-              <span className="scene-position">
-                현재 기능 {String(active + 1).padStart(2, "0")} /{" "}
-                {String(scenes.length).padStart(2, "0")}
-              </span>
-              <select
-                aria-label="미리보기 기능 선택"
-                value={active}
-                onChange={(event) => choose(Number(event.target.value))}
-              >
-                {scenes.map((item, index) => (
-                  <option key={item.id} value={index}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              disabled={active === scenes.length - 1}
-              onClick={() => choose(active + 1)}
-            >
-              다음 기능 →
-            </button>
-          </div>
-          <div className="scene-progress" aria-hidden="true">
-            <i
-              style={{ transform: `scaleX(${(active + 1) / scenes.length})` }}
-            />
-          </div>
+          {scenes.length > 1 && (
+            <>
+              <div className="scene-controls">
+                <button
+                  disabled={active === 0}
+                  onClick={() => choose(active - 1)}
+                >
+                  ← 이전 기능
+                </button>
+                <label className="scene-current">
+                  <span className="scene-position">
+                    현재 기능 {String(active + 1).padStart(2, "0")} /{" "}
+                    {String(scenes.length).padStart(2, "0")}
+                  </span>
+                  <select
+                    aria-label="미리보기 기능 선택"
+                    value={active}
+                    onChange={(event) => choose(Number(event.target.value))}
+                  >
+                    {scenes.map((item, index) => (
+                      <option key={item.id} value={index}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  disabled={active === scenes.length - 1}
+                  onClick={() => choose(active + 1)}
+                >
+                  다음 기능 →
+                </button>
+              </div>
+              <div className="scene-progress" aria-hidden="true">
+                <i
+                  style={{
+                    transform: `scaleX(${(active + 1) / scenes.length})`,
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
         <div className="scene-stories" ref={container}>
           {scenes.map((s, i) => (
@@ -343,7 +380,31 @@ export function FeatureShowcase({ project }: { project: Project }) {
                 {String(i + 1).padStart(2, "0")} / 주요 기능
               </span>
               <h3>{s.name}</h3>
+              {s.status && (
+                <small>
+                  {s.status === "완료"
+                    ? "등록된 상태: 완료"
+                    : s.status === "진행 중"
+                      ? "구현 진행 중"
+                      : "기획·대기 중"}
+                </small>
+              )}
               {s.description && <p>{s.description}</p>}
+              {s.action && (
+                <dl className="scene-flow">
+                  {[
+                    ["하는 일", s.action],
+                    ["달라지는 것", s.outcome],
+                    ["이렇게 만든 이유", s.rationale],
+                  ].map(([label, text]) => (
+                    <div key={label}>
+                      <dt>{label}</dt>
+                      <dd>{text}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              {s.notice && <small className="scene-notice">{s.notice}</small>}
               {s.screen >= 0 && screens[s.screen].label !== s.name && (
                 <small>{screens[s.screen].label}</small>
               )}

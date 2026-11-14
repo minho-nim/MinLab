@@ -10,11 +10,13 @@ export function projectDestination(projectId: string) {
         target: "_blank",
         rel: "noopener noreferrer",
         "data-external-portfolio": true,
-        title: "별도 포트폴리오 · 새 탭",
+        title: "외부 포트폴리오 · 새 탭",
       }
     : { href: routeHash({ view: "project", projectId }) };
 }
 
 export function projectLinkLabel(projectId: string) {
-  return projectStories[projectId] ? "포트폴리오 보기" : "프로젝트 보기";
+  return projectStories[projectId]
+    ? "외부 포트폴리오 · 새 탭"
+    : "MinLab 소개 보기";
 }

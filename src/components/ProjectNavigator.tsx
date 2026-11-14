@@ -1,4 +1,7 @@
-import { projectDestination } from "../utils/projectDestinations";
+import {
+  projectDestination,
+  projectLinkLabel,
+} from "../utils/projectDestinations";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { motionAllowed } from "../utils/visualMotion";
@@ -78,7 +81,9 @@ export function ProjectNavigator({
             {related.map((p) => (
               <a {...projectDestination(p.id)} key={p.id}>
                 {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
-                <small>{p.category}</small>
+                <small>
+                  {p.category} · {projectLinkLabel(p.id)}
+                </small>
                 <h3>{p.name} ↗</h3>
                 <p>{p.description}</p>
               </a>
@@ -94,7 +99,7 @@ export function ProjectNavigator({
           <div>
             <span className="next-project-caption">다음 프로젝트</span>
             <h2>{next.name}</h2>
-            <span className="text-link">다음 프로젝트 보기 ↗</span>
+            <span className="text-link">{projectLinkLabel(next.id)} ↗</span>
           </div>
           {mediaFor(next).length > 0 && <ProjectMedia project={next} />}
         </a>
@@ -184,6 +189,7 @@ export function ProjectNavigator({
           {visible.map((p) => (
             <a
               aria-current={p.id === project.id ? "page" : undefined}
+              data-project-id={p.id}
               key={p.id}
               {...projectDestination(p.id)}
             >
@@ -197,7 +203,9 @@ export function ProjectNavigator({
                 )}
               </div>
               <small>
-                {p.id === project.id ? "보고 있는 프로젝트" : p.category}
+                {p.id === project.id
+                  ? "보고 있는 프로젝트"
+                  : projectLinkLabel(p.id)}
               </small>
               <strong>{p.name}</strong>
               <ArrowUpRight size={16} aria-hidden="true" />

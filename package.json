@@ -26,7 +26,8 @@
     "test:capabilities": "node scripts/test-capability-links.cjs",
     "test:remote": "node scripts/test-remote-studio.cjs",
     "test:schedule": "node --import tsx --test apps/work-schedule/src/utils/*.test.ts",
-    "test:navigator": "node scripts/test-project-navigator.cjs"
+    "test:navigator": "node scripts/test-project-navigator.cjs",
+    "test:case-studies": "node scripts/test-case-studies.cjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

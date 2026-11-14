@@ -337,6 +337,12 @@
 .browser-showcase img {
   object-fit: contain;
 }
+.browser-showcase .project-media[data-zoomable] > img {
+  height: calc(100% - 56px);
+}
+.browser-showcase .project-media[data-zoomable] > .media-expand {
+  bottom: 6px;
+}
 .scene-controls {
   display: flex;
   justify-content: space-between;
@@ -2080,4 +2086,38 @@ html[data-visual-motion="paused"] .next-project-showcase .text-link { transition
   grid-row: auto;
   transform: none;
   translate: none;
+}
+
+/* Editorial context stays separate from the historical record reader. */
+.project-availability { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 24px 0; font-size: 13px; }
+.project-availability dt, .project-making dt, .project-scope dt, .scene-flow dt, .capability-narrative dt { color: var(--color-muted); font-size: 12px; margin-bottom: 8px; }
+.project-use-flow { list-style: decimal; padding-inline-start: 24px; max-width: 70ch; }
+.project-use-flow li { padding: 8px 0 8px 4px; line-height: 1.8; }
+.project-making { margin-bottom: 48px; }
+.project-making > article { border-top: 1px solid var(--color-line); padding: 28px 0; }
+.project-making h3 { font-size: 23px; margin: 0 0 24px; }
+.project-making dl > div, .project-scope > div { display: grid; grid-template-columns: 100px minmax(0,1fr); gap: 20px; margin-bottom: 20px; }
+.project-making dd, .project-scope dd { max-width: 70ch; line-height: 1.85; white-space: pre-wrap; }
+.project-scope { margin-top: 28px; }
+.case-sources { margin: 28px 0; }
+.case-sources summary { cursor: pointer; padding: 16px 0; }
+.case-sources a { display: flex; margin: 12px 0; }
+.scene-flow > div, .capability-narrative > div { margin: 20px 0; }
+.scene-flow dd, .capability-narrative dd { font-size: 15px; line-height: 1.85; }
+.scene-notice { display: block; margin-top: 20px; line-height: 1.8; }
+.project-destination { display: block; font-size: 11px; margin-top: 6px; color: var(--color-muted); font-weight: 400; }
+.archive-project .project-description { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-footer { flex-wrap: wrap; }
+.hero-project-label { flex-wrap: wrap; gap: 8px; }
+.hero-project-label > span { font-size: 12px; }
+@media (max-width: 639px) {
+  .project-making dl > div, .project-scope > div { grid-template-columns: 1fr; gap: 0; }
+  .scene-flow dd, .capability-narrative dd { font-size: 14px; }
+  .project-availability { display: grid; }
+}
+.media-viewer-controls.single-screen { grid-template-columns: minmax(0, 1fr) 44px; }
+.media-viewer-caption { margin: 0; padding: 0 20px 12px; color: var(--color-muted); font-size: 12px; line-height: 1.7; }
+@media (max-width: 899px) {
+  .hero-mobile-caption { display: block; min-height: 112px; }
+  .hero-mobile-caption > span { display: block; margin-top: 8px; white-space: normal; }
 }

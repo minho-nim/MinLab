@@ -229,8 +229,9 @@ export function HomePage({ projects }: { projects: Project[] }) {
     representatives.filter(hasScreen),
     hasScreen,
     2,
+    true,
   );
-  const featured = selectHomeProjects(projects, hasScreen, 6);
+  const featured = selectHomeProjects(projects, hasScreen, 6, true);
   useEffect(() => {
     let frame = 0;
     const update = () => {

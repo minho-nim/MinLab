@@ -27,10 +27,10 @@ const fs = require("node:fs/promises");
       clientX: 1000,
       clientY: 200,
     });
-    assert.notEqual(
+    assert.equal(
       await title.evaluate((n) => getComputedStyle(n).translate),
       before,
-      "title responds to cursor",
+      "title stays still while the cursor moves",
     );
     const end = await page
       .locator("#selected-work")
@@ -154,7 +154,7 @@ const fs = require("node:fs/promises");
     await page.locator(".project-story").waitFor();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: kinetic title, reversible real-screen handoff, shared preview transition, native back restoration, scroll/click timeline and reduced motion.",
+      "PASS: stable title, reversible real-screen handoff, shared preview transition, native back restoration, scroll/click timeline and reduced motion.",
     );
   } finally {
     await browser.close();

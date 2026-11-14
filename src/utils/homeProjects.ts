@@ -7,7 +7,19 @@ export const primaryProjectIds = [
   "proj-crossroads-ai-verdict",
 ] as const;
 
-/** Preserve stored order as the tie-breaker; never change archive order or data. */
+/** Lead visitor navigation with the main projects; keep all other saved positions. */
+export function orderPortfolioProjects(projects: Project[]): Project[] {
+  const rank = new Map<string, number>(
+    primaryProjectIds.map((id, index) => [id, index]),
+  );
+  return [...projects].sort(
+    (a, b) =>
+      (rank.get(a.id) ?? primaryProjectIds.length) -
+      (rank.get(b.id) ?? primaryProjectIds.length),
+  );
+}
+
+/** Preserve stored order as the tie-breaker without changing saved data. */
 export function selectHomeProjects(
   projects: Project[],
   hasScreen: (project: Project) => boolean,

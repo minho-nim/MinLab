@@ -425,7 +425,17 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
         .count(),
       5,
     );
-    const lastProject = before.filter((p) => p.visible !== false).at(-1);
+    const lastHref = await page
+      .locator(".mini-project-track > a")
+      .last()
+      .getAttribute("href");
+    const lastProject = before.find(
+      (p) => lastHref === "#/projects/" + encodeURIComponent(p.id),
+    );
+    assert.ok(
+      lastProject,
+      "the final visitor project is available in the saved source",
+    );
     await page.goto(base + "#/projects/" + lastProject.id);
     await page
       .getByRole("heading", { name: lastProject.name, exact: true, level: 1 })

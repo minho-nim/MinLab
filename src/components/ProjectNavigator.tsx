@@ -92,9 +92,8 @@ export function ProjectNavigator({
           {...projectDestination(next.id)}
         >
           <div>
-            <span className="eyebrow">다음 프로젝트 / {next.category}</span>
+            <span className="next-project-caption">다음 프로젝트</span>
             <h2>{next.name}</h2>
-            <p>{next.description}</p>
             <span className="text-link">다음 프로젝트 보기 ↗</span>
           </div>
           {mediaFor(next).length > 0 && <ProjectMedia project={next} />}

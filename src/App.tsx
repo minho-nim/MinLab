@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, lazy } from "react";
 import { flushSync } from "react-dom";
+import { orderPortfolioProjects } from "./utils/homeProjects";
 import { routeMotion } from "./utils/routeMotion";
 import { revealLinkedRecord } from "./utils/linkedRecord";
 import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
@@ -66,6 +67,10 @@ const DeleteConfirmModal = lazy(() =>
 export default function App() {
   const [projects, setProjects] = useState<Project[]>(() => loadProjects());
   const [published, setPublished] = useState<Project[]>(() => projects);
+  const visitorProjects = useMemo(
+    () => orderPortfolioProjects(published.filter((p) => p.visible !== false)),
+    [published],
+  );
   const [review, setReview] = useState(false);
   const [recovery, setRecovery] = useState<Project[] | null>(null);
   const [remoteAdmin, setRemoteAdmin] = useState(false);
@@ -538,7 +543,7 @@ export default function App() {
               published.find((p) => p.id === selectedProject.id) ||
               selectedProject
             }
-            projects={published}
+            projects={visitorProjects}
             linkedLogId={route.view === "project" ? route.logId : undefined}
           />
         ) : selectedProject ? (
@@ -577,16 +582,11 @@ export default function App() {
         ) : route.view === "landing" ? (
           <EntryLanding />
         ) : route.view === "home" ? (
-          <HomePage projects={published.filter((p) => p.visible !== false)} />
+          <HomePage projects={visitorProjects} />
         ) : route.view === "about" ? (
-          <AboutPage
-            projects={published.filter((p) => p.visible !== false)}
-            introOverride={remoteAbout}
-          />
+          <AboutPage projects={visitorProjects} introOverride={remoteAbout} />
         ) : route.view === "archive" ? (
-          <ArchiveView
-            projects={published.filter((p) => p.visible !== false)}
-          />
+          <ArchiveView projects={visitorProjects} />
         ) : route.view === "admin" ? (
           <section className="admin-dashboard">
             <header className="page-heading">
@@ -1008,13 +1008,13 @@ export default function App() {
             {route.view === "records" && route.tab === "prompts" ? (
               <PromptHistoryView
                 readOnly={!manageRecords}
-                projects={manageRecords ? projects : published}
+                projects={manageRecords ? projects : visitorProjects}
                 projectId={devLogProjectIdFilter}
                 onUpdateProject={handleUpdateProject}
               />
             ) : !manageRecords ? (
               <VersionJournal
-                projects={manageRecords ? projects : published}
+                projects={manageRecords ? projects : visitorProjects}
                 projectId={devLogProjectIdFilter}
                 onSelect={(id) =>
                   navigate({

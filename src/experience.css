@@ -487,20 +487,22 @@
   color: var(--color-accent);
 }
 .next-project-showcase {
-  display: grid !important;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 30px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
+  gap: 24px;
   align-items: center;
-  padding: 45px 0 !important;
+  padding: 24px 0;
 }
 .next-project-showcase h2 {
-  font-size: clamp(28px, 4vw, 56px);
-  line-height: 1.2;
-  margin: 20px 0;
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 8px 0 12px;
+  overflow-wrap: anywhere;
 }
-.next-project-showcase p {
-  font-size: 15px;
-  line-height: 1.8;
+.next-project-caption {
+  font-size: 13px;
+  color: var(--color-muted);
 }
 .next-project-showcase .project-media {
   aspect-ratio: 1.6;
@@ -601,6 +603,7 @@
   font-size: 14px;
   line-height: 1.8;
 }
+.capability-evidence .capability-record-title { font-size: 13px; color: var(--color-muted); }
 .capability-evidence article {
   padding: 20px 0;
   border-bottom: 1px solid var(--color-line);
@@ -690,7 +693,8 @@
     margin-top: 20px;
   }
   .next-project-showcase {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 16px;
   }
   .process-journal-entry {
     gap: 30px;

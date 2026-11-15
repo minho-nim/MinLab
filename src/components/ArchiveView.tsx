@@ -22,6 +22,7 @@ import {
 } from "../utils/projectGroups";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { useCollectionMotion } from "../utils/useCollectionMotion";
+import { clearArchiveReturnCue } from "../utils/archiveReturn";
 export function ArchiveView({ projects }: { projects: Project[] }) {
   const [filtersOpen, setFiltersOpen] = useState(
     () => safeRead("minlab_archive_filters_open") === "true",
@@ -84,6 +85,7 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
     return () => window.removeEventListener("hashchange", restore);
   }, []);
   const change = (patch: Partial<ArchiveQuery>, animate = true) => {
+    clearArchiveReturnCue();
     const next = { ...query, ...patch };
     collection.capture(animate);
     setHovered(null);

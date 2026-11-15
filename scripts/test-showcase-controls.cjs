@@ -48,7 +48,7 @@ async function swipe(page, box, vertical = false) {
     await fs.mkdir(evidence, { recursive: true });
     for (const width of [1440, 390, 320]) {
       const page = await browser.newPage({
-        viewport: { width, height: 900 },
+        viewport: { width, height: width === 320 ? 640 : 900 },
         hasTouch: width < 900,
         isMobile: width < 900,
         reducedMotion: "reduce",
@@ -67,6 +67,12 @@ async function swipe(page, box, vertical = false) {
       await page.goto(base + "#/projects/proj-musclemap");
       const select = page.getByRole("combobox", { name: "미리보기 기능 선택" });
       await select.waitFor();
+      const previewHeight = await page
+        .locator(".scene-preview-stage")
+        .evaluate((node) => node.getBoundingClientRect().height);
+      const controlsHeight = await page
+        .locator(".scene-controls")
+        .evaluate((node) => node.getBoundingClientRect().height);
       const saved = digest(
         await page.evaluate(() =>
           localStorage.getItem("minlab_projects_data_v2"),
@@ -139,6 +145,7 @@ async function swipe(page, box, vertical = false) {
               .scene === "0",
         );
         const stage = page.locator(".scene-preview-stage");
+        await stage.scrollIntoViewIfNeeded();
         await swipe(page, await stage.boundingBox());
         await page.waitForFunction(
           () => document.querySelector(".scene-current select")?.value === "1",
@@ -237,6 +244,32 @@ async function swipe(page, box, vertical = false) {
       assert.ok(total > 2);
       await plain.selectOption(String(total - 1));
       await page.locator(".browser-showcase .scene-no-image").waitFor();
+      assert.ok(
+        Math.abs(
+          (await page
+            .locator(".scene-preview-stage")
+            .evaluate((node) => node.getBoundingClientRect().height)) -
+            previewHeight,
+        ) < 1,
+        "A missing feature image keeps the same preview space",
+      );
+      assert.ok(
+        Math.abs(
+          (await page
+            .locator(".scene-controls")
+            .evaluate((node) => node.getBoundingClientRect().height)) -
+            controlsHeight,
+        ) < 1,
+        "Feature controls keep their height across image and text scenes",
+      );
+      if (width === 320)
+        assert.equal(
+          await page
+            .locator(".browser-showcase")
+            .evaluate((node) => getComputedStyle(node).position),
+          "static",
+          "Short phones can scroll past the preview without it covering the story",
+        );
       assert.equal(await page.locator(".scene-stories article").count(), total);
       if (width < 900) {
         const last = await page

@@ -158,6 +158,20 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
         "예시 데이터 화면입니다. 회사 시스템으로 일정 Excel을 올리는 과정까지 검증한 것은 아닙니다.",
       fit: "contain",
     },
+    {
+      id: "schedule-export",
+      src: "media/schedule-export.jpg",
+      label: "일괄등록 Excel 미리보기와 다운로드",
+      featureId: "feature-2",
+      action:
+        "내보낼 일정과 캘린더·등록자·참여자 값을 확인하고 Excel을 내려받습니다.",
+      outcome: "일정리스트와 캘린더 참여자 시트가 들어 있는 파일을 생성합니다.",
+      rationale:
+        "회사 시스템에 올리기 전에 파일에 들어갈 내용과 계정 값을 확인하도록 했습니다.",
+      notice:
+        "예시 문서·계정으로 실제 파일 생성을 확인했습니다. 현재는 매칭 실패 문서도 내보내기 대상에 포함됩니다. 회사 시스템으로의 업로드는 검증하지 않았습니다.",
+      fit: "contain",
+    },
   ],
   "proj-minlab-ai-office": [
     {

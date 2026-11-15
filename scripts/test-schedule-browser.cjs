@@ -210,13 +210,6 @@ async function capture(page, name) {
       exportedBook.Sheets["일정리스트"].A8.v,
       "3401. 예시 일정 · 실제 업로드용 아님",
     );
-    if (process.env.MINLAB_CAPTURE_EXPORT === "1")
-      console.log(
-        "MINLAB_EXPORT_CAPTURE=" +
-          (await fs.readFile(`${evidence}/schedule-export.jpg`)).toString(
-            "base64",
-          ),
-      );
     assert.deepEqual(errors, []);
     assert.deepEqual(
       writes,

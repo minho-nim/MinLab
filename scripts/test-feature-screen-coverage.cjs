@@ -60,6 +60,21 @@ const siteId = "proj-1792485558773";
         6,
         "Every ChoicePilot feature has its own real capture",
       );
+      await page.goto(base + "#/projects/risk-assessment-workplan-automation");
+      await page
+        .getByRole("combobox", { name: "미리보기 기능 선택" })
+        .selectOption("4");
+      await page
+        .locator(
+          '.browser-showcase img.media-current[src*="schedule-export.jpg"]',
+        )
+        .waitFor();
+      await page.waitForFunction(
+        () =>
+          document.querySelector(".browser-showcase .project-media")?.dataset
+            .mediaState === "ready",
+      );
+      assert.equal(await page.locator(".scene-no-image").count(), 0);
       await page.goto(
         base +
           `#/projects/${siteId}?log=` +
@@ -113,7 +128,7 @@ const siteId = "proj-1792485558773";
       await page.close();
     }
     console.log(
-      "PASS: six distinct ChoicePilot feature captures; MinLab excluded from the archive, old linked-record URLs and full prompts preserved; original data unchanged at 390/1440px.",
+      "PASS: six distinct ChoicePilot feature captures and real schedule export screen; MinLab excluded from the archive, old linked-record URLs and full prompts preserved; original data unchanged at 390/1440px.",
     );
   } finally {
     await browser.close();

@@ -9,6 +9,7 @@ export interface ProcessCase {
   sourceUrl?: string;
 }
 export interface ProjectCaseStudy {
+  planned?: boolean;
   audience: string;
   purpose: string;
   flow: string[];
@@ -333,9 +334,9 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
       "음식 도감과 밥친구의 변화를 확인합니다.",
     ],
     implementation:
-      "현재 README에는 식사·영양 목표·메뉴 추천·음식 도감·펫 육성이 설명돼 있습니다. AI 사진 분석은 기본 비활성화이며 기록은 브라우저에 저장됩니다.",
+      "현재 앱에는 식사 검색·섭취량 입력·영양 합계·음식 도감·밥친구가 연결돼 있습니다. AI 사진 분석은 기본 비활성화이며 기록은 브라우저에 저장됩니다.",
     verification:
-      "2026-11-14 저장소의 현재 README와 MinLab 등록 정보를 대조했습니다. 이번 작업에서 원본 앱을 새로 실행하거나 기존 검사 수치를 재검증하지는 않았습니다.",
+      "2026-11-16 원본 앱 소스와 공개 저장소가 일치하는지 대조하고 로컬 프로덕션 빌드에서 예시 식단을 확인했습니다. 바나나 선택·섭취량 확인·끼니 저장·음식 도감 이동을 직접 조작해 촬영했습니다.",
     remaining:
       "사진 분석의 실제 연결과 영양 정보의 정확성은 이번에 검증하지 않았습니다. 건강 판단이나 전문적인 식단 처방을 보장하지 않습니다.",
     sources: [
@@ -356,11 +357,11 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
       "다른 핑계를 고르거나 글·PNG·PDF로 저장합니다.",
     ],
     implementation:
-      "현재 README에는 문서 생성·다른 핑계·이름과 도장 편집·파일 저장·브라우저 백업이 설명돼 있습니다.",
+      "상황에 맞는 로컬 규칙으로 핑계 문서를 만듭니다. 요약·결재 형식을 고르고 이름·도장을 바꿀 수 있으며, 만든 문서는 이 브라우저에 보관합니다.",
     verification:
-      "2026-11-14 저장소의 현재 README와 MinLab 등록 정보를 대조했습니다. 이번 작업에서 원본 앱을 새로 실행하거나 기존 검사 수치를 재검증하지는 않았습니다.",
+      "2026-11-16 원본 앱 소스와 공개 저장소가 일치하는지 대조했습니다. 로컬 프로덕션 빌드에서 방 청소 예시로 문서를 생성하고 PNG 파일 내려받기와 내 문서 보관을 확인했습니다.",
     remaining:
-      "실제 서류나 증명서로 사용할 수 없습니다. 이번에는 생성·내보내기의 브라우저 동작을 재검증하지 않았습니다.",
+      "실제 서류나 증명서로 사용할 수 없습니다. PNG 저장은 확인했으며 PDF 출력·이미지 복사·실제 휴대폰 공유는 이번에 검증하지 않았습니다.",
     sources: [
       {
         label: "현재 사용 방법과 한계",
@@ -425,9 +426,9 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
       "충돌 여부를 확인한 뒤 배치를 저장합니다.",
     ],
     implementation:
-      "원본 README에는 로컬 이동·가구 이용·배치 편집과 Supabase 연결 코드가 설명돼 있습니다. 환경변수가 없으면 로컬 체험이며 가상 접속자를 표시하지 않습니다.",
+      "둘러보기·조감도·가구 배치 편집을 나눴습니다. Supabase 환경변수가 없는 이번 실행은 로컬 체험이며 가구와 배치는 브라우저에 저장됩니다.",
     verification:
-      "2026-11-14 저장소의 현재 README와 MinLab 등록 정보를 대조했습니다. 이번 작업에서 원본 앱을 새로 실행하거나 기존 검사 수치를 재검증하지는 않았습니다.",
+      "2026-11-16 공개 저장소와 일치하는 앱 소스를 빌드해 Chromium에서 기본 3D 공간을 렌더링했습니다. 조감도 전환·인테리어 진입·의자 선택과 배치 미리보기를 직접 조작해 촬영했습니다.",
     remaining:
       "원본 문서도 실제 기기 WebGL·터치와 Supabase 두 계정 동시 접속을 미검증으로 구분합니다. 사진에서 3D를 자동 생성하는 기능은 없습니다.",
     sources: [
@@ -438,6 +439,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
     ],
   },
   "proj-1792645542246": {
+    planned: true,
     audience:
       "메시지가 의도와 다르게 받아들여질까 고민하는 사람을 대상으로 한 서비스 구상입니다.",
     purpose:

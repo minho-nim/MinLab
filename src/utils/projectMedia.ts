@@ -14,6 +14,113 @@ export interface ResolvedMedia {
   section?: number;
 }
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
+  "proj-1792558759961": [
+    {
+      id: "nutrifit-home",
+      src: "media/nutrifit-home.jpg",
+      label: "밥친구와 영양 목표",
+      action: "홈에서 밥친구의 상태와 선택한 날짜의 식사·영양 합계를 봅니다.",
+      outcome: "기록한 식사와 하루 목표를 한곳에서 확인합니다.",
+      rationale: "숫자만 확인하는 기록에 밥친구와 함께하는 흐름을 더했습니다.",
+      notice:
+        "앱의 기본 예시 프로필과 식단입니다. 실제 건강 기록이나 식단 처방이 아닙니다.",
+      fit: "contain",
+    },
+    {
+      id: "nutrifit-meal",
+      src: "media/nutrifit-meal.jpg",
+      label: "음식과 섭취량 기록",
+      action: "음식을 검색해 고르고 섭취량을 조절한 뒤 끼니에 저장합니다.",
+      outcome: "입력한 중량에 맞춰 환산한 영양 정보를 확인합니다.",
+      rationale: "식품 기준량과 실제 먹은 양을 구분해 기록하도록 했습니다.",
+      notice:
+        "예시로 바나나를 선택한 실제 화면입니다. AI 사진 분석은 사용하지 않았습니다.",
+      fit: "contain",
+    },
+    {
+      id: "nutrifit-collection",
+      src: "media/nutrifit-collection.jpg",
+      label: "식사 기록을 도감으로 보기",
+      action: "음식 도감에서 발견한 음식과 기록 횟수를 보고 다시 기록합니다.",
+      outcome: "먹어 본 음식과 아직 기록하지 않은 음식을 구분합니다.",
+      rationale:
+        "식사 기록을 다시 살펴보고 새로운 음식을 탐색하도록 연결했습니다.",
+      notice:
+        "기본 예시 식단에 바나나를 추가한 화면입니다. 실제 사용자의 식습관이 아닙니다.",
+      fit: "contain",
+    },
+  ],
+  "proj-excuseoffice": [
+    {
+      id: "excuse-compose",
+      src: "media/excuse-compose.jpg",
+      label: "상황과 문서 형식 고르기",
+      action: "상황을 적거나 예시를 고르고 이름·도장·문서 형식을 정합니다.",
+      outcome: "입력한 내용이 문서 미리보기에 반영됩니다.",
+      rationale: "상황 한 줄에서 시작하고 필요한 정보만 바꾸도록 했습니다.",
+      notice: "앱의 기본 가상 이름과 예시 상황입니다. 재미용 문서만 만듭니다.",
+      fit: "contain",
+    },
+    {
+      id: "excuse-document",
+      src: "media/excuse-document.jpg",
+      label: "핑계 문서 만들고 저장하기",
+      action: "핑계 문서를 만들고 요약 형식으로 바꿔 이미지 저장을 누릅니다.",
+      outcome: "입력한 상황으로 만든 문서를 PNG 파일로 내려받습니다.",
+      rationale: "문서를 친구에게 보내기 편하도록 글과 파일 저장을 나눴습니다.",
+      notice:
+        "방 청소를 미루는 예시입니다. 실제 증명서·허가서로 사용할 수 없습니다.",
+      fit: "contain",
+    },
+    {
+      id: "excuse-archive",
+      src: "media/excuse-archive.jpg",
+      label: "만든 문서 다시 보기",
+      action: "내 문서에서 이전에 만든 핑계를 찾아봅니다.",
+      outcome: "이 브라우저에 저장한 문서를 다시 열 수 있습니다.",
+      rationale: "한 번 만든 내용을 매번 다시 입력하지 않게 했습니다.",
+      notice:
+        "이번 촬영에서 생성한 예시 문서입니다. 다른 기기와의 동기화 화면이 아닙니다.",
+      fit: "contain",
+    },
+  ],
+  "proj-minoom": [
+    {
+      id: "minoom-room",
+      src: "media/minoom-room.jpg",
+      label: "집 안 둘러보기",
+      action: "둘러보기에서 방 안을 보고 생활 모드를 이용합니다.",
+      outcome: "가구가 배치된 집을 눈높이에서 살펴봅니다.",
+      rationale:
+        "평면 배치뿐 아니라 공간 안에서 보이는 모습을 확인하게 했습니다.",
+      notice:
+        "기본 3D 공간을 로컬로 실행한 화면입니다. 온라인 연결은 사용하지 않았습니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoom-overview",
+      src: "media/minoom-overview.jpg",
+      label: "조감도로 전체 배치 보기",
+      action: "조감도 보기를 눌러 집 전체를 보고 인테리어 하기로 들어갑니다.",
+      outcome: "방과 가구의 위치를 위에서 확인합니다.",
+      rationale: "집 안을 걷는 시점과 가구 배치를 보는 시점을 나눴습니다.",
+      notice:
+        "기본 가구를 불러온 실제 3D 화면입니다. 사진에서 자동 생성한 공간이 아닙니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoom-placement",
+      src: "media/minoom-placement.jpg",
+      label: "가구 배치 미리보기",
+      action: "가구 목록에서 의자를 고르고 위치·회전·크기를 조절합니다.",
+      outcome: "배치 가능 여부를 확인하고 확정하거나 취소합니다.",
+      rationale: "겹치는 위치에 바로 저장하지 않고 먼저 확인하도록 했습니다.",
+      notice:
+        "원목 라운지 체어를 추가로 선택한 미리보기입니다. 온라인 저장·공유는 검증하지 않았습니다.",
+      fit: "contain",
+    },
+  ],
+
   "proj-1792563333333": [
     {
       id: "choicepilot-input",

@@ -75,6 +75,67 @@ const siteId = "proj-1792485558773";
             .mediaState === "ready",
       );
       assert.equal(await page.locator(".scene-no-image").count(), 0);
+      for (const [id, prefix] of [
+        ["proj-1792558759961", "nutrifit-"],
+        ["proj-excuseoffice", "excuse-"],
+        ["proj-minoom", "minoom-"],
+      ]) {
+        await page.goto(base + "#/projects/" + id);
+        await select.waitFor();
+        assert.equal(await select.locator("option").count(), 3);
+        const images = new Set();
+        for (let i = 0; i < 3; i++) {
+          await select.selectOption(String(i));
+          await page.waitForFunction(
+            (index) =>
+              document.querySelector(".scene-stories .is-active")?.dataset
+                .scene === String(index) &&
+              document.querySelector(".browser-showcase .project-media")
+                ?.dataset.mediaState === "ready",
+            i,
+          );
+          const img = page.locator(".browser-showcase img.media-current");
+          const src = await img.getAttribute("src");
+          assert.ok(src.includes(prefix));
+          assert.ok(await img.evaluate((n) => n.naturalWidth > 500));
+          images.add(src);
+        }
+        assert.equal(images.size, 3, "Distinct real captures for each flow");
+        assert.ok(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth + 1,
+          ),
+        );
+        await page
+          .locator(".feature-showcase")
+          .screenshot({
+            path: `test-results/feature-screens/${prefix}${width}.png`,
+          });
+        const expand = page.locator(".browser-showcase .media-expand");
+        await expand.click();
+        await page.getByRole("dialog").waitFor();
+        await page.keyboard.press("Escape");
+        assert.equal(await page.getByRole("dialog").count(), 0);
+        assert.ok(await expand.evaluate((n) => n === document.activeElement));
+      }
+      await page.goto(base + "#/projects/proj-1792645542246");
+      await page
+        .getByRole("heading", { name: "구상 중인 사용 흐름", exact: true })
+        .waitFor();
+      assert.equal(await select.count(), 0);
+      assert.equal(await page.locator(".browser-showcase").count(), 0);
+      assert.ok(
+        (await page.locator(".showcase-empty").innerText()).includes(
+          "구현 전 구상",
+        ),
+      );
+      assert.equal(
+        await page.evaluate(() =>
+          localStorage.getItem("minlab_projects_data_v2"),
+        ),
+        raw,
+        "Viewing bundled screens must not replace stored user data",
+      );
       await page.goto(
         base +
           `#/projects/${siteId}?log=` +
@@ -128,7 +189,7 @@ const siteId = "proj-1792485558773";
       await page.close();
     }
     console.log(
-      "PASS: six distinct ChoicePilot feature captures and real schedule export screen; MinLab excluded from the archive, old linked-record URLs and full prompts preserved; original data unchanged at 390/1440px.",
+      "PASS: nine real NutriFit/ExcuseOffice/minoom captures with switching and viewer focus, IntentGap planning only, six ChoicePilot captures and schedule export; MinLab excluded from the archive, old linked-record URLs and full prompts preserved; original data unchanged at 390/1440px.",
     );
   } finally {
     await browser.close();

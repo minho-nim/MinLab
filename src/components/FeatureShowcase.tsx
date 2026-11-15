@@ -204,7 +204,11 @@ export function FeatureShowcase({ project }: { project: Project }) {
         id="project-showcase"
         className="showcase-empty project-chapter-target"
       >
-        <h2>프로젝트 화면</h2>
+        <h2>
+          {projectCaseStudies[project.id]?.planned
+            ? "구상 중인 사용 흐름"
+            : "프로젝트 화면"}
+        </h2>
         {projectCaseStudies[project.id] ? (
           <>
             <ol className="project-use-flow">
@@ -213,8 +217,9 @@ export function FeatureShowcase({ project }: { project: Project }) {
               ))}
             </ol>
             <p>
-              아직 소개에 연결한 실제 화면은 없습니다. 사용 흐름은 확인한 자료를
-              바탕으로 정리했습니다.
+              {projectCaseStudies[project.id].planned
+                ? "아직 실행할 수 있는 앱과 실제 화면은 없습니다. 이 흐름은 구현 전 구상입니다."
+                : "아직 소개에 연결한 실제 화면은 없습니다. 사용 흐름은 확인한 자료를 바탕으로 정리했습니다."}
             </p>
           </>
         ) : (

@@ -9,6 +9,7 @@ import {
   ProjectScope,
 } from "./ProjectCaseContent";
 import { ProjectNavigator } from "./ProjectNavigator";
+import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { FeatureShowcase } from "./FeatureShowcase";
 import { DevelopmentJourney } from "./DevelopmentJourney";
 import { ProjectChapters } from "./ProjectChapters";
@@ -28,6 +29,7 @@ export function ProjectPage({
   linkedLogId?: string;
 }) {
   const story = projectStories[project.id];
+  const cover = mediaFor(project)[0];
   const logs = [...project.workLogs].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
@@ -75,57 +77,76 @@ export function ProjectPage({
       </div>
       <header
         id="project-overview"
-        className="project-intro project-chapter-target"
+        className={
+          "project-intro project-chapter-target" +
+          (cover ? " has-project-cover" : "")
+        }
       >
-        <p className="eyebrow">{project.category}</p>
-        <h1>{project.name}</h1>
-        <p>{project.description}</p>
-        <dl className="project-availability">
-          <div>
-            <dt>개발 상태</dt>
-            <dd>{project.status}</dd>
+        <div className="project-intro-copy">
+          <p className="project-category">{project.category}</p>
+          <h1>{project.name}</h1>
+          <p className="project-intro-description">{project.description}</p>
+          <dl className="project-availability">
+            <div>
+              <dt>개발 상태</dt>
+              <dd>{project.status}</dd>
+            </div>
+            <div>
+              <dt>이용 경로</dt>
+              <dd>
+                {project.liveUrl?.trim()
+                  ? "앱 실행 링크 제공 · 검증 범위는 아래에서 확인"
+                  : "등록된 앱 실행 링크 없음"}
+              </dd>
+            </div>
+          </dl>
+          <div className="project-tags">
+            {project.techStack.map((t) => (
+              <span key={t}>{t}</span>
+            ))}
           </div>
-          <div>
-            <dt>이용 경로</dt>
-            <dd>
-              {project.liveUrl?.trim()
-                ? "앱 실행 링크 제공 · 검증 범위는 아래에서 확인"
-                : "등록된 앱 실행 링크 없음"}
-            </dd>
-          </div>
-        </dl>
-        <div className="project-tags">
-          {project.techStack.map((t) => (
-            <span key={t}>{t}</span>
-          ))}
-        </div>
-        <div className="project-actions">
           {story && (
-            <a className="primary-link" {...projectDestination(project.id)}>
-              {projectLinkLabel(project.id)} <ArrowUpRight size={17} />
-            </a>
+            <p className="project-portfolio-note">
+              제작 배경과 자세한 사용 흐름은 별도 포트폴리오에 정리했습니다.
+            </p>
           )}
-          {project.liveUrl?.trim() && (
-            <a
-              className={story ? "text-link" : "primary-link"}
-              href={project.liveUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              앱 실행 · 새 탭 <ArrowUpRight size={17} />
-            </a>
-          )}
-          {project.githubUrl && (
-            <a
-              className="text-link"
-              href={project.githubUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              GitHub · 새 탭 <ArrowUpRight size={16} />
-            </a>
-          )}
+          <div className="project-actions">
+            {story && (
+              <a className="primary-link" {...projectDestination(project.id)}>
+                {projectLinkLabel(project.id)} <ArrowUpRight size={17} />
+              </a>
+            )}
+            {project.liveUrl?.trim() && (
+              <a
+                className={story ? "text-link" : "primary-link"}
+                href={project.liveUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                앱 실행 · 새 탭 <ArrowUpRight size={17} />
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                className="text-link"
+                href={project.githubUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub · 새 탭 <ArrowUpRight size={16} />
+              </a>
+            )}
+          </div>
         </div>
+        {cover && (
+          <figure className="project-intro-screen">
+            <ProjectMedia project={project} eager priority zoomable />
+            <figcaption>
+              <span>{cover.label}</span>
+              {cover.notice && <p>{cover.notice}</p>}
+            </figcaption>
+          </figure>
+        )}
       </header>
       <FeatureShowcase project={project} />
       <ProjectPurpose project={project} />

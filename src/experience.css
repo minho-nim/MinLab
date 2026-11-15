@@ -2140,6 +2140,13 @@ html[data-visual-motion="paused"] .next-project-showcase .text-link { transition
 .project-making { margin-bottom: 48px; }
 .project-making > article { border-top: 1px solid var(--color-line); padding: 28px 0; }
 .project-making h3 { font-size: 23px; margin: 0 0 24px; }
+@media (min-width: 1000px) {
+  .project-making > article { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.6fr); gap: 0 48px; padding: 36px 0; align-items: start; }
+  .project-making h3 { grid-column: 1; font-size: 24px; line-height: 1.5; text-wrap: balance; }
+  .project-making dl, .project-making .project-actions { grid-column: 2; }
+  .project-making .project-actions { margin-top: 4px; }
+}
+
 .project-making dl > div, .project-scope > div { display: grid; grid-template-columns: 100px minmax(0,1fr); gap: 20px; margin-bottom: 20px; }
 .project-making dd, .project-scope dd { max-width: 70ch; line-height: 1.85; white-space: pre-wrap; }
 .project-scope { margin-top: 28px; }

@@ -32,6 +32,16 @@ const cueSelector = '[data-archive-return="true"]';
         await page.reload();
         const card = page.locator(selector);
         await card.waitFor();
+        // Measure after the existing entry animation and cold font load settle.
+        await page.evaluate(async () => {
+          await document.fonts.ready;
+          await Promise.all(
+            document
+              .querySelector(".archive-view")
+              .getAnimations({ subtree: true })
+              .map((animation) => animation.finished.catch(() => {})),
+          );
+        });
         await card.evaluate((node) =>
           node.scrollIntoView({ block: "center", behavior: "instant" }),
         );

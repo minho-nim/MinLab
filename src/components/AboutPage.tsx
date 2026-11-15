@@ -9,6 +9,30 @@ import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { safeRead, safeWrite } from "../utils/archiveQuery";
 import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
 import { primaryProjectIds } from "../utils/homeProjects";
+import { motionAllowed } from "../utils/visualMotion";
+const aiWork = [
+  {
+    title: "직접 정한 기준",
+    description:
+      "미노피아는 배정·실행·승인을 구분하고, 미니어리는 달력에서 바로 일정과 할 일을 등록하도록 방향을 정했습니다.",
+    capability: "planning",
+    action: "기획 기준과 기록 보기",
+  },
+  {
+    title: "AI에 맡긴 일",
+    description:
+      "정리한 요구사항을 바탕으로 화면과 기능을 구현하도록 요청합니다. 오류가 나면 어떤 조작에서 발생했는지 설명하고 수정을 요청합니다.",
+    capability: "development",
+    action: "구현한 기록 보기",
+  },
+  {
+    title: "결과를 검토한 방식",
+    description:
+      "직접 써 보고 오류를 고친 기록을 남깁니다. 미니어리의 등록·설정 오류처럼 다시 확인한 내용과 아직 확인하지 못한 내용을 구분합니다.",
+    capability: "validation",
+    action: "검증과 개선 기록 보기",
+  },
+] as const;
 const introKey = "minlab_about_intro_v1";
 const defaultIntro =
   "통신·데이터센터 구축 프로젝트에서 일정과 공정, 품질, 사업 관리를 맡아왔습니다. 미노피아와 미니어리는 AI와 대화하며 만듭니다. 직접 써 보고 필요한 기능을 더하거나 불편한 부분을 고칩니다.";
@@ -77,6 +101,28 @@ export function AboutPage({
     return () => o.disconnect();
   }, []);
   const evidence = capabilityEvidence(projects, capability);
+  const capabilityHeading = useRef<HTMLHeadingElement>(null);
+  const chooseCapability = (index: number, reveal = false) => {
+    if (index < 0 || index >= capabilities.length) return;
+    setCapability(index);
+    if (!editing)
+      history.replaceState(
+        null,
+        "",
+        "#/about?" +
+          new URLSearchParams({
+            capability: capabilities[index].id,
+          }).toString(),
+      );
+    if (reveal)
+      requestAnimationFrame(() => {
+        capabilityHeading.current?.focus({ preventScroll: true });
+        capabilityHeading.current?.scrollIntoView({
+          block: "start",
+          behavior: motionAllowed() ? "smooth" : "instant",
+        });
+      });
+  };
   const [introReview, setIntroReview] = useState(false);
   const [saved, setSaved] = useState(false);
   const experiences = [
@@ -96,11 +142,10 @@ export function AboutPage({
     },
     {
       label: "AI 활용",
-      title: "개발할 때 AI의 도움을 받습니다.",
+      title: "AI에게 구현을 요청하고, 결과는 직접 확인합니다.",
       description:
-        "AI에게 개발 도움을 받으면서도 업무 구조와 승인 기준은 직접 정합니다. Minoffia에서는 이 요청·역할 분담·검토 과정을 하나의 흐름으로 확장했습니다.",
-      match: (p: Project) =>
-        p.workLogs.length > 0 || Boolean(p.promptHistory?.length),
+        "무엇을 만들지 정하고, 구현을 요청한 뒤, 돌아온 결과를 검토합니다.",
+      match: null,
     },
   ];
   return (
@@ -227,26 +272,54 @@ export function AboutPage({
               <p className="eyebrow">{item.label}</p>
               <h2>{item.title}</h2>
               <p>{item.description}</p>
-              <div className="related-skills">
-                {projects
-                  .filter(item.match)
-                  .slice(0, 2)
-                  .map((p) => (
-                    <a {...projectDestination(p.id)} key={p.id}>
-                      {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
-                      <div>
-                        <strong>{p.name} ↗</strong>
-                        <small>{projectLinkLabel(p.id)}</small>
-                        <p>{p.description}</p>
-                        <small>
-                          {p.workLogs.length
-                            ? `${p.workLogs.length}개의 개발일지`
-                            : p.category}
-                        </small>
-                      </div>
-                    </a>
+              {item.match ? (
+                <div className="related-skills">
+                  {projects
+                    .filter(item.match)
+                    .slice(0, 2)
+                    .map((p) => (
+                      <a {...projectDestination(p.id)} key={p.id}>
+                        {mediaFor(p).length > 0 && <ProjectMedia project={p} />}
+                        <div>
+                          <strong>{p.name} ↗</strong>
+                          <small>{projectLinkLabel(p.id)}</small>
+                          <p>{p.description}</p>
+                          <small>
+                            {p.workLogs.length
+                              ? `${p.workLogs.length}개의 개발일지`
+                              : p.category}
+                          </small>
+                        </div>
+                      </a>
+                    ))}
+                </div>
+              ) : (
+                <dl className="capability-narrative about-ai-work">
+                  {aiWork.map((work) => (
+                    <div key={work.title}>
+                      <dt>{work.title}</dt>
+                      <dd>{work.description}</dd>
+                      <dd>
+                        <button
+                          type="button"
+                          className="text-link"
+                          aria-controls="capability-evidence"
+                          onClick={() =>
+                            chooseCapability(
+                              capabilities.findIndex(
+                                (c) => c.id === work.capability,
+                              ),
+                              true,
+                            )
+                          }
+                        >
+                          {work.action} ↘
+                        </button>
+                      </dd>
+                    </div>
                   ))}
-              </div>
+                </dl>
+              )}
             </div>
           </article>
         ))}
@@ -266,23 +339,16 @@ export function AboutPage({
                 key={c.name}
                 aria-pressed={capability === i}
                 aria-controls="capability-evidence"
-                onClick={() => {
-                  setCapability(i);
-                  if (!editing)
-                    history.replaceState(
-                      null,
-                      "",
-                      "#/about?" +
-                        new URLSearchParams({ capability: c.id }).toString(),
-                    );
-                }}
+                onClick={() => chooseCapability(i)}
               >
                 {c.name} ↗
               </button>
             ))}
           </nav>
           <div>
-            <h3>{capabilities[capability].name}</h3>
+            <h3 ref={capabilityHeading} tabIndex={-1}>
+              {capabilities[capability].name}
+            </h3>
             <p>{capabilities[capability].description}</p>
             <div
               id="capability-evidence"

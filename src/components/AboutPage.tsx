@@ -142,7 +142,7 @@ export function AboutPage({
     },
     {
       label: "AI 활용",
-      title: "AI에게 구현을 요청하고, 결과는 직접 확인합니다.",
+      title: "AI와 만들고, 직접 확인합니다.",
       description:
         "무엇을 만들지 정하고, 구현을 요청한 뒤, 돌아온 결과를 검토합니다.",
       match: null,

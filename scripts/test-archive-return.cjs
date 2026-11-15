@@ -80,10 +80,14 @@ const cueSelector = '[data-archive-return="true"]';
           true,
         );
         const after = await card.boundingBox();
+        const afterScroll = await page.evaluate(() => scrollY);
+        // Layout coordinates exclude the separately checked scroll restoration.
+        before.rect.y += before.y;
+        after.y += afterScroll;
         for (const field of ["x", "y", "width", "height"])
           assert.ok(
             Math.abs(after[field] - before.rect[field]) < 2,
-            `Cue must not change ${field}`,
+            `Cue must not change ${field} (${width}px ${layout}: ${JSON.stringify({ before: before.rect, after, beforeScroll: before.y, afterScroll })})`,
           );
         assert.equal(await page.locator(cueSelector).count(), 1);
         assert.equal(

@@ -171,6 +171,7 @@ async function capture(page, name) {
     assert.ok(!(await page.locator("main").innerText()).includes("DEMO-002"));
     captures.push(await capture(page, "schedule-calendar"));
     await page
+      .locator("header")
       .getByRole("button", { name: "일괄등록 엑셀 다운로드", exact: true })
       .click();
     await page

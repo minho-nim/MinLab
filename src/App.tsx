@@ -7,6 +7,13 @@ import {
   portfolioOrderKey,
 } from "./utils/homeProjects";
 import { routeMotion } from "./utils/routeMotion";
+import {
+  rememberArchiveOrigin,
+  archiveReturnProject,
+  forgetArchiveOrigin,
+  clearArchiveReturnCue,
+  showArchiveReturnCue,
+} from "./utils/archiveReturn";
 import { revealLinkedRecord } from "./utils/linkedRecord";
 import { remoteConfigured, readRemoteSnapshot } from "./utils/remoteContent";
 import { Project, WorkLog, NavigationTab } from "./types";
@@ -187,7 +194,7 @@ export default function App() {
     let navigationId = 0;
     let requestedRecord: string | undefined;
     const motion = routeMotion();
-    const captureRecord = (event: MouseEvent) => {
+    const captureNavigation = (event: MouseEvent) => {
       requestedRecord = undefined;
       if (
         event.button ||
@@ -197,7 +204,23 @@ export default function App() {
         event.altKey
       )
         return;
-      const link = (event.target as Element).closest<HTMLAnchorElement>(
+      const archiveLink = (
+        event.target as Element | null
+      )?.closest<HTMLAnchorElement>("a.archive-project[data-collection-key]");
+      if (
+        archiveLink &&
+        (!archiveLink.target || archiveLink.target === "_self") &&
+        !archiveLink.hasAttribute("download") &&
+        parseRoute(location.hash).view === "archive"
+      ) {
+        const destination = parseRoute(archiveLink.hash);
+        if (
+          destination.view === "project" &&
+          destination.projectId === archiveLink.dataset.collectionKey
+        )
+          rememberArchiveOrigin(location.hash, destination.projectId);
+      }
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>(
         "a[data-record-link]",
       );
       if (link && link.target !== "_blank")
@@ -205,11 +228,13 @@ export default function App() {
     };
     const update = (event?: HashChangeEvent) => {
       const navigation = ++navigationId;
+      clearArchiveReturnCue();
       const explicitRecord = requestedRecord;
       requestedRecord = undefined;
       restoring = true;
+      let previous = current;
       try {
-        const previous = event?.oldURL
+        previous = event?.oldURL
           ? new URL(event.oldURL).hash || "#/start"
           : current;
         sessionStorage.setItem("minlab_scroll:" + previous, String(position));
@@ -217,37 +242,62 @@ export default function App() {
           sessionStorage.setItem("minlab_last_archive", previous);
       } catch {}
       current = window.location.hash || "#/start";
+      const destinationHash = current;
       const nextRoute = parseRoute(current);
-      void motion.run(
-        () =>
-          new Promise<void>((resolve) => {
-            if (navigation !== navigationId) return resolve();
-            flushSync(() => setRoute(nextRoute));
-            frame = window.setTimeout(() => {
+      const previousRoute = parseRoute(previous);
+      const returnProject =
+        previousRoute.view === "project" && nextRoute.view === "archive"
+          ? archiveReturnProject(current)
+          : null;
+      if (
+        (nextRoute.view !== "archive" && nextRoute.view !== "project") ||
+        (previousRoute.view === "archive" &&
+          nextRoute.view === "project" &&
+          archiveReturnProject(previous) !== nextRoute.projectId) ||
+        (previousRoute.view === "project" &&
+          nextRoute.view === "archive" &&
+          !returnProject)
+      )
+        forgetArchiveOrigin();
+      void motion
+        .run(
+          () =>
+            new Promise<void>((resolve) => {
               if (navigation !== navigationId) return resolve();
-              let top = 0;
-              let saved: string | null = null;
-              try {
-                saved = sessionStorage.getItem("minlab_scroll:" + current);
-                top = Number(saved) || 0;
-              } catch {}
-              window.scrollTo({ top, behavior: "instant" });
-              if (
-                nextRoute.view === "project" &&
-                nextRoute.logId &&
-                (saved === null || explicitRecord === nextRoute.logId)
-              )
-                revealLinkedRecord(nextRoute.logId);
-              position = window.scrollY;
-              restoring = false;
-              resolve();
-            }, 0);
-          }),
-        nextRoute.view === "project" ? nextRoute.projectId : undefined,
-      );
+              flushSync(() => setRoute(nextRoute));
+              frame = window.setTimeout(() => {
+                if (navigation !== navigationId) return resolve();
+                let top = 0;
+                let saved: string | null = null;
+                try {
+                  saved = sessionStorage.getItem("minlab_scroll:" + current);
+                  top = Number(saved) || 0;
+                } catch {}
+                window.scrollTo({ top, behavior: "instant" });
+                if (
+                  nextRoute.view === "project" &&
+                  nextRoute.logId &&
+                  (saved === null || explicitRecord === nextRoute.logId)
+                )
+                  revealLinkedRecord(nextRoute.logId);
+                position = window.scrollY;
+                restoring = false;
+                resolve();
+              }, 0);
+            }),
+          nextRoute.view === "project" ? nextRoute.projectId : undefined,
+        )
+        .then(() => {
+          if (
+            navigation === navigationId &&
+            location.hash === destinationHash &&
+            returnProject
+          )
+            showArchiveReturnCue(returnProject);
+        });
     };
     window.addEventListener("hashchange", update);
-    document.addEventListener("click", captureRecord, true);
+    document.addEventListener("click", captureNavigation, true);
     window.addEventListener("scroll", save, { passive: true });
     const initial = parseRoute(current);
     const initialHash = current;
@@ -261,8 +311,9 @@ export default function App() {
       history.scrollRestoration = priorRestoration;
       clearTimeout(frame);
       motion.dispose();
+      clearArchiveReturnCue();
       window.removeEventListener("hashchange", update);
-      document.removeEventListener("click", captureRecord, true);
+      document.removeEventListener("click", captureNavigation, true);
       window.removeEventListener("scroll", save);
     };
   }, []);

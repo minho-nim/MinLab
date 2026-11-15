@@ -2,6 +2,68 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
+async function verifyAiWork(page, evidence) {
+  const work = page.locator(".about-ai-work");
+  await work.waitFor();
+  const stage = page.locator(".about-timeline article").filter({ has: work });
+  assert.equal(
+    await stage.locator(".related-skills a, img").count(),
+    0,
+    "AI explanation must not repeat project cards",
+  );
+  assert.deepEqual(await work.locator("dt").allTextContents(), [
+    "직접 정한 기준",
+    "AI에 맡긴 일",
+    "결과를 검토한 방식",
+  ]);
+  await stage.screenshot({
+    path: `${evidence}/ai-work-${page.viewportSize().width}.png`,
+  });
+  const original = await page.evaluate(() =>
+    localStorage.getItem("minlab_projects_data_v2"),
+  );
+  for (const [name, id, heading] of [
+    ["기획 기준과 기록 보기 ↘", "planning", "기획 및 문제 정의"],
+    ["구현한 기록 보기 ↘", "development", "구현 및 개발"],
+    ["검증과 개선 기록 보기 ↘", "validation", "검증 및 개선"],
+  ]) {
+    const button = work.getByRole("button", { name, exact: true });
+    await button.scrollIntoViewIfNeeded();
+    await button.press("Enter");
+    const title = page.locator(".capability-layout h3");
+    await page.waitForFunction(
+      (text) =>
+        document.querySelector(".capability-layout h3")?.textContent === text &&
+        document.activeElement ===
+          document.querySelector(".capability-layout h3"),
+      heading,
+    );
+    assert.ok(page.url().includes(`capability=${id}`));
+    assert.equal(
+      await page
+        .getByRole("button", { name: heading + " ↗", exact: true })
+        .getAttribute("aria-pressed"),
+      "true",
+    );
+    assert.ok(
+      (await title.boundingBox()).y >= 64,
+      "Focused evidence heading clears the header",
+    );
+    const record = page.locator(".capability-evidence article").first();
+    assert.ok(await record.isVisible());
+    const href = await record
+      .locator("a[data-record-link]")
+      .getAttribute("href");
+    assert.equal(
+      new URLSearchParams(href.split("?")[1]).get("log"),
+      await record.getAttribute("data-evidence-log"),
+    );
+  }
+  assert.equal(
+    await page.evaluate(() => localStorage.getItem("minlab_projects_data_v2")),
+    original,
+  );
+}
 (async () => {
   const b = await chromium.launch({
     headless: true,
@@ -22,6 +84,7 @@ const fs = require("node:fs/promises");
     p.on("pageerror", (e) => errors.push(e.message));
     await p.goto(base + "#/about");
     await p.reload();
+    await verifyAiWork(p, evidence);
     await p.getByRole("button", { name: "UX/UI 설계 ↗", exact: true }).click();
     assert.ok(p.url().includes("capability=experience"));
     const card = p.locator(".capability-evidence article").first();
@@ -76,7 +139,7 @@ const fs = require("node:fs/promises");
     );
     assert.ok(
       Math.abs((await p.evaluate(() => scrollY)) - aboutY) < 12,
-      `back restores About reading position: before=${aboutY}, after=${await p.evaluate(()=>scrollY)}, header=${await p.locator(".smart-header").evaluate(n=>n.getBoundingClientRect().height)}`,
+      `back restores About reading position: before=${aboutY}, after=${await p.evaluate(() => scrollY)}, header=${await p.locator(".smart-header").evaluate((n) => n.getBoundingClientRect().height)}`,
     );
     await link.click();
     await target.waitFor();
@@ -117,6 +180,8 @@ const fs = require("node:fs/promises");
       }),
       m = await mobile.newPage();
     m.on("pageerror", (e) => errors.push(e.message));
+    await m.goto(base + "#/about");
+    await verifyAiWork(m, evidence);
     await m.goto(base + href);
     const detail = m.locator(".journey-mobile>details[data-linked=true]");
     await detail.waitFor();

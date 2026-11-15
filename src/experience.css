@@ -256,6 +256,8 @@
 }
 .floating-navigation button {
   display: flex;
+  flex-shrink: 0;
+  min-height: 44px;
   align-items: center;
   gap: 12px;
   padding: 13px 20px;
@@ -273,6 +275,12 @@
   max-width: 120px;
   opacity: 1;
   padding-left: 20px;
+}
+/* Touch-sized navigation has one stable target; projects remain in the menu. */
+@media (max-width: 899px) {
+  .floating-project-link {
+    display: none;
+  }
 }
 .full-menu {
   width: 100vw !important;
@@ -330,8 +338,11 @@
   border: 1px solid var(--color-line);
   overflow: hidden;
 }
-.browser-showcase .project-media {
+.scene-preview-stage {
   height: min(52vw, 490px);
+}
+.browser-showcase .project-media {
+  height: 100%;
   aspect-ratio: auto;
 }
 .browser-showcase img {
@@ -349,8 +360,8 @@
     position: static;
     top: auto;
   }
-  .project-story .browser-showcase .project-media {
-    height: min(120vw, 440px);
+  .project-story .scene-preview-stage {
+    height: min(90vw, 360px);
     max-height: none;
   }
 }
@@ -373,7 +384,8 @@
   cursor: default;
 }
 .scene-no-image {
-  min-height: 300px;
+  height: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -505,16 +517,16 @@
 }
 .next-project-showcase {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 140px;
+  grid-template-columns: minmax(0, 1fr) 88px;
   gap: 24px;
   align-items: center;
   padding: 24px 0;
 }
 .next-project-showcase h2 {
-  font-size: clamp(20px, 2vw, 28px);
+  font-size: 20px;
   font-weight: 500;
   line-height: 1.4;
-  margin: 8px 0 12px;
+  margin: 4px 0;
   overflow-wrap: anywhere;
 }
 .next-project-caption {
@@ -523,6 +535,15 @@
 }
 .next-project-showcase .project-media {
   aspect-ratio: 1.6;
+}
+.next-project-showcase .text-link {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.next-project-showcase .text-link svg {
+  width: 16px;
+  height: 16px;
+  margin-left: 0;
 }
 .mini-project-menu {
   border-top: 1px solid var(--color-line);
@@ -672,9 +693,8 @@
     top: 80px;
     z-index: 2;
   }
-  .browser-showcase .project-media {
-    height: 42vh;
-    max-height: 360px;
+  .scene-preview-stage {
+    height: clamp(240px, 36svh, 340px);
   }
   .scene-stories article {
     padding: 24px 0 32px;
@@ -710,7 +730,7 @@
     margin-top: 20px;
   }
   .next-project-showcase {
-    grid-template-columns: minmax(0, 1fr) 96px;
+    grid-template-columns: minmax(0, 1fr) 72px;
     gap: 16px;
   }
   .process-journal-entry {
@@ -2100,6 +2120,19 @@ html[data-visual-motion="paused"] .next-project-showcase .text-link { transition
 }
 
 /* Editorial context stays separate from the historical record reader. */
+.archive-project[data-archive-return="true"] {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-visual-motion="paused"]) .archive-project[data-archive-return="true"]:not(:focus-visible) {
+    animation: archive-return-cue 1800ms ease-out both;
+  }
+}
+@keyframes archive-return-cue {
+  0%, 65% { outline-color: var(--color-accent); }
+  100% { outline-color: transparent; }
+}
 .project-availability { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 24px 0; font-size: 13px; }
 .project-availability dt, .project-making dt, .project-scope dt, .scene-flow dt, .capability-narrative dt { color: var(--color-muted); font-size: 12px; margin-bottom: 8px; }
 .project-use-flow { list-style: decimal; padding-inline-start: 24px; max-width: 70ch; }

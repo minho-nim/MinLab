@@ -99,7 +99,10 @@ export function ProjectNavigator({
           <div>
             <span className="next-project-caption">다음 프로젝트</span>
             <h2>{next.name}</h2>
-            <span className="text-link">{projectLinkLabel(next.id)} ↗</span>
+            <span className="text-link">
+              {projectLinkLabel(next.id)}{" "}
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </span>
           </div>
           {mediaFor(next).length > 0 && <ProjectMedia project={next} />}
         </a>

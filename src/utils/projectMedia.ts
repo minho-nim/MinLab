@@ -14,6 +14,88 @@ export interface ResolvedMedia {
   section?: number;
 }
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
+  "proj-1792563333333": [
+    {
+      id: "choicepilot-input",
+      src: "media/choicepilot-input.jpg",
+      label: "고민 적기",
+      featureId: "feat-1792571798822",
+      fit: "contain",
+      action:
+        "지금의 고민을 적고 필요하면 선택지와 시간·비용 조건을 덧붙입니다.",
+      outcome: "적은 내용을 바탕으로 필요한 질문을 확인합니다.",
+      rationale:
+        "처음부터 모든 조건을 채우기보다 한 문장으로 시작하게 했습니다.",
+      notice: "예시 고민을 입력한 실제 앱 화면입니다.",
+    },
+    {
+      id: "choicepilot-question",
+      src: "media/choicepilot-question.jpg",
+      label: "필요한 질문에 답하기",
+      featureId: "feat-1792571807554",
+      fit: "contain",
+      action:
+        "추가 질문에 답하거나 건너뛰고, 요약에서 다른 부분을 직접 고칩니다.",
+      outcome: "확인하거나 수정한 내용으로 결과를 정리합니다.",
+      rationale:
+        "글에서 찾은 표현이 내 뜻과 맞는지 사용자가 확인할 수 있게 했습니다.",
+      notice:
+        "예시 입력 화면입니다. 질문과 요약은 브라우저의 로컬 규칙으로 구성합니다.",
+    },
+    {
+      id: "choicepilot-result",
+      src: "media/choicepilot-result.jpg",
+      label: "고민을 한눈에 보기",
+      featureId: "feat-1792571819586",
+      fit: "contain",
+      action:
+        "핵심 고민, 중요하게 생각하는 것, 아직 모르는 내용을 함께 읽습니다.",
+      outcome: "지금 확인할 정보와 작은 행동 하나를 살펴봅니다.",
+      rationale:
+        "앱의 점수를 정답으로 받아들이기보다 스스로 판단할 근거를 찾게 했습니다.",
+      notice:
+        "예시 입력으로 촬영했습니다. 언어 모델의 추천 점수나 심리 진단 결과가 아닙니다.",
+    },
+    {
+      id: "choicepilot-details",
+      src: "media/choicepilot-details.jpg",
+      label: "상세 정리 펼치기",
+      featureId: "feat-1792571827375",
+      fit: "contain",
+      action: "상세 정리를 펼쳐 고민의 배경과 확인이 필요한 내용을 읽습니다.",
+      outcome: "추가로 알아볼 정보와 다음 행동을 구분합니다.",
+      rationale:
+        "처음에는 짧은 결과를 보고, 필요할 때 설명을 더 읽도록 나눴습니다.",
+      notice: "같은 예시 고민의 상세 정리를 실제로 펼친 화면입니다.",
+    },
+    {
+      id: "choicepilot-plan",
+      src: "media/choicepilot-plan.jpg",
+      label: "7일 계획 살펴보기",
+      featureId: "feat-1792571838878",
+      fit: "contain",
+      action: "원할 때 7일 계획을 열고 하루별 할 일과 완료 기준을 읽습니다.",
+      outcome:
+        "입력한 목표와 사용 가능한 시간을 반영한 계획 초안을 확인합니다.",
+      rationale:
+        "정보가 부족한 상황에서도 작게 시도해 볼 행동부터 정하도록 했습니다.",
+      notice:
+        "예시 입력에 맞춘 계획입니다. 실제로 7일간 실행한 성과를 뜻하지 않습니다.",
+    },
+    {
+      id: "choicepilot-copy",
+      src: "media/choicepilot-copy.jpg",
+      label: "계획 복사와 완료 표시",
+      featureId: "feat-1792571847207",
+      fit: "contain",
+      action: "마친 일을 체크하고 계획 복사를 눌러 텍스트를 가져갑니다.",
+      outcome: "완료한 날짜가 표시되고 복사 성공 안내가 나타납니다.",
+      rationale:
+        "결과를 읽는 데서 끝내지 않고, 다시 확인하며 실행할 수 있게 했습니다.",
+      notice:
+        "예시 계획의 1일차를 체크하고 실제 텍스트 복사를 확인한 화면입니다.",
+    },
+  ],
   "risk-assessment-workplan-automation": [
     {
       id: "schedule-import",

@@ -113,7 +113,10 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       .getByRole("heading", { name: "검색 결과가 없습니다." })
       .waitFor();
     await page.getByRole("button", { name: "전체 프로젝트 보기" }).click();
-    assert.equal(await page.locator(".archive-project").count(), before.length);
+    assert.equal(
+      await page.locator(".archive-project").count(),
+      before.filter((p) => p.id !== "proj-1792485558773").length,
+    );
     await page.goto(base + "#/development-log");
     await page.locator(".version-index button").first().click();
     assert.ok(await page.locator(".journal-detail .log-content").innerText());

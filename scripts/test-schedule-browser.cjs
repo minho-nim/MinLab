@@ -170,6 +170,52 @@ async function capture(page, name) {
     assert.ok((await page.locator("main").innerText()).includes("DEMO-001"));
     assert.ok(!(await page.locator("main").innerText()).includes("DEMO-002"));
     captures.push(await capture(page, "schedule-calendar"));
+    await page
+      .getByRole("button", { name: "일괄등록 엑셀 다운로드", exact: true })
+      .click();
+    await page
+      .getByPlaceholder("원본 양식의 캘린더 번호와 이름 입력")
+      .fill("3401. 예시 일정 · 실제 업로드용 아님");
+    await page.getByPlaceholder("회사 등록자 ID 입력").fill("DEMO_ADMIN");
+    await page
+      .getByPlaceholder("회사 참여자 ID 입력 (;로 구분)")
+      .fill("DEMO_MEMBER");
+    await page.locator('input[value$=".xlsx"]').fill("예시_일정_일괄등록.xlsx");
+    await page
+      .getByRole("button", { name: "업로드 전 확인", exact: true })
+      .click();
+    captures.push(await capture(page, "schedule-export"));
+    const download = page.waitForEvent("download");
+    await page
+      .getByRole("button", { name: "일괄등록 엑셀 다운로드", exact: true })
+      .last()
+      .click();
+    const exported = await download;
+    assert.equal(exported.suggestedFilename(), "예시_일정_일괄등록.xlsx");
+    const exportedBook = XLSX.read(await fs.readFile(await exported.path()));
+    assert.deepEqual(exportedBook.SheetNames, [
+      "일정리스트",
+      "dropdown_hidden",
+      "캘린더 참여자",
+    ]);
+    assert.equal(
+      exportedBook.Sheets["일정리스트"].A7.v,
+      "3401. 예시 일정 · 실제 업로드용 아님",
+    );
+    assert.equal(exportedBook.Sheets["일정리스트"].F7.v, "DEMO_ADMIN");
+    assert.equal(exportedBook.Sheets["일정리스트"].G7.v, "DEMO_MEMBER");
+    // The current app exports both processed documents, including an unmatched one.
+    assert.equal(
+      exportedBook.Sheets["일정리스트"].A8.v,
+      "3401. 예시 일정 · 실제 업로드용 아님",
+    );
+    if (process.env.MINLAB_CAPTURE_EXPORT === "1")
+      console.log(
+        "MINLAB_EXPORT_CAPTURE=" +
+          (await fs.readFile(`${evidence}/schedule-export.jpg`)).toString(
+            "base64",
+          ),
+      );
     assert.deepEqual(errors, []);
     assert.deepEqual(
       writes,
@@ -193,7 +239,7 @@ async function capture(page, name) {
       ),
     );
     console.log(
-      "PASS: actual built schedule app imports synthetic Excel/DOCX, matches one contract, explains an unmatched contract, reads workers and original DOCX, and shows only the matched task in the calendar; no document upload requests.",
+      "PASS: actual built schedule app imports synthetic Excel/DOCX, reads matching/workers/original DOCX/calendar, previews and downloads the two-document Excel export with synthetic account values; no document uploads or company-system import.",
     );
   } catch (e) {
     await page.screenshot({ path: `${evidence}/failure.png`, fullPage: true });

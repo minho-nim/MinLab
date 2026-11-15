@@ -30,6 +30,7 @@
     "test:schedule": "node --import tsx --test apps/work-schedule/src/utils/*.test.ts",
     "test:navigator": "node scripts/test-project-navigator.cjs",
     "test:case-studies": "node scripts/test-case-studies.cjs",
+    "test:feature-screens": "node scripts/test-feature-screen-coverage.cjs",
     "test:schedule-browser": "node scripts/test-schedule-browser.cjs"
   },
   "dependencies": {

@@ -16,6 +16,7 @@ import type { Project } from "../types";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { lastArchive } from "../utils/archiveQuery";
 import { routeHash } from "../utils/navigation";
+import { minLabProjectId } from "../utils/homeProjects";
 
 export function ProjectPage({
   project,
@@ -30,6 +31,40 @@ export function ProjectPage({
   const logs = [...project.workLogs].sort((a, b) =>
     b.date.localeCompare(a.date),
   );
+  // Keep old record links working without a portfolio showcase for this site itself.
+  if (project.id === minLabProjectId)
+    return (
+      <div
+        className="project-story minlab-history"
+        data-project-id={project.id}
+      >
+        <header className="page-heading">
+          <h1>MinLab 변경사항</h1>
+          <p>이 웹사이트를 고친 내용과 작업 프롬프트를 모았습니다.</p>
+          <div className="project-actions">
+            <a
+              className="text-link"
+              href={routeHash({ view: "records", projectId: project.id })}
+            >
+              변경사항 모아보기
+            </a>
+            <a
+              className="text-link"
+              href={routeHash({
+                view: "records",
+                projectId: project.id,
+                tab: "prompts",
+              })}
+            >
+              작업 프롬프트 보기
+            </a>
+          </div>
+        </header>
+        <section id="project-development" className="detail-development">
+          <DevelopmentJourney project={project} linkedLogId={linkedLogId} />
+        </section>
+      </div>
+    );
   return (
     <div className="project-story" data-project-id={project.id}>
       <ProjectChapters />

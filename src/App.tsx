@@ -5,6 +5,8 @@ import {
   orderPortfolioProjects,
   parsePortfolioOrder,
   portfolioOrderKey,
+  isPortfolioProject,
+  minLabProjectId,
 } from "./utils/homeProjects";
 import { routeMotion } from "./utils/routeMotion";
 import {
@@ -89,6 +91,10 @@ export default function App() {
         portfolioOrder,
       ).map(publicProject),
     [published, portfolioOrder],
+  );
+  const portfolioProjects = useMemo(
+    () => visitorProjects.filter(isPortfolioProject),
+    [visitorProjects],
   );
   const [review, setReview] = useState(false);
   const [recovery, setRecovery] = useState<Project[] | null>(null);
@@ -552,7 +558,15 @@ export default function App() {
       <Toast toasts={toasts} onDismiss={handleDismissToast} />
 
       {route.view !== "landing" && (
-        <SmartHeader view={route.view === "project" ? "archive" : route.view} />
+        <SmartHeader
+          view={
+            route.view === "project"
+              ? route.projectId === minLabProjectId
+                ? "records"
+                : "archive"
+              : route.view
+          }
+        />
       )}
 
       {/* Storage & Data Preservation Notice Banner */}
@@ -607,7 +621,7 @@ export default function App() {
               visitorProjects.find((p) => p.id === selectedProject.id) ||
               selectedProject
             }
-            projects={visitorProjects}
+            projects={portfolioProjects}
             linkedLogId={route.view === "project" ? route.logId : undefined}
           />
         ) : selectedProject ? (
@@ -646,11 +660,11 @@ export default function App() {
         ) : route.view === "landing" ? (
           <EntryLanding />
         ) : route.view === "home" ? (
-          <HomePage projects={visitorProjects} />
+          <HomePage projects={portfolioProjects} />
         ) : route.view === "about" ? (
-          <AboutPage projects={visitorProjects} introOverride={remoteAbout} />
+          <AboutPage projects={portfolioProjects} introOverride={remoteAbout} />
         ) : route.view === "archive" ? (
-          <ArchiveView projects={visitorProjects} />
+          <ArchiveView projects={portfolioProjects} />
         ) : route.view === "admin" ? (
           <section className="admin-dashboard">
             <header className="page-heading">

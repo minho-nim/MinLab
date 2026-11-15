@@ -1,5 +1,10 @@
 import type { Project } from "../types";
 
+export const minLabProjectId = "proj-1792485558773";
+// MinLab keeps its original records and editing data, without advertising itself as a work.
+export const isPortfolioProject = (project: Project) =>
+  project.id !== minLabProjectId;
+
 export const primaryProjectIds = [
   "proj-minlab-ai-office",
   "proj-minially",

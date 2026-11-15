@@ -8,9 +8,10 @@ import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { safeRead, safeWrite } from "../utils/archiveQuery";
 import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
+import { primaryProjectIds } from "../utils/homeProjects";
 const introKey = "minlab_about_intro_v1";
 const defaultIntro =
-  "통신·데이터센터 구축 프로젝트에서 일정과 공정, 품질, 사업 관리를 맡아왔습니다. 개인 프로젝트는 AI와 대화하며 만듭니다. 직접 써 보고 필요한 기능을 더하거나 불편한 부분을 고칩니다.";
+  "통신·데이터센터 구축 프로젝트에서 일정과 공정, 품질, 사업 관리를 맡아왔습니다. 미노피아와 미니어리는 AI와 대화하며 만듭니다. 직접 써 보고 필요한 기능을 더하거나 불편한 부분을 고칩니다.";
 export function AboutPage({
   projects,
   editing = false,
@@ -87,10 +88,11 @@ export function AboutPage({
       match: (p: Project) => p.id === "risk-assessment-workplan-automation",
     },
     {
-      label: "개인 프로젝트",
-      title: "일할 때나 일상에서 쓸 도구를 만듭니다.",
-      description: "필요한 기능부터 만들고, 사용하면서 불편한 부분을 고칩니다.",
-      match: (p: Project) => /게임|건강|운동|일정/.test(p.category),
+      label: "메인 프로젝트",
+      title: "미노피아와 미니어리를 만들고 있습니다.",
+      description:
+        "미노피아에서는 AI에게 맡긴 일과 결과를 확인하고, 미니어리에서는 일정과 할 일을 관리합니다.",
+      match: (p: Project) => primaryProjectIds.some((id) => id === p.id),
     },
     {
       label: "AI 활용",

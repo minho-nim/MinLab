@@ -140,7 +140,13 @@ export function ProjectPage({
         </div>
         {cover && (
           <figure className="project-intro-screen">
-            <ProjectMedia project={project} eager priority zoomable />
+            <ProjectMedia
+              project={project}
+              eager
+              priority
+              zoomable
+              expandLabel={project.name + " 대표 화면 크게 보기"}
+            />
             <figcaption>
               <span>{cover.label}</span>
               {cover.notice && <p>{cover.notice}</p>}

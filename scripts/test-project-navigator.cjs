@@ -49,6 +49,24 @@ const evidence =
         )
         .click();
       const menu = page.locator(".mini-project-menu");
+      const next = page.locator(".next-project-showcase");
+      if (await next.count()) {
+        assert.ok(
+          (await page
+            .locator(".project-intro h1")
+            .evaluate((node) => parseFloat(getComputedStyle(node).fontSize))) >
+            (await next
+              .locator("h2")
+              .evaluate((node) => parseFloat(getComputedStyle(node).fontSize))),
+          "The current project title remains the primary heading",
+        );
+        const thumbnail = next.locator(".project-media");
+        if (await thumbnail.count())
+          assert.ok(
+            (await thumbnail.boundingBox()).width <= 88,
+            "Next project uses a secondary thumbnail",
+          );
+      }
       await menu.scrollIntoViewIfNeeded();
       assert.equal(await menu.evaluate((el) => el.open), width >= 900);
       if (width < 900) await menu.locator("summary").click();

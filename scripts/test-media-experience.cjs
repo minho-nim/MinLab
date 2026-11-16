@@ -28,10 +28,13 @@ const sameSize = (a, b) => {
       const gate = new Promise((resolve) => {
         release = resolve;
       });
-      await page.route(/\/media\/.*\.webp$/, async (route) => {
-        await gate;
-        await route.continue();
-      });
+      await page.route(
+        /\/media\/.*\.(?:webp|jpe?g|png)(?:\?.*)?$/,
+        async (route) => {
+          await gate;
+          await route.continue();
+        },
+      );
       try {
         await page.goto(base + "#/projects/proj-crossroads-ai-verdict", {
           waitUntil: "domcontentloaded",
@@ -82,10 +85,13 @@ const sameSize = (a, b) => {
       const gate = new Promise((resolve) => {
         release = resolve;
       });
-      await page.route(/\/media\/.*\.webp$/, async (route) => {
-        await gate;
-        await route.continue();
-      });
+      await page.route(
+        /\/media\/.*\.(?:webp|jpe?g|png)(?:\?.*)?$/,
+        async (route) => {
+          await gate;
+          await route.continue();
+        },
+      );
       await page.goto(base + "#/home", { waitUntil: "domcontentloaded" });
       const primary = page.locator('.home-hero img[fetchpriority="high"]');
       await primary.waitFor();

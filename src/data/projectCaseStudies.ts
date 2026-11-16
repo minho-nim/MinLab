@@ -23,7 +23,7 @@ export interface ProjectCaseStudy {
 const minovaSource =
   "https://github.com/minho-nim/MINOVA/blob/26fb0859f01f478ebb6c932475f1bdca3c5d69ef/";
 const minoffiaSource =
-  "https://github.com/minho-nim/minoffia/blob/2a9bbbf4e5036b715bf8530262a0aeb429c730ef/";
+  "https://github.com/minho-nim/minoffia/blob/c2a7452c8301afa30115adbdf44feee4bcfc661a/";
 const miniallySource =
   "https://github.com/minho-nim/minially/blob/bf9b6ffd25d70c98ab361fec3799f0d9f4d20455/";
 const valuminSource =
@@ -96,7 +96,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
   },
   "proj-minlab-ai-office": {
     showcaseIntro:
-      "요청을 접수하고 기획과 담당 AI를 확인하는 흐름입니다. 기본 미리보기는 공개 예시이며, 실제 AI 실행과 최종 승인을 시험한 화면은 아닙니다.",
+      "PC 체험 모드에서 요청 접수·기획 확인·담당 AI·결과 검토를 살펴봅니다. 결과와 점수는 데모의 고정 예시이며 실제 AI 실행이나 배포 결과가 아닙니다.",
     audience:
       "여러 AI에게 개발 업무를 나눠 맡기면서도 기획과 결과는 직접 확인하려는 개인 사용자를 위한 앱입니다.",
     purpose:
@@ -110,7 +110,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
     implementation:
       "원본의 현재 흐름 문서에는 기획·올리기·배포 승인과 역할별 작업 전달이 연결돼 있습니다. 공개 데모는 예시 데이터로 흐름을 체험하며 실제 클라우드 작업이나 AI 실행을 하지 않습니다. 소유자 앱에는 로그인이 필요합니다.",
     verification:
-      "2026-11-14 공개 포트폴리오를 확인했고, 2026-11-16 원본의 FLOW·STATUS 문서와 기존 개발 기록을 다시 대조했습니다. MinLab의 화면 미리보기는 원본 포트폴리오가 제공한 예시 데이터 캡처입니다. 이번 작업에서 실제 계정·AI 실행·배포 승인을 통합 시험하지 않았습니다.",
+      "2026-11-16 원본 빌드의 PC 체험 모드에서 요청 접수·스킬 선택·기획 승인·결과 승인을 조작하고 촬영했습니다. 결과 승인 뒤 데모의 PR·CI 확인 단계까지 확인했습니다. 예시 결과와 점수는 앱이 미리 정한 값이며 실제 계정·AI 실행·PR 생성·배포는 검증하지 않았습니다.",
     remaining:
       "실제 업무에서의 재시도·인수인계, AI가 저장소 규칙과 스킬을 따르는지 등의 확인 과제가 원본 상태 문서에 남아 있습니다. 배정된 상태를 실행 완료로 표현하지 않습니다.",
     process: [
@@ -169,7 +169,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
     implementation:
       "달력·할 일·프리셋과 코드 로그인·보기 전용 공유가 원본에 구성돼 있습니다. 프리셋을 넣어도 날짜·시간·메모는 유지하며 제목을 다시 편집할 수 있습니다.",
     verification:
-      "2026-11-14 공개 포트폴리오의 예시 캡처를 확인했고, 2026-11-16 원본 README와 기존 개발 기록으로 사용 흐름을 다시 대조했습니다. 이번에는 실제 두 기기 간 동기화·알림·아이폰 설치 동작을 새로 시험하지 않았습니다.",
+      "2026-11-16 원본 빌드의 PC 체험 모드에서 날짜를 열고 프리셋 두 개를 넣어 예시 일정을 등록했습니다. 등록한 일정의 주간 표시와 할 일 목록도 확인하고 촬영했습니다. 실제 두 기기 간 동기화·알림·아이폰 설치는 시험하지 않았습니다.",
     remaining:
       "실제 기기의 입력·스크롤·알림과 동시 편집 상황은 별도 검증이 필요합니다. 공개 예시 일정은 실제 사용자의 일정이 아닙니다.",
     process: [
@@ -182,7 +182,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
         change:
           "교체·이어 붙이기와 이전 제목 복구를 제공하고, 프리셋과 작성 중인 일정의 값을 분리했습니다.",
         result:
-          "기존 개발 기록과 현재 README에서 입력 보존 방식을 확인했습니다. 이번에는 원본 캡처와 문서를 대조했으며 실제 계정 동기화는 재검증하지 않았습니다.",
+          "기존 개발 기록과 현재 README에서 입력 보존 방식을 확인했습니다. 이번 PC 체험에서는 프리셋으로 제목을 넣고 등록하는 흐름을 확인했습니다. 모든 입력 보존 조건과 실제 계정 동기화는 재검증하지 않았습니다.",
         logId:
           "codex:proj-minially:2026-11-10-minially-share-icons-persistent-presets",
         sourceUrl: miniallySource + "README.md",
@@ -196,7 +196,7 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
         change:
           "할 일별 날짜 변경과 미완료 가져오기를 넣고, 완료·완료 취소를 표시하도록 정리했습니다.",
         result:
-          "기존 기록에는 PC·모바일에서 날짜 이동과 세부 정보 보존을 확인한 결과가 있습니다. 이번에는 기록과 예시 화면을 대조했으며 원본 앱을 새로 시험한 결과는 아닙니다.",
+          "기존 기록에는 PC·모바일에서 날짜 이동과 세부 정보 보존을 확인한 결과가 있습니다. 이번 PC 체험에서는 할 일 목록과 완료 표시를 확인했습니다. 날짜 이동과 세부 정보 보존을 다시 시험한 결과는 아닙니다.",
         logId:
           "codex:proj-minially:2026-11-04-minially-task-completion-reschedule",
       },

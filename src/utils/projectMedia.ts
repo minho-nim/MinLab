@@ -284,7 +284,7 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
   "proj-minlab-ai-office": [
     {
       id: "minoffia-portfolio-0",
-      src: "media/minoffia-portfolio-0.webp",
+      src: "media/minoffia-pc-office.jpg",
       label: "사무실 전체 보기",
       description: "역할을 나눈 AI와 업무 상태를 사무실에서 살펴봅니다.",
       action: "방과 말풍선을 보고 어느 역할에 일이 모여 있는지 확인합니다.",
@@ -292,12 +292,12 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       rationale:
         "여러 AI 사이에서 같은 설명을 반복하지 않고 업무를 따라가도록 한곳에 모았습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC에서 실행한 로컬 체험 화면입니다. 예시 데이터만 사용하며 실제 서버·AI는 호출하지 않습니다.",
       fit: "contain",
     },
     {
       id: "minoffia-portfolio-2",
-      src: "media/minoffia-portfolio-2.webp",
+      src: "media/minoffia-pc-intake.jpg",
       label: "요청 접수와 스킬 선택",
       description:
         "요청을 어느 프로젝트에 접수할지 확인하고 작업에 쓸 스킬을 고릅니다.",
@@ -306,30 +306,29 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       rationale:
         "요청을 임의의 다른 프로젝트로 보내지 않고, 계획과 담당 업무가 함께 연결돼야 한다고 정했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC에서 실행한 로컬 체험 화면입니다. 예시 데이터만 사용하며 실제 서버·AI는 호출하지 않습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minlab-ai-office:2026-11-03-ai-office-plan-assignment-handoff",
     },
     {
       id: "minoffia-portfolio-3",
-      src: "media/minoffia-portfolio-3.webp",
-      label: "기획 확인과 내 차례",
-      description:
-        "업무 보드에서 기획 확인이 필요한 일과 진행 중인 일을 나눠 봅니다.",
+      src: "media/minoffia-pc-plan.jpg",
+      label: "기획 확인과 승인",
+      description: "체험 업무의 기획서에서 바꿀 범위와 확인 기준을 읽습니다.",
       action: "내 차례의 업무를 열어 기획을 읽고 승인하거나 수정을 요청합니다.",
       outcome: "직접 판단할 일과 AI가 진행 중인 일을 구분합니다.",
       rationale:
         "기획·배정만 저장된 상태를 실행 완료로 오해하지 않도록 사람의 검토 지점을 남겼습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC에서 실행한 로컬 체험 화면입니다. 예시 데이터만 사용하며 실제 서버·AI는 호출하지 않습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minlab-ai-office:2026-11-03-ai-office-execution-stability",
     },
     {
       id: "minoffia-portfolio-4",
-      src: "media/minoffia-portfolio-4.webp",
+      src: "media/minoffia-pc-team.jpg",
       label: "담당 AI와 상태 확인",
       description: "팀 화면에서 각 AI의 역할과 맡은 업무를 확인합니다.",
       action: "담당 AI의 상태와 연결된 업무를 살펴봅니다.",
@@ -337,29 +336,28 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       rationale:
         "담당자를 정하는 것과 결과가 돌아오는 것은 달라서, 배정과 실행 상태를 따로 확인하게 했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC에서 실행한 로컬 체험 화면입니다. 예시 데이터만 사용하며 실제 서버·AI는 호출하지 않습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minlab-ai-office:2026-11-03-ai-office-plan-assignment-handoff",
     },
     {
       id: "minoffia-portfolio-1",
-      src: "media/minoffia-portfolio-1.webp",
-      label: "휴대폰에서 요청하기",
-      description: "휴대폰에서도 대화창에서 할 일을 적습니다.",
-      action: "대화로 요청을 적고 이어지는 확인에 답합니다.",
-      outcome: "접수한 요청의 기획과 업무 상태를 이어서 확인합니다.",
-      rationale:
-        "PC에서 보던 일을 휴대폰에서도 같은 업무 맥락으로 이어가려는 구성입니다.",
+      src: "media/minoffia-pc-result.jpg",
+      label: "결과 검토 · 데모",
+      description: "체험 업무의 결과와 평가를 보고 다음 승인을 결정합니다.",
+      action: "결과를 확인한 뒤 결과 승인을 누릅니다.",
+      outcome: "데모의 PR·CI 확인 단계로 넘어가며 배포 승인은 별도로 남습니다.",
+      rationale: "결과를 받는 것과 공개 반영을 승인하는 것을 나눴습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "로컬 체험의 고정 예시 결과입니다. 화면의 평가 점수는 실제 AI 성능이나 테스트 결과가 아니며 실제 PR·배포도 실행하지 않았습니다.",
       fit: "contain",
     },
   ],
   "proj-minially": [
     {
       id: "minially-portfolio-0",
-      src: "media/minially-portfolio-0.webp",
+      src: "media/minially-pc-calendar.jpg",
       label: "PC 달력에서 일정 보기",
       description: "넓은 달력에서 날짜별 일정과 시간을 함께 봅니다.",
       action: "월간 달력을 넘기고 확인할 날짜를 누릅니다.",
@@ -367,14 +365,14 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       rationale:
         "PC에서도 날짜 확인과 입력을 다른 흐름으로 나누지 않도록 간편 등록을 연결했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC 체험 모드의 예시 일정입니다. 이 기기에만 저장하며 실제 계정·다른 기기와 연결하지 않았습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minially:2026-10-30-minially-date-menu-desktop-entry",
     },
     {
       id: "minially-portfolio-2",
-      src: "media/minially-portfolio-2.webp",
+      src: "media/minially-pc-register.jpg",
       label: "날짜에서 바로 등록하기",
       description: "날짜를 누르면 그날 일정과 할 일이 함께 열립니다.",
       action: "선택한 날짜의 입력창에 제목과 필요한 정보를 적어 등록합니다.",
@@ -382,54 +380,53 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
       rationale:
         "날짜를 확인한 뒤 별도 화면에서 다시 고르지 않고, 보던 날에 바로 적게 했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC 체험 모드의 예시 일정입니다. 이 기기에만 저장하며 실제 계정·다른 기기와 연결하지 않았습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minially:2026-10-30-minially-date-menu-desktop-entry",
     },
     {
       id: "minially-portfolio-3",
-      src: "media/minially-portfolio-3.webp",
+      src: "media/minially-pc-presets.jpg",
       label: "프리셋으로 제목 넣기",
       description: "자주 쓰는 문구를 눌러 제목에 넣고 필요하면 다시 고칩니다.",
-      action: "입력창을 보면서 프리셋을 선택하고 제목을 수정해 등록합니다.",
-      outcome: "날짜·시간·메모는 유지하면서 반복 입력을 줄입니다.",
+      action: "제목에 ‘영어’와 ‘학원’ 프리셋을 차례로 넣어 등록합니다.",
+      outcome: "선택한 날짜에 ‘예시 일정 영어 학원’이 등록됩니다.",
       rationale:
         "빠른 입력을 도우려는 기능이 쓰던 내용을 가리거나 입력 초점을 끊으면 안 된다고 정했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC 체험 모드의 예시 일정입니다. 이 기기에만 저장하며 실제 계정·다른 기기와 연결하지 않았습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minially:2026-11-10-minially-share-icons-persistent-presets",
     },
     {
       id: "minially-portfolio-4",
-      src: "media/minially-portfolio-4.webp",
-      label: "할 일 끝내고 다시 계획하기",
+      src: "media/minially-pc-tasks.jpg",
+      label: "날짜별 할 일 확인하기",
       description: "할 일을 날짜별로 보고 끝낸 일과 남은 일을 구분합니다.",
-      action:
-        "끝낸 일은 완료로 표시하고, 남은 일은 날짜를 바꾸거나 미완료 가져오기로 옮깁니다.",
-      outcome: "기존 내용과 완료 상태를 유지하며 다음 할 일을 정리합니다.",
+      action: "할 일 화면에서 날짜와 완료 여부를 골라 목록을 봅니다.",
+      outcome: "끝낸 일과 남은 일을 같은 날짜의 목록에서 구분합니다.",
       rationale:
         "날짜를 옮길 때 같은 일을 복제하지 않고 기존 항목을 고치도록 했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC 체험 모드의 예시 일정입니다. 이 기기에만 저장하며 실제 계정·다른 기기와 연결하지 않았습니다.",
       fit: "contain",
       processLogId:
         "codex:proj-minially:2026-11-04-minially-task-completion-reschedule",
     },
     {
       id: "minially-portfolio-1",
-      src: "media/minially-portfolio-1.webp",
-      label: "휴대폰에서 이어 보기",
-      description:
-        "휴대폰 달력에서도 날짜에 붙은 일정 이름을 보고 하루를 엽니다.",
-      action: "날짜를 눌러 그날의 일정과 할 일을 확인합니다.",
-      outcome: "작은 화면에서도 날짜에서 해야 할 일로 이어집니다.",
+      src: "media/minially-pc-week.jpg",
+      label: "주간 달력으로 바꿔 보기",
+      description: "월간에서 주간으로 바꿔 이번 주에 잡힌 일정을 봅니다.",
+      action: "달력 위의 주간 버튼을 누릅니다.",
+      outcome:
+        "같은 일정이 일주일 단위로 펼쳐지고 방금 등록한 일정도 보입니다.",
       rationale:
-        "기기가 달라도 달력에서 하루를 열어 확인하는 사용 흐름은 유지했습니다.",
+        "한 달의 흐름과 이번 주의 계획을 필요한 단위로 나눠 보게 했습니다.",
       notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+        "PC 체험 모드의 예시 일정입니다. 이번 촬영에서 프리셋으로 등록한 예시 일정이 포함돼 있습니다.",
       fit: "contain",
     },
   ],

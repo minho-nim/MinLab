@@ -12,12 +12,14 @@ export function ProjectMedia({
   eager = false,
   priority = false,
   zoomable = false,
+  expandLabel,
 }: {
   project: Project;
   index?: number;
   eager?: boolean;
   priority?: boolean;
   zoomable?: boolean;
+  expandLabel?: string;
 }) {
   const screens = mediaFor(project);
   const media = screens[index] || screens[0];
@@ -141,9 +143,8 @@ export function ProjectMedia({
         {zoomable && media && !broken && (
           <button
             ref={opener}
-            disabled={!ready && !viewer}
             className="media-expand"
-            aria-label={project.name + " 화면 크게 보기"}
+            aria-label={expandLabel || project.name + " 화면 크게 보기"}
             onClick={() => setViewer(true)}
           >
             <Maximize2 size={18} />

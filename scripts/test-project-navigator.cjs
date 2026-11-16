@@ -27,7 +27,9 @@ const evidence =
       const saved = await page.evaluate(() =>
         localStorage.getItem("minlab_projects_data_v2"),
       );
-      const source = JSON.parse(saved).filter((p) => p.visible !== false);
+      const source = JSON.parse(saved).filter(
+        (p) => p.visible !== false && p.id !== "proj-1792485558773",
+      );
       const mainIds = [
         "proj-minlab-ai-office",
         "proj-minially",

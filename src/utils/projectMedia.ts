@@ -9,11 +9,201 @@ export interface ResolvedMedia {
   rationale?: string;
   notice?: string;
   featureId?: string;
+  processLogId?: string;
   version?: string;
   fit: "contain" | "cover";
   section?: number;
 }
 export const bundledScreens: Record<string, ResolvedMedia[]> = {
+  "proj-1792558759961": [
+    {
+      id: "nutrifit-home",
+      src: "media/nutrifit-home.jpg",
+      label: "밥친구와 영양 목표",
+      action: "홈에서 밥친구의 상태와 선택한 날짜의 식사·영양 합계를 봅니다.",
+      outcome: "기록한 식사와 하루 목표를 한곳에서 확인합니다.",
+      rationale: "숫자만 확인하는 기록에 밥친구와 함께하는 흐름을 더했습니다.",
+      notice:
+        "앱의 기본 예시 프로필과 식단입니다. 실제 건강 기록이나 식단 처방이 아닙니다.",
+      fit: "contain",
+    },
+    {
+      id: "nutrifit-meal",
+      src: "media/nutrifit-meal.jpg",
+      label: "음식과 섭취량 기록",
+      action: "음식을 검색해 고르고 섭취량을 조절한 뒤 끼니에 저장합니다.",
+      outcome: "입력한 중량에 맞춰 환산한 영양 정보를 확인합니다.",
+      rationale: "식품 기준량과 실제 먹은 양을 구분해 기록하도록 했습니다.",
+      notice:
+        "예시로 바나나를 선택한 실제 화면입니다. AI 사진 분석은 사용하지 않았습니다.",
+      fit: "contain",
+    },
+    {
+      id: "nutrifit-collection",
+      src: "media/nutrifit-collection.jpg",
+      label: "식사 기록을 도감으로 보기",
+      action: "음식 도감에서 발견한 음식과 기록 횟수를 보고 다시 기록합니다.",
+      outcome: "먹어 본 음식과 아직 기록하지 않은 음식을 구분합니다.",
+      rationale:
+        "식사 기록을 다시 살펴보고 새로운 음식을 탐색하도록 연결했습니다.",
+      notice:
+        "기본 예시 식단에 바나나를 추가한 화면입니다. 실제 사용자의 식습관이 아닙니다.",
+      fit: "contain",
+    },
+  ],
+  "proj-excuseoffice": [
+    {
+      id: "excuse-compose",
+      src: "media/excuse-compose.jpg",
+      label: "상황과 문서 형식 고르기",
+      action: "상황을 적거나 예시를 고르고 이름·도장·문서 형식을 정합니다.",
+      outcome: "입력한 내용이 문서 미리보기에 반영됩니다.",
+      rationale: "상황 한 줄에서 시작하고 필요한 정보만 바꾸도록 했습니다.",
+      notice: "앱의 기본 가상 이름과 예시 상황입니다. 재미용 문서만 만듭니다.",
+      fit: "contain",
+    },
+    {
+      id: "excuse-document",
+      src: "media/excuse-document.jpg",
+      label: "핑계 문서 만들고 저장하기",
+      action: "핑계 문서를 만들고 요약 형식으로 바꿔 이미지 저장을 누릅니다.",
+      outcome: "입력한 상황으로 만든 문서를 PNG 파일로 내려받습니다.",
+      rationale: "문서를 친구에게 보내기 편하도록 글과 파일 저장을 나눴습니다.",
+      notice:
+        "방 청소를 미루는 예시입니다. 실제 증명서·허가서로 사용할 수 없습니다.",
+      fit: "contain",
+    },
+    {
+      id: "excuse-archive",
+      src: "media/excuse-archive.jpg",
+      label: "만든 문서 다시 보기",
+      action: "내 문서에서 이전에 만든 핑계를 찾아봅니다.",
+      outcome: "이 브라우저에 저장한 문서를 다시 열 수 있습니다.",
+      rationale: "한 번 만든 내용을 매번 다시 입력하지 않게 했습니다.",
+      notice:
+        "이번 촬영에서 생성한 예시 문서입니다. 다른 기기와의 동기화 화면이 아닙니다.",
+      fit: "contain",
+    },
+  ],
+  "proj-minoom": [
+    {
+      id: "minoom-room",
+      src: "media/minoom-room.jpg",
+      label: "집 안 둘러보기",
+      action: "둘러보기에서 방 안을 보고 생활 모드를 이용합니다.",
+      outcome: "가구가 배치된 집을 눈높이에서 살펴봅니다.",
+      rationale:
+        "평면 배치뿐 아니라 공간 안에서 보이는 모습을 확인하게 했습니다.",
+      notice:
+        "기본 3D 공간을 로컬로 실행한 화면입니다. 온라인 연결은 사용하지 않았습니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoom-overview",
+      src: "media/minoom-overview.jpg",
+      label: "조감도로 전체 배치 보기",
+      action: "조감도 보기를 눌러 집 전체를 보고 인테리어 하기로 들어갑니다.",
+      outcome: "방과 가구의 위치를 위에서 확인합니다.",
+      rationale: "집 안을 걷는 시점과 가구 배치를 보는 시점을 나눴습니다.",
+      notice:
+        "기본 가구를 불러온 실제 3D 화면입니다. 사진에서 자동 생성한 공간이 아닙니다.",
+      fit: "contain",
+    },
+    {
+      id: "minoom-placement",
+      src: "media/minoom-placement.jpg",
+      label: "가구 배치 미리보기",
+      action: "가구 목록에서 의자를 고르고 위치·회전·크기를 조절합니다.",
+      outcome: "배치 가능 여부를 확인하고 확정하거나 취소합니다.",
+      rationale: "겹치는 위치에 바로 저장하지 않고 먼저 확인하도록 했습니다.",
+      notice:
+        "원목 라운지 체어를 추가로 선택한 미리보기입니다. 온라인 저장·공유는 검증하지 않았습니다.",
+      fit: "contain",
+    },
+  ],
+
+  "proj-1792563333333": [
+    {
+      id: "choicepilot-input",
+      src: "media/choicepilot-input.jpg",
+      label: "고민 적기",
+      featureId: "feat-1792571798822",
+      fit: "contain",
+      action:
+        "지금의 고민을 적고 필요하면 선택지와 시간·비용 조건을 덧붙입니다.",
+      outcome: "적은 내용을 바탕으로 필요한 질문을 확인합니다.",
+      rationale:
+        "처음부터 모든 조건을 채우기보다 한 문장으로 시작하게 했습니다.",
+      notice: "예시 고민을 입력한 실제 앱 화면입니다.",
+    },
+    {
+      id: "choicepilot-question",
+      src: "media/choicepilot-question.jpg",
+      label: "필요한 질문에 답하기",
+      featureId: "feat-1792571807554",
+      fit: "contain",
+      action:
+        "추가 질문에 답하거나 건너뛰고, 요약에서 다른 부분을 직접 고칩니다.",
+      outcome: "확인하거나 수정한 내용으로 결과를 정리합니다.",
+      rationale:
+        "글에서 찾은 표현이 내 뜻과 맞는지 사용자가 확인할 수 있게 했습니다.",
+      notice:
+        "예시 입력 화면입니다. 질문과 요약은 브라우저의 로컬 규칙으로 구성합니다.",
+    },
+    {
+      id: "choicepilot-result",
+      src: "media/choicepilot-result.jpg",
+      label: "고민을 한눈에 보기",
+      featureId: "feat-1792571819586",
+      fit: "contain",
+      action:
+        "핵심 고민, 중요하게 생각하는 것, 아직 모르는 내용을 함께 읽습니다.",
+      outcome: "지금 확인할 정보와 작은 행동 하나를 살펴봅니다.",
+      rationale:
+        "앱의 점수를 정답으로 받아들이기보다 스스로 판단할 근거를 찾게 했습니다.",
+      notice:
+        "예시 입력으로 촬영했습니다. 언어 모델의 추천 점수나 심리 진단 결과가 아닙니다.",
+    },
+    {
+      id: "choicepilot-details",
+      src: "media/choicepilot-details.jpg",
+      label: "상세 정리 펼치기",
+      featureId: "feat-1792571827375",
+      fit: "contain",
+      action: "상세 정리를 펼쳐 고민의 배경과 확인이 필요한 내용을 읽습니다.",
+      outcome: "추가로 알아볼 정보와 다음 행동을 구분합니다.",
+      rationale:
+        "처음에는 짧은 결과를 보고, 필요할 때 설명을 더 읽도록 나눴습니다.",
+      notice: "같은 예시 고민의 상세 정리를 실제로 펼친 화면입니다.",
+    },
+    {
+      id: "choicepilot-plan",
+      src: "media/choicepilot-plan.jpg",
+      label: "7일 계획 살펴보기",
+      featureId: "feat-1792571838878",
+      fit: "contain",
+      action: "원할 때 7일 계획을 열고 하루별 할 일과 완료 기준을 읽습니다.",
+      outcome:
+        "입력한 목표와 사용 가능한 시간을 반영한 계획 초안을 확인합니다.",
+      rationale:
+        "정보가 부족한 상황에서도 작게 시도해 볼 행동부터 정하도록 했습니다.",
+      notice:
+        "예시 입력에 맞춘 계획입니다. 실제로 7일간 실행한 성과를 뜻하지 않습니다.",
+    },
+    {
+      id: "choicepilot-copy",
+      src: "media/choicepilot-copy.jpg",
+      label: "계획 복사와 완료 표시",
+      featureId: "feat-1792571847207",
+      fit: "contain",
+      action: "마친 일을 체크하고 계획 복사를 눌러 텍스트를 가져갑니다.",
+      outcome: "완료한 날짜가 표시되고 복사 성공 안내가 나타납니다.",
+      rationale:
+        "결과를 읽는 데서 끝내지 않고, 다시 확인하며 실행할 수 있게 했습니다.",
+      notice:
+        "예시 계획의 1일차를 체크하고 실제 텍스트 복사를 확인한 화면입니다.",
+    },
+  ],
   "risk-assessment-workplan-automation": [
     {
       id: "schedule-import",
@@ -76,31 +266,31 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
         "예시 데이터 화면입니다. 회사 시스템으로 일정 Excel을 올리는 과정까지 검증한 것은 아닙니다.",
       fit: "contain",
     },
+    {
+      id: "schedule-export",
+      src: "media/schedule-export.jpg",
+      label: "일괄등록 Excel 미리보기와 다운로드",
+      featureId: "feature-2",
+      action:
+        "내보낼 일정과 캘린더·등록자·참여자 값을 확인하고 Excel을 내려받습니다.",
+      outcome: "일정리스트와 캘린더 참여자 시트가 들어 있는 파일을 생성합니다.",
+      rationale:
+        "회사 시스템에 올리기 전에 파일에 들어갈 내용과 계정 값을 확인하도록 했습니다.",
+      notice:
+        "예시 문서·계정으로 실제 파일 생성을 확인했습니다. 현재는 매칭 실패 문서도 내보내기 대상에 포함됩니다. 회사 시스템으로의 업로드는 검증하지 않았습니다.",
+      fit: "contain",
+    },
   ],
   "proj-minlab-ai-office": [
     {
       id: "minoffia-portfolio-0",
       src: "media/minoffia-portfolio-0.webp",
-      label: "사무실과 대화창 · 예시 데이터",
-      description:
-        "방마다 맡은 일이 다른 AI들이 보입니다. 캐릭터 위치와 말풍선은 업무 상태를 나타냅니다.",
-      action: "역할별 AI와 업무 상태를 확인합니다.",
-      outcome: "어떤 일을 맡겼고 어디를 검토해야 하는지 살펴봅니다.",
-      rationale: "업무의 배정과 실제 실행 상태를 구분하기 위한 화면입니다.",
-      notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
-      fit: "contain",
-    },
-    {
-      id: "minoffia-portfolio-1",
-      src: "media/minoffia-portfolio-1.webp",
-      label: "휴대폰에서 요청하기 · 예시 데이터",
-      description:
-        "대화로 할 일을 적고 답을 확인합니다. 화면은 체험 모드의 예시 데이터입니다.",
-      action: "휴대폰 대화창에서 요청을 입력합니다.",
-      outcome: "기획과 확인이 필요한 업무로 이어집니다.",
+      label: "사무실 전체 보기",
+      description: "역할을 나눈 AI와 업무 상태를 사무실에서 살펴봅니다.",
+      action: "방과 말풍선을 보고 어느 역할에 일이 모여 있는지 확인합니다.",
+      outcome: "같은 요청에 참여하는 AI와 현재 상태를 한곳에서 봅니다.",
       rationale:
-        "복잡한 화면을 오가며 같은 설명을 반복하는 일을 줄이려는 흐름입니다.",
+        "여러 AI 사이에서 같은 설명을 반복하지 않고 업무를 따라가도록 한곳에 모았습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
@@ -108,38 +298,59 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
     {
       id: "minoffia-portfolio-2",
       src: "media/minoffia-portfolio-2.webp",
-      label: "접수와 스킬 선택 · 예시 데이터",
-      description: "접수한 일에 사용할 작업 설명서(스킬)를 고릅니다.",
-      action: "요청에 사용할 작업 설명서인 스킬을 선택합니다.",
-      outcome: "업무와 선택한 작업 방법을 함께 확인합니다.",
-      rationale: "AI가 맡을 일과 참고할 방법을 분리해 전달하려는 구성입니다.",
+      label: "요청 접수와 스킬 선택",
+      description:
+        "요청을 어느 프로젝트에 접수할지 확인하고 작업에 쓸 스킬을 고릅니다.",
+      action: "프로젝트가 맞는지 확인한 뒤 필요한 스킬을 선택합니다.",
+      outcome: "접수한 일과 참고할 작업 방법이 함께 남습니다.",
+      rationale:
+        "요청을 임의의 다른 프로젝트로 보내지 않고, 계획과 담당 업무가 함께 연결돼야 한다고 정했습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
+      processLogId:
+        "codex:proj-minlab-ai-office:2026-11-03-ai-office-plan-assignment-handoff",
     },
     {
       id: "minoffia-portfolio-3",
       src: "media/minoffia-portfolio-3.webp",
-      label: "업무 보드 · 예시 데이터",
-      description: "맡긴 일을 상태별로 모아 보고, 사람이 확인할 일을 찾습니다.",
-      action: "업무 보드에서 상태를 보고 사람이 확인할 일을 엽니다.",
-      outcome: "기획·결과·올리기와 배포 승인 단계를 구분해 검토합니다.",
+      label: "기획 확인과 내 차례",
+      description:
+        "업무 보드에서 기획 확인이 필요한 일과 진행 중인 일을 나눠 봅니다.",
+      action: "내 차례의 업무를 열어 기획을 읽고 승인하거나 수정을 요청합니다.",
+      outcome: "직접 판단할 일과 AI가 진행 중인 일을 구분합니다.",
       rationale:
-        "배정만 된 일을 완료로 오해하지 않도록 검토 지점을 남겼습니다.",
+        "기획·배정만 저장된 상태를 실행 완료로 오해하지 않도록 사람의 검토 지점을 남겼습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
+      processLogId:
+        "codex:proj-minlab-ai-office:2026-11-03-ai-office-execution-stability",
     },
     {
       id: "minoffia-portfolio-4",
       src: "media/minoffia-portfolio-4.webp",
-      label: "AI 팀 상태 · 예시 데이터",
-      description:
-        "역할을 나눈 AI들의 상태를 확인합니다. 배정과 실제 실행은 구분해서 봅니다.",
-      action: "AI 팀의 역할과 상태를 확인합니다.",
-      outcome: "요청을 누가 맡는지와 실제 실행 여부를 나누어 봅니다.",
+      label: "담당 AI와 상태 확인",
+      description: "팀 화면에서 각 AI의 역할과 맡은 업무를 확인합니다.",
+      action: "담당 AI의 상태와 연결된 업무를 살펴봅니다.",
+      outcome: "누구에게 맡겼는지와 실행 여부를 나누어 확인합니다.",
       rationale:
-        "자동화의 흐름 안에서도 사람이 현재 상태를 이해할 수 있어야 하기 때문입니다.",
+        "담당자를 정하는 것과 결과가 돌아오는 것은 달라서, 배정과 실행 상태를 따로 확인하게 했습니다.",
+      notice:
+        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+      fit: "contain",
+      processLogId:
+        "codex:proj-minlab-ai-office:2026-11-03-ai-office-plan-assignment-handoff",
+    },
+    {
+      id: "minoffia-portfolio-1",
+      src: "media/minoffia-portfolio-1.webp",
+      label: "휴대폰에서 요청하기",
+      description: "휴대폰에서도 대화창에서 할 일을 적습니다.",
+      action: "대화로 요청을 적고 이어지는 확인에 답합니다.",
+      outcome: "접수한 요청의 기획과 업무 상태를 이어서 확인합니다.",
+      rationale:
+        "PC에서 보던 일을 휴대폰에서도 같은 업무 맥락으로 이어가려는 구성입니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
@@ -149,65 +360,74 @@ export const bundledScreens: Record<string, ResolvedMedia[]> = {
     {
       id: "minially-portfolio-0",
       src: "media/minially-portfolio-0.webp",
-      label: "PC 달력 · 예시 데이터",
-      description: "넓은 화면에서는 날짜별 일정과 시간을 함께 봅니다.",
-      action: "월간 달력을 넘기며 날짜와 시간을 확인합니다.",
-      outcome: "넓은 화면에서 날짜별 일정을 한눈에 살펴봅니다.",
-      rationale: "달력과 별도 목록을 번갈아 확인하는 일을 줄이려는 구성입니다.",
-      notice:
-        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
-      fit: "contain",
-    },
-    {
-      id: "minially-portfolio-1",
-      src: "media/minially-portfolio-1.webp",
-      label: "휴대폰 달력 · 예시 데이터",
-      description:
-        "날짜에 붙은 일정 이름을 보고, 날짜를 눌러 그날 일을 엽니다.",
-      action: "날짜에 붙은 일정 이름을 보고 하루를 누릅니다.",
-      outcome: "선택한 날짜의 일정과 할 일을 엽니다.",
+      label: "PC 달력에서 일정 보기",
+      description: "넓은 달력에서 날짜별 일정과 시간을 함께 봅니다.",
+      action: "월간 달력을 넘기고 확인할 날짜를 누릅니다.",
+      outcome: "그날의 일정 확인과 간편 등록으로 이어집니다.",
       rationale:
-        "작은 화면에서도 날짜에서 바로 해야 할 일로 이어지게 했습니다.",
+        "PC에서도 날짜 확인과 입력을 다른 흐름으로 나누지 않도록 간편 등록을 연결했습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
+      processLogId:
+        "codex:proj-minially:2026-10-30-minially-date-menu-desktop-entry",
     },
     {
       id: "minially-portfolio-2",
       src: "media/minially-portfolio-2.webp",
-      label: "하루 일정과 할 일 · 예시 데이터",
-      description: "선택한 날짜의 일정과 할 일을 카테고리별로 모아 봅니다.",
-      action: "선택한 날의 입력창에서 제목과 필요한 정보를 적습니다.",
-      outcome: "그날 일정과 할 일을 카테고리별로 모아 봅니다.",
+      label: "날짜에서 바로 등록하기",
+      description: "날짜를 누르면 그날 일정과 할 일이 함께 열립니다.",
+      action: "선택한 날짜의 입력창에 제목과 필요한 정보를 적어 등록합니다.",
+      outcome: "등록한 내용을 같은 날짜에서 다시 확인합니다.",
       rationale:
-        "등록한 내용이 어느 날짜에 들어갔는지 바로 확인하게 하려는 흐름입니다.",
+        "날짜를 확인한 뒤 별도 화면에서 다시 고르지 않고, 보던 날에 바로 적게 했습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
+      processLogId:
+        "codex:proj-minially:2026-10-30-minially-date-menu-desktop-entry",
     },
     {
       id: "minially-portfolio-3",
       src: "media/minially-portfolio-3.webp",
-      label: "자주 쓰는 문구 · 예시 데이터",
-      description:
-        "입력창에서 프리셋을 눌러 제목을 넣습니다. 넣은 제목은 다시 고칠 수 있습니다.",
-      action: "자주 쓰는 문구를 눌러 제목을 넣고 필요하면 고칩니다.",
-      outcome: "날짜·시간·메모를 유지하면서 반복 입력을 줄입니다.",
+      label: "프리셋으로 제목 넣기",
+      description: "자주 쓰는 문구를 눌러 제목에 넣고 필요하면 다시 고칩니다.",
+      action: "입력창을 보면서 프리셋을 선택하고 제목을 수정해 등록합니다.",
+      outcome: "날짜·시간·메모는 유지하면서 반복 입력을 줄입니다.",
       rationale:
-        "빠른 입력이 작성 중인 다른 내용을 지우면 안 된다고 정했습니다.",
+        "빠른 입력을 도우려는 기능이 쓰던 내용을 가리거나 입력 초점을 끊으면 안 된다고 정했습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",
+      processLogId:
+        "codex:proj-minially:2026-11-10-minially-share-icons-persistent-presets",
     },
     {
       id: "minially-portfolio-4",
       src: "media/minially-portfolio-4.webp",
-      label: "할 일 목록 · 예시 데이터",
-      description: "할 일은 하루 단위로 보고, 끝내면 완료로 표시합니다.",
-      action: "하루 단위 목록에서 끝낸 할 일을 완료로 표시합니다.",
-      outcome: "남은 일과 마친 일을 구분해 다음 일을 확인합니다.",
+      label: "할 일 끝내고 다시 계획하기",
+      description: "할 일을 날짜별로 보고 끝낸 일과 남은 일을 구분합니다.",
+      action:
+        "끝낸 일은 완료로 표시하고, 남은 일은 날짜를 바꾸거나 미완료 가져오기로 옮깁니다.",
+      outcome: "기존 내용과 완료 상태를 유지하며 다음 할 일을 정리합니다.",
       rationale:
-        "달력의 일정과 끝내야 하는 일을 한곳에서 관리하려는 기능입니다.",
+        "날짜를 옮길 때 같은 일을 복제하지 않고 기존 항목을 고치도록 했습니다.",
+      notice:
+        "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
+      fit: "contain",
+      processLogId:
+        "codex:proj-minially:2026-11-04-minially-task-completion-reschedule",
+    },
+    {
+      id: "minially-portfolio-1",
+      src: "media/minially-portfolio-1.webp",
+      label: "휴대폰에서 이어 보기",
+      description:
+        "휴대폰 달력에서도 날짜에 붙은 일정 이름을 보고 하루를 엽니다.",
+      action: "날짜를 눌러 그날의 일정과 할 일을 확인합니다.",
+      outcome: "작은 화면에서도 날짜에서 해야 할 일로 이어집니다.",
+      rationale:
+        "기기가 달라도 달력에서 하루를 열어 확인하는 사용 흐름은 유지했습니다.",
       notice:
         "원본 공개 포트폴리오의 예시 데이터 화면입니다. 실제 계정 동작을 이번에 재검증한 화면은 아닙니다.",
       fit: "contain",

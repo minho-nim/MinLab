@@ -3,6 +3,7 @@ import type { Project } from "../types";
 import { mediaFor, ProjectMedia } from "./ProjectMedia";
 import { publicFeature } from "../utils/publicProjects";
 import { projectCaseStudies } from "../data/projectCaseStudies";
+import { routeHash } from "../utils/navigation";
 import { motionAllowed } from "../utils/visualMotion";
 
 export function FeatureShowcase({ project }: { project: Project }) {
@@ -20,6 +21,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
     outcome: undefined,
     rationale: undefined,
     notice: undefined,
+    processLogId: undefined,
     status: f.status,
     screen: screens.findIndex(
       (s) => s.featureId === f.id || s.label === f.name,
@@ -36,6 +38,7 @@ export function FeatureShowcase({ project }: { project: Project }) {
         outcome: s.outcome,
         rationale: s.rationale,
         notice: s.notice,
+        processLogId: s.processLogId,
         status: feature?.status,
         screen,
       };
@@ -204,7 +207,11 @@ export function FeatureShowcase({ project }: { project: Project }) {
         id="project-showcase"
         className="showcase-empty project-chapter-target"
       >
-        <h2>프로젝트 화면</h2>
+        <h2>
+          {projectCaseStudies[project.id]?.planned
+            ? "구상 중인 사용 흐름"
+            : "프로젝트 화면"}
+        </h2>
         {projectCaseStudies[project.id] ? (
           <>
             <ol className="project-use-flow">
@@ -213,8 +220,9 @@ export function FeatureShowcase({ project }: { project: Project }) {
               ))}
             </ol>
             <p>
-              아직 소개에 연결한 실제 화면은 없습니다. 사용 흐름은 확인한 자료를
-              바탕으로 정리했습니다.
+              {projectCaseStudies[project.id].planned
+                ? "아직 실행할 수 있는 앱과 실제 화면은 없습니다. 이 흐름은 구현 전 구상입니다."
+                : "아직 소개에 연결한 실제 화면은 없습니다. 사용 흐름은 확인한 자료를 바탕으로 정리했습니다."}
             </p>
           </>
         ) : (
@@ -239,6 +247,11 @@ export function FeatureShowcase({ project }: { project: Project }) {
           {String(scenes.length).padStart(2, "0")}
         </span>
       </header>
+      {projectCaseStudies[project.id]?.showcaseIntro && (
+        <p className="showcase-flow-intro">
+          {projectCaseStudies[project.id].showcaseIntro}
+        </p>
+      )}
       {scenes.length > 1 && (
         <nav ref={tabs} className="scene-tabs" aria-label="기능 직접 선택">
           {scenes.map((s, i) => (
@@ -405,6 +418,20 @@ export function FeatureShowcase({ project }: { project: Project }) {
                 </dl>
               )}
               {s.notice && <small className="scene-notice">{s.notice}</small>}
+              {s.processLogId &&
+                project.workLogs.some((log) => log.id === s.processLogId) && (
+                  <a
+                    className="text-link scene-record-link"
+                    data-record-link={s.processLogId}
+                    href={routeHash({
+                      view: "project",
+                      projectId: project.id,
+                      logId: s.processLogId,
+                    })}
+                  >
+                    이 판단의 개발 기록 ↗
+                  </a>
+                )}
               {s.screen >= 0 && screens[s.screen].label !== s.name && (
                 <small>{screens[s.screen].label}</small>
               )}

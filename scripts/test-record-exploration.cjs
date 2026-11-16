@@ -164,6 +164,20 @@ const recordNode = (page, width, id) =>
         await node.locator(".log-original").evaluate((el) => el.open),
         "deep links still open the original record after a filtered search",
       );
+      // Rendering the linked record precedes the route's focus restoration.
+      await page.waitForFunction(
+        (id) =>
+          [
+            ...document.querySelectorAll(
+              ".journey-record[data-log], .journey-mobile>details[data-log]",
+            ),
+          ].some(
+            (el) =>
+              el.getAttribute("data-log") === id &&
+              el.contains(document.activeElement),
+          ),
+        other.id,
+      );
       assert.ok(
         await node.evaluate((el) => el.contains(document.activeElement)),
       );

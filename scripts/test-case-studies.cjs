@@ -205,11 +205,15 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results/case-studies";
         await p
           .getByRole("combobox", { name: "미리보기 기능 선택" })
           .selectOption("4");
-        await p.locator(".scene-no-image").waitFor();
+        await p
+          .locator(
+            '.browser-showcase img.media-current[src*="schedule-export.jpg"]',
+          )
+          .waitFor();
         assert.equal(
-          await p.locator(".browser-showcase img").count(),
+          await p.locator(".browser-showcase .scene-no-image").count(),
           0,
-          "Export has no new capture; never reuse an unrelated screen",
+          "Export uses its own real capture",
         );
       }
       await p.goto(base + "#/about");

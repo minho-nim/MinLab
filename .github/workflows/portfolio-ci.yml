@@ -35,6 +35,7 @@ jobs:
           npm run test:journey
           npm run test:showcase
           npm run test:case-studies
+          npm run test:feature-screens
           npm run test:records
           npm run test:navigator
           MINLAB_TEST_URL=http://localhost:3000/ npm run test:motion

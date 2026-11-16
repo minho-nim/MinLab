@@ -232,13 +232,27 @@ async function swipe(page, box, vertical = false) {
         ),
         saved,
       );
-      const plainId = await page.evaluate(
-        () =>
-          JSON.parse(localStorage.getItem("minlab_projects_data_v2")).find(
-            (p) => p.name === "ChoicePilot",
-          ).id,
-      );
+      const plainId = await page.evaluate(() => {
+        // Isolated fixture: an administrator can still add a feature without a screenshot.
+        const projects = JSON.parse(
+          localStorage.getItem("minlab_projects_data_v2"),
+        );
+        const project = projects.find((p) => p.id === "proj-musclemap");
+        project.keyFeatures.push({
+          id: "fixture-no-screen",
+          name: "예시: 아직 화면이 없는 기능",
+          description:
+            "미등록 화면의 높이와 탐색을 확인하는 시험용 항목입니다.",
+          status: "대기",
+        });
+        localStorage.setItem(
+          "minlab_projects_data_v2",
+          JSON.stringify(projects),
+        );
+        return project.id;
+      });
       await page.goto(base + "#/projects/" + plainId);
+      await page.reload();
       const plain = page.getByRole("combobox", { name: "미리보기 기능 선택" });
       const total = await plain.locator("option").count();
       assert.ok(total > 2);

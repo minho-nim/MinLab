@@ -2172,3 +2172,7 @@ html[data-visual-motion="paused"] .next-project-showcase .text-link { transition
   .hero-mobile-caption { display: block; min-height: 112px; }
   .hero-mobile-caption > span { display: block; margin-top: 8px; white-space: normal; }
 }
+
+/* Context for the two main walkthroughs; original records remain separate. */
+.showcase-flow-intro { max-width: 70ch; margin: 0 0 24px; color: var(--color-ink-secondary); font-size: 15px; line-height: 1.85; }
+.scene-record-link { margin-top: 16px; }

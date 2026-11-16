@@ -143,7 +143,6 @@ export function ProjectMedia({
         {zoomable && media && !broken && (
           <button
             ref={opener}
-            disabled={!ready && !viewer}
             className="media-expand"
             aria-label={expandLabel || project.name + " 화면 크게 보기"}
             onClick={() => setViewer(true)}

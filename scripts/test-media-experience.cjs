@@ -18,6 +18,57 @@ const sameSize = (a, b) => {
     args: ["--no-sandbox"],
   });
   try {
+    // A pending image must not disable opening its viewer during scroll selection.
+    for (const width of [320, 1440]) {
+      const page = await browser.newPage({
+        viewport: { width, height: 800 },
+        reducedMotion: "reduce",
+      });
+      let release;
+      const gate = new Promise((resolve) => {
+        release = resolve;
+      });
+      await page.route(/\/media\/.*\.webp$/, async (route) => {
+        await gate;
+        await route.continue();
+      });
+      try {
+        await page.goto(base + "#/projects/proj-crossroads-ai-verdict", {
+          waitUntil: "domcontentloaded",
+        });
+        const expand = page.locator(".browser-showcase .media-expand");
+        await expand.waitFor();
+        assert.ok(
+          await expand.isEnabled(),
+          "Viewer remains available while its image loads",
+        );
+        await expand.click();
+        const dialog = page.getByRole("dialog", {
+          name: "MINOVA(미노바)",
+          exact: true,
+        });
+        await dialog.waitFor();
+        await dialog.getByText("화면 불러오는 중", { exact: true }).waitFor();
+        release();
+        await dialog
+          .locator(".media-viewer-stage img")
+          .evaluate(
+            (img) =>
+              (img.complete && img.naturalWidth > 0) ||
+              new Promise((resolve) =>
+                img.addEventListener("load", resolve, { once: true }),
+              ),
+          );
+        await page.keyboard.press("Escape");
+        await dialog.waitFor({ state: "detached" });
+        assert.ok(
+          await expand.evaluate((node) => node === document.activeElement),
+        );
+      } finally {
+        release();
+        await page.close();
+      }
+    }
     for (const width of [1440, 390]) {
       const page = await browser.newPage({
         viewport: { width, height: 900 },
@@ -97,20 +148,28 @@ const sameSize = (a, b) => {
         .getByRole("button")
         .first()
         .click();
-      const first = await viewer.locator(".media-viewer-stage img").getAttribute("src");
+      const first = await viewer
+        .locator(".media-viewer-stage img")
+        .getAttribute("src");
       await viewer
         .getByRole("button", { name: "다음 화면", exact: true })
         .click();
-      const second = await viewer.locator(".media-viewer-stage img").getAttribute("src");
+      const second = await viewer
+        .locator(".media-viewer-stage img")
+        .getAttribute("src");
       assert.notEqual(second, first);
       await page.keyboard.press("ArrowLeft");
       await page.waitForFunction(
         (src) =>
-          document.querySelector(".media-viewer-stage img")?.getAttribute("src") ===
-          src,
+          document
+            .querySelector(".media-viewer-stage img")
+            ?.getAttribute("src") === src,
         first,
       );
-      assert.equal(await viewer.locator(".media-viewer-stage img").getAttribute("src"), first);
+      assert.equal(
+        await viewer.locator(".media-viewer-stage img").getAttribute("src"),
+        first,
+      );
       const stage = viewer.locator(".media-viewer-stage");
       if (width < 900) {
         const bounds = await stage.boundingBox();
@@ -131,8 +190,9 @@ const sameSize = (a, b) => {
         await cdp.detach();
         await page.waitForFunction(
           (src) =>
-            document.querySelector(".media-viewer-stage img")?.getAttribute("src") ===
-            src,
+            document
+              .querySelector(".media-viewer-stage img")
+              ?.getAttribute("src") === src,
           second,
         );
         assert.equal(
@@ -179,7 +239,10 @@ const sameSize = (a, b) => {
         .getByRole("button")
         .first()
         .click();
-      assert.equal(await viewer.locator(".media-viewer-stage img").getAttribute("src"), first);
+      assert.equal(
+        await viewer.locator(".media-viewer-stage img").getAttribute("src"),
+        first,
+      );
       await page.screenshot({ path: `${evidence}/viewer-${width}.png` });
       assert.ok(
         await viewer.evaluate((el) => el.contains(document.activeElement)),

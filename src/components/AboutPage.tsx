@@ -8,6 +8,7 @@ import { routeHash } from "../utils/navigation";
 import { ProjectMedia, mediaFor } from "./ProjectMedia";
 import { safeRead, safeWrite } from "../utils/archiveQuery";
 import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
+import { CapabilityScreen } from "./CapabilityScreen";
 import { primaryProjectIds } from "../utils/homeProjects";
 import { motionAllowed } from "../utils/visualMotion";
 const aiWork = [
@@ -377,6 +378,7 @@ export function AboutPage({
                       ))}
                     </dl>
                   )}
+                  <CapabilityScreen key={log.id} project={p} logId={log.id} />
                   <p className="capability-record-title">
                     {log.title || log.task || "개발 기록"}
                   </p>

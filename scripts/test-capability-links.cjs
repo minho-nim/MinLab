@@ -2,6 +2,71 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
+async function verifyEvidenceScreens(page, evidence) {
+  const before = await page.evaluate(() =>
+    localStorage.getItem("minlab_projects_data_v2"),
+  );
+  for (const [capability, file] of [
+    ["기획 및 문제 정의", "minoffia-pc-intake.jpg"],
+    ["UX/UI 설계", "minially-pc-presets.jpg"],
+  ]) {
+    await page
+      .getByRole("button", { name: capability + " ↗", exact: true })
+      .click();
+    const panel = page.locator(".capability-screen").first();
+    const summary = panel.locator("summary");
+    await summary.waitFor();
+    assert.equal(await panel.getAttribute("open"), null);
+    assert.equal(
+      await panel.locator("img[src]").count(),
+      0,
+      "collapsed evidence screens do not request images",
+    );
+    await summary.press("Enter");
+    await panel.locator('.project-media[data-media-state="ready"]').waitFor();
+    const image = panel.locator("img.media-current");
+    assert.ok((await image.getAttribute("src")).includes(file));
+    assert.ok(
+      (await panel.innerText()).includes("기록 당시 버전의 캡처는 아닙니다"),
+    );
+    const expand = panel.locator(".media-expand");
+    const imageBox = await image.boundingBox();
+    const buttonBox = await expand.boundingBox();
+    assert.ok(
+      buttonBox.y >= imageBox.y + imageBox.height - 1,
+      "expand does not cover the app screen",
+    );
+    assert.ok((await summary.boundingBox()).height >= 44);
+    await panel.screenshot({
+      path: `${evidence}/screen-${file}-${page.viewportSize().width}.png`,
+    });
+    await expand.press("Enter");
+    const viewer = page.locator(".media-viewer");
+    await viewer.waitFor();
+    assert.ok(
+      (await viewer.locator("img.viewer-screen").getAttribute("src")).includes(
+        file,
+      ),
+    );
+    await page.keyboard.press("Escape");
+    await viewer.waitFor({ state: "detached" });
+    assert.equal(
+      await expand.evaluate((n) => n === document.activeElement),
+      true,
+    );
+    await summary.press("Space");
+    assert.equal(await panel.getAttribute("open"), null);
+    assert.ok(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+    );
+  }
+  assert.equal(
+    await page.evaluate(() => localStorage.getItem("minlab_projects_data_v2")),
+    before,
+  );
+}
 async function verifyAiWork(page, evidence) {
   const work = page.locator(".about-ai-work");
   await work.waitFor();
@@ -85,6 +150,7 @@ async function verifyAiWork(page, evidence) {
     await p.goto(base + "#/about");
     await p.reload();
     await verifyAiWork(p, evidence);
+    await verifyEvidenceScreens(p, evidence);
     await p.getByRole("button", { name: "UX/UI 설계 ↗", exact: true }).click();
     assert.ok(p.url().includes("capability=experience"));
     const card = p.locator(".capability-evidence article").first();
@@ -182,6 +248,7 @@ async function verifyAiWork(page, evidence) {
     m.on("pageerror", (e) => errors.push(e.message));
     await m.goto(base + "#/about");
     await verifyAiWork(m, evidence);
+    await verifyEvidenceScreens(m, evidence);
     await m.goto(base + href);
     const detail = m.locator(".journey-mobile>details[data-linked=true]");
     await detail.waitFor();
@@ -235,7 +302,7 @@ async function verifyAiWork(page, evidence) {
     await mobile.close();
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: real capability excerpts, exact record URLs, desktop/mobile focus and expansion, refresh, repeated explicit links, About selection/back restoration, missing-record recovery and unchanged source data.",
+      "PASS: record-matched screens with deferred loading and viewer focus, real capability excerpts, exact record URLs, desktop/mobile focus and expansion, refresh, repeated explicit links, About selection/back restoration, missing-record recovery and unchanged source data.",
     );
   } finally {
     await b.close();

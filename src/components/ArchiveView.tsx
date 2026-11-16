@@ -364,12 +364,17 @@ export function ArchiveView({ projects }: { projects: Project[] }) {
               )}
               {query.layout === "list" && (
                 <div className="archive-list-row">
-                  <strong>
-                    {p.name} ↗
+                  <div className="archive-list-project">
+                    <strong>
+                      {p.name} <ArrowUpRight size={16} aria-hidden="true" />
+                    </strong>
+                    {p.description?.trim() && (
+                      <p className="archive-list-summary">{p.description}</p>
+                    )}
                     <small className="project-destination">
                       {projectLinkLabel(p.id)}
                     </small>
-                  </strong>
+                  </div>
                   <span>{p.category}</span>
                   <span>{p.status}</span>
                   <time>{p.updatedAt?.slice(0, 10) || "미등록"}</time>

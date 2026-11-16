@@ -148,6 +148,20 @@ const moving = (page) =>
         });
         await page.keyboard.press("Escape");
         await preview.waitFor({ state: "detached" });
+        await card.focus();
+        await page.keyboard.press("Tab");
+        await page.waitForFunction(() => {
+          const row = document.activeElement;
+          return (
+            row?.matches(".archive-project:focus-visible") &&
+            getComputedStyle(row).backgroundColor !== "rgba(0, 0, 0, 0)"
+          );
+        });
+        assert.equal(
+          await preview.count(),
+          0,
+          "keyboard comparison keeps row context without a cursor preview",
+        );
       }
       await page.goto(base + "#/home");
       await page

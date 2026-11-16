@@ -56,15 +56,44 @@ async function verifyEvidenceScreens(page, evidence) {
     );
     await summary.press("Space");
     assert.equal(await panel.getAttribute("open"), null);
+    await summary.press("Enter");
+    const recordLink = panel
+      .locator("xpath=ancestor::article")
+      .locator("a[data-record-link]");
+    await recordLink.scrollIntoViewIfNeeded();
+    const readingY = await page.evaluate(() => scrollY);
+    await recordLink.click();
+    await page.locator(".project-story").waitFor();
+    await page.reload();
+    await page.locator(".project-story").waitFor();
+    await page.goBack();
+    await panel.waitFor();
+    await page.waitForFunction(() => {
+      const panel = document.querySelector(".capability-screen");
+      return panel?.open === true;
+    });
+    await page.waitForFunction((y) => Math.abs(scrollY - y) < 12, readingY);
+    assert.equal(
+      await panel.getAttribute("open"),
+      "",
+      "expanded evidence survives a record refresh and browser back",
+    );
+    await summary.press("Space");
+    assert.equal(await panel.getAttribute("open"), null);
     assert.ok(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth + 1,
       ),
     );
   }
-  assert.equal(
-    await page.evaluate(() => localStorage.getItem("minlab_projects_data_v2")),
-    before,
+  assert.deepEqual(
+    JSON.parse(
+      await page.evaluate(() =>
+        localStorage.getItem("minlab_projects_data_v2"),
+      ),
+    ),
+    JSON.parse(before),
+    "record refresh preserves content after the existing import normalization",
   );
 }
 async function verifyAiWork(page, evidence) {
@@ -247,6 +276,8 @@ async function verifyAiWork(page, evidence) {
       m = await mobile.newPage();
     m.on("pageerror", (e) => errors.push(e.message));
     await m.goto(base + "#/about");
+    // Match desktop: warm the existing import defaults before read-only checks.
+    await m.reload();
     await verifyAiWork(m, evidence);
     await verifyEvidenceScreens(m, evidence);
     await m.goto(base + href);

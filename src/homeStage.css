@@ -129,6 +129,17 @@
 .featured-editorial .explorer-progress {
   margin-top: 12px;
 }
+.featured-editorial .explorer-hint > span:last-child {
+  display: none;
+}
+@media (max-width: 899px), (max-height: 859px) {
+  .featured-editorial .explorer-hint > span:first-child {
+    display: none;
+  }
+  .featured-editorial .explorer-hint > span:last-child {
+    display: inline;
+  }
+}
 @media (min-width: 900px) and (max-height: 859px) {
   .featured-scroll.featured-editorial {
     height: auto;

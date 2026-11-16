@@ -248,7 +248,10 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
           <div>
             <i style={{ width: `${((index + 1) / count) * 100}%` }} />
           </div>
-          <span>스크롤로 둘러보기 · 모바일은 좌우로 넘기기</span>
+          <span className="explorer-hint">
+            <span>스크롤로 둘러보기 · 목록에서 바로 선택</span>
+            <span>목록에서 선택 · 터치 화면은 좌우로 넘기기</span>
+          </span>
           <a
             className="text-link"
             href="#development-process"

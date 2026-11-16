@@ -699,6 +699,7 @@
   min-height: 44px;
 }
 .capability-screen small {
+  color: var(--color-ink-secondary);
   font-size: 12px;
   line-height: 1.8;
   padding: 8px 0;

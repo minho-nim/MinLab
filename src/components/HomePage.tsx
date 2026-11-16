@@ -17,9 +17,23 @@ import { selectHomeProjects, primaryProjectIds } from "../utils/homeProjects";
 import { useHeroHandoff } from "../utils/useHeroHandoff";
 import { motionAllowed } from "../utils/visualMotion";
 import { MotionControl } from "./MotionControl";
+import "../homeStage.css";
 export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const section = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
+  const [step, setStep] = useState(() =>
+    Math.max(420, Math.round(innerHeight * 0.72)),
+  );
+  const scrollTarget = useRef<number | null>(null);
+  const choices = useRef<(HTMLButtonElement | null)[]>([]);
+  useEffect(() => {
+    const resize = () => {
+      scrollTarget.current = null;
+      setStep(Math.max(420, Math.round(innerHeight * 0.72)));
+    };
+    addEventListener("resize", resize);
+    return () => removeEventListener("resize", resize);
+  }, []);
   useEffect(() => {
     const node = section.current?.querySelector(".featured-sticky");
     if (!node) return;
@@ -35,7 +49,6 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   const touchX = useRef(0);
   const touchY = useRef(0);
   const count = projects.length;
-  const STEP = 120; // Native scroll distance per project; no wheel interception or scroll lock.
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -43,24 +56,47 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
       frame = requestAnimationFrame(() => {
         if (
           !section.current ||
-          !matchMedia("(min-width: 900px) and (min-height: 571px)").matches
+          !matchMedia("(min-width: 900px) and (min-height: 860px)").matches
         )
           return;
+        if (scrollTarget.current !== null) {
+          if (Math.abs(scrollY - scrollTarget.current) > 4) return;
+          scrollTarget.current = null;
+        }
         const y = -section.current.getBoundingClientRect().top + 90;
         setActive(
-          Math.min(count - 1, Math.max(0, Math.floor((y + STEP * 0.2) / STEP))),
+          Math.min(
+            count - 1,
+            Math.max(0, Math.floor((y + step * 0.12) / step)),
+          ),
         );
       });
     };
+    const interrupt = () => {
+      if (scrollTarget.current !== null)
+        window.scrollTo({ top: scrollY, behavior: "instant" });
+      scrollTarget.current = null;
+    };
+    const keyboard = (event: KeyboardEvent) => {
+      if (
+        ["ArrowUp", "ArrowDown", "PageUp", "PageDown", " "].includes(event.key)
+      )
+        interrupt();
+    };
     window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("wheel", interrupt, { passive: true });
+    window.addEventListener("touchstart", interrupt, { passive: true });
+    window.addEventListener("keydown", keyboard);
     update();
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", update);
+      window.removeEventListener("wheel", interrupt);
+      window.removeEventListener("touchstart", interrupt);
+      window.removeEventListener("keydown", keyboard);
     };
-  }, [count]);
+  }, [count, step]);
   useEffect(() => {
-    if (!matchMedia("(max-width:899px)").matches) return;
     const nav = section.current?.querySelector<HTMLElement>(".explorer-index");
     const button = nav?.querySelectorAll("button")[active];
     if (nav && button)
@@ -72,61 +108,55 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
   if (!count) return null;
   const index = Math.max(0, Math.min(active, count - 1));
   const project = projects[index];
-  const select = (value: number) => {
+  const select = (value: number, focus = false) => {
     const next = Math.max(0, Math.min(value, count - 1));
     setActive(next);
+    if (focus) choices.current[next]?.focus({ preventScroll: true });
     if (
       section.current &&
-      matchMedia("(min-width: 900px) and (min-height: 571px)").matches
-    )
-      window.scrollTo({
-        top:
+      matchMedia("(min-width: 900px) and (min-height: 860px)").matches
+    ) {
+      const top = Math.max(
+        0,
+        Math.min(
+          document.documentElement.scrollHeight - innerHeight,
           section.current.getBoundingClientRect().top +
-          window.scrollY -
-          90 +
-          next * STEP,
-        behavior: "instant",
+            scrollY -
+            90 +
+            next * step,
+        ),
+      );
+      scrollTarget.current = top;
+      window.scrollTo({
+        top,
+        behavior: motionAllowed() ? "smooth" : "instant",
       });
+    }
   };
   return (
     <section
       id="selected-work"
       ref={section}
-      className="featured-scroll"
+      className="featured-scroll featured-editorial"
       style={
         {
-          "--explore-distance": `${Math.max(0, count - 1) * STEP}px`,
+          "--explore-distance": `${Math.max(0, count - 1) * step}px`,
+          "--explore-step": `${step}px`,
         } as React.CSSProperties
       }
     >
       <div className="featured-sticky">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">프로젝트 탐색</p>
-            <h2>만든 프로젝트</h2>
+            <h2>프로젝트 둘러보기</h2>
           </div>
           <a className="text-link" href="#/">
             전체 아카이브 <ArrowUpRight size={16} />
           </a>
         </div>
         <div className="explorer-layout">
-          <nav className="explorer-index" aria-label="프로젝트 선택">
-            {projects.map((p, i) => (
-              <button
-                key={p.id}
-                aria-current={index === i ? "true" : undefined}
-                onClick={() => select(i)}
-              >
-                <span>{String(i + 1).padStart(2, "0")}</span>
-                <div>
-                  <strong>{p.name}</strong>
-                  <small>{p.category}</small>
-                </div>
-                <ArrowUpRight size={17} />
-              </button>
-            ))}
-          </nav>
           <div
+            id="featured-project-preview"
             className={
               "explorer-preview " +
               (!mediaFor(project).length ? "explorer-text" : "")
@@ -155,16 +185,17 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
               </a>
             )}
             <div className="preview-copy" key={project.id}>
-              <p className="eyebrow">
-                {project.category} / {project.status}
-              </p>
               <h3>{project.name}</h3>
-              <p>{project.description}</p>
+              <p className="stage-context">
+                {project.category} · {project.status}
+              </p>
+              <p className="stage-description">{project.description}</p>
               <p className="explorer-facts">
                 {project.workLogs.length
                   ? `${project.workLogs.length}개의 개발 기록`
-                  : "프로젝트 소개"}{" "}
-                · {project.techStack.slice(0, 2).join(" · ")}
+                  : "프로젝트 소개"}
+                {project.techStack.length > 0 &&
+                  ` · ${project.techStack.slice(0, 2).join(" · ")}`}
               </p>
               <div className="preview-bottom">
                 <a className="primary-link" {...projectDestination(project.id)}>
@@ -177,6 +208,41 @@ export function FeaturedExplorer({ projects }: { projects: Project[] }) {
               </div>
             </div>
           </div>
+          <nav className="explorer-index" aria-label="프로젝트 선택">
+            {projects.map((p, i) => (
+              <button
+                key={p.id}
+                ref={(node) => {
+                  choices.current[i] = node;
+                }}
+                aria-controls="featured-project-preview"
+                aria-current={index === i ? "true" : undefined}
+                onClick={() => select(i)}
+                onKeyDown={(event) => {
+                  const target =
+                    event.key === "ArrowRight"
+                      ? i + 1
+                      : event.key === "ArrowLeft"
+                        ? i - 1
+                        : event.key === "Home"
+                          ? 0
+                          : event.key === "End"
+                            ? count - 1
+                            : null;
+                  if (target !== null) {
+                    event.preventDefault();
+                    select(target, true);
+                  }
+                }}
+              >
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{p.name}</strong>
+                  <small>{p.category}</small>
+                </div>
+              </button>
+            ))}
+          </nav>
         </div>
         <div className="explorer-progress">
           <div>

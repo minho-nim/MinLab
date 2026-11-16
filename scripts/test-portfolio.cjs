@@ -59,7 +59,21 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
     assert.ok(before.length > 0);
     assert.equal(await page.locator("iframe").count(), 0);
     await page.locator(".explorer-index button").nth(0).click();
+    await page.waitForFunction(
+      () =>
+        Math.abs(
+          document.getElementById("selected-work").getBoundingClientRect().top -
+            90,
+        ) < 2,
+    );
     const first = await page.locator(".preview-copy h3").innerText();
+    const projectStep = await page
+      .locator("#selected-work")
+      .evaluate((n) =>
+        Number.parseFloat(
+          getComputedStyle(n).getPropertyValue("--explore-step"),
+        ),
+      );
     await page.mouse.wheel(0, 80);
     await page.waitForTimeout(200);
     assert.equal(
@@ -67,10 +81,10 @@ const evidence = process.env.MINLAB_EVIDENCE_DIR || "test-results";
       first,
       "small wheel delta stays on current project",
     );
-    await page.mouse.wheel(0, 550);
+    await page.mouse.wheel(0, projectStep);
     await page.waitForTimeout(400);
     assert.notEqual(await page.locator(".preview-copy h3").innerText(), first);
-    await page.mouse.wheel(0, -550);
+    await page.mouse.wheel(0, -projectStep);
     await page.waitForTimeout(400);
     assert.equal(await page.locator(".preview-copy h3").innerText(), first);
     await page.goto(base + "#/");

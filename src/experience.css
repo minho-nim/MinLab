@@ -677,6 +677,34 @@
 .capability-evidence .text-link {
   font-size: 12px;
 }
+.capability-screen {
+  margin: 24px 0;
+  border-block: 1px solid var(--color-line);
+}
+.capability-screen summary {
+  cursor: pointer;
+  padding: 14px 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.capability-screen .project-media {
+  aspect-ratio: 16 / 10;
+  min-height: 240px;
+}
+.capability-screen .project-media[data-zoomable] > img {
+  height: calc(100% - 48px);
+}
+.capability-screen .media-expand {
+  inset: auto 0 0 auto;
+  min-height: 44px;
+}
+.capability-screen small {
+  color: var(--color-ink-secondary);
+  font-size: 12px;
+  line-height: 1.8;
+  padding: 8px 0;
+}
+
 @keyframes copy-arrive {
   from {
     opacity: 0;

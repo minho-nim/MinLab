@@ -7,7 +7,7 @@ export function useHeroHandoff(hero: RefObject<HTMLElement | null>) {
     const root = hero.current;
     if (!root) return;
     const desktop = matchMedia(
-      "(min-width:900px) and (min-height:571px) and (prefers-reduced-motion:no-preference)",
+      "(min-width:900px) and (min-height:860px) and (prefers-reduced-motion:no-preference)",
     );
     let frame = 0;
     let overlay: HTMLDivElement | null = null;

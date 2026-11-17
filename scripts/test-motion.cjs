@@ -71,10 +71,77 @@ const fs = require("node:fs/promises");
         return native(update);
       };
     });
+    const readingStep = await page
+      .locator("#selected-work")
+      .evaluate((n) =>
+        Number.parseFloat(
+          getComputedStyle(n).getPropertyValue("--explore-step"),
+        ),
+      );
+    assert.ok(
+      readingStep >= 420,
+      "each project has a readable scroll interval",
+    );
+    await page.evaluate(() => {
+      window.__projectChoices = [];
+      window.__choiceObserver = new MutationObserver(() => {
+        window.__projectChoices.push(
+          document.querySelector(".explorer-index [aria-current] strong")
+            ?.textContent,
+        );
+      });
+      window.__choiceObserver.observe(
+        document.querySelector(".explorer-index"),
+        {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ["aria-current"],
+        },
+      );
+    });
     await page.locator(".explorer-index button").nth(2).click();
     await page.waitForFunction(
       (expected) => Math.abs(scrollY - expected) < 2,
-      end + 240,
+      end + readingStep * 2,
+    );
+    const chosenName = await page
+      .locator(".explorer-index button")
+      .nth(2)
+      .locator("strong")
+      .innerText();
+    assert.ok(
+      (
+        await page.evaluate(() => {
+          window.__choiceObserver.disconnect();
+          return window.__projectChoices;
+        })
+      ).every((name) => name === chosenName),
+      "smooth direct selection never flashes intermediate projects",
+    );
+    await page.locator(".explorer-index button").nth(2).focus();
+    await page.keyboard.press("ArrowRight");
+    await page.waitForFunction(
+      (expected) => Math.abs(scrollY - expected) < 2,
+      end + readingStep * 3,
+    );
+    assert.equal(
+      await page
+        .locator(".explorer-index button")
+        .nth(3)
+        .getAttribute("aria-current"),
+      "true",
+    );
+    assert.equal(
+      await page
+        .locator(".explorer-index button")
+        .nth(3)
+        .evaluate((n) => n === document.activeElement),
+      true,
+    );
+    await page.keyboard.press("ArrowLeft");
+    await page.waitForFunction(
+      (expected) => Math.abs(scrollY - expected) < 2,
+      end + readingStep * 2,
     );
     const departureScroll = await page.evaluate(() => scrollY);
     await page.locator(".showcase-image").click();
@@ -159,6 +226,50 @@ const fs = require("node:fs/promises");
     await page.goto(base + "#/");
     await page.locator('.archive-project[href^="#/projects/"]').first().click();
     await page.locator(".project-story").waitFor();
+    for (const [width, height] of [
+      [1024, 1000],
+      [1440, 860],
+      [1440, 768],
+      [390, 844],
+      [320, 640],
+    ]) {
+      await page.setViewportSize({ width, height });
+      await page.goto(base + "#/home");
+      await page.locator(".explorer-index button").first().click();
+      await page
+        .locator('.explorer-preview .project-media[data-media-state="ready"]')
+        .waitFor();
+      assert.ok(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth + 1,
+        ),
+        `${width} has no page overflow`,
+      );
+      const stage = page.locator(".featured-sticky");
+      if (width >= 900 && height >= 860) {
+        await page.waitForFunction(
+          () =>
+            Math.abs(
+              document.getElementById("selected-work").getBoundingClientRect()
+                .top - 90,
+            ) < 2,
+        );
+        const bounds = await stage.boundingBox();
+        assert.ok(
+          bounds.y + bounds.height <= height,
+          `${width}x${height}: sticky controls stay in the viewport`,
+        );
+      } else {
+        assert.equal(
+          await stage.evaluate((n) => getComputedStyle(n).position),
+          "relative",
+          "short windows and phones use normal page flow",
+        );
+      }
+      await page.screenshot({
+        path: `${evidence}/stage-${width}-${height}.png`,
+      });
+    }
     assert.deepEqual(errors, []);
     console.log(
       "PASS: stable title, reversible real-screen handoff, shared preview transition, native back restoration, scroll/click timeline and reduced motion.",

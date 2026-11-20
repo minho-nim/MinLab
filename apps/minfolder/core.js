@@ -71,9 +71,20 @@ export async function filesEqual(a,b) {
 }
 // The browser has no exclusive-create flag for user-selected folders. Check
 // before creation, serialize this app's writes, and never remove a failed output blindly.
-export async function transfer({entry, target, sourceRoot, destRoot}) {
+async function verifyDestination(root,path,expected){
+  try{
+    const live=await openDir(root,path)
+    if(expected && !(await expected.isSameEntry(live)))throw Error('different entry')
+    return live
+  }catch{
+    const error=Error('저장 폴더가 바뀌었거나 접근할 수 없어요. 위치를 다시 골라 주세요.')
+    error.code='TARGET_CHANGED'
+    throw error
+  }
+}
+export async function transfer({entry, target, expectedTarget, sourceRoot, destRoot}) {
   if(sourceRoot!==destRoot&&!(await separate(sourceRoot,destRoot))) throw Error('원본과 저장 폴더가 같거나 서로 안에 있어요.')
-  const dest=await openDir(destRoot,target)
+  const dest=await verifyDestination(destRoot,target,expectedTarget)
   let original, src
   if(entry.kind==='move') {
     src=await openDir(sourceRoot,entry.parent)
@@ -101,15 +112,21 @@ export async function transfer({entry, target, sourceRoot, destRoot}) {
     const saved=await output.getFile()
     if(!(await filesEqual(payload,saved))) throw Error('저장한 내용이 일치하지 않아요.')
     if(!original) return '복사 완료'
+    // Before removing the source, confirm the saved file is still at the promised path.
+    const currentDest=await verifyDestination(destRoot,target,expectedTarget)
+    const currentFile=await currentDest.getFileHandle(entry.name)
+    if(!(await output.isSameEntry(currentFile)))return '복사 확인 필요 · 원본 유지'
+    const currentSaved=await currentFile.getFile()
     const latestHandle=await src.getFileHandle(entry.name)
     const latest=await latestHandle.getFile()
-    if(!(await original.isSameEntry(latestHandle)) || latest.lastModified!==payload.lastModified || !(await filesEqual(latest,saved))){
+    if(!(await original.isSameEntry(latestHandle)) || latest.lastModified!==payload.lastModified || !(await filesEqual(latest,currentSaved))){
       return '복사 완료 · 원본 변경으로 삭제 안 함'
     }
     try { await src.removeEntry(entry.name); return '이동 완료' }
     catch { return '복사 완료 · 원본 삭제 실패' }
   } catch(e){
     if(writer) try{await writer.abort()}catch{}
+    if(e.code==='TARGET_CHANGED')throw e
     throw Error('저장 중 중단됐어요. 저장 폴더를 확인해 주세요. '+e.message)
   }
 }

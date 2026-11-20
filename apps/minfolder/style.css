@@ -38,3 +38,17 @@
 .map-folder,.map-file{width:148px;flex:0 0 148px}
 
 .board{grid-template-columns:minmax(0,1fr)}.right{grid-template-columns:minmax(0,1fr)}.hero{padding-block:1.15rem}.hero h1{font-size:clamp(1.45rem,2.7vw,2.12rem)}.connections #restore-workspace{grid-column:2;grid-row:3;margin-top:.32rem}.exclude-panel{font-size:.83rem}.exclude-panel input{max-width:100%;width:25rem;margin-right:.4rem;padding:.5rem .6rem;border:1px solid var(--line);border-radius:.5rem}.exclude-panel button{margin-top:.3rem}
+
+.map-camera{display:inline-flex;align-items:center;gap:.32rem;margin-left:auto}.map-camera button{min-width:2.1rem;font-size:1rem;font-weight:750}.map-camera output{min-width:3.2rem;text-align:center;font-variant-numeric:tabular-nums}.map-gesture{margin-bottom:.25rem}#tree.is-panning,#tree.is-panning *{cursor:grabbing!important;user-select:none}
+.map-graph[data-zoom="5"]{zoom:0.5}
+.map-graph[data-zoom="6"]{zoom:0.6}
+.map-graph[data-zoom="7"]{zoom:0.7}
+.map-graph[data-zoom="8"]{zoom:0.8}
+.map-graph[data-zoom="9"]{zoom:0.9}
+.map-graph[data-zoom="10"]{zoom:1.0}
+.map-graph[data-zoom="11"]{zoom:1.1}
+.map-graph[data-zoom="12"]{zoom:1.2}
+.map-graph[data-zoom="13"]{zoom:1.3}
+.map-graph[data-zoom="14"]{zoom:1.4}
+.map-graph[data-zoom="15"]{zoom:1.5}
+.map-graph[data-zoom="16"]{zoom:1.6}

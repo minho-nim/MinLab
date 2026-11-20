@@ -5,10 +5,10 @@
 </div></section>
 <p id="alert" role="status" aria-live="polite">폴더 하나만 연결하세요. 지도에 보이는 파일은 폴더 간 이동, 탐색기에서 웹으로 놓은 파일은 복사예요.</p>
 <div class="board">
-<section class="panel"><div class="heading"><div><p class="eyebrow">01 / MAP</p><h2>폴더 지도</h2></div><button id="refresh">새로고침</button></div>
+<section class="panel"><div class="heading"><div><p class="eyebrow">01 / MAP</p><h2>폴더 지도</h2></div><button id="refresh" title="선택한 폴더의 바로 아래만 다시 읽습니다">선택 폴더 새로고침</button></div>
 <label class="sr" for="search">폴더 검색</label><input id="search" type="search" placeholder="불러온 폴더·파일 검색">
 <div class="pinbar"><b>자주 쓰는 폴더</b><div id="pins"></div><button id="pin" disabled>선택 폴더 고정</button></div>
-<div class="map-controls"><label><input id="show-files" type="checkbox" checked> 파일도 보기</label><button id="map-expand" disabled>선택한 폴더 펼치기</button><button id="map-collapse" disabled>2단계로 접기</button></div><p id="map-hint" class="hint">폴더를 연결하면 실제 구조가 여기에 나타나요.</p>
+<div class="map-controls"><label><input id="show-files" type="checkbox" checked> 파일도 보기</label><button id="map-expand" disabled>선택한 폴더 펼치기</button><button id="map-collapse" disabled>기본 3단계 보기</button><div class="map-camera" role="group" aria-label="지도 확대 및 축소"><button id="zoom-out" aria-label="지도 축소" disabled>−</button><output id="zoom-level" aria-live="polite">100%</output><button id="zoom-in" aria-label="지도 확대" disabled>+</button></div></div><p class="hint map-gesture">지도 위에서 휠을 돌리면 확대·축소, 휠 버튼을 누른 채 끌면 상하좌우로 이동해요.</p><p id="map-hint" class="hint">폴더를 연결하면 실제 구조가 여기에 나타나요.</p>
 <div id="tree" aria-label="저장 폴더와 파일의 연결 지도"></div>
 <details class="exclude-panel"><summary>표시에서 제외할 이름</summary><p class="hint">시스템 파일과 임시 파일은 기본으로 제외돼요. 더 숨길 파일이나 폴더 이름을 쉼표로 구분해서 적어 주세요. 원본은 지우지 않아요.</p><label class="sr" for="exclusions">제외할 이름</label><input id="exclusions" maxlength="3000" placeholder="예: 임시작업, 보관하지 않을 파일.xlsx"><button id="save-exclusions">제외 규칙 저장</button></details><p id="target" class="hint"></p></section>
 <div class="right"><section class="panel input-panel"><div class="heading"><div><p class="eyebrow">02 / SORT</p><h2>파일 분류</h2></div></div>

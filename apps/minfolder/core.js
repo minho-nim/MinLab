@@ -2,6 +2,15 @@ export const key = p => JSON.stringify(p)
 export const bare = s => s.replace(/^\d+[_. -]+/u,'')
 export const norm = s => bare(s).normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]/gu,'')
 const title = p => norm(p.at(-1) || '')
+export function matchingProjects(filename,folders){
+  const text=norm(filename.replace(/\.[^.]+$/,''))
+  const projects=folders.filter(p=>p.length===2 && norm(p[0])==='계약별공사자료')
+  return projects.filter(p=>{
+    const label=title(p)
+    const short=label.replace(/(?:케이블공사|공사|팀)$/u,'')
+    return (label.length>=3 && text.includes(label)) || (short.length>=3 && text.includes(short))
+  })
+}
 export function predict(filename, folders) {
   const text = norm(filename.replace(/\.[^.]+$/,''))
   const pick = (p, reason) => ({ path: p, reason })
@@ -27,12 +36,7 @@ export function predict(filename, folders) {
     [/안전서류|안전보건실적/u,'안전서류',''],
     [/견적|계약품의|계약서|하도급/u,'견적및계약','']
   ]
-  const projects=folders.filter(p=>p.length===2 && norm(p[0])==='계약별공사자료')
-  const hits=projects.filter(p=>{
-    const label=title(p)
-    const short=label.replace(/(?:케이블공사|공사|팀)$/u,'')
-    return (label.length>=3 && text.includes(label)) || (short.length>=3 && text.includes(short))
-  })
+  const hits=matchingProjects(filename,folders)
   // A single document type and project must both agree before a recommendation.
   if(hits.length!==1) return pick(null,hits.length?'계약·팀 후보가 여러 개예요.':'파일명에서 계약·팀을 찾지 못했어요.')
   const types=uses.filter(([re])=>re.test(text))

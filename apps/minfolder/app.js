@@ -1,4 +1,4 @@
-import {key,norm,predict,openDir,transfer} from './core.js'
+import {key,norm,predict,matchingProjects,openDir,transfer} from './core.js'
 const $=s=>document.getElementById(s)
 const el=(t,text,cls)=>{const e=document.createElement(t);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
 const button=(text,fn)=>{const b=el('button',text);b.type='button';b.addEventListener('click',fn);return b}
@@ -7,7 +7,7 @@ const msg=t=>$('alert').textContent=t
 const parts=(root,p)=>[root?.name,...p].filter(Boolean).join(' > ')
 const busySet=b=>{S.busy=b;for(const id of ['workspace','refresh'])$(id).disabled=b;renderQueue();renderInbox()}
 let sequence=0
-const S={root:null,scanId:0,inboxId:0,scanning:false,folders:[],filesByDir:new Map(),mapStatus:null,lookup:new Map(),expanded:new Set(),selected:null,sub:[],inbox:[],queue:[],pins:[],history:[],skip:[],busy:false}
+const S={root:null,scanId:0,scanning:false,entries:new Map(),folders:[],filesByDir:new Map(),mapStatus:null,lookup:new Map(),expanded:new Set(),selected:null,sub:[],inbox:[],queue:[],pins:[],history:[],skip:[],busy:false}
 const dragMime='application/x-minfolder-inbox'
 let dragItem=null
 let dragSerial=0
@@ -106,91 +106,155 @@ async function requestSaved(){
     msg('폴더 권한이 허용되지 않았어요. 다른 폴더를 선택하거나 브라우저에서 권한을 확인해 주세요.')
   }catch(e){msg('기억한 폴더를 열 수 없어요. 폴더를 다시 선택해 주세요. '+e.message)}
 }
-async function scan(root, publish, isCurrent){
-  const found=[[]], pending=[[root,[]]], filesByDir=new Map()
-  const denied=new Set()
-  let limited=false, fileCount=0, unreadable=0, excluded=0, last=Date.now()
-  for(let i=0;i<pending.length;i++){
-    if(!isCurrent())return
-    const [h,path]=pending[i]
-    const dirs=[], files=[]
+const PAGE=100, RAW_PAGE=240, INITIAL_BRANCHES=16
+const order=(a,b)=>a.localeCompare(b,'ko',{numeric:true})
+function cacheNode(path,handle){
+  const id=key(path)
+  if(!S.entries.has(id))S.entries.set(id,{path,handle,children:[],files:[],iterator:null,done:false,loaded:false,denied:false,excluded:0,task:null,viewPage:0,listPage:0})
+  return S.entries.get(id)
+}
+function syncIndex(){
+  const entries=[...S.entries.values()].filter(n=>!n.denied)
+  S.folders=entries.map(n=>n.path)
+  S.lookup=new Map(S.folders.map(p=>[key(p),p]))
+  S.filesByDir=new Map(entries.map(n=>[key(n.path),n.files.map(h=>h.name)]))
+  S.inbox=S.entries.get(key(S.sub))?.files??[]
+  S.mapStatus={fileCount:entries.reduce((n,x)=>n+x.files.length,0),
+    excluded:entries.reduce((n,x)=>n+x.excluded,0),
+    unreadable:S.entries.size-entries.length,limited:entries.some(n=>n.loaded&&!n.done)}
+}
+async function readFolder(path){
+  const n=S.entries.get(key(path)), generation=S.scanId
+  if(!n||n.done||n.denied)return n
+  if(n.task)return n.task
+  n.task=(async()=>{
     try{
-      for await(const v of h.values()){
-        if(!isCurrent())return
-        if(isExcluded(v.name,v.kind)){excluded++;continue}
-        if(v.kind==='directory'){
-          if(path.length<12&&found.length+dirs.length<3000)dirs.push(v)
-          else {limited=true;break}
-        }else if(v.kind==='file'){
-          if(fileCount<5000){files.push(v.name);fileCount++}
-          else limited=true
-        }
+      n.iterator??=n.handle.values()[Symbol.asyncIterator]()
+      let count=0
+      for(let raw=0;raw<RAW_PAGE&&count<PAGE;raw++){
+        const {value:h,done}=await n.iterator.next()
+        if(generation!==S.scanId)return n
+        if(done){n.done=true;break}
+        if(isExcluded(h.name,h.kind)){n.excluded++;continue}
+        if(h.kind==='directory'){
+          const next=[...path,h.name]
+          cacheNode(next,h);if(!n.children.some(p=>p.at(-1)===h.name))n.children.push(next);count++
+        }else if(h.kind==='file'){n.files.push(h);count++}
       }
-    }catch(e){if(!path.length)throw e;unreadable++;denied.add(key(path));dirs.length=0;fileCount-=files.length;files.length=0}
-    files.sort((a,b)=>a.localeCompare(b,'ko',{numeric:true}))
-    filesByDir.set(key(path),files)
-    dirs.sort((a,b)=>a.name.localeCompare(b.name,'ko',{numeric:true}))
-    for(const entry of dirs){
-      const sub=[...path,entry.name]
-      found.push(sub);pending.push([entry,sub])
+      n.loaded=true;n.files.sort((a,b)=>order(a.name,b.name))
+      n.children.sort((a,b)=>order(a.at(-1),b.at(-1)))
+    }catch(e){
+      if(generation!==S.scanId)return n
+      n.denied=true
+      if(!path.length){
+        S.mapStatus={error:e.message}
+        msg('기준 폴더를 읽지 못했어요. 접근 권한을 확인하거나 다시 연결해 주세요.')
+      }else msg(parts(S.root,path)+' · 접근할 수 없어 제외했어요.')
+    }finally{
+      n.task=null
+      if(generation===S.scanId){
+        const rootError=!path.length&&n.denied&&S.mapStatus?.error
+        syncIndex()
+        if(rootError)S.mapStatus.error=rootError
+        if(!dragItem)renderTree()
+        renderInbox();counts()
+      }
     }
-    const done=i===pending.length-1
-    if(i===0||done||Date.now()-last>160){
-      publish({found:found.filter(p=>!denied.has(key(p))),filesByDir:new Map(filesByDir),fileCount,limited,unreadable,excluded},done)
-      last=Date.now()
-      if(!done)await new Promise(resolve=>setTimeout(resolve,0))
-    }
-  }
+    return n
+  })()
+  return n.task
 }
 async function loadInbox(){
-  if(!S.root)return
-  const token=++S.inboxId, root=S.root, path=[...S.sub]
-  try{
-    const current=await openDir(root,path), items=[]
-    for await(const h of current.values()){
-      if(token!==S.inboxId||root!==S.root)return
-      if(items.length>=1000)break
-      if(!isExcluded(h.name,h.kind))items.push(h)
-    }
-    if(token!==S.inboxId||root!==S.root)return
-    items.sort((a,b)=>a.kind===b.kind?a.name.localeCompare(b.name,'ko',{numeric:true}):a.kind==='directory'?-1:1)
-    S.inbox=items;renderInbox()
-  }catch(e){if(token===S.inboxId&&root===S.root){S.inbox=[];renderInbox();msg('선택한 폴더의 파일을 읽지 못했어요. '+e.message)}}
+  const n=S.entries.get(key(S.sub))
+  if(n&&!n.loaded)await readFolder(S.sub)
+  S.inbox=S.entries.get(key(S.sub))?.files??[]
+  renderInbox()
 }
-async function refresh(autoOpen=false){
+async function refresh(){
   if(!S.root)return
-  const root=S.root, token=++S.scanId
-  const current=()=>token===S.scanId&&root===S.root
-  S.scanning=true
-  void loadInbox()
-  try {
-    await scan(root,(snapshot,done)=>{
-      if(!current())return
-      const known=S.lookup
-      if(autoOpen){
-        for(const p of snapshot.found)if(!known.has(key(p))&&p.length<2)S.expanded.add(key(p))
+  const gen=++S.scanId
+  S.entries=new Map()
+  S.selected=null;S.sub=[];S.inbox=[]
+  S.expanded=new Set([key([])]);S.scanning=true;S.folders=[];S.lookup=new Map();S.filesByDir=new Map()
+  const root=cacheNode([],S.root)
+  await readFolder([])
+  if(gen!==S.scanId)return
+  if(!root.denied){
+    const pending=root.children.slice(0,INITIAL_BRANCHES)
+    // Root is already drawn. Load at most one extra level in small batches.
+    for(let i=0;i<pending.length&&gen===S.scanId;i+=3){
+      const batch=pending.slice(i,i+3)
+      for(const p of batch)S.expanded.add(key(p))
+      await Promise.all(batch.map(readFolder))
+      await new Promise(resolve=>setTimeout(resolve,0))
+    }
+  }
+  if(gen!==S.scanId)return
+  S.scanning=false
+  render()
+  reroute()
+}
+function expand(p){
+  S.expanded.add(key(p));renderTree()
+  const n=S.entries.get(key(p))
+  if(n&&!n.loaded)void readFolder(p)
+}
+async function reveal(p){
+  const gen=S.scanId,root=S.root
+  for(let i=0;i<=p.length;i++){
+    const part=p.slice(0,i)
+    if(part.some(n=>isExcluded(n,'directory'))||gen!==S.scanId)return
+    try{
+      if(!S.entries.has(key(part))){
+        const handle=await openDir(root,part)
+        if(gen!==S.scanId)return
+        cacheNode(part,handle)
+        const parent=S.entries.get(key(part.slice(0,-1)))
+        if(part.length&&parent&&!parent.children.some(p=>key(p)===key(part)))parent.children.push(part)
       }
-      S.folders=snapshot.found;S.filesByDir=snapshot.filesByDir;S.mapStatus=snapshot
-      S.lookup=new Map(S.folders.map(p=>[key(p),p]))
-      S.scanning=!done
-      if(!dragItem)renderTree()
-      if(done){
-        for(const q of S.queue){
-          if(q.auto&&q.target===null&&!q.failed){
-            const recommendation=suggest(q)
-            q.target=recommendation.path;q.reason=recommendation.reason
-          }else if(q.target!==null&&!S.lookup.has(key(q.target))){
-            q.target=null;q.reason='대상 폴더가 목록에 없어요. 다시 선택해 주세요.'
-          }
-        }
-        renderQueue();renderHistory()
-      }
-    },current)
-  }catch(e){
-    if(!current())return
-    S.folders=[];S.filesByDir.clear();S.lookup.clear();S.scanning=false
-    S.mapStatus={error:e.message};render()
-    msg('폴더를 읽지 못했어요. 접근 권한을 확인하거나 작업용 폴더를 다시 연결해 주세요.')
+    }
+    catch{msg('폴더가 없어졌거나 접근할 수 없어요.');return}
+    const n=await readFolder(part)
+    if(!n||n.denied||gen!==S.scanId)return
+    S.expanded.add(key(part))
+  }
+  select(p)
+}
+async function loadBranch(path, maxPages=5){
+  let n=S.entries.get(key(path))
+  for(let i=0;n&&!n.done&&!n.denied&&i<maxPages;i++)n=await readFolder(path)
+  return n
+}
+async function prepareSuggestion(rec){
+  const gen=S.scanId
+  const text=norm(rec.name)
+  const projects=S.folders.find(p=>p.length===1&&norm(p[0])==='계약별공사자료')
+  const accounting=S.folders.find(p=>p.length===1&&norm(p[0])==='공무및회계')
+  if(accounting&&/하도급승낙|매입세금계산서|대금지급/u.test(text))await loadBranch(accounting)
+  if(projects&&!/총괄장|정산현황|취합본/u.test(text)){
+    const list=await loadBranch(projects)
+    if(gen!==S.scanId)return
+    if(list&&!list.done&&!list.denied){
+      rec.reason='계약이 많아 추천 범위를 다 확인하지 못했어요. 지도에서 직접 골라 주세요.'
+      renderQueue();return
+    }
+    const hits=matchingProjects(rec.name,S.folders)
+    if(hits.length===1){
+      const base=await loadBranch(hits[0])
+      if(!base?.done&&!base?.denied){rec.reason='해당 계약의 폴더가 많아요. 저장 위치를 직접 골라 주세요.';renderQueue();return}
+      if(gen!==S.scanId)return
+      const subgroup=/작업절차서|작업심의|선번장/u.test(text)?'작업자료':/위험성평가|산안비/u.test(text)?'안전서류':''
+      const branch=base?.children.find(p=>norm(p.at(-1))===subgroup)
+      if(branch){const loaded=await loadBranch(branch);if(!loaded?.done&&!loaded?.denied){rec.reason='관련 폴더를 다 확인하지 못했어요. 저장 위치를 직접 골라 주세요.';renderQueue();return}}
+    }
+  }
+  if(gen!==S.scanId||!S.queue.includes(rec)||!rec.auto||rec.failed)return
+  const p=suggest(rec);rec.target=p.path;rec.reason=p.reason
+  renderQueue()
+}
+function reroute(){
+  for(const q of S.queue){
+    if(q.auto&&q.target===null&&!q.failed)void prepareSuggestion(q)
   }
 }
 function accepts(e){return Array.from(e.dataTransfer?.types||[]).some(t=>t==='Files'||t===dragMime)}
@@ -224,7 +288,7 @@ function renderTree(){
   const q=norm($('search').value)
   const showFiles=$('show-files').checked
   const m=S.mapStatus
-  $('map-hint').textContent='폴더 '+(S.folders.length-1)+'개 · 파일 '+m.fileCount+'개'+(m.limited?' · 표시 한도에 도달했어요.':'')+(m.excluded?' · 규칙으로 제외 '+m.excluded+'개':'')+(m.unreadable?' · 접근 불가 제외 '+m.unreadable+'개':'')+(S.scanning?' · 하위 폴더 읽는 중':'')+' · 파일을 폴더 상자에 놓으면 승인 목록으로 보내요.'
+  $('map-hint').textContent='폴더 '+(S.folders.length-1)+'개 · 파일 '+m.fileCount+'개'+(m.limited?' · 큰 폴더는 더 보기로 추가 표시':'')+(m.excluded?' · 규칙으로 제외 '+m.excluded+'개':'')+(m.unreadable?' · 접근 불가 제외 '+m.unreadable+'개':'')+(S.scanning?' · 하위 폴더 읽는 중':'')+' · 파일을 폴더 상자에 놓으면 승인 목록으로 보내요.'
   const branches=new Map()
   for(const p of S.folders.slice(1)){
     const parent=key(p.slice(0,-1))
@@ -241,12 +305,16 @@ function renderTree(){
     }
     if(norm(S.root.name).includes(q))for(const p of S.folders)inSearch.add(key(p))
   }
+  let remaining=420
   function makeNode(p){
+    remaining--
     const id=key(p)
     const nodes=(branches.get(id)||[]).filter(child=>!q||inSearch.has(key(child)))
     const matchingFolder=!q||norm(S.root.name).includes(q)||p.some(n=>norm(n).includes(q))
     const files=showFiles?(S.filesByDir.get(id)||[]).filter(name=>matchingFolder||fileMatch(name)):[]
-    const hasChildren=!!(nodes.length||files.length)
+    const record=S.entries.get(id)
+    const more=record&&!record.done&&!record.denied
+    const hasChildren=!!(nodes.length||files.length||more)
     const opened=!!q||S.expanded.has(id)
     const branch=el('div',null,'map-node')
     const card=el('div',null,'map-folder')
@@ -258,8 +326,7 @@ function renderTree(){
     if(hasChildren){
       const toggle=button(opened?'−':'+',()=>{
         if(q)$('search').value=''
-        if(opened)S.expanded.delete(id);else S.expanded.add(id)
-        renderTree()
+        if(opened){S.expanded.delete(id);renderTree()}else expand(p)
       })
       toggle.className='map-toggle'
       toggle.setAttribute('aria-label',opened?'하위 항목 접기':'하위 항목 펼치기')
@@ -270,14 +337,31 @@ function renderTree(){
     branch.append(card)
     if(opened&&hasChildren){
       const childList=el('div',null,'map-children')
-      for(const child of nodes)childList.append(makeNode(child))
-      for(const name of files){
+      const items=[...nodes.map(path=>({path})),...files.map(name=>({name}))]
+      const offset=(record?.viewPage??0)*PAGE
+      for(const item of items.slice(offset,offset+PAGE)){
+        if(remaining<=0)break
+        if(item.path){childList.append(makeNode(item.path));continue}
+        remaining--
         const fileBranch=el('div',null,'map-node')
-        const file=button(name,()=>queueInternal(null,p,null,name))
-        file.className='map-file';file.title=parts(S.root,[...p,name])+' · 클릭해서 분류'
-        bindInternalDrag(file,{name,parent:p})
-        fileBranch.append(file)
-        childList.append(fileBranch)
+        const file=button(item.name,()=>queueInternal(null,p,null,item.name))
+        file.className='map-file';file.title=parts(S.root,[...p,item.name])+' · 클릭해서 분류'
+        bindInternalDrag(file,{name:item.name,parent:p})
+        fileBranch.append(file);childList.append(fileBranch)
+      }
+      if(offset>0){
+        const prev=el('div',null,'map-node')
+        prev.append(button('이전 100개',()=>{record.viewPage--;renderTree()}));childList.append(prev)
+      }
+      if(more||items.length>offset+PAGE){
+        const b=button(record.task?'읽는 중…':'다음 항목 보기',async()=>{
+          if(items.length<=offset+PAGE&&more)await readFolder(p)
+          const now=record.children.length+(showFiles?record.files.length:0)
+          if(!q&&now>offset+PAGE||q&&items.length>offset+PAGE)record.viewPage++
+          renderTree()
+        })
+        b.disabled=!!record.task
+        const next=el('div',null,'map-node');next.append(b);childList.append(next)
       }
       branch.append(childList)
     }
@@ -287,6 +371,7 @@ function renderTree(){
   else{
     const board=el('div',null,'map-graph')
     board.append(makeNode([]))
+    if(remaining<=0)board.append(el('p','표시할 항목이 많아요. 다른 가지를 접거나 검색해서 범위를 줄여 주세요.','hint'))
     $('tree').replaceChildren(board)
   }
   $('target').textContent=S.selected?'선택한 폴더 · '+parts(S.root,S.selected):''
@@ -301,33 +386,49 @@ function select(p){
 function renderPins(){
   $('pins').replaceChildren()
   for(const p of S.pins.filter(Array.isArray)){
-    if(!S.lookup.has(key(p)))continue
-    const b=button(p.at(-1)||S.root.name,()=>{$('search').value='';select(p)})
+    if(p.some(n=>isExcluded(n,'directory')))continue
+    const b=button(p.at(-1)||S.root.name,()=>{$('search').value='';void reveal(p)})
     b.title=parts(S.root,p);$('pins').append(b)
   }
   const selected=S.selected!==null, pinned=selected&&S.pins.some(p=>key(p)===key(S.selected))
   $('pin').disabled=!selected;$('pin').textContent=pinned?'선택 폴더 고정 해제':'선택 폴더 고정'
 }
+function inboxPage(){
+  const listing=S.entries.get(key(S.sub))
+  if(!listing||listing.denied)return []
+  const start=listing.listPage*PAGE
+  return [...listing.children.map(path=>({kind:'directory',path})),...listing.files].slice(start,start+PAGE)
+}
 function renderInbox(){
   $('in-count').textContent=S.inbox.filter(h=>h.kind==='file').length
-  $('in-all').disabled=S.busy||!S.inbox.some(h=>h.kind==='file')||!S.root
+  $('in-all').disabled=S.busy||!inboxPage().some(h=>h.kind==='file')||!S.root
   $('in-path').textContent=S.root?parts(S.root,S.sub):''
   $('in-back').hidden=!S.sub.length
   $('in-back').disabled=S.busy
   if(!S.root){empty($('inbox'),'기준 폴더를 연결하면 여기에서 파일을 선택하고 이동할 수 있어요.');return}
-  if(!S.inbox.length){empty($('inbox'),'이 폴더에는 항목이 없어요.');return}
+  if(!S.entries.get(key(S.sub))?.loaded){empty($('inbox'),'선택한 폴더를 읽는 중이에요.');return}
   const frag=document.createDocumentFragment()
-  for(const h of S.inbox){
-    const row=el('div',null,'entry');const name=el('span',h.name);const path=[...S.sub]
-    if(h.kind==='directory'){
-      const b=button('열기',()=>{S.sub=[...path,h.name];S.inbox=[];renderInbox();void loadInbox()});b.disabled=S.busy;row.append(name,b)
+  const listing=S.entries.get(key(S.sub))
+  for(const item of inboxPage()){
+    const row=el('div',null,'entry')
+    if(item.kind==='directory'){
+      const b=button('열기',()=>{select(item.path);expand(item.path)})
+      b.disabled=S.busy;row.append(el('span',item.path.at(-1)),b)
     }else{
-      const b=button('분류',()=>queueInternal(h,path,null));b.disabled=S.busy||!S.root
-      bindInternalDrag(row,{handle:h,parent:path})
-      row.append(name,b)
+      const path=[...S.sub],b=button('분류',()=>queueInternal(item,path,null));b.disabled=S.busy
+      bindInternalDrag(row,{handle:item,parent:path});row.append(el('span',item.name),b)
     }
     frag.append(row)
   }
+  if(listing?.listPage>0)frag.append(button('이전 100개',()=>{listing.listPage--;renderInbox()}))
+  if(listing&&!listing.denied&&(!listing.done||listing.children.length+listing.files.length>(listing.listPage+1)*PAGE)){
+    const more=button('다음 항목 보기',async()=>{
+      if(listing.children.length+listing.files.length<=(listing.listPage+1)*PAGE&&!listing.done)await readFolder(listing.path)
+      if(listing.children.length+listing.files.length>(listing.listPage+1)*PAGE)listing.listPage++
+      renderInbox()
+    });more.disabled=S.busy;frag.append(more)
+  }
+  if(!listing?.files.length&&!listing?.children.length&&listing?.done)frag.append(el('p','이 폴더에는 항목이 없어요.','empty'))
   $('inbox').replaceChildren(frag)
 }
 function bindInternalDrag(node,item){
@@ -340,7 +441,6 @@ function bindInternalDrag(node,item){
   node.ondragend=()=>{dragItem=null;renderTree()}
 }
 function suggest(rec){
-  if(S.scanning)return {path:null,reason:'지도 읽는 중이에요. 완료되면 위치를 다시 추천해요.'}
   const p=predict(rec.name,S.folders)
   if(rec.kind==='move'&&p.path&&key(rec.parent)===key(p.path))return {path:null,reason:'이미 추천 위치에 있는 파일이에요. 다른 폴더를 고르면 이동할 수 있어요.'}
   return p
@@ -353,7 +453,10 @@ function add(rec,path){
     if(path!==null)Object.assign(existing,{target:p.path,reason:p.reason,auto:false,failed:false,checked:true})
     return
   }
-  S.queue.push({...rec,id:++sequence,target:p.path,reason:p.reason,auto:path===null,checked:true})
+  const candidate={...rec,id:++sequence,target:p.path,reason:p.reason,auto:path===null,checked:true}
+  if(candidate.auto){candidate.target=null;candidate.reason='관련 폴더 확인 중…'}
+  S.queue.push(candidate)
+  if(candidate.auto&&!S.scanning)void prepareSuggestion(candidate)
 }
 async function queueInternal(handle,parent,path,name){
   if(!S.root||S.busy||isExcluded(handle?.name??name)||parent.some(n=>isExcluded(n,'directory')))return
@@ -392,7 +495,9 @@ function renderQueue(){
     head.append(check,el('b',q.name),el('small',q.kind==='move'?'원본 이동':'원본 유지'),remove)
     const where=el('select');where.setAttribute('aria-label',q.name+' 저장 경로');where.disabled=S.busy
     const prompt=el('option','저장 위치 선택');prompt.value='';where.append(prompt)
-    for(const p of S.folders){
+    const choices=S.folders.slice(0,200)
+    if(q.target!==null&&!choices.some(p=>key(p)===key(q.target)))choices.push(q.target)
+    for(const p of choices){
       if(q.kind==='move'&&key(q.parent)===key(p))continue
       const option=el('option',parts(S.root,p));option.value=key(p);where.append(option)
     }
@@ -408,7 +513,7 @@ function renderHistory(){
   for(const h of S.history){
     const row=el('div',null,'hrow')
     row.append(el('b',h.name),el('small',h.status+' · '+new Date(h.time).toLocaleString('ko-KR')),el('small',parts(S.root,h.path)))
-    if(S.lookup.has(key(h.path)))row.append(button('지도에서 보기',()=>{$('search').value='';select(h.path)}))
+    row.append(button('지도에서 보기',()=>{$('search').value='';void reveal(h.path)}))
     frag.append(row)
   }
   $('history').replaceChildren(frag)
@@ -455,9 +560,9 @@ $('save-exclusions').onclick=()=>{
   remember();renderQueue();void refresh()
   msg('제외 규칙을 저장했어요. 지정한 이름은 지도와 분류 목록에서 제외해요.')
 }
-$('refresh').onclick=()=>refresh();$('search').oninput=()=>renderTree()
+$('refresh').onclick=()=>refresh();$('search').oninput=()=>{for(const n of S.entries.values())n.viewPage=0;renderTree()}
 $('show-files').onchange=()=>renderTree()
-$('map-expand').onclick=()=>{S.expanded=new Set(S.folders.map(key));renderTree()}
+$('map-expand').onclick=()=>expand(S.selected??[])
 $('map-collapse').onclick=()=>{S.expanded=new Set(S.folders.filter(p=>p.length<2).map(key));$('search').value='';renderTree()}
 $('pin').onclick=()=>{
   if(S.selected===null)return
@@ -468,7 +573,7 @@ $('pin').onclick=()=>{
 $('in-back').onclick=()=>{S.sub=S.sub.slice(0,-1);S.inbox=[];renderInbox();void loadInbox()}
 $('in-all').onclick=async()=>{
   const path=[...S.sub]
-  for(const h of [...S.inbox])if(h.kind==='file')await queueInternal(h,path,null)
+  for(const h of inboxPage())if(h.kind==='file')await queueInternal(h,path,null)
 }
 $('drop').onclick=()=>$('files').click()
 $('files').onchange=e=>{queueExternal(Array.from(e.target.files),null);e.target.value=''}

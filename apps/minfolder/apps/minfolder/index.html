@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"><title>MinFolder · 업무 자료지도</title><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
+<body><header><div class="brand"><span class="mark">M</span><div><b>MinFolder</b><small>업무 자료지도</small></div></div><span class="local">내 PC에서만 처리</span></header>
+<main><section class="hero"><div><p class="eyebrow">LOCAL WORKSPACE</p><h1>파일이 들어갈 곳을<br>한눈에.</h1><p>폴더를 연결하고, 저장 위치를 확인한 뒤 승인하세요.</p></div><div class="connections">
+<div><span>내 PC의 기준 폴더</span><strong id="workspace-name">미연결</strong><button id="workspace">폴더 연결</button><button id="restore-workspace" hidden>기억한 폴더 열기</button></div>
+</div></section>
+<p id="alert" role="status" aria-live="polite">폴더 하나만 연결하세요. 지도에 보이는 파일은 폴더 간 이동, 탐색기에서 웹으로 놓은 파일은 복사예요.</p>
+<div class="board">
+<section class="panel"><div class="heading"><div><p class="eyebrow">01 / MAP</p><h2>폴더 지도</h2></div><button id="refresh">새로고침</button></div>
+<label class="sr" for="search">폴더 검색</label><input id="search" type="search" placeholder="계약명, 팀명, 폴더명 검색">
+<div class="pinbar"><b>자주 쓰는 폴더</b><div id="pins"></div><button id="pin" disabled>선택 폴더 고정</button></div>
+<div class="map-controls"><label><input id="show-files" type="checkbox" checked> 파일도 보기</label><button id="map-expand" disabled>모두 펼치기</button><button id="map-collapse" disabled>2단계로 접기</button></div><p id="map-hint" class="hint">폴더를 연결하면 실제 구조가 여기에 나타나요.</p>
+<div id="tree" aria-label="저장 폴더와 파일의 연결 지도"></div>
+<details class="exclude-panel"><summary>표시에서 제외할 이름</summary><p class="hint">시스템 파일과 임시 파일은 기본으로 제외돼요. 더 숨길 파일이나 폴더 이름을 쉼표로 구분해서 적어 주세요. 원본은 지우지 않아요.</p><label class="sr" for="exclusions">제외할 이름</label><input id="exclusions" maxlength="3000" placeholder="예: 임시작업, 보관하지 않을 파일.xlsx"><button id="save-exclusions">제외 규칙 저장</button></details><p id="target" class="hint"></p></section>
+<div class="right"><section class="panel input-panel"><div class="heading"><div><p class="eyebrow">02 / SORT</p><h2>파일 분류</h2></div></div>
+<button id="drop" class="drop"><strong>파일을 여기에 놓으세요</strong><small>저장 위치 추천 · 클릭해서 파일 선택</small></button><input id="files" type="file" multiple hidden>
+<details open><summary>선택한 폴더의 파일 <span id="in-count">0</span></summary><div class="inbox-nav"><button id="in-all" disabled>보이는 파일 모두 추천</button><span id="in-path" class="hint"></span><button id="in-back" hidden>상위로</button></div><div id="inbox"></div></details></section>
+<section class="panel results"><div class="heading"><div><p class="eyebrow">REVIEW</p><h2>3. 분류 결과 확인</h2></div></div><p class="hint">추천 경로를 확인하고, 필요하면 위치를 바꿔 주세요. 선택한 파일만 승인 후 이동하거나 복사해요.</p><div class="tabs"><button id="tab-queue" aria-pressed="true">분류 결과 <span id="q-count">0</span></button><button id="tab-history" aria-pressed="false">최근 넣은 파일</button></div>
+<div id="queue-view"><div id="queue"></div><div class="actions"><span id="summary" class="hint"></span><button class="primary" id="approve" disabled>이동·복사 승인</button></div></div><div id="history-view" hidden><div id="history"></div></div></section></div>
+</div></main><footer>MINFOLDER · 연결한 폴더 밖에는 접근하지 않아요.</footer></body></html>

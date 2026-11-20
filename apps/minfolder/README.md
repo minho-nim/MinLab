@@ -1,23 +1,12 @@
 # MinFolder | MinLab 내장 앱
 
-이 디렉터리의 소스는 MinLab의 apps/minfolder에 둡니다.
+공개 주소: https://minho-nim.github.io/MinLab/apps/minfolder/
+MinLab의 기존 Pages 배포에서 HTML, CSS, JS를 복사합니다.
 
-1. ZIP의 apps와 scripts 폴더를 MinLab 저장소 최상위에 병합합니다.
-2. 루트 package.json의 build 한 줄만 아래처럼 변경합니다.
-
-```json
-"build": "vite build && vite build --config vite.schedule.config.ts && node scripts/copy-minfolder.mjs"
-```
-
-3. main에 커밋한 후 기존 GitHub Actions Pages 배포가 성공하면
-   https://minho-nim.github.io/MinLab/apps/minfolder/ 에서 열 수 있습니다.
-
-새 저장소와 Pages 설정 변경은 필요 없습니다. 기존 공사 일정 앱과 포트폴리오 배포는 유지합니다.
-MinFolder는 정적 HTML, CSS, JS이므로 의존성 없이 기존 빌드의 마지막에 복사됩니다.
-MinLab 홈에 바로가기 또는 카드를 추가하는 작업은 포함하지 않습니다.
-
-Chrome 또는 Edge에서 원본과 저장 폴더를 각각 연결합니다.
-연결된 원본 폴더에서 가져온 항목은 승인 후 이동, 탐색기에서 직접 놓은 항목은 승인 후 복사합니다.
-회사 파일과 계약 목록은 저장소에 올리지 않습니다.
-
-분류 테스트는 루트에서 node --test apps/minfolder/tests/core.test.js 로 실행합니다.
+- Chrome 또는 Edge에서 기준 폴더 하나를 연결합니다.
+- 마지막 폴더 연결 정보는 이 브라우저에 기억됩니다. 권한이 아직 있으면 자동으로 엽니다. 만료되면 '기억한 폴더 열기'로 권한을 다시 확인합니다.
+- 지도는 기본 2단계까지 펼쳐지고, 더 깊은 가지는 +로 엽니다.
+- 시스템·임시 파일, 읽지 못하는 하위 폴더는 제외합니다. 직접 지정한 제외 이름은 정확한 이름으로 비교합니다.
+- 지도에서 파일을 클릭하거나 폴더로 끌어다 놓고, 분류 결과에서 경로를 확인한 뒤 승인합니다.
+- 연결 폴더 내부의 파일은 승인 후 이동합니다. 탐색기에서 직접 가져온 파일은 복사합니다.
+- 파일과 폴더 내용은 GitHub에 업로드되지 않습니다.

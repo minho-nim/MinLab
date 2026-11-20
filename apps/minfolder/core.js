@@ -68,11 +68,12 @@ export async function filesEqual(a,b) {
 // The browser has no exclusive-create flag for user-selected folders. Check
 // before creation, serialize this app's writes, and never remove a failed output blindly.
 export async function transfer({entry, target, sourceRoot, destRoot}) {
-  if(!(await separate(sourceRoot,destRoot))) throw Error('원본과 저장 폴더가 같거나 서로 안에 있어요.')
+  if(sourceRoot!==destRoot&&!(await separate(sourceRoot,destRoot))) throw Error('원본과 저장 폴더가 같거나 서로 안에 있어요.')
   const dest=await openDir(destRoot,target)
   let original, src
   if(entry.kind==='move') {
     src=await openDir(sourceRoot,entry.parent)
+    if((sourceRoot===destRoot&&key(entry.parent)===key(target)) || await src.isSameEntry?.(dest)) throw Error('이미 이 폴더에 있는 파일이에요.')
     original=await src.getFileHandle(entry.name)
     if(!(await original.isSameEntry(entry.handle))) throw Error('원본 항목이 바뀌었어요. 다시 추가해 주세요.')
   }

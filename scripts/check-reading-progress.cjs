@@ -53,9 +53,12 @@ module.exports = async function checkReadingProgress(browser, base, evidence) {
         ) > value,
       before,
     );
-    assert.equal(
-      await timeline.evaluate((node) => node.getBoundingClientRect().height),
-      height,
+    const afterHeight = await timeline.evaluate(
+      (node) => node.getBoundingClientRect().height,
+    );
+    // DOMRect rounding can vary with scroll offset below Chromium's 1/64px layout unit.
+    assert.ok(
+      Math.abs(afterHeight - height) < 1 / 64,
       "progress does not resize content",
     );
     await toStep(timeline, 2);
@@ -82,12 +85,13 @@ module.exports = async function checkReadingProgress(browser, base, evidence) {
       await timeline.locator(".reading-progress-dot").isVisible(),
       false,
     );
-    const quiet = await timeline.evaluate(position);
+    const offset = (node) =>
+      Number.parseFloat(node.style.getPropertyValue("--reading-offset"));
+    const quiet = await timeline.evaluate(offset);
     await page.mouse.wheel(0, 20);
     await page.waitForTimeout(100);
-    assert.equal(
-      await timeline.evaluate(position),
-      quiet,
+    assert.ok(
+      Math.abs((await timeline.evaluate(offset)) - quiet) < 1 / 64,
       "reduced motion keeps discrete stage feedback",
     );
     await toStep(timeline, 2);

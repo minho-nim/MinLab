@@ -1,0 +1,125 @@
+.reading-story {
+  position: relative;
+}
+.reading-story > .reading-progress {
+  position: absolute;
+  left: 5px;
+  top: var(--reading-start, 40px);
+  height: var(--reading-distance, calc(100% - 64px));
+  width: 2px;
+  background: var(--color-line-strong);
+  pointer-events: none;
+}
+.reading-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  transform-origin: top;
+  transform: scaleY(var(--reading-progress, 0));
+}
+.reading-progress-dot {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-canvas);
+  border-radius: 50%;
+  background: var(--color-accent);
+  transform: translate3d(-50%, var(--reading-offset, 0px), 0);
+}
+.reading-story[data-reading-motion="off"] .reading-progress-dot {
+  display: none;
+}
+.about-timeline.reading-story .timeline-marker i,
+.project-making .making-marker {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 36px;
+  bottom: auto;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--color-ink-secondary);
+  border-radius: 50%;
+  background: var(--color-canvas);
+}
+.about-timeline.reading-story .timeline-marker i::before {
+  content: none;
+}
+.reading-story [aria-current="step"] [data-reading-anchor] {
+  border: 2px solid var(--color-accent);
+}
+.reading-story [data-reading-state="past"] [data-reading-anchor] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.reading-current-label,
+.reading-step-label {
+  color: var(--color-accent);
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reading-current-label {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+}
+.about-timeline.reading-story .timeline-marker > span {
+  position: relative;
+  z-index: 1;
+  padding-block: 4px;
+  background: var(--color-canvas);
+}
+[aria-current="step"] .reading-current-label,
+[aria-current="step"] .reading-step-label {
+  opacity: 1;
+}
+.project-making.reading-story > article {
+  position: relative;
+  padding-inline-start: 32px;
+}
+.project-making .making-marker {
+  top: 44px;
+}
+.reading-step-label {
+  position: absolute;
+  left: 32px;
+  top: 8px;
+}
+@media (max-width: 999px) {
+  .project-making .making-marker {
+    top: 36px;
+  }
+  .project-making .reading-step-label {
+    top: 4px;
+  }
+}
+@media (max-width: 639px) {
+  .about-timeline.reading-story > article {
+    padding-inline-start: 32px;
+  }
+  .about-timeline.reading-story .timeline-marker i {
+    left: -32px;
+    top: 4px;
+  }
+  .reading-current-label {
+    position: static;
+    margin-inline-start: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress-dot {
+    display: none;
+  }
+  .reading-current-label,
+  .reading-step-label {
+    transition: none;
+  }
+}
+html[data-visual-motion="paused"] .reading-current-label,
+html[data-visual-motion="paused"] .reading-step-label {
+  transition: none;
+}

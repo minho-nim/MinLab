@@ -11,6 +11,8 @@ import { capabilities, capabilityEvidence } from "../utils/capabilityEvidence";
 import { CapabilityScreen } from "./CapabilityScreen";
 import { primaryProjectIds } from "../utils/homeProjects";
 import { motionAllowed } from "../utils/visualMotion";
+import { useReadingProgress } from "../utils/useReadingProgress";
+import { ReadingRail } from "./ReadingRail";
 const aiWork = [
   {
     title: "직접 정한 기준",
@@ -86,21 +88,7 @@ export function AboutPage({
     return () => removeEventListener("hashchange", restore);
   }, [editing]);
   const journey = useRef<HTMLElement>(null);
-  const [stage, setStage] = useState(0);
-  useEffect(() => {
-    const o = new IntersectionObserver(
-      (es) => {
-        for (const e of es)
-          if (e.isIntersecting)
-            setStage(Number((e.target as HTMLElement).dataset.stage));
-      },
-      { rootMargin: "-20% 0px -45% 0px" },
-    );
-    journey.current
-      ?.querySelectorAll("[data-stage]")
-      .forEach((n) => o.observe(n));
-    return () => o.disconnect();
-  }, []);
+  const stage = useReadingProgress(journey, "about");
   const evidence = capabilityEvidence(projects, capability);
   const capabilityHeading = useRef<HTMLHeadingElement>(null);
   const chooseCapability = (index: number, reveal = false) => {
@@ -255,19 +243,26 @@ export function AboutPage({
         )}
       </header>
       <section
-        className="about-timeline"
+        className="about-timeline reading-story"
         ref={journey}
         aria-label="경험과 성장 과정"
       >
+        <ReadingRail />
         {experiences.map((item, i) => (
           <article
             key={item.label}
             data-stage={i}
+            data-reading-step
+            data-reading-state={i < stage ? "past" : "upcoming"}
+            aria-current={stage === i ? "step" : undefined}
             className={stage === i ? "is-current-stage" : ""}
           >
             <div className="timeline-marker">
               <span>{item.label}</span>
-              <i />
+              <i data-reading-anchor />
+              <small className="reading-current-label" aria-hidden="true">
+                현재
+              </small>
             </div>
             <div>
               <p className="eyebrow">{item.label}</p>

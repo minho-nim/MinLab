@@ -194,6 +194,7 @@ const fs = require("node:fs/promises");
       ),
     );
     assert.deepEqual(errors, []);
+    await require("./check-reading-progress.cjs")(browser, base, evidence);
     console.log(
       "PASS: five chapter targets, native scroll sync, keyboard focus/Escape, outside touch, closed mobile disclosure, desktop spacing, reduced/smooth motion, unchanged history/data and 320–1440 px layouts.",
     );

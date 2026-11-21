@@ -1,3 +1,6 @@
+import { useRef } from "react";
+import { ReadingRail } from "./ReadingRail";
+import { useReadingProgress } from "../utils/useReadingProgress";
 import type { Project } from "../types";
 import { projectCaseStudies } from "../data/projectCaseStudies";
 import { routeHash } from "../utils/navigation";
@@ -32,12 +35,24 @@ export function ProjectPurpose({ project }: { project: Project }) {
 }
 export function ProjectMaking({ project }: { project: Project }) {
   const study = projectCaseStudies[project.id];
+  const reading = useRef<HTMLDivElement>(null);
+  const current = useReadingProgress(reading, project.id);
   if (!study?.process?.length) return null;
   return (
-    <div className="project-making">
+    <div className="project-making reading-story" ref={reading}>
       <h2>만들면서 바꾼 것</h2>
-      {study.process.map((item) => (
-        <article key={item.title}>
+      <ReadingRail />
+      {study.process.map((item, index) => (
+        <article
+          key={item.title}
+          data-reading-step
+          data-reading-state={index < current ? "past" : "upcoming"}
+          aria-current={index === current ? "step" : undefined}
+        >
+          <i className="making-marker" data-reading-anchor aria-hidden="true" />
+          <span className="reading-step-label" aria-hidden="true">
+            현재 읽는 과정
+          </span>
           <h3>{item.title}</h3>
           <dl>
             {[

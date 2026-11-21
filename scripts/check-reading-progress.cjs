@@ -35,6 +35,7 @@ module.exports = async function checkReadingProgress(browser, base, evidence) {
     await page.goto(base + "#/about");
     const timeline = page.locator(".about-timeline");
     await timeline.locator("[data-reading-step]").first().waitFor();
+    await page.evaluate(() => document.fonts.ready.then(() => undefined));
     const original = await page.evaluate(() =>
       localStorage.getItem("minlab_projects_data_v2"),
     );

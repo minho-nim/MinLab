@@ -46,6 +46,9 @@ jobs:
           cache: npm
           cache-dependency-path: apps/minfolder/desktop/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/minfolder/src-tauri -> target
       - run: npm ci --prefix apps/minfolder/desktop
       - run: npm --prefix apps/minfolder/desktop run build
       - run: cargo test --locked --manifest-path apps/minfolder/src-tauri/Cargo.toml --no-default-features --lib

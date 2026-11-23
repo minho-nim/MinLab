@@ -21,6 +21,9 @@ jobs:
           cache: npm
           cache-dependency-path: apps/minfolder/desktop/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/minfolder/src-tauri -> target
       - name: main과 서명 키·새 버전 확인
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,4 +1,5 @@
 import {norm, key} from '../core.js'
+import {rememberFocus,restoreFocus} from './focus.js'
 const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node}
 const button=(text,action,cls)=>{const node=el('button',text,cls);node.type='button';node.onclick=action;return node}
 
@@ -24,6 +25,7 @@ export function createMapView({state,load,select,onFileOpen,onFileDrag}) {
     if(viewport.hasPointerCapture?.(event.pointerId))viewport.releasePointerCapture(event.pointerId)
   }
   function render(){
+    const focus=rememberFocus(viewport)
     controls()
     if(!state.root){viewport.replaceChildren(el('p','기준 폴더를 연결하면 실제 폴더 구조가 여기에 나타나요.','empty'));return}
     const q=norm($('search').value),showFiles=$('show-files').checked,nodes=[...state.nodes.values()]
@@ -37,8 +39,9 @@ export function createMapView({state,load,select,onFileOpen,onFileDrag}) {
     function branch(node){
       const wrap=el('div',undefined,'map-node');remaining--
       const card=el('div',undefined,'map-folder'+(state.selected===node.id?' selected':''));card.dataset.folder=node.id
-      const name=button(node.name,()=>select(node.id),'folder-name');name.title=node.path
+      const name=button(node.name,()=>select(node.id),'folder-name');name.title=node.path;name.dataset.focusKey='map-folder:'+node.id
       const toggle=button(node.opened?'−':'+',async()=>{node.opened=!node.opened;render();if(node.opened)await load(node)},'toggle')
+      toggle.dataset.focusKey='map-toggle:'+node.id
       toggle.setAttribute('aria-label',node.name+(node.opened?' 접기':' 펼치기'));toggle.setAttribute('aria-expanded',String(node.opened))
       card.append(name,toggle);wrap.append(card)
       if(node.opened||q){
@@ -50,7 +53,7 @@ export function createMapView({state,load,select,onFileOpen,onFileDrag}) {
           if(q&&!norm(file.name).includes(q)&&!norm(state.root.name).includes(q)&&!node.relative.some(n=>norm(n).includes(q)))continue
           remaining--
           const leaf=el('div',undefined,'map-node'),card=el('div',undefined,'map-file'),name=button(file.name,()=>onFileOpen(file),'map-file-name')
-          name.title=file.path+' · 클릭해서 열기 · 끌어서 이동';name.onpointerdown=e=>onFileDrag(e,file);card.append(name);leaf.append(card);children.append(leaf)
+          name.dataset.focusKey='map-file:'+file.id;name.title=file.path+' · 클릭해서 열기 · 끌어서 이동';name.onpointerdown=e=>onFileDrag(e,file);card.append(name);leaf.append(card);children.append(leaf)
         }
         if(node.error){const error=el('div',undefined,'map-node');error.append(el('p','읽기 실패 · '+node.error,'empty'));children.append(error)}
         if(!node.done){const more=el('div',undefined,'map-node');more.append(button(node.loading?'읽는 중…':'다음 항목 보기',()=>load(node),'map-more'));children.append(more)}
@@ -62,7 +65,7 @@ export function createMapView({state,load,select,onFileOpen,onFileDrag}) {
     if(q&&!visible.size)graph.append(el('p','불러온 항목에 검색 결과가 없어요.','empty'))
     else graph.append(branch(state.nodes.get(state.root.id)))
     if(remaining<=0)graph.append(el('p','다른 가지를 접거나 검색해서 범위를 줄여 주세요.','empty'))
-    viewport.replaceChildren(graph)
+    viewport.replaceChildren(graph);restoreFocus(viewport,focus)
   }
   $('zoom-out').onclick=()=>changeZoom(-1);$('zoom-in').onclick=()=>changeZoom(1)
   $('show-files').onchange=render

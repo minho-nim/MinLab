@@ -3,6 +3,7 @@ import {getCurrentWindow} from '@tauri-apps/api/window'
 import {open, confirm} from '@tauri-apps/plugin-dialog'
 import {key, norm, predict, matchingProjects} from '../core.js'
 import {createMapView} from './map-view.js'
+import {rememberFocus,restoreFocus} from './focus.js'
 const $=id=>document.getElementById(id)
 const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
@@ -18,7 +19,8 @@ function makeNode(entry,relative){return {...entry,relative,entries:[],opened:fa
 async function load(node,reset=false){
   if(node.loading)return node.loading
   if(node.done&&!reset)return
-  const epoch=state.epoch
+  const epoch=state.epoch,retrying=!!node.error
+  node.error=''
   node.loading=(async()=>{
     try{
       const page=await invoke('list_directory',{id:node.id,reset:reset||!node.loaded})
@@ -39,6 +41,7 @@ async function load(node,reset=false){
         for(const rec of state.queue)if(rec.target&&!state.nodes.has(rec.target)){rec.target='';rec.auto=false;rec.reason='폴더 목록이 바뀌었어요. 저장 위치를 다시 골라 주세요.'}
       }
       node.loaded=true;node.done=page.done;node.error=''
+      if(retrying)status(node.name+' 목록을 다시 읽었어요.')
       if(page.skipped)status(`읽지 못한 항목 또는 연결 폴더 ${page.skipped}개를 제외했어요.`)
     }catch(e){if(epoch===state.epoch){node.error=String(e);status('폴더를 읽지 못했어요. '+e)}}
     finally{node.loading=null;if(epoch===state.epoch)render()}
@@ -57,6 +60,7 @@ async function connect(path){
   $('root-name').textContent=root.name;$('root-name').title=root.path;$('connect').textContent='폴더 변경'
   status('상위 폴더부터 읽고 있어요. 하위 폴더는 필요한 만큼 펼치세요.');render()
   await load(node)
+  if(node.error){status('기준 폴더를 읽지 못했어요. '+node.error);return}
   // Only the first page of the first groups: never recursively scan the whole drive.
   const epoch=state.epoch
   for(const entry of node.entries.filter(e=>e.kind==='directory').slice(0,16)){
@@ -76,19 +80,20 @@ function renderTree(){mapView.render()}
 function renderFiles(){
   const box=$('files'),node=state.nodes.get(state.selected)
   $('selected-path').textContent=node?.path??'지도에서 폴더를 선택하세요.'
-  $('file-count').textContent=node?node.entries.filter(e=>e.kind==='file').length+'개':''
+  $('file-count').textContent=node?(node.error?'확인 필요':node.entries.filter(e=>e.kind==='file').length+'개'):''
   $('open-folder').dataset.unavailable=String(!node)
   $('recommend-all').dataset.unavailable=String(!node||!state.checked.size)
   if(!node){empty(box,'폴더를 연결하고 파일을 선택하세요.');return}
   box.replaceChildren()
+  if(node.error){empty(box,'파일 목록을 읽지 못했어요. '+node.error);box.append(button('다시 읽기',()=>load(node,true)));return}
   for(const file of node.entries.filter(e=>e.kind==='file')){
-    const row=element('div',undefined,'file-row'), check=element('input');check.type='checkbox';check.checked=state.checked.has(file.id);check.setAttribute('aria-label',file.name+' 선택')
+    const row=element('div',undefined,'file-row'), check=element('input');check.type='checkbox';check.dataset.focusKey='file-check:'+file.id;check.checked=state.checked.has(file.id);check.setAttribute('aria-label',file.name+' 선택')
     check.onchange=()=>{if(check.checked)state.checked.add(file.id);else state.checked.delete(file.id);$('recommend-all').dataset.unavailable=String(!state.checked.size);applyBusy()}
-    const label=element('button',undefined,'file-label');label.type='button';label.title='클릭해서 열기 · 끌어서 이동';label.onclick=()=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)};label.append(element('div',file.name),element('div',formatSize(file.size),'file-meta'));label.onpointerdown=e=>startDrag(e,file)
-    const add=button('분류',()=>addFiles([file]));row.append(check,label,add);box.append(row)
+    const label=element('button',undefined,'file-label');label.type='button';label.dataset.focusKey='file-open:'+file.id;label.title='클릭해서 열기 · 끌어서 이동';label.onclick=()=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)};label.append(element('div',file.name),element('div',formatSize(file.size),'file-meta'));label.onpointerdown=e=>startDrag(e,file)
+    const add=button('분류',()=>addFiles([file]));add.dataset.focusKey='file-sort:'+file.id;row.append(check,label,add);box.append(row)
   }
   if(!box.childNodes.length)box.append(element('p',node.loading?'읽는 중…':'표시할 파일이 없어요.','empty'))
-  if(!node.done)box.append(button(node.loading?'읽는 중…':'다음 100개 읽기',()=>load(node)))
+  if(node.loaded&&!node.done){const more=button(node.loading?'읽는 중…':'다음 100개 읽기',()=>load(node));more.dataset.unavailable=String(!!node.loading);box.append(more)}
 }
 function formatSize(size){return size<1024?size+' B':size<1024**2?(size/1024).toFixed(1)+' KB':(size/1024**2).toFixed(1)+' MB'}
 async function complete(node){for(let n=0;node&&!node.done&&n<5;n++)await load(node);return node?.done}
@@ -136,21 +141,21 @@ async function importPaths(paths,target=''){
 }
 async function chooseFiles(){if(state.busy)return;try{const paths=await open({multiple:true,directory:false,title:'이동할 파일 선택'});if(paths)await importPaths(Array.isArray(paths)?paths:[paths])}catch(e){status(String(e))}}
 function renderQueue(){
-  const queue=$('queue');queue.replaceChildren();$('queue-count').textContent=state.queue.length+'건'
+  const queue=$('queue'),focus=rememberFocus(queue);queue.replaceChildren();$('queue-count').textContent=state.queue.length+'건'
   if(!state.queue.length)empty(queue,'분류할 파일을 선택하거나 끌어 놓으세요.')
   const folders=folderNodes().sort((a,b)=>a.path.localeCompare(b.path,'ko',{numeric:true}))
   for(const rec of state.queue){
-    const row=element('article',undefined,'queue-item'+(rec.failed?' failed':'')),head=element('div',undefined,'queue-head'),check=element('input');check.type='checkbox';check.checked=rec.checked;check.setAttribute('aria-label',rec.file.name+' 승인 대상')
+    const row=element('article',undefined,'queue-item'+(rec.failed?' failed':'')),head=element('div',undefined,'queue-head'),check=element('input');check.type='checkbox';check.dataset.focusKey='queue-check:'+rec.file.id;check.checked=rec.checked;check.setAttribute('aria-label',rec.file.name+' 승인 대상')
     check.onchange=()=>{rec.checked=check.checked;updateSummary()}
     const remove=button('제외',()=>{state.queue=state.queue.filter(r=>r!==rec);renderQueue()})
     head.append(check,element('strong',rec.file.name),remove)
-    const select=element('select');select.setAttribute('aria-label',rec.file.name+' 저장 위치');const placeholder=element('option','저장 위치 선택');placeholder.value='';select.append(placeholder)
+    const select=element('select');select.dataset.focusKey='queue-target:'+rec.file.id;select.setAttribute('aria-label',rec.file.name+' 저장 위치');const placeholder=element('option','저장 위치 선택');placeholder.value='';select.append(placeholder)
     for(const node of folders){if(parentPath(rec.file.path)===node.path)continue;const option=element('option',[state.root.name,...node.relative].join(' > '));option.value=node.id;select.append(option)}
     select.value=rec.target
     select.onchange=()=>{rec.target=select.value;rec.auto=false;rec.reason='직접 선택한 폴더예요.';rec.failed=false;updateSummary()}
     row.append(head,element('p',rec.file.path,'source'),select,element('p',rec.reason,'reason'));queue.append(row)
   }
-  updateSummary();applyBusy()
+  updateSummary();applyBusy();restoreFocus(queue,focus)
 }
 function ready(){return state.queue.filter(r=>r.checked&&r.target&&state.nodes.has(r.target))}
 function updateSummary(){$('summary').textContent=`승인 대상 ${ready().length}건 · 전체 ${state.queue.length}건`;$('approve').disabled=state.busy||!ready().length}
@@ -162,7 +167,7 @@ function renderHistory(){
   }
 }
 function applyBusy(){for(const node of document.querySelectorAll('button,input,select'))node.disabled=state.busy||node.dataset.unavailable==='true';updateSummary()}
-function render(){renderTree();renderFiles();renderQueue();renderHistory();applyBusy()}
+function render(){const focus=rememberFocus();renderTree();renderFiles();renderQueue();renderHistory();applyBusy();restoreFocus(document,focus)}
 async function approve(){
   if(state.busy)return
   const batch=ready();if(!batch.length)return

@@ -34,6 +34,8 @@ try{
     await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.id),'connect')
     await page.keyboard.press('Enter')
     await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('폴더 연결 완료'))
+    const toggle=page.getByRole('button',{name:'강남케이블공사 펼치기',exact:true});await toggle.focus();await page.keyboard.press('Enter')
+    await page.waitForFunction(()=>document.activeElement?.dataset.focusKey?.startsWith('map-toggle:')&&document.activeElement?.getAttribute('aria-expanded')==='true')
     const first=page.locator('#files .file-label').first();await first.focus();await page.keyboard.press('Enter')
     assert.equal(await page.evaluate(()=>demo.calls.filter(c=>c.cmd==='open_entry').length),1)
     await page.locator('#files .file-row').last().getByRole('button',{name:'분류',exact:true}).click()
@@ -56,6 +58,7 @@ try{
   {
     const {page,errors}=await make(1400,{error:true})
     await page.locator('#connect').click();await page.getByText('읽기 실패 · 공유폴더 접근 권한을 확인해 주세요.').waitFor()
+    assert.match(await page.locator('#status').textContent(),/읽지 못/);assert.doesNotMatch(await page.locator('#status').textContent(),/연결 완료/)
     await report(page,errors,'1400-permission-error')
     await page.screenshot({path:`${output}/05-permission-error.png`,fullPage:true});await page.close()
   }

@@ -1,4 +1,4 @@
-# MINILOG — 제품 및 개발 명세 v3.3
+# MINILOG — 제품 및 개발 명세 v3.4
 작성일: 2026-11-23
 상태: 기획 확정 / 개발 착수 전
 
@@ -20,16 +20,28 @@
 - 경제적 대가성 콘텐츠는 적절한 광고·협찬 고지 확인 전 승인 차단
 
 ## Gemini 계정·API 키 정책 (확정: 2026-11-23)
-- 두 사용자는 **서로 다른 Google 계정**에서 각각 자신만의 Gemini API 프로젝트와 키를 발급한다. MINILOG 내 본인 계정의 설정 화면에서 자신의 키를 등록·교체·연결 해제한다.
-- MINILOG 공통 백엔드는 Cloudflare Worker 1개(논리적으로 서비스 분리 가능), D1, R2를 사용하지만 **Gemini 호출은 반드시 요청한 사용자의 키**로 수행한다.
+- 두 사용자는 **서로 다른 Google 계정**에서 각각 자신만의 Gemini API 프로젝트와 키를 발급한다. 각 사용자에게 할당한 **동일한 키를 Minially와 MINILOG가 공유**하며, 사용자별 공통 보안 설정에서 등록·교체·연결 해제한다.
+- MINILOG는 전용 Cloudflare Worker, D1, R2를 사용하며 Minially와 **공통 인증·개인 Gemini 키 관리 계층**을 공유한다. Gemini 호출은 반드시 요청한 사용자의 키로 수행한다.
 - 서로의 API 키, 사용량 내역, 청구 정보, 원고, 사진, 스타일 프로필에 접근할 수 없다. 키 원문은 화면에 다시 표시하지 않는다.
 - API 키는 **브라우저 로컬스토리지·공개 GitHub 코드·D1 평문·로그에 저장하지 않는다.** 키 저장 시 Worker에서 AES-GCM 등의 인증된 암호화로 암호화하고, 암호화 마스터 키는 Cloudflare Worker Secret에 보관한다. D1에는 사용자 ID별 암호문·nonce·키 버전만 저장한다. 암호화 키 교체·키 삭제·복호화 실패 처리도 설계한다.
 - 키 등록/갱신 요청은 HTTPS + 로그인 세션 보호 + 사용자 소유권 확인을 강제하고, 키를 수신하는 엔드포인트에는 민감 정보 로깅을 하지 않는다. 가능하다면 API 키 권한을 Gemini API로 제한한다.
 - Google API의 무료 할당량과 과금은 사용자의 **Google Cloud 프로젝트 기준**으로 적용된다. 키가 다르다고 한도가 무조건 늘지 않으며, 별도 계정/프로젝트도 무료 사용이나 비용 0원을 보장하지 않는다.
-- Worker는 사용자별 요청 횟수/토큰/모델/오류/추정 비용을 `ai_usage_logs`에 저장한다. 프라이버시를 위해 사진·원고 본문·키는 로그에 남기지 않는다.
+- 두 앱의 Worker는 사용자별·앱별 요청 횟수/토큰/모델/오류/추정 비용을 `ai_usage_logs`에 저장한다. 프라이버시를 위해 사진·원고 본문·키는 로그에 남기지 않는다.
 - 별도 Minoffia 통합 대시보드에서는 향후 MINILOG의 **집계된 운영 지표만** 권한 있는 관리자 API로 조회한다. Gemini 키를 Minoffia에 복제하거나 타인 계정 호출에 사용하지 않는다.
 - 사용자 API 키가 없거나 유효하지 않으면 글 생성 기능만 제한하고, 저장 원고 조회·편집·내보내기는 계속 가능해야 한다.
 - 두 사람의 API 키 분리 외에 사용량 초과, 호출 실패, 모델 미지원 시 사용자별 오류·재시도 정책을 갖춘다.
+
+## Minially·MINILOG 공동 로그인 및 개인별 Gemini 연결 정책 (확정: 2026-11-23)
+- **두 앱에서 각 사용자별로 동일한 로그인 자격 증명과 동일한 Gemini API 키를 사용한다.** 사용자 A는 앱 2곳에서 A의 Gemini 프로젝트/키를 사용하고, 사용자 B는 앱 2곳에서 B의 Gemini 프로젝트/키를 사용한다. A/B 간 키·계정은 공유하지 않는다.
+- 공통 인증 서비스(예: 별도 Cloudflare Worker)를 하나 운영해 고유 `user_id`를 발급한다. 두 앱은 같은 인증 서비스를 신뢰하며, 각 앱의 서버는 발급된 세션/토큰의 사용자 및 앱별 접근 권한을 검증한다.
+- **'로그인 코드 통일'은 동일한 계정으로 로그인하는 것을 뜻하며, 두 사용자가 같은 비밀번호나 단일 공통 PIN을 쓰는 구조는 금지한다.** 비밀번호는 해시 저장, 세션은 짧은 수명과 갱신/폐기 기능 제공, 로그인 시도 횟수 제한. 필요시 초대형 이메일 인증/패스키 이용.
+- Gemini API 키는 공용 인증/비밀정보 보관 기능에서 사용자별로 1회 등록·회전·삭제한다. 두 앱 모두 서버를 통해 자신의 키로만 AI 호출한다. 클라이언트에는 키가 전달되지 않는다.
+- MINILOG 전용 Worker와 Minially 전용 Worker는 분리하고, 공통 인증/키 관리 Worker에 서버 간 인증으로 연결하거나 이에 준하는 중앙 키 관리 구조로 구현한다. 브라우저가 다른 앱의 세션을 임의 재사용하도록 하지 않는다.
+- 개인별 Gemini 프로젝트 사용량 한도는 **두 앱 호출량을 합쳐서 적용**된다. MINILOG·Minially 출처 앱, 모델, 토큰, 성공/실패, 추정 비용을 분리 기록하고 사용자별 및 앱별 쿼터를 제공한다.
+- 인증 정보·키 저장소와 앱 콘텐츠 저장소는 분리한다. MINILOG의 원고·사진·참고 블로그·협찬 정보는 Minially에서 조회할 수 없고, 반대도 동일하다.
+- 기존 Minially 로그인/배포 구조는 현재 소스 분석 후 마이그레이션한다. 기존 세션/이용 데이터를 파괴하거나 사용자 동의 없이 변경하지 않는다.
+- GitHub Pages 도메인과 Cloudflare Worker 도메인이 달라질 수 있으므로 세션 쿠키, CORS, CSRF 방어 및 OAuth/이메일 로그인 리디렉션을 실제 도메인에 맞게 설계·시험한다. 공통 인증이란 자동 SSO를 보장하는 의미는 아니다.
+- 통합 Minoffia 운영 대시보드에는 관리자 인증을 거친 **집계 지표만 제공**하며 개인 키, 원고, 사진은 전달하지 않는다.
 
 ## 사진 저장소 정책 (확정: 2026-11-23)
 **기본 정책:** 게시 완료 확인일로부터 **30일** 보관 후 정리. **원본 정리 옵션 사용**, **삭제 예정 알림 사용**. 이 정책은 두 사용자 각각에게 독립적으로 적용한다.
@@ -122,8 +134,8 @@
 - UI: React + TypeScript + Vite, 기존 MinLab 디자인과 독립 앱 구조
 - 배포: GitHub Pages `/MinLab/apps/minilog/` (기존 빌드에 앱 아웃풋 복사 필요)
 - 계정/DB/미디어: Cloudflare Workers 인증, D1(SQLite) 사용자별 소유권 제어, 비공개 R2 사진 저장
-- AI 백엔드: Cloudflare Worker (사용자별 암호화된 Gemini 키 복호화, 인증된 유저 검증, rate limit, 사용자별 호출 기록)
-- 데이터: user_ai_credentials, ai_usage_logs, profiles, blog_references, style_profiles, articles, article_photos, article_revisions, photo_deletion_logs, sponsorships, revenue_records, article_metrics, outreach_leads, outreach_proposals, outreach_events, media_kits
+- AI 백엔드: MINILOG 전용 Cloudflare Worker + 공통 인증/키 관리 계층 (사용자별 암호화된 Gemini 키, 인증된 유저 검증, 앱별·사용자별 rate limit, 호출 기록)
+- 데이터: shared_auth_users, user_ai_credentials, ai_usage_logs, profiles, blog_references, style_profiles, articles, article_photos, article_revisions, photo_deletion_logs, sponsorships, revenue_records, article_metrics, outreach_leads, outreach_proposals, outreach_events, media_kits
 - 보안: 공개 저장소에 비밀 키/개인 사진/협찬 계약서 직접 커밋 금지
 
 ## 첫 구현 순서

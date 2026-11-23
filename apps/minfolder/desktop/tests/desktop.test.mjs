@@ -2,9 +2,12 @@ import {test, before, after} from 'node:test'
 import assert from 'node:assert/strict'
 import {chromium} from 'playwright'
 import {createServer} from 'vite'
+import {fileURLToPath} from 'node:url'
+import {tmpdir} from 'node:os'
+import {join} from 'node:path'
 let server,browser,url
 before(async()=>{
-  server=await createServer({root:new URL('..',import.meta.url).pathname,server:{host:'127.0.0.1',port:0}})
+  server=await createServer({root:fileURLToPath(new URL('..',import.meta.url)),server:{host:'127.0.0.1',port:0}})
   await server.listen();url=server.resolvedUrls.local[0]
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox']})
 })
@@ -92,6 +95,6 @@ test('탐색기 드롭은 실제 경로를 받아 지정한 목적지로 분류'
   await page.waitForFunction(()=>document.querySelector('#queue select')?.value==='group')
   assert.match(await page.locator('#queue').textContent(),/외부/)
   assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='move_file').length),0)
-  await page.screenshot({path:'/tmp/minfolder-desktop-preview.png',fullPage:true})
+  await page.screenshot({path:join(tmpdir(),'minfolder-desktop-preview.png'),fullPage:true})
   await page.close()
 })

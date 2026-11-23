@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MinFolder · 업무 자료지도</title><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
+<body>
+<header><div class="brand"><span class="mark">M</span><div><strong>MinFolder</strong><small>업무 자료지도</small></div></div><span class="badge">내 PC에서만 처리</span></header>
+<main>
+<section class="hero"><div><p class="eyebrow">LOCAL WORKSPACE</p><h1>파일이 들어갈 곳을 한눈에.</h1><p>파일명으로 추천받고, 확인한 파일만 옮기세요.</p></div><div class="connect"><small>기준 폴더</small><strong id="root-name">미연결</strong><button id="connect" class="primary">폴더 연결</button></div></section>
+<p id="status" role="status" aria-live="polite">기준 폴더를 연결하세요. 탐색기에서 놓은 파일도 승인 후 실제 이동합니다.</p>
+<div class="board"><div class="workspace">
+<section class="panel"><div class="heading"><div><p class="eyebrow">01 / MAP</p><h2>폴더 지도</h2></div><button id="refresh">선택 폴더 새로고침</button></div><label class="sr" for="search">불러온 폴더 검색</label><input id="search" type="search" placeholder="불러온 폴더 검색"><p class="hint">+로 하위 폴더를 펼치세요. 파일을 폴더에 놓으면 승인 목록에 추가해요.</p><div id="tree" aria-label="폴더 지도"></div></section>
+<section class="panel"><div class="heading"><div><p class="eyebrow">02 / FILES</p><h2>선택 폴더의 파일</h2></div><div><button id="open-folder">폴더 열기</button> <button id="recommend-all">선택 파일 추천</button></div></div><p id="selected-path" class="path">폴더를 선택하세요.</p><div id="files"></div></section>
+</div><aside>
+<section class="panel"><p class="eyebrow">03 / SORT</p><h2>파일 분류</h2><button id="add-files" class="drop"><strong>파일을 여기에 놓으세요</strong><small>또는 클릭해서 파일 선택 · 승인 후 이동</small></button><p class="hint">파일명에서 계약·팀과 문서 종류를 찾아요. 본문은 읽지 않아요.</p><div id="queue"></div><p id="summary" class="hint"></p><button id="approve" class="primary wide" disabled>선택 파일 이동 승인</button></section>
+<section class="panel"><div class="heading"><h2>이동 기록</h2><button id="clear-history">기록 지우기</button></div><div id="history"></div></section>
+</aside></div>
+</main><footer>MINFOLDER · 같은 이름의 파일은 덮어쓰지 않아요.</footer>
+<div id="drag-label" hidden></div>
+</body></html>

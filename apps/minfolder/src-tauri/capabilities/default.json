@@ -1,0 +1,12 @@
+{
+  "identifier": "main",
+  "description": "Local MinFolder window and file selection",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    "dialog:allow-message"
+  ]
+}

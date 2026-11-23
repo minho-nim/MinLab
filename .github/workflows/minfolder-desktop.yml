@@ -1,0 +1,43 @@
+name: MinFolder Windows
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/minfolder/**'
+      - '.github/workflows/minfolder-desktop.yml'
+permissions:
+  contents: read
+jobs:
+  interface:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/minfolder/desktop/package-lock.json
+      - run: npm ci --prefix apps/minfolder/desktop
+      - run: npm --prefix apps/minfolder/desktop test
+      - run: npm --prefix apps/minfolder/desktop run build
+      - run: npx --prefix apps/minfolder/desktop playwright install --with-deps chromium
+      - run: npm --prefix apps/minfolder/desktop run test:browser
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/minfolder/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci --prefix apps/minfolder/desktop
+      - run: npm --prefix apps/minfolder/desktop run build
+      - run: cargo test --locked --manifest-path apps/minfolder/src-tauri/Cargo.toml --no-default-features --lib
+      - run: npm --prefix apps/minfolder/desktop run desktop:build -- -- --locked
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MinFolder-Windows-installer
+          path: apps/minfolder/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error

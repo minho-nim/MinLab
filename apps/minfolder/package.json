@@ -1,1 +1,1 @@
-{"name":"minfolder-pages","private":true,"version":"0.1.0","type":"module","scripts":{"test":"node --test tests/core.test.js"}}
+{"name":"minfolder-pages","private":true,"version":"0.1.1","type":"module","scripts":{"test":"node --test tests/core.test.js"}}

@@ -26,14 +26,16 @@ async function pageWithBridge(){
     const external=file('external','강남공사_작업절차서_외부.docx','C:\\Downloads\\강남공사_작업절차서_외부.docx')
     const lists={root:[group,document],group:[project],project:[work],work:[destination],destination:[]}
     const callbacks={},events={};let next=0
-    window.testBridge={calls:[],accept:true,failMove:false,partialRoot:false,lists,events,emit:(event,payload)=>callbacks[events[event]]({event,payload})}
+    window.testBridge={calls:[],accept:true,failMove:false,partialRoot:false,newVersion:false,pauseMove:false,lists,events,emit:(event,payload)=>callbacks[events[event]]({event,payload})}
     window.isTauri=true
     window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback:fn=>{callbacks[++next]=fn;return next},unregisterCallback:()=>{},invoke:async(cmd,args)=>{
       window.testBridge.calls.push({cmd,args})
       if(cmd==='plugin:app|version')return '0.1.0'
       if(cmd==='plugin:window|is_maximized')return false
       if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
-      if(cmd==='plugin:updater|check')return null
+      if(cmd==='plugin:updater|check')return window.testBridge.newVersion?{rid:71,currentVersion:'0.1.0',version:'0.2.0'}:null
+      if(cmd==='plugin:updater|download')return 42
+      if(cmd==='plugin:updater|install')return
       if(cmd==='plugin:event|listen'){events[args.event]=args.handler;return args.handler}
       if(cmd==='plugin:dialog|open')return args.options.directory?root.path:[external.path]
       if(cmd==='plugin:dialog|message')return window.testBridge.accept?'Ok':'Cancel'
@@ -48,6 +50,7 @@ async function pageWithBridge(){
       if(cmd==='import_files')return [external]
       if(cmd==='open_entry')return
       if(cmd==='move_file'){
+        if(window.testBridge.pauseMove)await new Promise(resolve=>window.testBridge.finishMove=resolve)
         if(window.testBridge.failMove)throw '같은 이름의 파일이 있어요.'
         const source=args.sourceId==='external'?external:document
         lists.root=lists.root.filter(e=>e.id!==source.id)
@@ -124,5 +127,22 @@ test('일부 페이지만 새로 읽어도 기존 목적지를 유지하고 삭�
   await page.locator('#refresh').click()
   await page.waitForFunction(()=>document.querySelector('#queue select').value==='')
   assert.equal(await page.locator('#approve').isDisabled(),true)
+  await page.close()
+})
+
+test('업데이트는 대기 분류와 진행 중인 이동을 보존하고 완료 후 명시적으로 설치',async()=>{
+  const page=await pageWithBridge();await page.evaluate(()=>testBridge.newVersion=true)
+  await page.locator('#window-version').click();await page.locator('#update-check').click()
+  await page.waitForFunction(()=>document.querySelector('#update-status').textContent.includes('설치 준비 완료'))
+  await page.locator('#close-info').click();await waitForSuggestion(page)
+  await page.locator('#window-version').click();assert.equal(await page.locator('#update-install').isDisabled(),true)
+  assert.match(await page.locator('#update-safety-hint').textContent(),/대기 중인 분류/)
+  await page.locator('#close-info').click();await page.evaluate(()=>testBridge.pauseMove=true)
+  await page.locator('#approve').click();await page.waitForFunction(()=>typeof testBridge.finishMove==='function')
+  await page.locator('#window-version').click();assert.equal(await page.locator('#update-install').isDisabled(),true)
+  await page.evaluate(()=>testBridge.finishMove());await page.waitForFunction(()=>!document.querySelector('#update-install').disabled)
+  assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='plugin:updater|install').length),0)
+  await page.locator('#update-install').click();await page.waitForFunction(()=>testBridge.calls.some(c=>c.cmd==='plugin:process|restart'))
+  assert.deepEqual(await page.evaluate(()=>testBridge.calls.filter(c=>['prepare_update','plugin:updater|install','plugin:process|restart'].includes(c.cmd)).map(c=>c.cmd)),['prepare_update','plugin:updater|install','plugin:process|restart'])
   await page.close()
 })

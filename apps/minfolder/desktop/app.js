@@ -222,8 +222,15 @@ $('recommend-all').onclick=()=>{const node=state.nodes.get(state.selected);if(no
 $('clear-history').onclick=()=>{state.history=[];saveHistory();renderHistory()}
 render()
 if(isTauri()){
-  shell=await setupWindowShell({isBusy:()=>state.busy,onError:status,onInstallState:value=>{state.installing=value;applyBusy()}})
-  await getCurrentWindow().onCloseRequested(event=>{if(state.busy&&!state.installing){event.preventDefault();status('파일 이동이 끝난 뒤 앱을 닫아 주세요.')}})
+  shell=await setupWindowShell({isBusy:()=>state.busy,hasPendingWork:()=>state.queue.length>0,onError:status,onInstallState:value=>{state.installing=value;applyBusy()}})
+  let closeConfirmed=false,closePrompt=false
+  await getCurrentWindow().onCloseRequested(async event=>{
+    if(state.busy&&!state.installing){event.preventDefault();status('파일 이동이 끝난 뒤 앱을 닫아 주세요.');return}
+    if(state.queue.length&&!closeConfirmed){
+      event.preventDefault();if(closePrompt)return;closePrompt=true
+      try{if(await confirm('분류 대기 목록은 종료하면 비워져요. 파일은 현재 위치에 그대로 남습니다. 창을 닫을까요?',{title:'MinFolder 종료',kind:'warning'})){closeConfirmed=true;await getCurrentWindow().close()}}catch(e){status(String(e))}finally{closePrompt=false}
+    }
+  })
   await getCurrentWindow().onDragDropEvent(({payload})=>{
     if(state.busy||state.installing)return
     if(payload.type==='leave'){clearHot();return}

@@ -34,7 +34,7 @@ export function createUpdateController({checkForUpdate,freezeWrites,thawWrites,r
   }
   async function install(){
     if(state.kind!=='ready'||!update)return false
-    if(isBusy()){set({error:'파일 이동이 끝난 뒤 설치해 주세요.'});return false}
+    if(isBusy()){set({error:'파일 이동과 대기 중인 분류를 처리한 뒤 설치해 주세요.'});return false}
     set({kind:'installing',error:''})
     let frozen=false
     try{

@@ -5,10 +5,10 @@ import {check} from '@tauri-apps/plugin-updater'
 import {relaunch} from '@tauri-apps/plugin-process'
 import {createUpdateController} from './updater.js'
 const $=id=>document.getElementById(id)
-export async function setupWindowShell({isBusy,onError,onInstallState}) {
+export async function setupWindowShell({isBusy,hasPendingWork=()=>false,onError,onInstallState}) {
   const dialog=$('app-info'),toggle=$('window-version'),auto=$('auto-updates')
   try{auto.checked=localStorage.getItem('minfolder.auto-updates')!=='false'}catch{}
-  auto.onchange=()=>{try{localStorage.setItem('minfolder.auto-updates',String(auto.checked))}catch{}}
+  auto.onchange=()=>{try{localStorage.setItem('minfolder.auto-updates',String(auto.checked))}catch{auto.checked=!auto.checked;$('update-status').textContent='자동 업데이트 설정을 저장하지 못했어요. 다시 시도해 주세요.'}}
   function openInfo(){if(!dialog.open){dialog.showModal();$('close-info').focus()}}
   toggle.onclick=openInfo;$('close-info').onclick=()=>dialog.close()
   dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()})
@@ -28,17 +28,17 @@ export async function setupWindowShell({isBusy,onError,onInstallState}) {
   if(!native){$('update-status').textContent='Windows 앱에서 업데이트를 확인할 수 있어요.';return {refresh(){}}}
   const version=await getVersion();toggle.textContent='V.'+version;$('app-version').textContent=version
   await reflect();await win.onResized(()=>void reflect().catch(()=>{}))
-  const syncActions=s=>{$('update-install').disabled=!['available','ready'].includes(s.kind)||isBusy()}
+  const syncActions=s=>{$('update-install').disabled=!['available','ready'].includes(s.kind)||(s.kind==='ready'&&(isBusy()||hasPendingWork()));$('update-safety-hint').textContent=isBusy()?'파일 이동이 끝난 뒤 설치할 수 있어요.':hasPendingWork()?'대기 중인 분류를 처리하거나 제외한 뒤 설치할 수 있어요.':'설치는 직접 시작하며 파일 이동 중에는 적용하지 않아요.'}
   let lastKind='idle'
   const controller=createUpdateController({
     checkForUpdate:()=>check({timeout:15000}),freezeWrites:()=>invoke('prepare_update',{installing:true}),thawWrites:()=>invoke('prepare_update',{installing:false}),
-    restart:()=>relaunch(),isBusy,autoDownload:()=>auto.checked,
+    restart:()=>relaunch(),isBusy:()=>isBusy()||hasPendingWork(),autoDownload:()=>auto.checked,
     onState:s=>{
       if(s.kind!==lastKind)onInstallState(s.kind==='installing')
       const messages={idle:'업데이트를 자동으로 확인합니다.',checking:'새 버전을 확인하고 있어요.',current:'최신 버전이에요.',available:`새 버전 ${s.version}을 받을 수 있어요.`,downloading:`${s.version} 다운로드 중${s.percent===null?'':` · ${s.percent}%`}`,ready:`${s.version} 설치 준비 완료`,installing:'파일 작업을 확인하고 설치를 시작합니다.',error:'업데이트를 확인하지 못했어요.'}
       $('update-status').textContent=s.error||messages[s.kind]
       $('update-check').disabled=['checking','downloading','installing'].includes(s.kind)
-      $('update-install').disabled=!['available','ready'].includes(s.kind)||isBusy()
+      syncActions(s)
       $('update-install').textContent=s.kind==='available'?'다운로드':'설치 후 재시작'
       const progress=$('update-progress');progress.hidden=s.kind!=='downloading';if(s.percent===null)progress.removeAttribute('value');else progress.value=s.percent
       toggle.textContent='V.'+version+(s.kind==='ready'?' · 설치 준비':s.kind==='downloading'?` · ${s.percent??'…'}%`:s.kind==='available'?' · 새 버전':'')

@@ -161,7 +161,9 @@ footer { padding-block: 20px; color: var(--muted); font-size: 11px; }
 .window-controls button span { width: 13px; height: 13px; display: grid; place-items: center; font: 12px/1 sans-serif; border: 1px solid #0002; border-radius: 50%; color: transparent; }
 .window-controls:hover button span, .window-controls button:focus-visible span { color: #25332c; }
 #window-close span { background: #ed7770; }#window-minimize span { background: #eabf5c; }#window-maximize span { background: #75b985; }
-.window-title { font-size: 13px; font-weight: 600; white-space: nowrap; pointer-events: auto; }
+.window-title { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; pointer-events: auto; }
+.window-title img, #app-info-title img { object-fit: contain; flex: none; }
+#app-info-title { display: flex; align-items: center; gap: 8px; }
 .window-title span { margin-left: 8px; font-size: 11px; font-weight: 400; color: var(--muted); }
 #window-version { justify-self: end; min-height: 28px; padding: 2px 8px; border: 0; background: transparent; font-size: 11px; white-space: nowrap; }
 #window-version[data-update=ready] { color: var(--green); background: var(--mint); }

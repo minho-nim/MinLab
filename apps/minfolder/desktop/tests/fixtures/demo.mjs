@@ -12,6 +12,7 @@ export function installDemo(options={}) {
     {name:'송도케이블공사_위험성평가_1123.xlsx',size:98304},
     {name:options.longName?'평택설비공사_동측_지하공동구_케이블_작업구간_변경에_따른_견적서_최종검토_20261123_수정본.pdf':'평택설비공사_견적서_1123.pdf',size:524288}
   ]}
+  if(options.manyFiles)for(let n=1;n<=45;n++)definitions.children.push({name:`추가자료_${String(n).padStart(2,'0')}.pdf`,size:4096})
   const entries=new Map(),children=new Map(),handles=new Map();let next=0
   function make(spec,parent='C:',relative=[]){
     const path=parent+'\\'+spec.name,id='demo-'+(++next),kind=spec.children?'directory':'file'
@@ -42,7 +43,11 @@ export function installDemo(options={}) {
   window.isTauri=true
   window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback(fn){callbacks[++callback]=fn;return callback},unregisterCallback(){},invoke:async(cmd,args)=>{
     window.demo.calls.push({cmd,args})
-    if(cmd==='plugin:event|listen'){events[args.event]=args.handler;return args.handler}
+    if(cmd==='plugin:app|version')return '0.1.0'
+      if(cmd==='plugin:window|is_maximized')return false
+      if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
+      if(cmd==='plugin:updater|check')return null
+      if(cmd==='plugin:event|listen'){events[args.event]=args.handler;return args.handler}
     if(cmd==='plugin:dialog|open')return args.options.directory?root.path:null
     if(cmd==='plugin:dialog|message')return 'Ok'
     if(cmd==='connect_root')return root

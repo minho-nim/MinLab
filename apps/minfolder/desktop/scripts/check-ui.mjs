@@ -13,7 +13,7 @@ await server.listen()
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||undefined,headless:true,args:['--no-sandbox']})
 const reports=[]
 async function make(width,options={}){
-  const page=await browser.newPage({viewport:{width,height:1000}}),errors=[]
+  const page=await browser.newPage({viewport:{width,height:options.height||1000}}),errors=[]
   page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())})
   await page.addInitScript(installDemo,{mode:'native',...options})
   await page.goto(server.resolvedUrls.local[0]+'desktop/index.html')
@@ -31,7 +31,7 @@ try{
     assert.equal(await page.locator('#approve').isDisabled(),true)
     await report(page,errors,`${width}-empty`)
     if(width===400)await page.screenshot({path:`${output}/04-mobile-empty.png`,fullPage:true})
-    await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.id),'connect')
+    await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.id),'window-close');await page.locator('#connect').focus()
     await page.keyboard.press('Enter')
     await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('폴더 연결 완료'))
     const toggle=page.getByRole('button',{name:'강남케이블공사 펼치기',exact:true});await toggle.focus();await page.keyboard.press('Enter')
@@ -53,6 +53,24 @@ try{
       assert.ok(await page.locator('#tree').evaluate(n=>n.scrollLeft)>0)
       await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:`${output}/04-mobile-long-name.png`,fullPage:true})
     }
+    await page.close()
+  }
+  for(const [width,height] of [[900,600],[1024,650],[1280,720],[1366,768],[1440,900],[1920,1080]]){
+    const {page,errors}=await make(width,{height,manyFiles:true})
+    await page.locator('#connect').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('폴더 연결 완료'))
+    for(const name of ['강남케이블공사_작업절차서','송도케이블공사_위험성평가','평택설비공사_견적서'])await page.locator('#files .file-row').filter({hasText:name}).getByRole('checkbox').check()
+    await page.locator('#recommend-all').click();await page.waitForFunction(()=>document.querySelectorAll('#queue select').length===3&&[...document.querySelectorAll('#queue select')].every(n=>n.value))
+    const geometry=await page.evaluate(()=>({height:innerHeight,page:document.documentElement.scrollHeight,scrollY,approval:document.querySelector('#approve').getBoundingClientRect().toJSON(),files:document.querySelector('#files').getBoundingClientRect().toJSON(),fileScroll:document.querySelector('#files').scrollHeight,queue:document.querySelector('#queue').getBoundingClientRect().toJSON()}))
+    assert.ok(geometry.page<=height,`${width}x${height}: vertical page scroll ${JSON.stringify(geometry)}`)
+    assert.equal(geometry.scrollY,0)
+    assert.ok(geometry.approval.top>=0&&geometry.approval.bottom<=height,JSON.stringify(geometry))
+    assert.ok(geometry.fileScroll>geometry.files.height,'long file list scrolls within its pane')
+    await report(page,errors,`${width}x${height}-single-screen`)
+    await page.evaluate(()=>{document.activeElement?.blur();document.querySelector('#files').scrollTop=0})
+    if(width===1366||width===900)await page.screenshot({path:`${output}/07-single-screen-${width}x${height}.png`,fullPage:true})
+    await page.locator('#window-version').click();await page.getByRole('dialog',{name:'MinFolder 0.1.0'}).waitFor()
+    await page.locator('#update-check').click();await page.waitForFunction(()=>document.querySelector('#update-status').textContent==='최신 버전이에요.')
+    await page.locator('#close-info').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'window-version')
     await page.close()
   }
   {

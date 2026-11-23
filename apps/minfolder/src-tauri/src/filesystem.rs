@@ -42,6 +42,7 @@ pub struct Moved {
 #[derive(Default)]
 pub struct Workspace {
     next: u64,
+    installing: bool,
     tracked: HashMap<String, Tracked>,
     by_path: HashMap<PathBuf, String>,
     iterators: HashMap<String, ReadDir>,
@@ -207,7 +208,13 @@ impl Workspace {
         }
         Ok(path)
     }
+    pub fn set_installing(&mut self, installing: bool) {
+        self.installing = installing;
+    }
     pub fn move_file(&mut self, source_id: &str, target_id: &str) -> Result<Moved, String> {
+        if self.installing {
+            return Err("업데이트 설치 준비 중에는 파일을 이동할 수 없어요.".into());
+        }
         let source = self.checked(source_id, "file", true)?;
         let folder = self.checked(target_id, "directory", false)?;
         let name = source.file_name().ok_or("파일 이름을 확인할 수 없어요.")?;
@@ -646,5 +653,14 @@ mod tests {
             b"[ZoneTransfer]\r\nZoneId=3\r\n"
         );
         assert!(!Path::new(&file.path).exists());
+    }
+    #[test]
+    fn update_installation_blocks_new_file_moves() {
+        let (_dir, mut ws, file, target) = setup();
+        ws.set_installing(true);
+        assert!(ws.move_file(&file.id, &target.id).is_err());
+        assert!(Path::new(&file.path).exists());
+        ws.set_installing(false);
+        assert!(ws.move_file(&file.id, &target.id).is_ok());
     }
 }

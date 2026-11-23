@@ -30,6 +30,10 @@ async function pageWithBridge(){
     window.isTauri=true
     window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback:fn=>{callbacks[++next]=fn;return next},unregisterCallback:()=>{},invoke:async(cmd,args)=>{
       window.testBridge.calls.push({cmd,args})
+      if(cmd==='plugin:app|version')return '0.1.0'
+      if(cmd==='plugin:window|is_maximized')return false
+      if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
+      if(cmd==='plugin:updater|check')return null
       if(cmd==='plugin:event|listen'){events[args.event]=args.handler;return args.handler}
       if(cmd==='plugin:dialog|open')return args.options.directory?root.path:[external.path]
       if(cmd==='plugin:dialog|message')return window.testBridge.accept?'Ok':'Cancel'

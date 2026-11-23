@@ -4,14 +4,16 @@ import {open, confirm} from '@tauri-apps/plugin-dialog'
 import {key, norm, predict, matchingProjects} from '../core.js'
 import {createMapView} from './map-view.js'
 import {rememberFocus,restoreFocus} from './focus.js'
+import {setupWindowShell} from './window-shell.js'
 const $=id=>document.getElementById(id)
 const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
 const read=(k,fallback)=>{try{return JSON.parse(localStorage.getItem(k))??fallback}catch{return fallback}}
-const state={root:null,nodes:new Map(),selected:null,queue:[],checked:new Set(),busy:false,suppressClickUntil:0,history:[],epoch:0,drag:null}
+let shell=null
+const state={root:null,nodes:new Map(),selected:null,queue:[],checked:new Set(),busy:false,installing:false,suppressClickUntil:0,history:[],epoch:0,drag:null}
 const excluded=new Set(['desktop.ini','thumbs.db','ehthumbs.db','.ds_store','$recycle.bin','system volume information'])
 const hidden=e=>excluded.has(e.name.toLowerCase())||e.name.startsWith('~$')
-const status=text=>$('status').textContent=text
+const status=text=>{$('status').textContent=text;$('status').title=text}
 const folderNodes=()=>[...state.nodes.values()]
 const historyKey=()=>`minfolder.desktop.history:${state.root?.path}`
 function saveHistory(){try{localStorage.setItem(historyKey(),JSON.stringify(state.history.slice(0,100)))}catch{status('이동은 완료됐지만 기록을 저장하지 못했어요.')}}
@@ -50,7 +52,7 @@ async function load(node,reset=false){
   return node.loading
 }
 async function connect(path){
-  if(state.busy)return
+  if(state.busy||state.installing)return
   if(state.queue.length&&!await confirm('분류 대기 목록을 비우고 기준 폴더를 바꿀까요?',{title:'폴더 변경',kind:'warning'}))return
   const root=await invoke('connect_root',{path})
   state.epoch++;mapView.reset();state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
@@ -70,7 +72,7 @@ async function connect(path){
   if(epoch===state.epoch)status('폴더 연결 완료 · 탐색기에서 놓거나 선택한 파일은 승인 후 이동해요.')
 }
 async function chooseRoot(){
-  if(state.busy)return
+  if(state.busy||state.installing)return
   try{const path=await open({directory:true,multiple:false,title:'MinFolder 기준 폴더'});if(path)await connect(path)}catch(e){status('폴더 연결 실패 · '+e)}
 }
 function select(id){state.selected=id;state.checked.clear();render();void load(state.nodes.get(id))}
@@ -123,7 +125,7 @@ async function suggest(rec){
 }
 function parentPath(path){return path.slice(0,Math.max(path.lastIndexOf('\\'),path.lastIndexOf('/')))}
 function addFiles(files,target=''){
-  if(state.busy)return
+  if(state.busy||state.installing)return
   if(!state.root){status('먼저 기준 폴더를 연결해 주세요.');return}
   for(const file of files.filter(e=>!hidden(e))){
     if(target&&state.nodes.get(target)?.path===parentPath(file.path)){status('이미 이 폴더에 있는 파일이에요. 다른 폴더를 골라 주세요.');continue}
@@ -135,11 +137,11 @@ function addFiles(files,target=''){
   renderQueue()
 }
 async function importPaths(paths,target=''){
-  if(state.busy)return
+  if(state.busy||state.installing)return
   if(!state.root){status('먼저 기준 폴더를 연결해 주세요.');return}
   try{const files=await invoke('import_files',{paths});addFiles(files,target)}catch(e){status('파일을 추가하지 못했어요. '+e)}
 }
-async function chooseFiles(){if(state.busy)return;try{const paths=await open({multiple:true,directory:false,title:'이동할 파일 선택'});if(paths)await importPaths(Array.isArray(paths)?paths:[paths])}catch(e){status(String(e))}}
+async function chooseFiles(){if(state.busy||state.installing)return;try{const paths=await open({multiple:true,directory:false,title:'이동할 파일 선택'});if(paths)await importPaths(Array.isArray(paths)?paths:[paths])}catch(e){status(String(e))}}
 function renderQueue(){
   const queue=$('queue'),focus=rememberFocus(queue);queue.replaceChildren();$('queue-count').textContent=state.queue.length+'건'
   if(!state.queue.length)empty(queue,'분류할 파일을 선택하거나 끌어 놓으세요.')
@@ -158,7 +160,7 @@ function renderQueue(){
   updateSummary();applyBusy();restoreFocus(queue,focus)
 }
 function ready(){return state.queue.filter(r=>r.checked&&r.target&&state.nodes.has(r.target))}
-function updateSummary(){$('summary').textContent=`승인 대상 ${ready().length}건 · 전체 ${state.queue.length}건`;$('approve').disabled=state.busy||!ready().length}
+function updateSummary(){$('summary').textContent=`승인 대상 ${ready().length}건 · 전체 ${state.queue.length}건`;$('approve').disabled=state.busy||state.installing||!ready().length}
 function renderHistory(){
   const box=$('history');box.replaceChildren()
   if(!state.history.length){empty(box,'아직 이동한 파일이 없어요.');return}
@@ -166,10 +168,10 @@ function renderHistory(){
     const row=element('div',undefined,'history-item');row.append(element('strong',h.name),element('small',h.destinationPath),element('small',h.status+' · '+new Date(h.time).toLocaleString('ko-KR')));box.append(row)
   }
 }
-function applyBusy(){for(const node of document.querySelectorAll('button,input,select'))node.disabled=state.busy||node.dataset.unavailable==='true';updateSummary()}
+function applyBusy(){for(const node of document.querySelectorAll('button,input,select'))if(!node.closest('.desktop-titlebar,#app-info'))node.disabled=state.busy||state.installing||node.dataset.unavailable==='true';updateSummary();shell?.refresh()}
 function render(){const focus=rememberFocus();renderTree();renderFiles();renderQueue();renderHistory();applyBusy();restoreFocus(document,focus)}
 async function approve(){
-  if(state.busy)return
+  if(state.busy||state.installing)return
   const batch=ready();if(!batch.length)return
   // Lock before the async native confirmation to prevent duplicate batches.
   state.busy=true;applyBusy()
@@ -193,7 +195,7 @@ async function approve(){
   finally{state.busy=false;render()}
 }
 function startDrag(event,file){
-  if(state.busy||event.button!==0)return
+  if(state.busy||state.installing||event.button!==0)return
   state.drag={file,x:event.clientX,y:event.clientY,active:false}
 }
 function dropFolder(x,y){return document.elementFromPoint(x,y)?.closest('[data-folder]')}
@@ -211,18 +213,19 @@ document.addEventListener('pointerup',event=>{
   if(drag?.active){state.suppressClickUntil=Date.now()+300;const node=dropFolder(event.clientX,event.clientY);if(node)addFiles([drag.file],node.dataset.folder);else status('이동할 폴더 위에 파일을 놓아 주세요.')}
 })
 window.addEventListener('blur',()=>{state.drag=null;$('drag-label').hidden=true;clearHot()})
-async function openEntry(id,directory){if(state.busy||!id)return;try{await invoke('open_entry',{id,directory});status(directory?'Windows 탐색기로 폴더를 열었어요.':'기본 프로그램에 파일 열기를 요청했어요.')}catch(e){status(String(e))}}
+async function openEntry(id,directory){if(state.busy||state.installing||!id)return;try{await invoke('open_entry',{id,directory});status(directory?'Windows 탐색기로 폴더를 열었어요.':'기본 프로그램에 파일 열기를 요청했어요.')}catch(e){status(String(e))}}
 $('open-folder').onclick=()=>openEntry(state.selected,true)
 $('connect').onclick=chooseRoot;$('add-files').onclick=chooseFiles;$('approve').onclick=approve
 $('search').oninput=renderTree
-$('refresh').onclick=async()=>{if(state.busy)return;const node=state.nodes.get(state.selected);if(node)await load(node,true)}
+$('refresh').onclick=async()=>{if(state.busy||state.installing)return;const node=state.nodes.get(state.selected);if(node)await load(node,true)}
 $('recommend-all').onclick=()=>{const node=state.nodes.get(state.selected);if(node)addFiles(node.entries.filter(e=>state.checked.has(e.id)))}
 $('clear-history').onclick=()=>{state.history=[];saveHistory();renderHistory()}
 render()
 if(isTauri()){
-  await getCurrentWindow().onCloseRequested(event=>{if(state.busy){event.preventDefault();status('파일 이동이 끝난 뒤 앱을 닫아 주세요.')}})
+  shell=await setupWindowShell({isBusy:()=>state.busy,onError:status,onInstallState:value=>{state.installing=value;applyBusy()}})
+  await getCurrentWindow().onCloseRequested(event=>{if(state.busy&&!state.installing){event.preventDefault();status('파일 이동이 끝난 뒤 앱을 닫아 주세요.')}})
   await getCurrentWindow().onDragDropEvent(({payload})=>{
-    if(state.busy)return
+    if(state.busy||state.installing)return
     if(payload.type==='leave'){clearHot();return}
     if(payload.type!=='over'&&payload.type!=='drop'&&payload.type!=='enter')return
     const x=payload.position.x/window.devicePixelRatio,y=payload.position.y/window.devicePixelRatio
@@ -232,4 +235,4 @@ if(isTauri()){
   })
   const saved=read('minfolder.desktop.root',null)
   if(saved)try{await connect(saved)}catch(e){status('기억한 폴더에 접근하지 못했어요. 폴더를 다시 연결해 주세요. '+e)}
-}else{status('Windows 앱에서 폴더 연결과 실제 이동을 사용할 수 있어요. 현재 화면은 미리보기예요.');$('connect').disabled=true;$('add-files').disabled=true}
+}else{shell=await setupWindowShell({isBusy:()=>false,onError:status,onInstallState:()=>{}});status('Windows 앱에서 폴더 연결과 실제 이동을 사용할 수 있어요. 현재 화면은 미리보기예요.');$('connect').disabled=true;$('add-files').disabled=true}

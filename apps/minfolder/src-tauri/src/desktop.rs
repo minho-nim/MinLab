@@ -3,6 +3,7 @@ use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
 };
+use tauri::Manager;
 use tauri_plugin_opener::OpenerExt;
 type Shared = Arc<Mutex<Workspace>>;
 async fn work<T: Send + 'static>(
@@ -58,8 +59,25 @@ async fn open_entry(
         .open_path(path.to_string_lossy(), None::<&str>)
         .map_err(|e| format!("기본 프로그램으로 열지 못했어요. {e}"))
 }
+#[tauri::command]
+async fn prepare_update(state: tauri::State<'_, Shared>, installing: bool) -> Result<(), String> {
+    // This mutex is held for an entire file move: wait for it before freezing new writes.
+    work(&state, move |ws| {
+        ws.set_installing(installing);
+        Ok(())
+    })
+    .await
+}
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _, _| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+        }))
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .manage(Shared::default())
@@ -68,7 +86,8 @@ pub fn run() {
             import_files,
             list_directory,
             move_file,
-            open_entry
+            open_entry,
+            prepare_update
         ])
         .run(tauri::generate_context!())
         .expect("MinFolder를 시작하지 못했습니다.");

@@ -22,20 +22,21 @@ async function load(node,reset=false){
     try{
       const page=await invoke('list_directory',{id:node.id,reset:reset||!node.loaded})
       if(epoch!==state.epoch)return
-      if(reset){
-        const keep=new Set(page.entries.map(e=>e.id))
-        for(const old of node.entries.filter(e=>e.kind==='directory'&&!keep.has(e.id))){
-          const branch=state.nodes.get(old.id)
-          if(branch)for(const n of folderNodes())if(branch.relative.every((v,i)=>n.relative[i]===v))state.nodes.delete(n.id)
-        }
-        node.entries=[]
-        for(const rec of state.queue)if(rec.target&&!state.nodes.has(rec.target)){rec.target='';rec.auto=false;rec.reason='폴더 목록이 바뀌었어요. 저장 위치를 다시 골라 주세요.'}
-      }
+      if(reset){node.priorDirectories=[...new Map([...(node.priorDirectories??[]),...node.entries.filter(e=>e.kind==='directory')].map(e=>[e.id,e])).values()];node.entries=[]}
       for(const entry of page.entries.filter(e=>!hidden(e))){
         if(!node.entries.some(e=>e.id===entry.id))node.entries.push(entry)
         if(entry.kind==='directory'&&!state.nodes.has(entry.id))state.nodes.set(entry.id,makeNode(entry,[...node.relative,entry.name]))
       }
       node.entries.sort((a,b)=>a.kind===b.kind?a.name.localeCompare(b.name,'ko',{numeric:true}):a.kind==='directory'?-1:1)
+      if(page.done&&node.priorDirectories){
+        const keep=new Set(node.entries.map(e=>e.id))
+        for(const old of node.priorDirectories.filter(e=>!keep.has(e.id))){
+          const branch=state.nodes.get(old.id)
+          if(branch)for(const n of folderNodes())if(branch.relative.every((v,i)=>n.relative[i]===v))state.nodes.delete(n.id)
+        }
+        node.priorDirectories=null
+        for(const rec of state.queue)if(rec.target&&!state.nodes.has(rec.target)){rec.target='';rec.auto=false;rec.reason='폴더 목록이 바뀌었어요. 저장 위치를 다시 골라 주세요.'}
+      }
       node.loaded=true;node.done=page.done;node.error=''
       if(page.skipped)status(`읽지 못한 항목 또는 연결 폴더 ${page.skipped}개를 제외했어요.`)
     }catch(e){if(epoch===state.epoch){node.error=String(e);status('폴더를 읽지 못했어요. '+e)}}
@@ -84,7 +85,7 @@ function renderTree(){
     row.append(toggle,name);wrap.append(row)
     if(node.opened||q){
       const children=element('div',undefined,'branch')
-      for(const e of node.entries.filter(e=>e.kind==='directory')){const n=state.nodes.get(e.id);if(n&&relevant(n)&&budget>0)children.append(branch(n))}
+      for(const e of [...new Map([...(node.priorDirectories??[]),...node.entries.filter(e=>e.kind==='directory')].map(e=>[e.id,e])).values()]){const n=state.nodes.get(e.id);if(n&&relevant(n)&&budget>0)children.append(branch(n))}
       if(node.error)children.append(element('p','읽기 실패 · '+node.error,'hint'))
       if(!node.done)children.append(button(node.loading?'읽는 중…':'다음 항목 보기',()=>load(node)))
       wrap.append(children)

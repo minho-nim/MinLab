@@ -26,7 +26,7 @@ async function pageWithBridge(){
     const external=file('external','강남공사_작업절차서_외부.docx','C:\\Downloads\\강남공사_작업절차서_외부.docx')
     const lists={root:[group,document],group:[project],project:[work],work:[destination],destination:[]}
     const callbacks={},events={};let next=0
-    window.testBridge={calls:[],accept:true,failMove:false,events,emit:(event,payload)=>callbacks[events[event]]({event,payload})}
+    window.testBridge={calls:[],accept:true,failMove:false,partialRoot:false,lists,events,emit:(event,payload)=>callbacks[events[event]]({event,payload})}
     window.isTauri=true
     window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback:fn=>{callbacks[++next]=fn;return next},unregisterCallback:()=>{},invoke:async(cmd,args)=>{
       window.testBridge.calls.push({cmd,args})
@@ -34,7 +34,13 @@ async function pageWithBridge(){
       if(cmd==='plugin:dialog|open')return args.options.directory?root.path:[external.path]
       if(cmd==='plugin:dialog|message')return window.testBridge.accept?'Ok':'Cancel'
       if(cmd==='connect_root')return root
-      if(cmd==='list_directory')return {entries:lists[args.id]??[],done:true,skipped:0}
+      if(cmd==='list_directory'){
+        if(args.id==='root'&&window.testBridge.partialRoot){
+          if(args.reset)return {entries:lists.root.filter(e=>e.kind==='file'),done:false,skipped:0}
+          window.testBridge.partialRoot=false;return {entries:lists.root.filter(e=>e.kind==='directory'),done:true,skipped:0}
+        }
+        return {entries:lists[args.id]??[],done:true,skipped:0}
+      }
       if(cmd==='import_files')return [external]
       if(cmd==='open_entry')return
       if(cmd==='move_file'){
@@ -96,5 +102,23 @@ test('탐색기 드롭은 실제 경로를 받아 지정한 목적지로 분류'
   assert.match(await page.locator('#queue').textContent(),/외부/)
   assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='move_file').length),0)
   await page.screenshot({path:join(tmpdir(),'minfolder-desktop-preview.png'),fullPage:true})
+  await page.close()
+})
+
+test('일부 페이지만 새로 읽어도 기존 목적지를 유지하고 삭제가 확인되면 해제',async()=>{
+  const page=await pageWithBridge();await waitForSuggestion(page)
+  await page.locator('#queue select').selectOption('group')
+  await page.evaluate(()=>testBridge.partialRoot=true)
+  await page.locator('#refresh').click()
+  await page.locator('#tree').getByRole('button',{name:'다음 항목 보기',exact:true}).waitFor()
+  assert.equal(await page.locator('#queue select').inputValue(),'group')
+  assert.equal(await page.locator('#approve').isEnabled(),true)
+  await page.locator('#tree').getByRole('button',{name:'다음 항목 보기',exact:true}).click()
+  await page.waitForFunction(()=>!document.querySelector('#tree').textContent.includes('다음 항목 보기'))
+  assert.equal(await page.locator('#queue select').inputValue(),'group')
+  await page.evaluate(()=>testBridge.lists.root=testBridge.lists.root.filter(e=>e.id!=='group'))
+  await page.locator('#refresh').click()
+  await page.waitForFunction(()=>document.querySelector('#queue select').value==='')
+  assert.equal(await page.locator('#approve').isDisabled(),true)
   await page.close()
 })

@@ -85,8 +85,8 @@ impl Workspace {
         let modified = stamp(&meta)?;
         if let Some(old) = self.by_path.get(&path).and_then(|id| self.tracked.get(id)) {
             if old.identity == identity
-                && old.entry.size == meta.len()
-                && old.entry.modified == modified
+                && (kind == "directory"
+                    || (old.entry.size == meta.len() && old.entry.modified == modified))
             {
                 return Ok(old.entry.clone());
             }
@@ -514,5 +514,18 @@ mod tests {
             "root listing with 1,000 nested files: {:?}; nested files read: 0",
             start.elapsed()
         );
+    }
+    #[test]
+    fn directory_id_survives_content_changes_during_a_batch() {
+        let (dir, mut ws, file, target) = setup();
+        // Directory timestamps change as files arrive; queued targets must retain their IDs.
+        ws.move_file(&file.id, &target.id).unwrap();
+        let after = ws.track(Path::new(&target.path)).unwrap();
+        assert_eq!(after.id, target.id);
+        let second_path = dir.path().join("second.txt");
+        fs::write(&second_path, b"second").unwrap();
+        let second = ws.import_files(&[second_path]).unwrap().remove(0);
+        ws.move_file(&second.id, &target.id).unwrap();
+        assert!(Path::new(&target.path).join("second.txt").exists());
     }
 }

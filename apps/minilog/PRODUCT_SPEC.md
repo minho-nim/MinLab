@@ -1,4 +1,4 @@
-# MINILOG — 제품 및 개발 명세 v3.2
+# MINILOG — 제품 및 개발 명세 v3.3
 작성일: 2026-11-23
 상태: 기획 확정 / 개발 착수 전
 
@@ -12,12 +12,24 @@
 
 ## 사용자 및 안전성
 - 초대 기반 2개 계정; 로그인/로그아웃, 개인 블로그 주소·닉네임·카테고리
-- Supabase Auth + DB RLS + 비공개 Storage 정책으로 사용자별 데이터 격리. 다른 계정의 미디어/원고/스타일/수익 접근 불가. DB뿐 아니라 이미지 URL/API 권한도 검증
-- GitHub Pages 프런트엔드 React/Vite/TypeScript, Supabase 백엔드, 인증된 Cloudflare Worker에서 AI API 호출(키를 클라이언트에 노출하지 않음)
+- Cloudflare Workers 인증(초대된 2인, 안전한 세션) + D1 데이터 소유자 검증 + 비공개 R2 객체 접근 정책으로 데이터 격리. 모든 API에서 사용자 소유권을 강제 검증
+- GitHub Pages 프런트엔드 React/Vite/TypeScript, Cloudflare Workers + D1 + R2 백엔드. 사용자별 Gemini API 키를 이용한 서버 측 AI 호출
 - 파일 업로드 크기·형식 검증, 오류 복구, 자동저장, 백업/복원, API 호출량 제한 및 비용 추적
 - 참고 블로그는 허용된 공개 본문/직접 제공 원문만 분석; 문장 복제 없이 구성 패턴만 추출. 크롤링·접근 우회 금지
 - AI는 사진에서 판단 불가능한 방문 경험·맛·가격·구매 사실·장소명을 허구로 채우지 않음. 정보 부족 시 확인 질문/빈 필드 유지
 - 경제적 대가성 콘텐츠는 적절한 광고·협찬 고지 확인 전 승인 차단
+
+## Gemini 계정·API 키 정책 (확정: 2026-11-23)
+- 두 사용자는 **서로 다른 Google 계정**에서 각각 자신만의 Gemini API 프로젝트와 키를 발급한다. MINILOG 내 본인 계정의 설정 화면에서 자신의 키를 등록·교체·연결 해제한다.
+- MINILOG 공통 백엔드는 Cloudflare Worker 1개(논리적으로 서비스 분리 가능), D1, R2를 사용하지만 **Gemini 호출은 반드시 요청한 사용자의 키**로 수행한다.
+- 서로의 API 키, 사용량 내역, 청구 정보, 원고, 사진, 스타일 프로필에 접근할 수 없다. 키 원문은 화면에 다시 표시하지 않는다.
+- API 키는 **브라우저 로컬스토리지·공개 GitHub 코드·D1 평문·로그에 저장하지 않는다.** 키 저장 시 Worker에서 AES-GCM 등의 인증된 암호화로 암호화하고, 암호화 마스터 키는 Cloudflare Worker Secret에 보관한다. D1에는 사용자 ID별 암호문·nonce·키 버전만 저장한다. 암호화 키 교체·키 삭제·복호화 실패 처리도 설계한다.
+- 키 등록/갱신 요청은 HTTPS + 로그인 세션 보호 + 사용자 소유권 확인을 강제하고, 키를 수신하는 엔드포인트에는 민감 정보 로깅을 하지 않는다. 가능하다면 API 키 권한을 Gemini API로 제한한다.
+- Google API의 무료 할당량과 과금은 사용자의 **Google Cloud 프로젝트 기준**으로 적용된다. 키가 다르다고 한도가 무조건 늘지 않으며, 별도 계정/프로젝트도 무료 사용이나 비용 0원을 보장하지 않는다.
+- Worker는 사용자별 요청 횟수/토큰/모델/오류/추정 비용을 `ai_usage_logs`에 저장한다. 프라이버시를 위해 사진·원고 본문·키는 로그에 남기지 않는다.
+- 별도 Minoffia 통합 대시보드에서는 향후 MINILOG의 **집계된 운영 지표만** 권한 있는 관리자 API로 조회한다. Gemini 키를 Minoffia에 복제하거나 타인 계정 호출에 사용하지 않는다.
+- 사용자 API 키가 없거나 유효하지 않으면 글 생성 기능만 제한하고, 저장 원고 조회·편집·내보내기는 계속 가능해야 한다.
+- 두 사람의 API 키 분리 외에 사용량 초과, 호출 실패, 모델 미지원 시 사용자별 오류·재시도 정책을 갖춘다.
 
 ## 사진 저장소 정책 (확정: 2026-11-23)
 **기본 정책:** 게시 완료 확인일로부터 **30일** 보관 후 정리. **원본 정리 옵션 사용**, **삭제 예정 알림 사용**. 이 정책은 두 사용자 각각에게 독립적으로 적용한다.
@@ -42,8 +54,8 @@
 - 삭제가 진행 중일 때는 원고를 별도 잠금/정리 대기 상태로 관리하고, 삭제 실패 시 재시도 가능한 상태 및 오류 이력을 남긴다.
 
 ### 사용자별 독립 저장과 보안
-- Supabase private Storage 경로는 `{user_id}/{article_id}/{photo_id}/...` 등 사용자 소유를 명확히 구분한다.
-- 사진 메타데이터 및 삭제 작업은 `user_id`가 포함되며 Supabase RLS와 Storage 정책으로 권한을 검증한다. 사진 다운로드 URL은 짧게 만료되는 서명 URL을 사용한다.
+- 비공개 Cloudflare R2 객체 경로는 `{user_id}/{article_id}/{photo_id}/...` 등 사용자 소유를 명확히 구분한다.
+- 사진 메타데이터 및 삭제 작업은 `user_id`를 기준으로 인증된 Worker가 소유권을 검증한다. R2는 공개 버킷으로 열지 않고 인증된 프록시 또는 단기 서명 URL로 접근한다.
 - 자동 삭제 처리기는 **본인 소유 파일만** 정리하고 해당 객체를 참조하는 다른 사용자나 원고가 없는지 검증한다. 일반 사용자가 타인의 파일 경로나 삭제 대상을 조작할 수 없도록 한다.
 - 두 계정의 저장 용량, 삭제 예정 내역, 삭제 로그 및 보관 예외 설정은 서로 노출되지 않는다.
 
@@ -57,8 +69,8 @@
 - 개인별 사진 원본/최적화본/삭제 예정 파일 사용량을 집계하고, 프로젝트 전체 사용량도 관리자가 확인하도록 한다(다른 사용자 세부 자료 제외).
 - 1인별 저장 상한·단일 파일 크기·사진 수·원고별 사진 수를 설정할 수 있게 하고, 제한 도달 시 신규 업로드 전 압축/정리를 안내한다.
 - 클라이언트 업로드 전 리사이즈·적절한 압축을 적용하고 화질/회전/EXIF 제거 여부를 확인한다. 원본 보관 시 추가 점유 용량을 별도로 표시한다.
-- Supabase 무료 플랜 한도는 다른 앱과 공유할 수 있으므로, MINILOG 사용량뿐 아니라 **프로젝트 전체 Storage 사용량**을 근거로 판단한다.
-- 저장소 데이터 삭제는 **Supabase Storage API를 통해** 수행한다. DB 행만 삭제하거나 Storage 객체를 직접 SQL로 삭제해서 용량이 정리된 것으로 취급하지 않는다.
+- Cloudflare R2/D1/Workers 무료 한도는 동일 계정의 다른 앱(Minoffia, Minially)과 공유될 수 있으므로 MINILOG와 계정 전체 사용량을 함께 확인한다.
+- 저장소 데이터 삭제는 **Cloudflare R2 API를 통해** 수행하고 성공을 확인한다. D1 메타데이터만 지워서 실제 사진 용량이 정리된 것으로 취급하지 않는다.
 
 ### 데이터 필드 및 테스트
 - `articles`: `published_url`, `published_confirmed_at`, `publishing_status`.
@@ -68,7 +80,7 @@
 
 ## 1단계: 사진 기반 AI 원고 작성 MVP
 **목표:** 사용자별 사진+간단한 사실 입력으로 사진이 배치된 원고 생성, 수정, 승인, 발행 준비 완료
-- 사용자별 로그인 및 프로필, RLS+Storage 접근통제
+- 사용자별 로그인 및 프로필, 인증된 Workers의 D1 소유권 검증과 비공개 R2 객체 접근통제
 - 사진 여러 장 업로드, 미리보기, 수동 순서 재배치, 압축/메타정보 관리, 저장
 - AI 사진 분석(무엇이 보이는지 식별), 사진별 메모/설명
 - 글 유형: 카페/맛집/여행/제품 후기/정보 글/협찬
@@ -109,14 +121,14 @@
 ## 기술/데이터
 - UI: React + TypeScript + Vite, 기존 MinLab 디자인과 독립 앱 구조
 - 배포: GitHub Pages `/MinLab/apps/minilog/` (기존 빌드에 앱 아웃풋 복사 필요)
-- 계정/DB/미디어: Supabase Auth/Postgres/Private Storage, 전 테이블 RLS
-- AI 백엔드: Cloudflare Worker (서버 측 모델 키, 인증된 유저 검증, rate limit)
-- 데이터: profiles, blog_references, style_profiles, articles, article_photos, article_revisions, photo_deletion_logs, sponsorships, revenue_records, article_metrics, outreach_leads, outreach_proposals, outreach_events, media_kits
+- 계정/DB/미디어: Cloudflare Workers 인증, D1(SQLite) 사용자별 소유권 제어, 비공개 R2 사진 저장
+- AI 백엔드: Cloudflare Worker (사용자별 암호화된 Gemini 키 복호화, 인증된 유저 검증, rate limit, 사용자별 호출 기록)
+- 데이터: user_ai_credentials, ai_usage_logs, profiles, blog_references, style_profiles, articles, article_photos, article_revisions, photo_deletion_logs, sponsorships, revenue_records, article_metrics, outreach_leads, outreach_proposals, outreach_events, media_kits
 - 보안: 공개 저장소에 비밀 키/개인 사진/협찬 계약서 직접 커밋 금지
 
 ## 첫 구현 순서
 1. `apps/minilog` 기본 페이지/라우팅과 MinLab 빌드 통합
-2. Supabase 프로젝트와 2인 초대 로그인 및 RLS/비공개 이미지 접근 검사
+2. Cloudflare Workers/D1/R2 구성, 2인 초대 로그인 및 사용자별 접근 권한 검증
 3. 사진 업로드/정렬/보관 및 간단한 사실정보 폼
 4. Worker 연동 사진 분석→AI 원고 생성
 5. 글·사진 통합 편집기/자동저장/승인

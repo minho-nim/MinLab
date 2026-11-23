@@ -1,9 +1,11 @@
 use file_id::{get_file_id, FileId};
 use serde::Serialize;
+#[cfg(not(windows))]
+use std::io::Write;
 use std::{
     collections::HashMap,
     fs::{self, File, OpenOptions, ReadDir},
-    io::{self, Read, Seek, SeekFrom, Write},
+    io::{self, Read, Seek, SeekFrom},
     path::{Path, PathBuf},
     time::UNIX_EPOCH,
 };
@@ -241,30 +243,45 @@ impl Workspace {
             // Keep the destination directory from being renamed during publication on Windows.
             let _folder_guard =
                 directory_guard(target.parent().ok_or("목적지 폴더가 없어요.")?).map_err(error)?;
+            #[cfg(windows)]
+            copy_exclusive(source, target).map_err(error)?;
             let mut input = source_for_copy(source).map_err(error)?;
+            self.checked(source_id, "file", true)?;
             let mut options = OpenOptions::new();
-            options.read(true).write(true).create_new(true);
+            options.read(true).write(true);
             #[cfg(windows)]
             {
                 use std::os::windows::fs::OpenOptionsExt;
                 options.share_mode(windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ);
             }
+            #[cfg(not(windows))]
+            options.create_new(true);
             let mut output = options.open(target).map_err(error)?;
-            let mut hash = blake3::Hasher::new();
-            let mut buffer = vec![0; 1024 * 1024];
-            loop {
-                let count = input.read(&mut buffer).map_err(error)?;
-                if count == 0 {
-                    break;
+            let expected_hash;
+            #[cfg(windows)]
+            {
+                // Native copy preserves Windows attributes and alternate data streams.
+                expected_hash = digest_reader(&mut input)?;
+            }
+            #[cfg(not(windows))]
+            {
+                let mut hash = blake3::Hasher::new();
+                let mut buffer = vec![0; 1024 * 1024];
+                loop {
+                    let count = input.read(&mut buffer).map_err(error)?;
+                    if count == 0 {
+                        break;
+                    }
+                    hash.update(&buffer[..count]);
+                    output.write_all(&buffer[..count]).map_err(error)?;
                 }
-                hash.update(&buffer[..count]);
-                output.write_all(&buffer[..count]).map_err(error)?;
+                expected_hash = hash.finalize();
             }
             output.sync_all().map_err(error)?;
             let saved_identity = get_file_id(target).map_err(error)?;
             output.seek(SeekFrom::Start(0)).map_err(error)?;
             let saved_hash = digest_reader(&mut output)?;
-            if hash.finalize() != saved_hash {
+            if expected_hash != saved_hash {
                 return Err("복사 내용이 일치하지 않아요.".into());
             }
             self.checked(source_id, "file", true)?;
@@ -274,6 +291,10 @@ impl Workspace {
                 || saved_identity != get_file_id(target).map_err(error)?
             {
                 return Err("복사 중 파일이 바뀌었어요.".into());
+            }
+            #[cfg(windows)]
+            if alternate_streams(source)? != alternate_streams(target)? {
+                return Err("파일의 추가 데이터가 일치하지 않아요. 원본을 유지해요.".into());
             }
             self.checked(source_id, "file", true)?;
             remove_copied_source(&input, source).map_err(error)?;
@@ -349,6 +370,82 @@ fn remove_copied_source(file: &File, _: &Path) -> io::Result<()> {
 #[cfg(not(windows))]
 fn remove_copied_source(_: &File, path: &Path) -> io::Result<()> {
     fs::remove_file(path)
+}
+#[cfg(windows)]
+fn copy_exclusive(source: &Path, target: &Path) -> io::Result<()> {
+    use std::os::windows::ffi::OsStrExt;
+    use windows_sys::Win32::Storage::FileSystem::CopyFileW;
+    let from: Vec<u16> = source.as_os_str().encode_wide().chain(Some(0)).collect();
+    let to: Vec<u16> = target.as_os_str().encode_wide().chain(Some(0)).collect();
+    if unsafe { CopyFileW(from.as_ptr(), to.as_ptr(), 1) } == 0 {
+        Err(io::Error::last_os_error())
+    } else {
+        Ok(())
+    }
+}
+#[cfg(windows)]
+fn alternate_streams(
+    path: &Path,
+) -> Result<std::collections::BTreeMap<String, blake3::Hash>, String> {
+    use std::os::windows::ffi::OsStrExt;
+    use windows_sys::Win32::{
+        Foundation::{HANDLE, INVALID_HANDLE_VALUE},
+        Storage::FileSystem::{
+            FindClose, FindFirstStreamW, FindNextStreamW, FindStreamInfoStandard,
+            WIN32_FIND_STREAM_DATA,
+        },
+    };
+    struct Streams(HANDLE);
+    impl Drop for Streams {
+        fn drop(&mut self) {
+            unsafe {
+                FindClose(self.0);
+            }
+        }
+    }
+    let wide: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+    let mut data: WIN32_FIND_STREAM_DATA = unsafe { std::mem::zeroed() };
+    let handle = unsafe {
+        FindFirstStreamW(
+            wide.as_ptr(),
+            FindStreamInfoStandard,
+            &mut data as *mut _ as *mut _,
+            0,
+        )
+    };
+    if handle == INVALID_HANDLE_VALUE {
+        let e = io::Error::last_os_error();
+        if e.raw_os_error() == Some(38) {
+            return Ok(Default::default());
+        }
+        return Err(error(e));
+    }
+    let guard = Streams(handle);
+    let mut result = std::collections::BTreeMap::new();
+    loop {
+        let end = data
+            .cStreamName
+            .iter()
+            .position(|c| *c == 0)
+            .unwrap_or(data.cStreamName.len());
+        let name = String::from_utf16(&data.cStreamName[..end]).map_err(error)?;
+        if name != "::$DATA" {
+            let mut stream = path.as_os_str().to_os_string();
+            stream.push(&name);
+            result.insert(
+                name,
+                digest_reader(&mut File::open(Path::new(&stream)).map_err(error)?)?,
+            );
+        }
+        if unsafe { FindNextStreamW(guard.0, &mut data as *mut _ as *mut _) } == 0 {
+            let e = io::Error::last_os_error();
+            if e.raw_os_error() != Some(38) {
+                return Err(error(e));
+            }
+            break;
+        }
+    }
+    Ok(result)
 }
 fn is_cross_device(e: &io::Error) -> bool {
     #[cfg(windows)]
@@ -527,5 +624,27 @@ mod tests {
         let second = ws.import_files(&[second_path]).unwrap().remove(0);
         ws.move_file(&second.id, &target.id).unwrap();
         assert!(Path::new(&target.path).join("second.txt").exists());
+    }
+    #[cfg(windows)]
+    #[test]
+    fn cross_volume_copy_preserves_windows_alternate_streams() {
+        let (_dir, mut ws, file, target) = setup();
+        fs::write(
+            format!("{}:Zone.Identifier", file.path),
+            b"[ZoneTransfer]\r\nZoneId=3\r\n",
+        )
+        .unwrap();
+        let file = ws
+            .import_files(&[PathBuf::from(&file.path)])
+            .unwrap()
+            .remove(0);
+        let destination = Path::new(&target.path).join(&file.name);
+        ws.copy_verified(&file.id, &target.id, Path::new(&file.path), &destination)
+            .unwrap();
+        assert_eq!(
+            fs::read(format!("{}:Zone.Identifier", destination.to_string_lossy())).unwrap(),
+            b"[ZoneTransfer]\r\nZoneId=3\r\n"
+        );
+        assert!(!Path::new(&file.path).exists());
     }
 }

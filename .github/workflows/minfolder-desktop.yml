@@ -25,6 +25,16 @@ jobs:
       - run: npm --prefix apps/minfolder/desktop run build
       - run: npx --prefix apps/minfolder/desktop playwright install --with-deps chromium
       - run: npm --prefix apps/minfolder/desktop run test:browser
+      - run: npm --prefix apps/minfolder/desktop run test:ui
+        env:
+          MINFOLDER_CAPTURE_DIR: ${{ runner.temp }}/minfolder-ui
+      - run: npm --prefix apps/minfolder/desktop run capture:ui
+        env:
+          MINFOLDER_CAPTURE_DIR: ${{ runner.temp }}/minfolder-ui
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MinFolder-UI-evidence
+          path: ${{ runner.temp }}/minfolder-ui
   windows:
     runs-on: windows-latest
     steps:

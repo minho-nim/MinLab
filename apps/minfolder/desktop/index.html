@@ -1,17 +1,18 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MinFolder · 업무 자료지도</title><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>MinFolder · 업무 자료지도</title><link rel="icon" type="image/svg+xml" href="./icon.svg"><link rel="stylesheet" href="./style.css"><script type="module" src="./app.js"></script></head>
 <body>
-<header><div class="brand"><span class="mark">M</span><div><strong>MinFolder</strong><small>업무 자료지도</small></div></div><span class="badge">내 PC에서만 처리</span></header>
+<header><div class="brand"><span class="mark" aria-hidden="true">M</span><div><strong>MinFolder</strong><small>업무 자료지도</small></div></div><span class="local">내 PC에서만 처리</span></header>
 <main>
-<section class="hero"><div><p class="eyebrow">LOCAL WORKSPACE</p><h1>파일이 들어갈 곳을 한눈에.</h1><p>파일명으로 추천받고, 확인한 파일만 옮기세요.</p></div><div class="connect"><small>기준 폴더</small><strong id="root-name">미연결</strong><button id="connect" class="primary">폴더 연결</button></div></section>
+<section class="workspace-bar" aria-label="기준 폴더 연결"><div><h1>업무 자료지도</h1><p>파일명으로 추천받고, 확인한 파일만 옮기세요.</p></div><div class="connection"><div><small>기준 폴더</small><strong id="root-name">폴더를 연결해 주세요</strong></div><button id="connect">폴더 연결</button></div></section>
 <p id="status" role="status" aria-live="polite">기준 폴더를 연결하세요. 탐색기에서 놓은 파일도 승인 후 실제 이동합니다.</p>
-<div class="board"><div class="workspace">
-<section class="panel"><div class="heading"><div><p class="eyebrow">01 / MAP</p><h2>폴더 지도</h2></div><button id="refresh">선택 폴더 새로고침</button></div><label class="sr" for="search">불러온 폴더 검색</label><input id="search" type="search" placeholder="불러온 폴더 검색"><p class="hint">+로 하위 폴더를 펼치세요. 파일을 폴더에 놓으면 승인 목록에 추가해요.</p><div id="tree" aria-label="폴더 지도"></div></section>
-<section class="panel"><div class="heading"><div><p class="eyebrow">02 / FILES</p><h2>선택 폴더의 파일</h2></div><div><button id="open-folder">폴더 열기</button> <button id="recommend-all">선택 파일 추천</button></div></div><p id="selected-path" class="path">폴더를 선택하세요.</p><div id="files"></div></section>
-</div><aside>
-<section class="panel"><p class="eyebrow">03 / SORT</p><h2>파일 분류</h2><button id="add-files" class="drop"><strong>파일을 여기에 놓으세요</strong><small>또는 클릭해서 파일 선택 · 승인 후 이동</small></button><p class="hint">파일명에서 계약·팀과 문서 종류를 찾아요. 본문은 읽지 않아요.</p><div id="queue"></div><p id="summary" class="hint"></p><button id="approve" class="primary wide" disabled>선택 파일 이동 승인</button></section>
-<section class="panel"><div class="heading"><h2>이동 기록</h2><button id="clear-history">기록 지우기</button></div><div id="history"></div></section>
-</aside></div>
-</main><footer>MINFOLDER · 같은 이름의 파일은 덮어쓰지 않아요.</footer>
-<div id="drag-label" hidden></div>
+<section class="panel map-panel" aria-labelledby="map-title">
+<div class="heading"><h2 id="map-title">폴더 지도</h2><div class="heading-actions"><label class="sr" for="search">불러온 폴더·파일 검색</label><input id="search" type="search" placeholder="불러온 폴더·파일 검색"><button id="refresh">선택 폴더 새로고침</button></div></div>
+<div class="map-toolbar"><div class="map-options"><label><input id="show-files" type="checkbox" checked> 파일도 보기</label><button id="map-expand">선택 폴더 펼치기</button><button id="map-collapse">기본 3단계 보기</button></div><div class="map-camera" role="group" aria-label="지도 확대 및 축소"><button id="zoom-out" aria-label="지도 축소">−</button><output id="zoom-level" aria-live="polite">100%</output><button id="zoom-in" aria-label="지도 확대">+</button></div></div>
+<div id="tree" aria-label="폴더와 파일의 연결 지도"></div><p class="map-help">휠로 확대·축소 · 휠 버튼을 누른 채 끌어 이동 · 파일을 폴더에 놓으면 승인 목록에 추가</p>
+</section>
+<div class="work-panels">
+<section class="panel files-panel" aria-labelledby="files-title"><div class="heading"><div class="section-title"><h2 id="files-title">선택 폴더의 파일</h2><span id="file-count" class="count"></span></div><div class="heading-actions"><button id="open-folder">폴더 열기</button><button id="recommend-all">선택 파일 추천</button></div></div><p id="selected-path" class="path">지도에서 폴더를 선택하세요.</p><div id="files"></div><p class="hint files-help">파일명 클릭으로 열기 · 분류 버튼으로 목적지 추천</p></section>
+<section class="panel review-panel" aria-labelledby="review-title"><div class="heading"><div class="section-title"><h2 id="review-title">이동 승인</h2><span id="queue-count" class="count">0건</span></div><button id="add-files" class="add-files">파일 추가 <span aria-hidden="true">+</span></button></div><p class="review-help">탐색기 파일을 이 영역이나 지도 속 폴더에 놓으세요.</p><div id="queue"></div><div class="approval"><p id="summary" class="hint"></p><button id="approve" class="primary" disabled>선택 파일 이동 승인</button></div><details class="history-section"><summary>최근 이동 기록</summary><div class="history-actions"><button id="clear-history">기록 지우기</button></div><div id="history"></div></details></section>
+</div>
+</main><footer>MINFOLDER · 같은 이름의 파일은 덮어쓰지 않아요.</footer><div id="drag-label" hidden></div>
 </body></html>

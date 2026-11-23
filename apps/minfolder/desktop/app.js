@@ -2,6 +2,7 @@ import {invoke, isTauri} from '@tauri-apps/api/core'
 import {getCurrentWindow} from '@tauri-apps/api/window'
 import {open, confirm} from '@tauri-apps/plugin-dialog'
 import {key, norm, predict, matchingProjects} from '../core.js'
+import {createMapView} from './map-view.js'
 const $=id=>document.getElementById(id)
 const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
@@ -42,13 +43,14 @@ async function load(node,reset=false){
     }catch(e){if(epoch===state.epoch){node.error=String(e);status('폴더를 읽지 못했어요. '+e)}}
     finally{node.loading=null;if(epoch===state.epoch)render()}
   })()
+  render()
   return node.loading
 }
 async function connect(path){
   if(state.busy)return
   if(state.queue.length&&!await confirm('분류 대기 목록을 비우고 기준 폴더를 바꿀까요?',{title:'폴더 변경',kind:'warning'}))return
   const root=await invoke('connect_root',{path})
-  state.epoch++;state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
+  state.epoch++;mapView.reset();state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
   const node=makeNode(root,[]);node.opened=true;state.nodes.set(root.id,node);state.selected=root.id
   state.history=read(historyKey(),[]);if(!Array.isArray(state.history))state.history=[]
   try{localStorage.setItem('minfolder.desktop.root',JSON.stringify(path))}catch{}
@@ -59,7 +61,7 @@ async function connect(path){
   const epoch=state.epoch
   for(const entry of node.entries.filter(e=>e.kind==='directory').slice(0,16)){
     if(epoch!==state.epoch)return
-    await load(state.nodes.get(entry.id))
+    const group=state.nodes.get(entry.id);group.opened=true;await load(group)
   }
   if(epoch===state.epoch)status('폴더 연결 완료 · 탐색기에서 놓거나 선택한 파일은 승인 후 이동해요.')
 }
@@ -69,40 +71,19 @@ async function chooseRoot(){
 }
 function select(id){state.selected=id;state.checked.clear();render();void load(state.nodes.get(id))}
 function empty(node,text){node.replaceChildren(element('p',text,'empty'))}
-function renderTree(){
-  const tree=$('tree'), q=norm($('search').value)
-  if(!state.root){empty(tree,'기준 폴더를 연결하면 실제 폴더가 보여요.');return}
-  const root=state.nodes.get(state.root.id)
-  let budget=450
-  const matches=node=>node.relative.some(n=>norm(n).includes(q))||norm(state.root.name).includes(q)
-  const relevant=node=>!q||matches(node)||folderNodes().some(n=>n.relative.length>node.relative.length&&node.relative.every((v,i)=>n.relative[i]===v)&&matches(n))
-  function branch(node){
-    const wrap=element('div');if(--budget<0)return wrap
-    const row=element('div',undefined,'folder-row')
-    const name=button('▱ '+node.name,()=>select(node.id),'folder-name'+(state.selected===node.id?' selected':''));name.dataset.folder=node.id;name.title=node.path
-    const toggle=button(node.opened?'−':'+',async()=>{node.opened=!node.opened;renderTree();if(node.opened)await load(node)},'toggle')
-    toggle.setAttribute('aria-label',node.name+(node.opened?' 접기':' 펼치기'));toggle.setAttribute('aria-expanded',String(node.opened))
-    row.append(toggle,name);wrap.append(row)
-    if(node.opened||q){
-      const children=element('div',undefined,'branch')
-      for(const e of [...new Map([...(node.priorDirectories??[]),...node.entries.filter(e=>e.kind==='directory')].map(e=>[e.id,e])).values()]){const n=state.nodes.get(e.id);if(n&&relevant(n)&&budget>0)children.append(branch(n))}
-      if(node.error)children.append(element('p','읽기 실패 · '+node.error,'hint'))
-      if(!node.done)children.append(button(node.loading?'읽는 중…':'다음 항목 보기',()=>load(node)))
-      wrap.append(children)
-    }
-    return wrap
-  }
-  tree.replaceChildren(branch(root))
-  if(budget<=0)tree.append(element('p','다른 가지를 접거나 검색해서 범위를 줄여 주세요.','hint'))
-}
+const mapView=createMapView({state,load,select,onFileOpen:file=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)},onFileDrag:startDrag})
+function renderTree(){mapView.render()}
 function renderFiles(){
   const box=$('files'),node=state.nodes.get(state.selected)
-  $('selected-path').textContent=node?.path??'폴더를 선택하세요.'
+  $('selected-path').textContent=node?.path??'지도에서 폴더를 선택하세요.'
+  $('file-count').textContent=node?node.entries.filter(e=>e.kind==='file').length+'개':''
+  $('open-folder').dataset.unavailable=String(!node)
+  $('recommend-all').dataset.unavailable=String(!node||!state.checked.size)
   if(!node){empty(box,'폴더를 연결하고 파일을 선택하세요.');return}
   box.replaceChildren()
   for(const file of node.entries.filter(e=>e.kind==='file')){
     const row=element('div',undefined,'file-row'), check=element('input');check.type='checkbox';check.checked=state.checked.has(file.id);check.setAttribute('aria-label',file.name+' 선택')
-    check.onchange=()=>{if(check.checked)state.checked.add(file.id);else state.checked.delete(file.id)}
+    check.onchange=()=>{if(check.checked)state.checked.add(file.id);else state.checked.delete(file.id);$('recommend-all').dataset.unavailable=String(!state.checked.size);applyBusy()}
     const label=element('button',undefined,'file-label');label.type='button';label.title='클릭해서 열기 · 끌어서 이동';label.onclick=()=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)};label.append(element('div',file.name),element('div',formatSize(file.size),'file-meta'));label.onpointerdown=e=>startDrag(e,file)
     const add=button('분류',()=>addFiles([file]));row.append(check,label,add);box.append(row)
   }
@@ -155,7 +136,7 @@ async function importPaths(paths,target=''){
 }
 async function chooseFiles(){if(state.busy)return;try{const paths=await open({multiple:true,directory:false,title:'이동할 파일 선택'});if(paths)await importPaths(Array.isArray(paths)?paths:[paths])}catch(e){status(String(e))}}
 function renderQueue(){
-  const queue=$('queue');queue.replaceChildren()
+  const queue=$('queue');queue.replaceChildren();$('queue-count').textContent=state.queue.length+'건'
   if(!state.queue.length)empty(queue,'분류할 파일을 선택하거나 끌어 놓으세요.')
   const folders=folderNodes().sort((a,b)=>a.path.localeCompare(b.path,'ko',{numeric:true}))
   for(const rec of state.queue){
@@ -180,7 +161,7 @@ function renderHistory(){
     const row=element('div',undefined,'history-item');row.append(element('strong',h.name),element('small',h.destinationPath),element('small',h.status+' · '+new Date(h.time).toLocaleString('ko-KR')));box.append(row)
   }
 }
-function applyBusy(){for(const node of document.querySelectorAll('button,input,select'))node.disabled=state.busy;updateSummary()}
+function applyBusy(){for(const node of document.querySelectorAll('button,input,select'))node.disabled=state.busy||node.dataset.unavailable==='true';updateSummary()}
 function render(){renderTree();renderFiles();renderQueue();renderHistory();applyBusy()}
 async function approve(){
   if(state.busy)return
@@ -240,7 +221,7 @@ if(isTauri()){
     if(payload.type==='leave'){clearHot();return}
     if(payload.type!=='over'&&payload.type!=='drop'&&payload.type!=='enter')return
     const x=payload.position.x/window.devicePixelRatio,y=payload.position.y/window.devicePixelRatio
-    const folder=dropFolder(x,y),area=document.elementFromPoint(x,y)?.closest('#add-files')
+    const folder=dropFolder(x,y),area=document.elementFromPoint(x,y)?.closest('.review-panel')
     clearHot();(folder||area)?.classList.add('hot')
     if(payload.type==='drop'){clearHot();if(folder||area)void importPaths(payload.paths,folder?.dataset.folder??'');else status('폴더 상자 또는 파일 분류 영역에 놓아 주세요.')}
   })

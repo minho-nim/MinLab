@@ -56,7 +56,7 @@ async function pageWithBridge(){
     }}
   })
   await page.goto(url);await page.getByRole('button',{name:'폴더 연결',exact:true}).click()
-  await page.getByRole('button',{name:'강남공사_작업절차서.docx',exact:false}).waitFor()
+  await page.locator('#files .file-label').waitFor()
   return page
 }
 async function waitForSuggestion(page){

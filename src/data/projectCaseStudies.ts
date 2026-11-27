@@ -486,4 +486,77 @@ export const projectCaseStudies: Record<string, ProjectCaseStudy> = {
     remaining: "작동하는 앱과 실제 사용 사례, 구현·검증 근거가 필요합니다.",
     sources: [],
   },
+  "proj-minilog": {
+    audience:
+      "맛집·카페·체험단 글을 꾸준히 올리는 개인 블로거를 위한 반자동 블로그 관리 도구입니다. 로그인 코드가 있는 사용자만 씁니다.",
+    purpose:
+      "원고·사진·협찬·제안·일정을 한곳에서 처리하되, 게시와 답장은 사람이 확인한 뒤 직접 하도록 만들었습니다. 자동 게시·자동 답글·네이버 로그인 저장은 하지 않습니다.",
+    flow: [
+      "원고에 사진을 올리고 사진마다 한 줄 메모와 실제 경험을 적습니다.",
+      "AI가 빠진 사실을 먼저 묻고, 내 문체로 초안을 씁니다. 메모에 없는 숫자는 사실 확인에 뜹니다.",
+      "원고 점검(가이드 키워드·글자 수·광고 표시·AI 요약 대비)을 통과하면 복사해 네이버에 직접 올립니다.",
+      "게시 주소를 넣으면 협찬·월간 보고·미니허브 비교로 이어집니다.",
+    ],
+    implementation:
+      "원고·사진·AI 초안·문체, 협찬·제안서·제안 메일, 콘텐츠 캘린더와 휴대폰 달력 구독, 내 블로그 RSS 연결, 월간 보고·누적 내역, 블로그 구조, 썸네일, 수요 예측과 한 달 계획이 구현돼 있습니다. AI는 사용자 본인의 무료 Gemini 키로만 부릅니다.",
+    verification:
+      "2026-11-26 로컬 Cloudflare 서버와 가짜 Gemini로 화면 시험 86개를 통과한 기록이 있습니다. 공개 체험 화면이 없어 이번 소개에는 화면을 촬영하지 않았습니다.",
+    remaining:
+      "운영에서 실제 Gemini 사진 읽기 품질, 휴대폰 사진 공유, 달력 구독 등록은 실기기 확인이 필요합니다. 네이버 검색량(데이터랩) 연결은 소유자 결정 전입니다.",
+    process: [
+      {
+        title: "AI가 지어낸 숫자를 사람이 바로 찾게",
+        problem: "AI 초안에 경험 메모에 없는 가격·시간이 섞여도 눈으로 찾기 어려웠습니다.",
+        criterion: "AI를 더 부르지 않고, 메모에 없는 숫자만 골라 사람이 확인하게 했습니다.",
+        change: "사진별 메모를 초안 자료로 넘기고, 본문의 가격·날짜·시간 중 메모에 없는 것을 '사실 확인'으로 표시했습니다.",
+        result: "규칙 시험과 화면 시험으로 메모에 없는 숫자만 뜨는 것을 확인했습니다. '근처' 같은 표현은 잡지 못합니다.",
+        logId: "codex:proj-minilog:2026-11-25-minilog-photo-notes-fact-check",
+        sourceUrl: "https://github.com/minho-nim/minihub/pull/58",
+      },
+      {
+        title: "검색량 없이 내 기록으로 쓸 때 정하기",
+        problem: "네이버 검색량 데이터는 새 키와 요금 확인이 필요해 바로 쓸 수 없었습니다.",
+        criterion: "외부 API 없이 내 글의 게시일·조회수·태그만으로 계산하도록 했습니다.",
+        change: "작년 이맘때 반응이 좋던 글, 다가오는 시기, 꾸준히 잘 되는 태그를 올릴 날과 함께 보여 주고 원고로 바로 만들게 했습니다.",
+        result: "규칙 시험과 화면 시험이 통과했고 운영 배포를 version.json으로 확인했습니다. 조회수는 사용자가 넣은 누적 숫자 기준입니다.",
+        logId: "codex:proj-minilog:2026-11-26-minilog-demand-forecast",
+        sourceUrl: "https://github.com/minho-nim/minihub/pull/74",
+      },
+    ],
+    sources: [
+      { label: "경쟁 서비스 비교와 다음 할 일", url: "https://github.com/minho-nim/minihub/blob/d755b7a98b46d4849e889979a7b5741af9ac08eb/docs/MINILOG_BENCHMARK.md" },
+      { label: "인계 문서(구현·시험·남은 문제)", url: "https://github.com/minho-nim/minihub/blob/d755b7a98b46d4849e889979a7b5741af9ac08eb/docs/HANDOFF_TO_CODEX.md" },
+    ],
+  },
+  "proj-minihub": {
+    audience:
+      "미니로그·미니어리를 함께 쓰는 두 사용자를 위한 공통 허브입니다. 로그인 코드가 있는 사용자만 씁니다.",
+    purpose:
+      "앱마다 따로 있던 로그인과 AI 사용 기록을 한곳에 모으고, 개인 앱에서 쌓인 숫자를 사람별로 비교하려고 만들었습니다. 원고·일정 같은 개인 데이터는 앱마다 따로 두고 숫자만 모읍니다.",
+    flow: [
+      "로그인 코드로 들어가 미니로그·미니어리로 이동합니다.",
+      "통합 대시보드에서 사람별 게시 글·수익·AI 사용량을 봅니다.",
+      "월간 보고와 12개월 비교로 두 사람의 흐름을 나란히 봅니다.",
+    ],
+    implementation:
+      "코드 해시 로그인과 세션, 사용자별 Gemini 연결과 사용량 기록, 통합 대시보드·월간 보고·월별 비교, 오늘 Gemini 사용, 설정(이름·테마)이 구현돼 있습니다.",
+    verification:
+      "2026-11-26 로컬 Cloudflare 서버로 화면 시험 18개를 통과한 기록이 있습니다. 공개 체험 화면이 없어 화면을 촬영하지 않았습니다.",
+    remaining:
+      "미노피아로 넘기는 통계 숫자 범위는 소유자 결정이 필요합니다. 사용자가 늘면 화면 권한을 나눠야 합니다.",
+    process: [
+      {
+        title: "앱은 나누고 숫자만 모으기",
+        problem: "통합 로그인을 하면 앱 데이터까지 섞일 수 있었습니다.",
+        criterion: "로그인은 함께 쓰되 앱별 데이터는 따로 두고, 허브는 숫자만 다루게 했습니다.",
+        change: "세션마다 앱을 확인하고 모든 쿼리에 사용자 조건을 걸었으며, 미니로그와 같은 계산으로 사람별 월별 비교를 만들었습니다.",
+        result: "사람별 숫자가 각자 월간 보고와 같은지 시험으로 확인했습니다.",
+        logId: "codex:proj-minihub:2026-11-26-minihub-history-compare",
+        sourceUrl: "https://github.com/minho-nim/minihub/pull/64",
+      },
+    ],
+    sources: [
+      { label: "인계 문서(구조·인증·시험)", url: "https://github.com/minho-nim/minihub/blob/d755b7a98b46d4849e889979a7b5741af9ac08eb/docs/HANDOFF_TO_CODEX.md" },
+    ],
+  },
 };

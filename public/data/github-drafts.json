@@ -235,6 +235,742 @@
     },
     {
       "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-compare-tone",
+        "date": "2026-11-27",
+        "title": "비교 표 칸 색",
+        "version": "0.12.2",
+        "content": "작업 목적\n사람별 비교 표에 지난달 대비 좋음·보통·살펴보기 칸 색과 범례를 넣었음(AI 줄은 색 없음, ▲▼ 글자 함께).\n\n주요 변경\n- 10% 넘게 늘면 초록, 줄면 빨강, 그 사이는 색 없음.",
+        "reason": "UI·UX 개선 묶음 B.",
+        "testResult": "PR #87: 미니허브 시험 20개 통과.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T12:59:08+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "e4a6b5a931c9b0ea37018fce001f163a33a4a1ab1caccdcb924e4b4183292ecd",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/87"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:59:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-compare-tone:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "UI·UX 묶음 B",
+        "prompt": "UI·UX 개선 묶음 B를 해 주세요.",
+        "outcome": "칸 색과 범례를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "6e30a222bcdadbdabbf95ca517f9ee3e19ffa6d86b0a4560d0add7050e5de9b9",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/87"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:59:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-kpi-palette",
+        "date": "2026-11-27",
+        "title": "위 숫자 카드·빠른 찾기",
+        "version": "0.13.0",
+        "content": "작업 목적\n위 숫자 카드를 게시 글·받은 금액 중심으로 바꾸고 Ctrl K 빠른 찾기(화면·보는 범위·앱 열기)를 넣었음.\n\n주요 변경\n- AI 토큰·오류는 AI 호출 칸의 작은 글씨로.",
+        "reason": "소유자가 고른 개선 1~8.",
+        "testResult": "PR #90: 미니허브 시험 23개 통과, 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T17:33:12+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "73145c82e791183f3a8449d56cfaacf6f20f80a70db4e38a1fb0a6617d7e3098",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/90"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T17:33:12+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-kpi-palette:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "다음 개선 1~8",
+        "prompt": "다음 개선 후보 1~8을 전부 해 주세요.",
+        "outcome": "숫자 카드와 빠른 찾기를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "c1185f5a75589ce23560c0e9ac1a5543417cb9e1a68b3350727dcb76e728b0bb",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/90"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T17:33:12+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-menu-fixit-table",
+        "date": "2026-11-27",
+        "title": "메뉴·손볼 것·한 줄 비교 표·휴대폰 탭",
+        "version": "0.12.3",
+        "content": "작업 목적\n미니로그 시안 A와 같은 메뉴로 바꾸고, 손볼 것 카드와 사람별 한 줄 비교 표, 휴대폰 아래 탭을 넣었음.\n\n주요 변경\n- 보기·관리·앱 열기 묶음 메뉴, 지금 보는 칸 띠.\n- 손볼 것: 연결 안 된 키·이번 달 오류.\n- 보는 범위 이름을 두 사람 같이 / 나만으로.",
+        "reason": "소유자가 고른 미니허브 수정안.",
+        "testResult": "PR #89: 미니허브 시험 22개 통과, 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T16:43:49+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "5c7d701f4e4e091c8f750c9ba2cda09c745fd9cc1ec0354e883bc3a1248bc2e4",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/89"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T16:43:49+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-menu-fixit-table:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "미니허브 수정안",
+        "prompt": "미니허브도 수정안 주세요. 전부 진행해 주세요.",
+        "outcome": "수정안대로 메뉴·카드·표·탭을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "c4a00a1b88dea5d6f36dd24ba35aae1ee09fd3636827e9d5197722bd603812db",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/89"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T16:43:49+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-model-gone-label",
+        "date": "2026-11-27",
+        "title": "AI 모델 바뀜 표시·빠른 찾기 Esc",
+        "version": "0.13.1",
+        "content": "작업 목적\nAI 사용량 오류 종류에 모델 바뀜(구글이 2.5 모델을 막아 새 모델로 다시 부름)을 보여 주고, 빠른 찾기 창이 열린 직후에도 Esc로 닫히게 했음.\n\n주요 변경\n- 오류 이름 model_gone → 모델 바뀜.",
+        "reason": "미니어리 사진 읽기 실패 원인을 미니허브에서 확인하기 위함.",
+        "testResult": "PR #91: 미니허브 시험 23개 통과, 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T19:43:38+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "ee4c4d2e30d22fb54a0ad8faefde0db0aeb1fa639298e8e1c3d5a0098a7e6c3d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/91"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T19:43:38+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-model-gone-label:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "실제로 되게",
+        "prompt": "미니어리 사진이 안 돼요(키 C). 실제로 되게 해야 돼요.",
+        "outcome": "모델 바뀜 표시와 Esc 고침을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "b11c9b23d3e042849067c67bb3cd1ae595d4a8f4d2d0dfe27f36579664440312",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/91"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T19:43:38+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-skeleton",
+        "date": "2026-11-27",
+        "title": "불러오는 중 윤곽",
+        "version": "0.12.1",
+        "content": "작업 목적\n불러오는 중 글자 대신 화면 모양 윤곽을 보여 줌.\n\n주요 변경\n- 윤곽(움직임 줄이기 설정 따름).",
+        "reason": "UI·UX 개선 묶음 A.",
+        "testResult": "PR #86: 미니허브 시험 20개 통과.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T12:13:08+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "1a58561f5c540c7127c59e80fed228f3380bff40b3d8a4dc737f32fdc2d48084",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/86"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:13:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-skeleton:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "UI·UX 개선 12가지",
+        "prompt": "UI·UX 개선 12가지를 모두 해 주세요.",
+        "outcome": "윤곽을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "15ff5373f0437311d74ab88313d880f05c53851bd6c914ef6b82328342a55eb0",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/86"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:13:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-writing-types",
+        "date": "2026-11-27",
+        "title": "사람별 자주 쓰는 글 종류",
+        "version": "0.12.0",
+        "content": "작업 목적\n통합 대시보드 사람별 칸에 미니로그 원고 수 기준 자주 쓰는 글 종류 3개를 보여 줌(원고 내용은 넘기지 않음).\n\n주요 변경\n- 계정 기반 글 종류 집계를 미니허브에 표시.",
+        "reason": "미니허브는 앱·계정을 모아 조회하는 곳이라 연동을 위함.",
+        "testResult": "PR #84에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T08:16:28+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "595cbeb40085416277303af0b3708bc8b5decd265950ad7f121d53eaba2388ba",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/84"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T08:16:28+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-27-minihub-writing-types:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "계정 기반·허브 표시",
+        "prompt": "자주 쓴 글 종류를 계정 기반으로, 미니허브에도 보이게 해 주세요.",
+        "outcome": "사람별 자주 쓰는 글 종류를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "61a39ebca80b25fc66d62f2741137721b5e3b91202bc74181c66099624ddc489",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/84"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T08:16:28+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-account-prefs",
+        "date": "2026-11-27",
+        "title": "글쓰기 설정을 계정 기반으로",
+        "version": "0.34.1",
+        "content": "작업 목적\n자주 쓴 글 종류와 글 구조를 기기가 아니라 계정에 저장해 어느 기기에서든 같게 했음.\n\n주요 변경\n- 자주 쓴 글 종류는 계정의 원고에서 셈, 글 구조는 계정 설정에 저장.",
+        "reason": "기기마다 설정이 달라지지 않게 하고 미니허브에서도 보이게 하기 위함.",
+        "testResult": "PR #84에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "UI·UX 개선 묶음.",
+        "createdAt": "2026-11-27T08:16:28+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "e77675e90aec7a6c2602e8c0d6860097995ad4ed75221a770f5f04aecd357826",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/84"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T08:16:28+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-account-prefs:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "계정 기반",
+        "prompt": "자주 쓴 글 종류는 기기 말고 계정 기반으로, 미니허브에도 보이게 해 주세요.",
+        "outcome": "계정 기반 설정과 미니허브 표시를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "5102cafd7a3adb6089f0f1550396267ac208ece5844f5b5943c9b1639195bec7",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/84"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T08:16:28+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-body-issue-marks",
+        "date": "2026-11-27",
+        "title": "원고 본문에 문제 위치 밑줄",
+        "version": "0.36.0",
+        "content": "작업 목적\n본문에서 확인 필요·지어낸 숫자·상투 표현·긴 문장 등 문제 있는 곳에 물결 밑줄을 긋고 이전/다음 문제로 바로 가게 했음.\n\n주요 변경\n- 본문 뒤에 같은 글을 겹쳐 그려 밑줄, 다음 문제를 누르면 그 부분을 고름, 밑줄 끄기 기억.",
+        "reason": "점검 목록만으로는 어느 문장인지 찾기 어려웠음.",
+        "testResult": "PR #87: 미니로그 시험 125개 통과, 겹쳐 그린 글 위치 시험(1280·390px), 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "메뉴 시안 A.",
+        "createdAt": "2026-11-27T12:59:08+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "6475bce60b1f44f0053b903b0054fab941e96a0d0bffc2b9d621c06297af743b",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/87"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:59:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-body-issue-marks:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "UI·UX 묶음 B",
+        "prompt": "UI·UX 개선 묶음 B를 해 주세요.",
+        "outcome": "원고 문제 위치 밑줄을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "bf6a4e16cd51d2270a638e4007980cb777bb0f4acc1e6ddae9dd35af42c5ad37",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/87"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:59:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-buttons-homefeed",
+        "date": "2026-11-27",
+        "title": "버튼 정리(힉의 법칙)·홈피드형 글 구조",
+        "version": "0.34.0",
+        "content": "작업 목적\n화면마다 메인 버튼 하나만 강조하고 가끔 쓰는 것은 ⋯ 메뉴로 넣었으며, 지어내지 않는 홈피드형 글 구조를 고를 수 있게 했음.\n\n주요 변경\n- 지금 단계의 메인 버튼 하나만, 나머지는 원고 메뉴·접기로.\n- 홈피드형 구조: 경험이 모자라면 [작성자 확인 필요]로 비움(지어내기 금지).",
+        "reason": "선택지를 줄여 결정을 빠르게 하고, 다른 사람 프롬프트를 안전장치와 함께 쓰기 위함.",
+        "testResult": "PR #83에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "계정 기반 글쓰기 설정.",
+        "createdAt": "2026-11-27T08:12:32+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "08d154279aa5a323af42847b668a2193cbfbc0592fd794b3d106291f0d60bcba",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/83"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T08:12:32+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-buttons-homefeed:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "힉의 법칙·홈피드 프롬프트",
+        "prompt": "버튼과 가독성을 힉의 법칙대로 개선하고, 다른 사람의 홈피드 프롬프트를 넣어 쓸 수 있게 해 주세요.",
+        "outcome": "버튼 정리와 안전장치가 있는 홈피드형 구조를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "4a085530193687144433d764c9840a2bfb2b6a9c1a45ea5ca7802f2c07c87f18",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/83"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T08:12:32+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-calendar-editor-layout",
+        "date": "2026-11-27",
+        "title": "캘린더 3단·원고 편집 2단",
+        "version": "0.33.2",
+        "content": "작업 목적\n캘린더를 날짜 없는 원고 서랍·달력·인스타 격자 3단으로, 원고 편집을 쓰기·점검 2단으로 바꿨음.\n\n주요 변경\n- 날짜 없는 원고를 끌어 놓거나 버튼으로 게시일 지정.\n- 원고 편집: 왼쪽 쓰기, 오른쪽 점검·미리보기·올리기, 집중 모드.",
+        "reason": "넓은 화면을 활용해 이동을 줄이기 위함.",
+        "testResult": "PR #82에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "버튼 정리.",
+        "createdAt": "2026-11-27T07:13:22+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "3f204b9fbb8ac765d4774b27bf99b9bc94f1fe59c85a48c4958026ddf4f33ebb",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/82"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T07:13:22+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-calendar-editor-layout:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "구조 시안 반영",
+        "prompt": "구조 시안대로 캘린더와 원고 편집 배치를 바꿔 주세요.",
+        "outcome": "3단·2단 배치를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "b08cccd3f21297fbdd68f4fd4afba296e02bd8421b63cc2561b0aae29343b8c8",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/82"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T07:13:22+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-improvements-autosave",
+        "date": "2026-11-27",
+        "title": "되돌리기 넓히기·계정 기억·자동 저장 멈춤 고침",
+        "version": "0.37.1",
+        "content": "작업 목적\n협찬 기록·해시태그 묶음도 되돌리기로 지우고, 밑줄 끄기·첫 안내를 계정에 기억하며, 큰 화면은 열 때 불러오게 했음. 바쁜 컴퓨터에서 자동 저장이 저장 대기에 멈추던 문제를 고침.\n\n주요 변경\n- 협찬·태그 묶음 되돌리기, 지운 지 10분 지나면 막힘을 시험으로 확인.\n- 첫 화면 파일 516→378kB.\n- 자동 저장: 저장할 내용을 입력한 순간에 정함(부하 반복: 고치기 전 20번 중 2번 멈춤 → 15번 모두 저장).",
+        "reason": "소유자가 고른 개선 1~8.",
+        "testResult": "PR #90: 미니로그 시험 131개 통과, 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "AI 모델 대체.",
+        "createdAt": "2026-11-27T17:33:12+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "42f995efe690a21c98f2e0dfae87c92ae87a6a466ef46cd60b943ce794904e6a",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/90"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T17:33:12+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-improvements-autosave:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "다음 개선 1~8",
+        "prompt": "다음 개선 후보 1~8을 전부 해 주세요.",
+        "outcome": "되돌리기 넓히기·계정 기억·화면 나눠 불러오기·자동 저장 고침을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "2a610d1508ccf0159de4757e4874c60d7a9f28a2182971cb5da5a084abb2e8b6",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/90"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T17:33:12+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-menu-a-palette",
+        "date": "2026-11-27",
+        "title": "메뉴 시안 A·휴대폰 아래 탭·빠른 찾기·첫 안내",
+        "version": "0.37.0",
+        "content": "작업 목적\n소유자가 고른 시안 A로 옆 메뉴를 바꾸고, 휴대폰 아래 탭·둥근 새 원고 버튼, Ctrl K 빠른 찾기, 첫 안내 3단계를 넣었음. 화면 폭 기준을 600·840·1200·1600으로 맞춤.\n\n주요 변경\n- 묶음 이름 아래 한 줄에 하나(아이콘), 지금 화면 띠, 설정은 맨 아래.\n- 빠른 찾기: 화면·원고 제목을 글자로 찾아 Enter(서버로 보내지 않음).\n- 첫 안내: 원고가 없을 때만 가운데 칸에(화면을 막지 않음).",
+        "reason": "메뉴 탭이 보기 좋지 않다는 소유자 의견과 개선 묶음 C.",
+        "testResult": "PR #88: 미니로그 시험 129개·미니허브 20개 통과, 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "개선 1~8.",
+        "createdAt": "2026-11-27T13:16:02+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "ba4a660197e41f61da73186f0d73e9777b5f99841a0bceb5990b3a8152a3ee75",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/88"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T13:16:02+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-menu-a-palette:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "메뉴 탭 개선",
+        "prompt": "이 메뉴 탭들도 별로예요. 시안 A로 하고 휴대폰도 좋아요.",
+        "outcome": "시안 A 메뉴·아래 탭·빠른 찾기·첫 안내를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "13d6473a6c761967e27d864b3a820fce1070b13214daeb5d937e3a4acb2a1db4",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/88"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T13:16:02+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-menu-groups-settings",
+        "date": "2026-11-27",
+        "title": "메뉴 묶음과 설정 화면 분리",
+        "version": "0.33.1",
+        "content": "작업 목적\n메뉴를 만들기·일정·협찬·분석 묶음으로 나누고 계정·백업을 설정 화면으로 옮겼음.\n\n주요 변경\n- 메뉴 10개 한 줄 → 묶음별 줄.\n- 설정 화면: 내 계정·바깥 서비스 연결·데이터 백업.",
+        "reason": "메뉴가 많아 찾기 어려워 정리함.",
+        "testResult": "PR #81에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "캘린더·원고 편집 배치.",
+        "createdAt": "2026-11-27T06:59:51+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "8843e2e615966b28ddcaec152ff837c91657239c87d6f932848852ce62ebc323",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/81"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T06:59:51+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-menu-groups-settings:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "구조 벤치마킹",
+        "prompt": "벤치마킹할 프로그램들의 UI와 구조를 검토해서 시안을 보여 주고 반영해 주세요.",
+        "outcome": "메뉴 묶음과 설정 분리를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "56dfe922cf9504977f84441225c796ebbf85125aa3a47dbfff0b4cebfbee3e5a",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/81"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T06:59:51+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-model-fallback-me",
+        "date": "2026-11-27",
+        "title": "AI 모델 대체·로그아웃 401 고침",
+        "version": "0.37.2",
+        "content": "작업 목적\n구글이 2.5 모델을 막으면 권장 대체 모델로 다시 부르고(미니로그 초안도 해당), 화면 설정을 로그인 때 받는 내 정보에 함께 넣어 로그아웃과 겹친 401을 없앴음.\n\n주요 변경\n- 2.5 Flash가 거절되면 3.5 Flash-Lite로 한 번 더, 사용 기록에 모델 바뀜.\n- 빠른 찾기 창이 열린 직후에도 Esc로 닫힘.",
+        "reason": "미니어리 사진 읽기 실패 조사 중 공통 AI 코드에서 찾은 위험과 CI에서 드러난 로그아웃 401.",
+        "testResult": "PR #91: 미니로그 시험 131개 통과(로그아웃 시험 19번 연속 401 없음), 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "",
+        "createdAt": "2026-11-27T19:43:38+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "aa1915a04406b0dbaa5f9c0e2bd8c4b8ebae352a3059f44ab3a8263ae6cf565e",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/91"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T19:43:38+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-model-fallback-me:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "실제로 되게",
+        "prompt": "미니어리 사진이 안 돼요(키 C). 실제로 되게 해야 돼요.",
+        "outcome": "공통 AI 모델 대체와 로그아웃 401 고침을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "4a440de9b840b5ccaacc17df9d2a6852975ee087f485ba64453ba50298af3153",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/91"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T19:43:38+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-tagsets-lessons-backup",
+        "date": "2026-11-27",
+        "title": "해시태그 묶음·지난 글에서 배운 점·백업 보강",
+        "version": "0.33.0",
+        "content": "작업 목적\n자주 쓰는 해시태그를 묶음으로 저장해 한 번에 넣고, 돌아보기 메모를 원고 화면에 보여 주며, 백업에 새 기록들을 포함했음.\n\n주요 변경\n- 해시태그 묶음 저장·적용(30개까지, 겹침 없이).\n- 지난 글에서 배운 점: 돌아보기 메모 최근 3개를 원고 화면에.\n- 백업·복원에 돌아보기·글감·SNS 아이디·게시 요일·태그 묶음 포함.",
+        "reason": "반복 작업을 줄이고 새로 생긴 기록도 백업되게 하기 위함.",
+        "testResult": "PR #80에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "메뉴 묶음 정리.",
+        "createdAt": "2026-11-27T06:45:57+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "1ad8361a7b32cfc96f51dd30261046822f1a3194b8f73c712faea337419ed60c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/80"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T06:45:57+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-tagsets-lessons-backup:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "다음 개선",
+        "prompt": "다음 개선을 진행해 주세요.",
+        "outcome": "태그 묶음·배운 점·백업 보강을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "45a2a09209735d3d7913caf68534c65d532cdba332d4115b789be4bb7719346d",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/80"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T06:45:57+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-undo-skeleton-empty",
+        "date": "2026-11-27",
+        "title": "지운 뒤 되돌리기·불러오는 윤곽·빈 화면",
+        "version": "0.35.0",
+        "content": "작업 목적\n원고·사진을 확인 창 없이 지우고 10분 동안 되돌릴 수 있게 했으며, 불러오는 중 윤곽·빈 화면 안내·휴대폰 아래 시트·버튼 상태를 맞췄음.\n\n주요 변경\n- 서버 휴지통(10분, 본인 것만, 지나면 사진 파일까지 정리).\n- 빈 화면: 제목·한 줄 설명·버튼 하나·저장되지 않는 예시.\n- 늦게 온 계정 설정 응답이 고른 글 구조를 덮어쓰던 문제 고침.",
+        "reason": "레퍼런스 사이트 검토로 정한 UI·UX 개선 12가지 중 묶음 A.",
+        "testResult": "PR #86: 미니로그 시험 121개·미니허브 20개 통과, 배포 뒤 운영 version.json 확인.",
+        "nextSteps": "원고 문제 위치 표시.",
+        "createdAt": "2026-11-27T12:13:08+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "43428cc80bd794dbfdf3ddfed86258117540a3aa1c2d9bc19f85cf6ce0a25fe5",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/86"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:13:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-27-minilog-undo-skeleton-empty:prompt:request-1",
+        "date": "2026-11-27",
+        "title": "UI·UX 개선 12가지",
+        "prompt": "레퍼런스 사이트를 참고한 UI·UX 개선 12가지를 시안대로 모두 해 주세요.",
+        "outcome": "묶음 A(되돌리기·윤곽·빈 화면·아래 시트·버튼 상태)를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "251b4df4ce4ce435ed42d928a22944b046b411a2814b1c4a5bc9487cde1deed0",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/86"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-27T12:13:08+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
       "projectId": "proj-minially",
       "record": {
         "id": "codex:proj-minially:2026-11-26-minially-contrast-work-mail",
@@ -513,6 +1249,52 @@
       "kind": "log",
       "projectId": "proj-minihub",
       "record": {
+        "id": "codex:proj-minihub:2026-11-26-minihub-accounts",
+        "date": "2026-11-26",
+        "title": "두 사람 계정 보기",
+        "version": "0.11.0",
+        "content": "작업 목적\n두 사람의 블로그·공개 SNS 아이디·연락 이메일을 미니허브에서 모아 봄(비밀번호 저장 없음).\n\n주요 변경\n- 계정 칸: 블로그 주소·SNS 아이디 링크(https만).",
+        "reason": "두 사람 활동 주소를 한곳에서 보기 위함.",
+        "testResult": "PR #76에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-26T22:21:56+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "f3183d4300d28f54b92815f7953d10161af81c069346a105aa874992bb29607c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/76"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T22:21:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-26-minihub-accounts:prompt:request-1",
+        "date": "2026-11-26",
+        "title": "두 사람 계정",
+        "prompt": "미니허브에서 두 사람 계정을 볼 수 있게 해 주세요.",
+        "outcome": "계정 칸을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "1e4986d00072eac999d53fe4654733e8cd2fd70e732f823880b5ba563a784aae",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/76"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T22:21:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
         "id": "codex:proj-minihub:2026-11-26-minihub-history-compare",
         "date": "2026-11-26",
         "title": "사람별 월별 비교",
@@ -552,6 +1334,52 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-11-26T19:04:20+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-26-minihub-mobile-table-fix",
+        "date": "2026-11-26",
+        "title": "휴대폰 표 잘림 고침",
+        "version": "0.11.1",
+        "content": "작업 목적\n휴대폰에서 오늘 Gemini 사용 표 오른쪽이 잘리고 사람별 비교 표가 옆으로 넘치던 것을 고쳤음.\n\n주요 변경\n- 표 넘침·잘림 수정.",
+        "reason": "실제 사진 화면 검토에서 찾음.",
+        "testResult": "PR #79에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "",
+        "createdAt": "2026-11-26T23:31:29+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "9c3b614488d01b993fc0fb0c054dcb8e3e7747ba44cb1a10ee5f0a503fec764a",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/79"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T23:31:29+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minihub",
+      "record": {
+        "id": "codex:proj-minihub:2026-11-26-minihub-mobile-table-fix:prompt:request-1",
+        "date": "2026-11-26",
+        "title": "실제 화면 검토",
+        "prompt": "실제 사진으로 미니로그·미니허브 UI를 검토해 주세요.",
+        "outcome": "휴대폰 표 문제를 고침.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/hub",
+          "fingerprint": "397dcec906cde2615c775f933aaea779a4c09afa3ccd9005cc596cd55e32f9ba",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/79"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T23:31:29+09:00"
         }
       }
     },
@@ -697,6 +1525,52 @@
       "kind": "log",
       "projectId": "proj-minilog",
       "record": {
+        "id": "codex:proj-minilog:2026-11-26-minilog-briefing-weekday-plan",
+        "date": "2026-11-26",
+        "title": "AI 요약 대비 점검·올리기 좋은 요일·한 달 계획",
+        "version": "0.30.0",
+        "content": "작업 목적\n원고 점검에 AI 요약(브리핑) 대비 항목을 넣고, 내 글 기록으로 올리기 좋은 요일과 한 달 글감 계획을 한 번에 짜게 했음. 내 계정(블로그·공개 SNS 아이디) 칸도 넣음.\n\n주요 변경\n- 원고 점검: 첫 40자 핵심어·긴 문장·가격 기준일·정리 줄·출처 표시를 봄.\n- 내 글 기록으로 올리기 좋은 요일, 게시 요일 시간표, 빈 게시일에 원고를 나눠 만드는 한 달 계획(게시는 사람이 함).\n- 내 계정: 블로그·공개 SNS 아이디·연락 이메일(비밀번호는 저장하지 않음).",
+        "reason": "네이버 AI 브리핑에 인용되기 쉬운 글 모양과 꾸준한 게시 리듬을 돕기 위함.",
+        "testResult": "PR #76에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "네이버 메일 자동 처리.",
+        "createdAt": "2026-11-26T22:21:56+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "062caf21577350e05c5ebe6304386adecf5dcd6b17136999b5ff10fe9bac76d8",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/76"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T22:21:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-26-minilog-briefing-weekday-plan:prompt:request-1",
+        "date": "2026-11-26",
+        "title": "AI 요약 대비·게시 계획",
+        "prompt": "미니로그 원고가 네이버 AI 브리핑에 잘 잡히게 점검을 더하고, 내 글 기록으로 올리기 좋은 요일과 한 달 계획을 짜 주세요. 내 계정 정보도 적을 수 있게 해 주세요.",
+        "outcome": "AI 요약 대비 점검·요일·한 달 계획·내 계정을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "01064350f8057524961f70906b4449829604ddb9e1f2406f549630acffaa8f3c",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/76"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T22:21:56+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
         "id": "codex:proj-minilog:2026-11-26-minilog-demand-forecast",
         "date": "2026-11-26",
         "title": "다음 4주 수요 예측(내 글 기준)",
@@ -782,6 +1656,98 @@
           ],
           "engine": "codex",
           "generatedAt": "2026-11-26T19:04:13+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-26-minilog-mail-insta-review-ideas",
+        "date": "2026-11-26",
+        "title": "메일 앱 화면·인스타 캡션·카드뉴스·격자·7일 돌아보기·글감 담기",
+        "version": "0.32.0",
+        "content": "작업 목적\n메일을 목록·읽기 2단으로 보고 서식 있는 답장을 쓰게 했고, 인스타 캡션 점검·카드뉴스·격자 미리보기, 게시 7일 뒤 돌아보기, 글감 담아 두기를 넣었음.\n\n주요 변경\n- 메일 앱: 받은 HTML 메일을 허용한 모양으로만 다시 그림, 서식 답장·새 메일.\n- 인스타 캡션 점검·카드뉴스 7장(브라우저에서만 그림)·3열 격자 미리보기.\n- 게시 7일 뒤 돌아보기(잘 됨·보통·아쉬움+메모), 글감 담아 두기.",
+        "reason": "SNS 재활용과 글 회고를 한 앱 안에서 하기 위함.",
+        "testResult": "PR #79에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "해시태그 묶음·백업 보강.",
+        "createdAt": "2026-11-26T23:31:29+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "09b4b73d8f81cb0601306f11a278f042a9d83ccbc77171900db8a55eaaf09dd1",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/79"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T23:31:29+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-26-minilog-mail-insta-review-ideas:prompt:request-1",
+        "date": "2026-11-26",
+        "title": "SNS 활용·회고 기능",
+        "prompt": "메일을 메일 앱처럼 보고, 인스타 캡션·카드뉴스·격자 미리보기, 게시 뒤 돌아보기, 글감 담아 두기를 넣어 주세요. 실제 사진으로 화면도 검토해 주세요.",
+        "outcome": "여섯 기능과 화면 검토에서 찾은 문제 고침을 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "4a0872e0bc2741d3425d67557c837f567d6dfd105d32153d1d8931e8428e27a7",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/79"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T23:31:29+09:00"
+        }
+      }
+    },
+    {
+      "kind": "log",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-26-minilog-naver-mail",
+        "date": "2026-11-26",
+        "title": "네이버 메일 자동 처리",
+        "version": "0.31.0",
+        "content": "작업 목적\n네이버 메일을 15분마다 받아 협찬 메일을 분류하고 캘린더에 마감을 올리며, AI 답장 초안을 만들어 두되 보내기는 사람이 누를 때만 함.\n\n주요 변경\n- 15분마다 메일 받기, 협찬 제안·선정·답장 분류(가벼운 AI 모델).\n- 마감·방문일을 캘린더에 표시, 답장 초안은 사람이 고친 뒤 직접 보냄(자동 발송 없음).",
+        "reason": "협찬 메일을 놓치지 않고 답장 시간을 줄이기 위함.",
+        "testResult": "PR #77에 기록된 시험을 기준으로 함. 이번 정리에서는 다시 실행하지 않았음.",
+        "nextSteps": "메일 앱 화면.",
+        "createdAt": "2026-11-26T22:41:15+09:00",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "13cc6da11acdc58963a20078d8464eded2d8c615e89e0a2ede1e09c9402eb39a",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/77"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T22:41:15+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minilog",
+      "record": {
+        "id": "codex:proj-minilog:2026-11-26-minilog-naver-mail:prompt:request-1",
+        "date": "2026-11-26",
+        "title": "메일 자동 처리",
+        "prompt": "네이버 메일을 미니로그에서 자동으로 받아 협찬을 분류하고 답장 초안까지 만들어 주세요. 보내기는 제가 누를 때만.",
+        "outcome": "메일 받기·분류·초안·누를 때만 보내기를 넣음.",
+        "source": {
+          "repository": "minho-nim/minihub/tree/main/mini-log",
+          "fingerprint": "13a3ec7e8e2c8816ba68ad349b5580970feac64e71925e6acf189ea7516495e1",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/minihub/pull/77"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-26T22:41:15+09:00"
         }
       }
     },

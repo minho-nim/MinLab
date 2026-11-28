@@ -1,3 +1,4 @@
+import {createLearning} from '../learning.js'
 import {invoke, isTauri} from '@tauri-apps/api/core'
 import {getCurrentWindow} from '@tauri-apps/api/window'
 import {open, confirm} from '@tauri-apps/plugin-dialog'
@@ -13,14 +14,25 @@ const $=id=>document.getElementById(id)
 const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
 const read=(k,fallback)=>{try{return JSON.parse(localStorage.getItem(k))??fallback}catch{return fallback}}
-let shell=null
+let shell=null,learning=null
 const state={root:null,nodes:new Map(),selected:null,source:null,queue:[],checked:new Set(),busy:false,closing:false,installing:false,suppressClickUntil:0,history:[],epoch:0,drag:null}
 const excluded=new Set(['desktop.ini','thumbs.db','ehthumbs.db','.ds_store','$recycle.bin','system volume information'])
 const hidden=e=>excluded.has(e.name.toLowerCase())||e.name.startsWith('~$')
 const status=text=>{$('status').textContent=text;$('status').title=text}
 const folderNodes=()=>[...state.nodes.values()]
-const historyKey=()=>`minfolder.desktop.history:${state.root?.path}`
-function saveHistory(){try{localStorage.setItem(historyKey(),JSON.stringify(state.history.slice(0,100)))}catch{status('이동은 완료됐지만 기록을 저장하지 못했어요.')}}
+async function refreshHistory(){
+  try{
+    const saved=await invoke('move_history'),legacy=read('minfolder.desktop.history:'+state.root?.path,[])
+    const old=Array.isArray(legacy)?legacy.filter(h=>h&&typeof h.name==='string'&&typeof h.destinationPath==='string'&&!saved.some(r=>r.sourcePath===h.sourcePath&&r.destinationPath===h.destinationPath)):[]
+    state.history=[...saved,...old.map(h=>({...h,canUndo:false,status:h.status+' · 이전 버전 기록'}))].sort((a,b)=>b.time-a.time).slice(0,100);state.historyError=''
+  }catch(e){state.historyError=String(e)}
+  renderHistory()
+}
+function learningControls(){
+  $('learn-approvals').checked=learning?.enabled??true
+  $('learn-count').textContent=learning?`이 기준 폴더의 승인 기록 ${learning.count}건 · PC에만 저장`:'폴더를 연결하면 승인 기록을 사용할 수 있어요.'
+  $('learn-approvals').disabled=!learning;$('clear-learning').disabled=!learning
+}
 function makeNode(entry,relative){return {...entry,relative,entries:[],opened:false,loaded:false,done:false,loading:null,error:''}}
 async function load(node,reset=false){
   if(node.loading)return node.loading
@@ -56,12 +68,15 @@ async function load(node,reset=false){
   return node.loading
 }
 async function connect(path){
+  if(state.connecting)return
+  state.connecting=true
+  try{
   if(state.busy||state.closing||state.installing)return
   if(state.queue.length&&!await confirm('분류 대기 목록을 비우고 기준 폴더를 바꿀까요?',{title:'폴더 변경',kind:'warning'}))return
   const root=await invoke('connect_root',{path})
   state.epoch++;mapView.reset();columnView.reset();state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
   const node=makeNode(root,[]);node.opened=true;state.nodes.set(root.id,node);state.selected=root.id;state.source=root.id
-  state.history=read(historyKey(),[]);if(!Array.isArray(state.history))state.history=[]
+  learning=createLearning({scope:'desktop:'+root.path,onError:status});learningControls();await refreshHistory()
   try{localStorage.setItem('minfolder.desktop.root',JSON.stringify(path))}catch{}
   $('root-name').textContent=root.name;$('root-name').title=root.path;$('connect').textContent='폴더 변경'
   status('상위 폴더부터 읽고 있어요. 하위 폴더는 필요한 만큼 펼치세요.');render()
@@ -74,8 +89,10 @@ async function connect(path){
     const group=state.nodes.get(entry.id);group.opened=true;await load(group)
   }
   if(epoch===state.epoch)status('폴더 연결 완료 · 탐색기에서 놓거나 선택한 파일은 승인 후 이동해요.')
+  }finally{state.connecting=false}
 }
 async function chooseRoot(){
+  if(state.connecting)return
   if(state.busy||state.closing||state.installing)return
   try{const path=await open({directory:true,multiple:false,title:'MinFolder 기준 폴더'});if(path)await connect(path)}catch(e){status('폴더 연결 실패 · '+e)}
 }
@@ -125,7 +142,7 @@ function renderFiles(){
   if(node.loaded&&!node.done){const more=button(node.loading?'읽는 중…':'다음 100개 읽기',()=>load(node));more.dataset.unavailable=String(!!node.loading);box.append(more)}
 }
 function formatSize(size){return size<1024?size+' B':size<1024**2?(size/1024).toFixed(1)+' KB':(size/1024**2).toFixed(1)+' MB'}
-async function complete(node){for(let n=0;node&&!node.done&&n<5;n++)await load(node);return node?.done}
+async function complete(node){for(let n=0;node&&!node.done&&n<5;n++){await load(node);if(node.error)return false}return node?.done}
 async function suggest(rec){
   const epoch=state.epoch
   const group=folderNodes().find(n=>n.relative.length===1&&norm(n.name)==='계약별공사자료')
@@ -144,7 +161,8 @@ async function suggest(rec){
     }
   }
   if(epoch!==state.epoch||!state.queue.includes(rec)||!rec.auto)return
-  const prediction=predict(rec.file.name,folderNodes().map(n=>n.relative))
+  const paths=folderNodes().map(n=>n.relative)
+  const prediction=learning?.predict(rec.file.name,paths)??predict(rec.file.name,paths)
   const target=prediction.path&&folderNodes().find(n=>key(n.relative)===key(prediction.path))
   if(target&&parentPath(rec.file.path)===target.path){rec.reason='이미 추천 위치에 있는 파일이에요.'}
   else{rec.target=target?.id??'';rec.reason=prediction.reason}
@@ -182,10 +200,30 @@ function ready(){return state.queue.filter(r=>r.checked&&r.target&&state.nodes.h
 function updateSummary(){const n=ready().length,hidden=reviewView.hiddenSelected();$('summary').textContent=`이동 대상 ${n}건 · 전체 ${state.queue.length}건`+(hidden?` · 숨겨진 선택 ${hidden}건`:'');$('approve').textContent=`확인한 ${n}개 이동`;$('approve').disabled=state.busy||state.closing||state.installing||!n}
 function renderHistory(){
   const box=$('history');box.replaceChildren()
+  if(state.historyError){empty(box,'이동 기록 확인 필요 · '+state.historyError);box.append(button('다시 읽기',refreshHistory));return}
   if(!state.history.length){empty(box,'아직 이동한 파일이 없어요.');return}
-  for(const h of state.history.slice(0,30)){
-    const row=element('div',undefined,'history-item');row.append(element('strong',h.name),element('small',h.destinationPath),element('small',h.status+' · '+new Date(h.time).toLocaleString('ko-KR')));box.append(row)
+  for(const h of state.history.slice(0,100)){
+    const row=element('div',undefined,'history-item');row.append(element('strong',h.name),element('small','원래 위치 · '+h.sourcePath),element('small','이동 위치 · '+h.destinationPath),element('small',h.status+' · '+new Date(h.time).toLocaleString('ko-KR')))
+    if(h.canUndo){const undo=button('원래 위치로 되돌리기',()=>undoMove(h));undo.dataset.focusKey='undo:'+h.id;row.append(undo)}
+    box.append(row)
   }
+}
+async function undoMove(record){
+  if(state.busy||state.closing||state.installing)return
+  state.busy=true;applyBusy()
+  try{
+    if(!await confirm(`${record.name}\n${record.sourcePath}\n원래 위치로 되돌릴까요? 수정되거나 같은 이름이 있으면 중단해요.`,{title:'이동 되돌리기',kind:'warning'}))return
+    status(record.name+' 되돌리는 중…')
+    const result=await invoke('undo_move',{id:record.id})
+    if(record.rootPath)createLearning({scope:'desktop:'+record.rootPath,onError:status}).forget(record.id)
+    if(record.rootPath===state.root?.path)learning=createLearning({scope:'desktop:'+state.root.path,onError:status})
+    learningControls()
+    for(const path of [parentPath(result.sourcePath),parentPath(result.destinationPath)]){const node=folderNodes().find(n=>n.path===path);if(node)await load(node,true)}
+    // A queued entry for the restored file must be selected afresh.
+    state.queue=state.queue.filter(r=>r.file.path!==result.sourcePath&&r.file.path!==result.destinationPath)
+    status('원래 위치로 되돌렸어요. · '+record.name)
+  }catch(e){status('되돌리지 못했어요. '+e)}
+  finally{await refreshHistory();state.busy=false;render()}
 }
 function applyBusy(){for(const node of document.querySelectorAll('button,input,select'))if(!node.closest('.desktop-titlebar,#app-info'))node.disabled=state.busy||state.closing||state.installing||node.dataset.unavailable==='true';updateSummary();shell?.refresh()}
 function render(){const focus=rememberFocus();renderTree();renderFiles();renderQueue();renderHistory();applyBusy();restoreFocus(document,focus)}
@@ -201,7 +239,9 @@ async function approve(){
       try{
         status(`${ok+failed+1}/${batch.length} · ${rec.file.name} 이동 중…`)
         const result=await invoke('move_file',{sourceId:rec.file.id,targetId:rec.target})
-        state.history.unshift({...result,time:Date.now()});state.history=state.history.slice(0,100);saveHistory()
+        const targetPath=state.nodes.get(rec.target)?.relative
+        if(targetPath)learning?.learn(rec.file.name,targetPath,result.undoId)
+        learningControls();await refreshHistory()
         state.queue=state.queue.filter(r=>r!==rec);ok++
         // Update only known source and destination lists; preserve other expanded branches.
         const source=folderNodes().find(n=>n.path===parentPath(rec.file.path)),target=state.nodes.get(rec.target)
@@ -241,7 +281,14 @@ $('view-columns').onclick=()=>setBrowseMode('columns')
 $('view-map').onclick=()=>setBrowseMode('map')
 $('refresh').onclick=async()=>{if(state.busy||state.closing||state.installing)return;const node=state.nodes.get(state.selected);if(node)await load(node,true)}
 $('recommend-all').onclick=()=>{const node=sourceNode();if(node)addFiles(node.entries.filter(e=>state.checked.has(e.id)))}
-$('clear-history').onclick=()=>{state.history=[];saveHistory();renderHistory()}
+$('clear-history').onclick=async()=>{
+  if(state.busy||state.closing||state.installing)return
+  state.busy=true;applyBusy()
+  try{if(await confirm('이 PC의 이동 기록과 되돌리기 정보를 지울까요? 파일은 현재 위치에 남아요.',{title:'기록 지우기',kind:'warning'})){await invoke('clear_move_history');try{for(const key of Object.keys(localStorage))if(key.startsWith('minfolder.desktop.history:'))localStorage.removeItem(key)}catch{}await refreshHistory()}}catch(e){status(String(e))}finally{state.busy=false;render()}
+}
+$('learn-approvals').onchange=()=>{learning?.setEnabled($('learn-approvals').checked);learningControls()}
+$('clear-learning').onclick=async()=>{if(!learning||state.busy||state.closing||state.installing)return;state.busy=true;applyBusy();try{if(await confirm('이 기준 폴더의 추천 기록을 지울까요? 이동 기록과 파일은 유지돼요.',{title:'추천 기록 지우기',kind:'warning'})){learning.clear();learningControls()}}finally{state.busy=false;applyBusy()}}
+learningControls()
 setupWorkspaceLayout({workspace:document.querySelector('main'),panes:document.querySelector('.work-panels'),horizontal:$('resize-explorer'),vertical:$('resize-source')})
 setBrowseMode(browseMode)
 render()

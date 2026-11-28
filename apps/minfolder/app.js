@@ -1,4 +1,5 @@
-import {key,norm,predict,matchingProjects,openDir,transfer} from './core.js'
+import {createLearning} from './learning.js'
+import {key,norm,predict,matchingProjects,openDir,transfer,filesEqual} from './core.js'
 import {createColumnView} from './column-view.js'
 import {matchesName} from './name-search.js'
 import {createReviewView} from './review-view.js'
@@ -9,8 +10,9 @@ const button=(text,fn)=>{const b=el('button',text);b.type='button';b.addEventLis
 const empty=(container,message)=>container.replaceChildren(el('p',message,'empty'))
 const msg=t=>$('alert').textContent=t
 const parts=(root,p)=>[root?.name,...p].filter(Boolean).join(' > ')
-const busySet=b=>{S.busy=b;for(const id of ['workspace','refresh','view-columns','view-map','use-folder'])$(id).disabled=b;renderQueue();renderInbox();if(browseMode==='columns')columnView.render()}
-let sequence=0
+const busySet=b=>{S.busy=b;learningControls();renderHistory();for(const id of ['workspace','refresh','view-columns','view-map','use-folder'])$(id).disabled=b;renderQueue();renderInbox();if(browseMode==='columns')columnView.render()}
+let sequence=0,learning=null
+const undoEntries=new Map()
 const S={root:null,scanId:0,scanning:false,entries:new Map(),folders:[],filesByDir:new Map(),mapStatus:null,lookup:new Map(),expanded:new Set(),selected:null,sub:[],inbox:[],queue:[],pins:[],history:[],skip:[],busy:false}
 const dragMime='application/x-minfolder-inbox'
 let dragItem=null
@@ -78,8 +80,27 @@ async function readHandle(){
     })
   }finally{db.close()}
 }
-function activate(h){
+async function learningScope(handle){
+  try{
+    const db=await workspaceDB()
+    try{
+      const saved=await new Promise((resolve,reject)=>{const q=db.transaction('settings','readonly').objectStore('settings').get('learning-scopes');q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)})
+      const scopes=Array.isArray(saved)?saved:[]
+      for(const item of scopes)if(await handle.isSameEntry(item.handle))return {id:item.id,persistent:true}
+      const id=crypto.randomUUID();scopes.push({id,handle})
+      await new Promise((resolve,reject)=>{const t=db.transaction('settings','readwrite');t.oncomplete=resolve;t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error);t.objectStore('settings').put(scopes.slice(-100),'learning-scopes')})
+      return {id,persistent:true}
+    }finally{db.close()}
+  }catch{return {id:crypto.randomUUID(),persistent:false}}
+}
+function learningControls(){
+  $('learn-approvals').checked=learning?.enabled??true
+  $('learn-approvals').disabled=!learning||S.busy;$('clear-learning').disabled=!learning||S.busy
+  $('learn-count').textContent=learning?`이 기준 폴더의 승인 기록 ${learning.count}건 · `+(S.learningPersistent?'이 브라우저에만 저장':'이번 연결에서만 사용'):'폴더를 연결하면 승인 기록을 사용할 수 있어요.'
+}
+function activate(h,scope){
   columnView.reset()
+  undoEntries.clear();learning=createLearning({scope:'web:'+scope.id,onError:msg});S.learningPersistent=scope.persistent;learningControls()
   S.root=h;mapZoom=10;S.sub=[];S.inbox=[];S.selected=null;S.queue=[];dragItem=null
   S.expanded=new Set([key([])]);S.folders=[];S.lookup.clear();S.filesByDir.clear();S.mapStatus=null
   const state=localRead(localKey(),{})
@@ -100,7 +121,8 @@ async function connect(){
   try{
     const h=await showDirectoryPicker({...permission,id:'minfolder-workspace'})
     if(epoch!==connectionEpoch)return
-    savedHandle=h;activate(h)
+    const scope=await learningScope(h);if(epoch!==connectionEpoch)return
+    savedHandle=h;activate(h,scope)
     try{await rememberHandle(h)}catch{if(epoch===connectionEpoch)msg('연결은 됐지만 브라우저가 연결 정보를 저장하지 못했어요. 다음 방문 때 다시 선택해 주세요.')}
   }catch(e){
     if(e.name!=='AbortError')msg('폴더 연결 실패 · 브라우저가 보호하는 위치라면 그 안의 작업용 폴더를 선택하세요. '+e.message)
@@ -114,7 +136,7 @@ async function restoreWorkspace(){
     savedHandle=h
     const status=await h.queryPermission(permission)
     if(epoch!==connectionEpoch)return
-    if(status==='granted'){activate(h);return}
+    if(status==='granted'){const scope=await learningScope(h);if(epoch===connectionEpoch)activate(h,scope);return}
     $('workspace-name').textContent=h.name+' · 기억됨'
     $('restore-workspace').hidden=false
     msg('지난번 폴더를 기억하고 있어요. 브라우저 권한이 끝났다면 ‘기억한 폴더 열기’를 눌러 주세요.')
@@ -126,7 +148,7 @@ async function requestSaved(){
   try{
     const result=await savedHandle.requestPermission(permission)
     if(epoch!==connectionEpoch)return
-    if(result==='granted'){activate(savedHandle);return}
+    if(result==='granted'){const h=savedHandle,scope=await learningScope(h);if(epoch===connectionEpoch)activate(h,scope);return}
     msg('폴더 권한이 허용되지 않았어요. 다른 폴더를 선택하거나 브라우저에서 권한을 확인해 주세요.')
   }catch(e){msg('기억한 폴더를 열 수 없어요. 폴더를 다시 선택해 주세요. '+e.message)}
 }
@@ -584,7 +606,7 @@ function bindInternalDrag(node,item){
   node.ondragend=()=>{dragItem=null;renderTree()}
 }
 function suggest(rec){
-  const p=predict(rec.name,S.folders)
+  const p=learning?.predict(rec.name,S.folders)??predict(rec.name,S.folders)
   if(rec.kind==='move'&&p.path&&key(rec.parent)===key(p.path))return {path:null,reason:'이미 추천 위치에 있는 파일이에요. 다른 폴더를 고르면 이동할 수 있어요.'}
   return p
 }
@@ -647,6 +669,7 @@ function renderHistory(){
     const row=el('div',null,'hrow')
     row.append(el('b',h.name),el('small',h.status+' · '+new Date(h.time).toLocaleString('ko-KR')),el('small',parts(S.root,h.path)))
     row.append(button('지도에서 보기',()=>{$('search').value='';void reveal(h.path)}))
+    if(undoEntries.has(h.id)){const undo=button('원래 위치로 되돌리기',()=>undoMove(h));undo.disabled=S.busy;row.append(undo)}
     frag.append(row)
   }
   $('history').replaceChildren(frag)
@@ -672,7 +695,16 @@ async function approve(){
         changed.set(key(q.target),q.target)
         if(q.kind==='move')changed.set(key(q.parent),q.parent)
         if(status.includes('원본'))retained++
-        S.history.unshift({name:q.name,path:q.target,status,time:Date.now()})
+        const id=crypto.randomUUID()
+        S.history.unshift({id,name:q.name,path:q.target,source:q.parent??null,status,time:Date.now()})
+        if(status==='이동 완료'||status==='복사 완료')learning?.learn(q.name,q.target,id)
+        if(status==='이동 완료'){
+          try{
+            const targetFolder=await openDir(S.root,q.target),originalFolder=await openDir(S.root,q.parent),handle=await targetFolder.getFileHandle(q.name),file=await handle.getFile()
+            undoEntries.set(id,{handle,file,originalFolder,targetFolder,parent:[...q.target],original:[...q.parent]})
+          }catch{msg('이동은 완료됐지만 되돌리기 정보를 확인하지 못했어요.')}
+        }
+        learningControls()
         S.history=S.history.slice(0,40)
         S.queue=S.queue.filter(x=>x!==q)
         remember();ok++
@@ -686,6 +718,28 @@ async function approve(){
   }catch(e){msg('작업이 중단됐어요. '+e.message)}
   finally{busySet(false)}
 }
+async function undoMove(record){
+  const saved=undoEntries.get(record.id);if(!saved||S.busy)return
+  if(!confirm(`${record.name}\n${parts(S.root,saved.original)}\n원래 위치로 되돌릴까요? 같은 이름이 있거나 파일이 변경됐으면 중단해요.`))return
+  busySet(true)
+  const run=async()=>{
+    const currentFolder=await openDir(S.root,saved.parent),originalFolder=await openDir(S.root,saved.original)
+    const handle=await currentFolder.getFileHandle(record.name),file=await handle.getFile()
+    if(!await saved.targetFolder.isSameEntry(currentFolder)||!await saved.originalFolder.isSameEntry(originalFolder)||!await saved.handle.isSameEntry(handle)||file.lastModified!==saved.file.lastModified||!await filesEqual(file,saved.file))throw Error('파일 또는 폴더가 변경됐어요. 되돌리지 않았어요.')
+    const status=await transfer({entry:{kind:'move',name:record.name,parent:saved.parent,handle,size:file.size,modified:file.lastModified},target:saved.original,expectedTarget:saved.originalFolder,sourceRoot:S.root,destRoot:S.root})
+    undoEntries.delete(record.id)
+    record.status=status==='이동 완료'?'되돌리기 완료':'되돌리기 확인 필요 · '+status
+    if(status==='이동 완료'){record.path=saved.original;learning?.forget(record.id)}
+    S.queue=S.queue.filter(q=>q.name!==record.name||!q.parent||![key(saved.parent),key(saved.original)].includes(key(q.parent)))
+    remember();learningControls()
+    await refreshBranch(saved.parent);await refreshBranch(saved.original)
+    msg(record.status)
+  }
+  try{if(navigator.locks?.request)await navigator.locks.request('minfolder-write',run);else await run()}catch(e){msg('되돌리지 못했어요. '+e.message)}finally{busySet(false);renderHistory()}
+}
+$('learn-approvals').onchange=()=>{learning?.setEnabled($('learn-approvals').checked);learningControls()}
+$('clear-learning').onclick=()=>{if(!learning||S.busy)return;if(confirm('이 기준 폴더의 추천 기록을 지울까요? 파일과 이동 기록은 유지돼요.')){learning.clear();learningControls()}}
+learningControls()
 $('workspace').onclick=connect
 $('use-folder').onclick=()=>useSource(S.selected??[])
 $('view-columns').onclick=()=>setBrowseMode('columns')

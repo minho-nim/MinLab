@@ -61,3 +61,7 @@
   .balance-labels>span:last-child{display:none}.balance-state{grid-column:2/-1;padding:0}
   .review-filters button{min-height:36px}.balanced-review .balance-row>select{min-height:36px}
 }
+.learning-settings{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.learning-settings h3{font-size:14px;margin:0 0 8px}.learning-settings label{display:flex;align-items:center;gap:8px;font-size:12px}
+.learning-settings input{flex:none}.learning-settings button{font-size:12px;min-height:36px}
+.history-item button{margin-top:8px;min-height:36px;font-size:12px}

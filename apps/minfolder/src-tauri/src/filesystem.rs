@@ -1,4 +1,7 @@
+#[path = "recovery.rs"]
+mod recovery;
 use file_id::{get_file_id, FileId};
+pub use recovery::MoveRecord;
 use serde::Serialize;
 #[cfg(not(windows))]
 use std::io::Write;
@@ -34,6 +37,7 @@ pub struct Page {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Moved {
+    pub undo_id: String,
     pub source_path: String,
     pub destination_path: String,
     pub name: String,
@@ -41,6 +45,7 @@ pub struct Moved {
 }
 #[derive(Default)]
 pub struct Workspace {
+    recovery: recovery::Recovery,
     next: u64,
     installing: bool,
     tracked: HashMap<String, Tracked>,
@@ -138,6 +143,7 @@ impl Workspace {
         if entry.kind != "directory" {
             return Err("폴더를 선택해 주세요.".into());
         }
+        self.recovery_root(&entry.path);
         self.iterators.clear();
         self.tracked.retain(|id, _| *id == entry.id);
         self.by_path.retain(|_, id| *id == entry.id);
@@ -211,7 +217,7 @@ impl Workspace {
     pub fn set_installing(&mut self, installing: bool) {
         self.installing = installing;
     }
-    pub fn move_file(&mut self, source_id: &str, target_id: &str) -> Result<Moved, String> {
+    fn move_unrecorded(&mut self, source_id: &str, target_id: &str) -> Result<Moved, String> {
         if self.installing {
             return Err("업데이트 설치 준비 중에는 파일을 이동할 수 없어요.".into());
         }
@@ -233,6 +239,7 @@ impl Workspace {
             Err(e) => return Err(format!("이동하지 못했어요. 원본 위치를 확인해 주세요. {e}")),
         }
         Ok(Moved {
+            undo_id: String::new(),
             source_path: source.to_string_lossy().into_owned(),
             destination_path: target.to_string_lossy().into_owned(),
             name: name.to_string_lossy().into_owned(),

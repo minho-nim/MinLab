@@ -1,4 +1,4 @@
-use crate::filesystem::{Entry, Moved, Page, Workspace};
+use crate::filesystem::{Entry, MoveRecord, Moved, Page, Workspace};
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
@@ -48,6 +48,18 @@ async fn move_file(
     work(&state, move |ws| ws.move_file(&source_id, &target_id)).await
 }
 #[tauri::command]
+async fn move_history(state: tauri::State<'_, Shared>) -> Result<Vec<MoveRecord>, String> {
+    work(&state, |ws| ws.move_history()).await
+}
+#[tauri::command]
+async fn undo_move(state: tauri::State<'_, Shared>, id: String) -> Result<Moved, String> {
+    work(&state, move |ws| ws.undo_move(&id)).await
+}
+#[tauri::command]
+async fn clear_move_history(state: tauri::State<'_, Shared>) -> Result<(), String> {
+    work(&state, |ws| ws.clear_move_history()).await
+}
+#[tauri::command]
 async fn open_entry(
     app: tauri::AppHandle,
     state: tauri::State<'_, Shared>,
@@ -82,11 +94,22 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .manage(Shared::default())
+        .setup(|app| {
+            let directory = app.path().app_local_data_dir()?;
+            let state = app.state::<Shared>();
+            if let Ok(mut ws) = state.lock() {
+                let _ = ws.configure_recovery(&directory);
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             connect_root,
             import_files,
             list_directory,
             move_file,
+            move_history,
+            undo_move,
+            clear_move_history,
             open_entry,
             prepare_update
         ])

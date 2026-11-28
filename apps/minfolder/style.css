@@ -52,3 +52,29 @@
 .map-graph[data-zoom="14"]{zoom:1.4}
 .map-graph[data-zoom="15"]{zoom:1.5}
 .map-graph[data-zoom="16"]{zoom:1.6}
+
+.brand-icon{width:40px;height:40px;object-fit:contain;flex:none}
+.header-actions{display:flex;align-items:center;gap:.75rem}
+#settings-open{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:44px}
+body:has(.settings-dialog[open]){overflow:hidden}
+.settings-dialog{width:min(30rem,calc(100% - 2rem));max-height:calc(100dvh - 2rem);margin:auto;padding:1.25rem;border:1px solid var(--line);border-radius:1.1rem;color:var(--ink);background:var(--card);overflow:auto;line-height:1.6}
+.settings-dialog::backdrop{background:rgb(32 52 45 / .36)}
+.settings-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:.75rem;margin-bottom:1rem}
+.settings-heading h2{margin:0;font-size:1.2rem}
+.settings-heading button{width:44px;height:44px;padding:0;font-size:1.5rem;line-height:1}
+.settings-dialog h3{font-size:1rem;margin:0 0 .25rem}
+.settings-dialog p,.install-steps{font-size:.87rem}
+.install-brand{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0 .75rem}
+.install-brand img{flex:none;object-fit:contain}
+.install-brand h4{margin:0;font-size:1rem}
+.install-brand .hint{margin:.15rem 0 0}
+.install-download{display:flex;align-items:center;justify-content:center;gap:.75rem;min-height:44px;padding:.6rem .75rem;border:1px solid var(--green);border-radius:.6rem;background:var(--green);color:var(--card);font-weight:650;text-decoration:none}
+.install-download:hover{background:var(--ink)}
+.install-steps{margin:1rem 0;padding-left:1.25rem}
+.install-steps li+li{margin-top:.4rem}
+.settings-dialog .install-notice{padding-top:.75rem;border-top:1px solid var(--line)}
+.release-link{display:inline-flex;align-items:center;min-height:44px;color:var(--green);font-size:.82rem;text-underline-offset:3px}
+.settings-dialog a:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.settings-footer{border-top:1px solid var(--line);margin-top:1rem;padding-top:1rem;display:flex;justify-content:flex-end}
+.settings-footer button{min-height:44px}
+@media(max-width:600px){.header-actions .local{display:none}.settings-dialog{padding:1rem}.install-brand{gap:.5rem}.install-brand img{width:52px;height:52px}}

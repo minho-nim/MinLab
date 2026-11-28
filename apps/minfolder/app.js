@@ -708,6 +708,21 @@ bindDrop($('drop'),null)
 bindCamera()
 $('approve').onclick=approve
 $('tab-queue').onclick=()=>tab(false);$('tab-history').onclick=()=>tab(true)
+const settings=$('settings'),settingsOpen=$('settings-open')
+settingsOpen.onclick=()=>{settings.showModal();settingsOpen.setAttribute('aria-expanded','true')}
+settings.addEventListener('close',()=>{settingsOpen.setAttribute('aria-expanded','false');settingsOpen.focus()})
+settings.addEventListener('keydown',e=>{
+  if(e.key!=='Tab')return
+  const controls=[...settings.querySelectorAll('button:not(:disabled),a[href]')].filter(x=>x.getClientRects().length)
+  const first=controls[0],last=controls.at(-1)
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+})
+settings.addEventListener('click',e=>{
+  if(e.target!==settings)return
+  const r=settings.getBoundingClientRect()
+  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)settings.close()
+})
 document.addEventListener('dragover',e=>{if(accepts(e))e.preventDefault()})
 document.addEventListener('drop',e=>{if(accepts(e))e.preventDefault()})
 render()

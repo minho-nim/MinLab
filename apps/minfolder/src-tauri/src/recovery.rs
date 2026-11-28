@@ -439,8 +439,19 @@ mod tests {
     fn changed_alternate_stream_blocks_undo() {
         let (_dir, mut ws, file, folder) = setup();
         fs::write(format!("{}:metadata", file.path), b"first").unwrap();
+        let file = ws.track(Path::new(&file.path)).unwrap();
         let moved = ws.move_file(&file.id, &folder.id).unwrap();
+        let modified = fs::metadata(&moved.destination_path)
+            .unwrap()
+            .modified()
+            .unwrap();
         fs::write(format!("{}:metadata", moved.destination_path), b"second").unwrap();
+        File::options()
+            .write(true)
+            .open(&moved.destination_path)
+            .unwrap()
+            .set_times(fs::FileTimes::new().set_modified(modified))
+            .unwrap();
         assert!(ws.undo_move(&moved.undo_id).is_err());
     }
 }

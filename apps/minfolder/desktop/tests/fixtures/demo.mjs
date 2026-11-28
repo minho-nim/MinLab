@@ -40,6 +40,7 @@ export function installDemo(options={}) {
       op.onsuccess?.()
     });return op
   }
+  window.demoFiles={addRootFile(name){const entry=make({name,size:4096},root.path,[name]);children.get(root.id).push(entry);return entry},entries,children}
   if(options.mode==='web')return
   const callbacks={},events={};let callback=0
   const moveHistory=[]
@@ -54,11 +55,11 @@ export function installDemo(options={}) {
       if(cmd==='plugin:event|listen'){events[args.event]=args.handler;return args.handler}
     if(cmd==='plugin:dialog|open')return args.options.directory?root.path:null
     if(cmd==='plugin:dialog|message')return 'Ok'
-    if(cmd==='connect_root')return root
+    if(cmd==='connect_root')return structuredClone(root)
     if(cmd==='list_directory'){
       if(options.delay)await new Promise(r=>setTimeout(r,options.delay))
       if(options.error)throw '공유폴더 접근 권한을 확인해 주세요.'
-      return {entries:children.get(args.id)??[],done:true,skipped:0}
+      return {entries:structuredClone(children.get(args.id)??[]),done:true,skipped:0}
     }
     if(cmd==='move_history')return moveHistory.map(r=>({...r}))
     if(cmd==='clear_move_history'){moveHistory.length=0;return}
@@ -79,7 +80,7 @@ export function installDemo(options={}) {
       return {sourcePath:r.destinationPath,destinationPath:r.sourcePath,name:r.name,status:r.status,undoId:r.id}
     }
     if(cmd==='open_entry')return
-    if(cmd==='import_files')return [...entries.values()].filter(e=>args.paths.includes(e.path))
+    if(cmd==='import_files')return structuredClone([...entries.values()].filter(e=>args.paths.includes(e.path)))
     throw Error('Unsupported demo operation '+cmd)
   }}
 }

@@ -23,6 +23,7 @@ for(const mode of ['native','web'])test(`${mode}: 승인·이동 기록·되돌�
   await page.waitForFunction(()=>document.querySelector('#queue').textContent.includes('파일')||!document.querySelector('#queue').textContent.trim())
   if(mode==='native')await page.locator('.history-section summary').click();else await page.locator('#tab-history').click()
   const undo=page.getByRole('button',{name:'원래 위치로 되돌리기'});await undo.waitFor()
+  await page.waitForFunction(selector=>document.querySelector(selector).textContent.startsWith('2'),mode==='web'?'#in-count':'#file-count')
   if(process.env.MINFOLDER_CAPTURE_DIR){await mkdir(process.env.MINFOLDER_CAPTURE_DIR,{recursive:true});for(const width of [1400,400]){await page.setViewportSize({width,height:900});await page.screenshot({path:join(process.env.MINFOLDER_CAPTURE_DIR,`${mode}-history-${width}.png`),fullPage:width<900})}await page.setViewportSize({width:1400,height:900})}
   await undo.click()
   await page.waitForFunction(()=>document.querySelector('#history').textContent.includes('되돌리기 완료'))
@@ -43,5 +44,26 @@ test('native: 되돌리기 실패를 표시하고 원본·기록을 유지한 �
   await page.evaluate(()=>demo.undoError='공유폴더 연결이 끊겼어요.');await page.getByRole('button',{name:'원래 위치로 되돌리기'}).click();await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('되돌리지 못했어요'))
   assert.equal(await page.getByRole('button',{name:'원래 위치로 되돌리기'}).isEnabled(),true)
   await page.evaluate(()=>demo.undoError=null);await page.getByRole('button',{name:'원래 위치로 되돌리기'}).click();await page.waitForFunction(()=>document.querySelector('#history').textContent.includes('되돌리기 완료'))
+ }finally{await page.close()}
+})
+test('native: 직접 승인한 미분류 이름을 다음 파일 추천에 사용',async()=>{
+ const page=await make('native')
+ try{
+  await page.evaluate(()=>demoFiles.addRootFile('추가자료_보고서.pdf'));await page.locator('#refresh').click()
+  await page.locator('#files .file-row').filter({hasText:'추가자료_보고서'}).getByRole('button',{name:'분류',exact:true}).click()
+  await page.locator('#queue select').selectOption({label:'총괄장'});await page.locator('#approve').click();await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('이동 완료 1건'))
+  await page.evaluate(()=>demoFiles.addRootFile('추가자료_보고서.pdf'));await page.locator('#refresh').click()
+  await page.locator('#files .file-row').filter({hasText:'추가자료_보고서'}).getByRole('button',{name:'분류',exact:true}).click()
+  await page.waitForFunction(()=>!document.querySelector('#approve').disabled)
+  const label=await page.locator('#queue select option:checked').textContent();assert.equal(label,'총괄장')
+  await page.locator('.balance-detail-button').click();assert.match(await page.locator('.balance-details').textContent(),/승인한 같은 파일명 유형/)
+ }finally{await page.close()}
+})
+test('web: 원래 위치의 새 파일을 덮어쓰지 않고 되돌리기 중단',async()=>{
+ const page=await make('web')
+ try{
+  await page.locator('#inbox .entry').filter({hasText:'평택설비공사_견적서'}).getByRole('button',{name:'분류',exact:true}).click();await page.waitForFunction(()=>!document.querySelector('#approve').disabled);await page.locator('#approve').click();await page.waitForFunction(()=>document.querySelector('#in-count').textContent==='2');await page.locator('#tab-history').click()
+  await page.evaluate(()=>demoFiles.addRootFile('평택설비공사_견적서_1123.pdf'));await page.getByRole('button',{name:'원래 위치로 되돌리기'}).click();await page.waitForFunction(()=>document.querySelector('#alert').textContent.includes('되돌리지 못했어요'))
+  assert.match(await page.locator('#alert').textContent(),/같은 이름/);assert.equal(await page.getByRole('button',{name:'원래 위치로 되돌리기'}).isEnabled(),true)
  }finally{await page.close()}
 })

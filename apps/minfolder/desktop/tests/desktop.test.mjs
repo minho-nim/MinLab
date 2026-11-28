@@ -28,7 +28,7 @@ async function pageWithBridge(){
     const external=file('external','강남공사_작업절차서_외부.docx','C:\\Downloads\\강남공사_작업절차서_외부.docx')
     const lists={root:[group,document],group:[project],project:[work],work:[destination],destination:[]}
     const callbacks={},events={};let next=0
-    window.testBridge={calls:[],accept:true,failMove:false,partialRoot:false,newVersion:false,pauseMove:false,lists,events,emit:(event,payload)=>callbacks[events[event]]({event,payload})}
+    window.testBridge={history:[],calls:[],accept:true,failMove:false,partialRoot:false,newVersion:false,pauseMove:false,lists,events,emit:(event,payload)=>callbacks[events[event]]({event,payload})}
     window.isTauri=true
     window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback:fn=>{callbacks[++next]=fn;return next},unregisterCallback:()=>{},invoke:async(cmd,args)=>{
       window.testBridge.calls.push({cmd,args})
@@ -52,6 +52,7 @@ async function pageWithBridge(){
         return {entries:lists[args.id]??[],done:true,skipped:0}
       }
       if(cmd==='import_files')return [external]
+      if(cmd==='move_history')return window.testBridge.history
       if(cmd==='open_entry')return
       if(cmd==='move_file'){
         if(window.testBridge.pauseMove)await new Promise(resolve=>window.testBridge.finishMove=resolve)
@@ -61,7 +62,8 @@ async function pageWithBridge(){
         const target=Object.values(lists).flat().find(e=>e.id===args.targetId)
         const moved={...source,id:source.id+'-moved',path:target.path+'\\'+source.name}
         lists[args.targetId].push(moved)
-        return {sourcePath:source.path,destinationPath:moved.path,name:source.name,status:'이동 완료'}
+        const result={id:'move-test',undoId:'move-test',sourcePath:source.path,destinationPath:moved.path,name:source.name,status:'이동 완료',time:Date.now(),canUndo:true}
+        window.testBridge.history.unshift(result);return result
       }
       throw new Error('Unexpected command '+cmd)
     }}

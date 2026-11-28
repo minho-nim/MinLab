@@ -21,8 +21,10 @@ export function installDemo(options={}) {
     entries.set(id,e)
     const handle={name:e.name,kind,id,queryPermission:async()=> 'granted',requestPermission:async()=> 'granted',isSameEntry:async other=>other?.id===id,
       values:async function*(){for(const child of children.get(id)??[])yield handles.get(child.id)},
-      getDirectoryHandle:async name=>find(name,'directory'),getFileHandle:async name=>find(name,'file'),
-      getFile:async()=>new File([new Uint8Array(e.size)],e.name,{lastModified:1795392000000}),
+      getDirectoryHandle:async name=>find(name,'directory'),getFileHandle:async(name,options)=>{try{return find(name,'file')}catch(e){if(!options?.create)throw e;const created=make({name,size:0},path,[...relative,name]);children.get(id).push(created);return handles.get(created.id)}},
+      createWritable:async()=>({write:async payload=>{e.contents=new Uint8Array(await payload.arrayBuffer());e.size=e.contents.length;e.modifiedMS=Date.now()},close:async()=>{},abort:async()=>{}}),
+      removeEntry:async name=>{const list=children.get(id),index=list.findIndex(c=>c.name===name);if(index<0)throw new DOMException('Not found','NotFoundError');list.splice(index,1)},
+      getFile:async()=>new File([e.contents??new Uint8Array(e.size)],e.name,{lastModified:e.modifiedMS??1795392000000}),
       resolve:async other=>{const target=entries.get(other?.id);if(target?.path.startsWith(e.path+'\\'))return target.relative.slice(e.relative.length);return null}}
     function find(name,kind){const child=(children.get(id)??[]).find(c=>c.name===name&&c.kind===kind);if(!child)throw new DOMException('Not found','NotFoundError');return handles.get(child.id)}
     handles.set(id,handle)
@@ -38,27 +40,47 @@ export function installDemo(options={}) {
       op.onsuccess?.()
     });return op
   }
+  window.demoFiles={addRootFile(name){const entry=make({name,size:4096},root.path,[name]);children.get(root.id).push(entry);return entry},entries,children}
   if(options.mode==='web')return
   const callbacks={},events={};let callback=0
-  window.demo={entries:[...entries.values()],events,callbacks,calls:[]}
+  const moveHistory=[]
+  window.demo={entries:[...entries.values()],events,callbacks,calls:[],history:moveHistory}
   window.isTauri=true
   window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback(fn){callbacks[++callback]=fn;return callback},unregisterCallback(){},invoke:async(cmd,args)=>{
     window.demo.calls.push({cmd,args})
-    if(cmd==='plugin:app|version')return '0.3.0'
+    if(cmd==='plugin:app|version')return '0.4.0'
       if(cmd==='plugin:window|is_maximized')return false
       if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
       if(cmd==='plugin:updater|check')return null
       if(cmd==='plugin:event|listen'){events[args.event]=args.handler;return args.handler}
     if(cmd==='plugin:dialog|open')return args.options.directory?root.path:null
     if(cmd==='plugin:dialog|message')return 'Ok'
-    if(cmd==='connect_root')return root
+    if(cmd==='connect_root')return structuredClone(root)
     if(cmd==='list_directory'){
       if(options.delay)await new Promise(r=>setTimeout(r,options.delay))
       if(options.error)throw '공유폴더 접근 권한을 확인해 주세요.'
-      return {entries:children.get(args.id)??[],done:true,skipped:0}
+      return {entries:structuredClone(children.get(args.id)??[]),done:true,skipped:0}
+    }
+    if(cmd==='move_history')return moveHistory.map(r=>({...r}))
+    if(cmd==='clear_move_history'){moveHistory.length=0;return}
+    if(cmd==='move_file'){
+      const file=entries.get(args.sourceId),target=entries.get(args.targetId)
+      if(!file||!target)throw '항목 없음'
+      const sourcePath=file.path,destinationPath=target.path+'\\'+file.name
+      const source=[...children.values()].find(list=>list.some(e=>e.id===file.id));source.splice(source.findIndex(e=>e.id===file.id),1)
+      children.get(target.id).push(file);file.path=destinationPath
+      const r={id:'move-'+(moveHistory.length+1),undoId:'move-'+(moveHistory.length+1),name:file.name,sourcePath,destinationPath,rootPath:root.path,time:Date.now(),status:'이동 완료',canUndo:true,fileId:file.id}
+      moveHistory.unshift(r);return {...r}
+    }
+    if(cmd==='undo_move'){
+      if(window.demo.undoError)throw window.demo.undoError
+      const r=moveHistory.find(r=>r.id===args.id);if(!r?.canUndo)throw '되돌릴 수 없음'
+      const file=entries.get(r.fileId),source=[...children.values()].find(list=>list.some(e=>e.id===file.id));source.splice(source.findIndex(e=>e.id===file.id),1)
+      const parent=[...entries.values()].find(e=>e.path===r.sourcePath.slice(0,r.sourcePath.lastIndexOf('\\')));children.get(parent.id).push(file);file.path=r.sourcePath;r.canUndo=false;r.status='되돌리기 완료'
+      return {sourcePath:r.destinationPath,destinationPath:r.sourcePath,name:r.name,status:r.status,undoId:r.id}
     }
     if(cmd==='open_entry')return
-    if(cmd==='import_files')return [...entries.values()].filter(e=>args.paths.includes(e.path))
+    if(cmd==='import_files')return structuredClone([...entries.values()].filter(e=>args.paths.includes(e.path)))
     throw Error('Unsupported demo operation '+cmd)
   }}
 }

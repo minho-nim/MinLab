@@ -84,7 +84,7 @@
     },
     {
       "id": "proj-minially",
-      "repository": "minho-nim/minially",
+      "repository": "minho-nim/minihub/tree/main/minially",
       "name": "미니어리 (Minially)",
       "description": "달력, 할 일, 자주 쓰는 문구를 한곳에서 관리하는 앱",
       "category": "일정 관리",
@@ -102,7 +102,7 @@
       "name": "미니로그 (MINILOG)",
       "description": "사진과 경험 메모로 블로그 원고를 만들고 협찬·일정·성과를 사람이 확인하며 관리하는 반자동 블로그 도구. 미니허브 로그인으로 미니어리와 연결됨",
       "category": "블로그 관리",
-      "appUrl": "",
+      "appUrl": "https://mini-log.pages.dev/",
       "techStack": [
         "React",
         "TypeScript",
@@ -117,7 +117,7 @@
       "name": "미니허브 (MINIHUB)",
       "description": "미니로그·미니어리를 같은 로그인 코드로 잇고, 앱별 활동 숫자를 사람별로 모아 보고 비교하는 공통 허브",
       "category": "플랫폼",
-      "appUrl": "",
+      "appUrl": "https://minihub.pages.dev/",
       "techStack": [
         "React",
         "TypeScript",

@@ -163,10 +163,13 @@ export function connectCatalogOnce(
     if (project.id !== "proj-minially") return project;
     const old = "https://minho-nim.github.io/minially";
     const current = { ...project };
+    if (project.githubUrl?.replace(/\/$/, "") === "https://github.com/minho-nim/minially")
+      current.githubUrl = "https://github.com/minho-nim/minihub/tree/main/minially";
     for (const key of ["liveUrl", "previewUrl"] as const)
       if (project[key]?.replace(/\/$/, "") === old)
         current[key] = "https://minially.pages.dev/";
-    return current.liveUrl === project.liveUrl &&
+    return current.githubUrl === project.githubUrl &&
+      current.liveUrl === project.liveUrl &&
       current.previewUrl === project.previewUrl
       ? project
       : current;

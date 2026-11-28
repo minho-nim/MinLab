@@ -323,3 +323,22 @@ test("updated public project names and Minially URL keep custom text, IDs and re
     custom.name,
   );
 });
+
+test("MINIHUB apps retain separate catalog identities and migrate only the old Minially repository", () => {
+  const stored = catalog.filter((p) => !["proj-minihub", "proj-minilog"].includes(p.id)).map((p) =>
+    p.id === "proj-minially" ? { ...p, githubUrl: "https://github.com/minho-nim/minially" } : p,
+  );
+  const result = connectCatalogOnce(stored, memoryStorage(), "projects");
+  for (const [id, path, liveUrl] of [
+    ["proj-minially", "minially", "https://minially.pages.dev/"],
+    ["proj-minihub", "hub", "https://minihub.pages.dev/"],
+    ["proj-minilog", "mini-log", "https://mini-log.pages.dev/"],
+  ]) {
+    const matches = result.filter((p) => p.id === id);
+    assert.equal(matches.length, 1);
+    assert.equal(matches[0].githubUrl, `https://github.com/minho-nim/minihub/tree/main/${path}`);
+    assert.equal(matches[0].liveUrl, liveUrl);
+  }
+  const custom = { ...stored.find((p) => p.id === "proj-minially")!, githubUrl: "https://example.com/custom" };
+  assert.equal(connectCatalogOnce([custom], memoryStorage(), "projects").find((p) => p.id === custom.id)!.githubUrl, custom.githubUrl);
+});

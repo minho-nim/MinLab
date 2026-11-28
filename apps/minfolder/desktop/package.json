@@ -1,0 +1,29 @@
+{
+  "name": "minfolder-desktop",
+  "private": true,
+  "version": "0.3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 1420 --strictPort",
+    "build": "vite build",
+    "tauri": "cd .. && tauri",
+    "desktop:dev": "cd .. && tauri dev",
+    "test": "node --test ../tests/*.test.js tests/updater.test.mjs tests/lifecycle.test.mjs",
+    "desktop:build": "cd .. && tauri build",
+    "test:browser": "node --test tests/desktop.test.mjs tests/explorer.test.mjs tests/balanced.test.mjs",
+    "test:ui": "node scripts/check-ui.mjs",
+    "capture:ui": "node scripts/capture-ui.mjs",
+    "desktop:pack": "cd .. && tauri build --config src-tauri/tauri.ci.conf.json"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/plugin-dialog": "^2.4.0",
+    "@tauri-apps/plugin-process": "^2.4.0",
+    "@tauri-apps/plugin-updater": "^2.14.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.8.0",
+    "playwright": "^1.65.1",
+    "vite": "^6.1.0"
+  }
+}

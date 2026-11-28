@@ -1,0 +1,46 @@
+[package]
+name = "minfolder"
+version = "0.3.0"
+edition = "2021"
+
+[lib]
+name = "minfolder_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "minfolder"
+path = "src/main.rs"
+required-features = ["desktop"]
+
+[[example]]
+name = "verify_update"
+required-features = ["release-tools"]
+
+[features]
+default = ["desktop"]
+release-tools = ["dep:base64", "dep:minisign-verify", "dep:serde_json"]
+custom-protocol = ["desktop", "tauri/custom-protocol"]
+desktop = ["dep:serde_json", "dep:tauri", "dep:tauri-plugin-dialog", "dep:tauri-plugin-opener", "dep:tauri-plugin-updater", "dep:tauri-plugin-process", "dep:tauri-plugin-single-instance", "dep:tauri-build"]
+
+[build-dependencies]
+tauri-build = { version = "2", optional = true }
+
+[dependencies]
+base64 = { version = "0.22", optional = true }
+minisign-verify = { version = "0.3", optional = true }
+serde_json = { version = "1", optional = true }
+serde = { version = "1", features = ["derive"] }
+file-id = "0.2"
+blake3 = "1"
+tauri = { version = "2", optional = true }
+tauri-plugin-dialog = { version = "2", optional = true }
+tauri-plugin-opener = { version = "2", optional = true }
+tauri-plugin-updater = { version = "2", optional = true }
+tauri-plugin-process = { version = "2", optional = true }
+tauri-plugin-single-instance = { version = "2", optional = true }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Storage_FileSystem", "Win32_Foundation"] }
+
+[dev-dependencies]
+tempfile = "3"

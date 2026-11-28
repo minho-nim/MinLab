@@ -1,0 +1,63 @@
+name: MinFolder Windows
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/minfolder/**'
+      - '.github/workflows/minfolder-desktop.yml'
+      - '.github/workflows/minfolder-release.yml'
+concurrency:
+  group: minfolder-windows-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  interface:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/minfolder/desktop/package-lock.json
+      - run: npm ci --prefix apps/minfolder/desktop
+      - run: npm --prefix apps/minfolder/desktop test
+      - run: npm --prefix apps/minfolder/desktop run build
+      - run: npx --prefix apps/minfolder/desktop playwright install --with-deps chromium
+      - run: npm --prefix apps/minfolder/desktop run test:browser
+      - run: npm --prefix apps/minfolder/desktop run test:ui
+        env:
+          MINFOLDER_CAPTURE_DIR: ${{ runner.temp }}/minfolder-ui
+      - run: npm --prefix apps/minfolder/desktop run capture:ui
+        env:
+          MINFOLDER_CAPTURE_DIR: ${{ runner.temp }}/minfolder-ui
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MinFolder-UI-evidence
+          path: ${{ runner.temp }}/minfolder-ui
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/minfolder/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/minfolder/src-tauri -> target
+      - run: npm ci --prefix apps/minfolder/desktop
+      - run: npm --prefix apps/minfolder/desktop run build
+      - run: cargo test --locked --manifest-path apps/minfolder/src-tauri/Cargo.toml --no-default-features --lib
+      - run: npm --prefix apps/minfolder/desktop run desktop:pack -- -- --locked
+      - name: 실제 Windows 앱 창 시작 확인
+        shell: pwsh
+        run: ./apps/minfolder/desktop/scripts/smoke-windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MinFolder-Windows-installer
+          path: apps/minfolder/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error

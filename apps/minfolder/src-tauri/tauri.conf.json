@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "MinFolder",
+  "version": "0.3.0",
+  "identifier": "com.minlab.minfolder",
+  "build": {
+    "beforeDevCommand": "npm --prefix desktop run dev",
+    "beforeBuildCommand": "npm --prefix desktop run build",
+    "devUrl": "http://127.0.0.1:1420",
+    "frontendDist": "../desktop-dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "MinFolder · 업무 자료지도",
+        "width": 1366,
+        "height": 820,
+        "minWidth": 900,
+        "minHeight": 600,
+        "decorations": false,
+        "maximized": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "shortDescription": "파일명으로 추천하고 승인 후 옮기는 업무 자료지도",
+    "windows": {
+      "nsis": {
+        "languages": [
+          "Korean",
+          "English"
+        ],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser"
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
+    },
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM2ODI3ODRCQUVCNkYzRDAKUldUUTg3YXVTM2lDTm5OaUZMRW1LRldVM2pwSW5XdVlnUm4vdFY1NHEzRHMvbmo5YVd4a1pQOEoK",
+      "endpoints": [
+        "https://github.com/minho-nim/MinLab/releases/download/minfolder-updates/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      },
+      "requireSignedVersion": true
+    }
+  }
+}

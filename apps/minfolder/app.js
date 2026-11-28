@@ -1,6 +1,8 @@
 import {key,norm,predict,matchingProjects,openDir,transfer} from './core.js'
 import {createColumnView} from './column-view.js'
 import {matchesName} from './name-search.js'
+import {createReviewView} from './review-view.js'
+import {setupWorkspaceLayout} from './workspace-layout.js'
 const $=s=>document.getElementById(s)
 const el=(t,text,cls)=>{const e=document.createElement(t);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
 const button=(text,fn)=>{const b=el('button',text);b.type='button';b.addEventListener('click',fn);return b}
@@ -17,7 +19,7 @@ let mapZoom=10, pan=null, wheelRemainder=0, wheelAt=0
 const localRead=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
 const localWrite=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 const localKey=()=> 'minfolder.pages.v1:'+S.root?.name
-let browseMode=localRead('minfolder.browse-view','map')==='columns'?'columns':'map'
+let browseMode=localRead('minfolder.browse-view','columns')==='columns'?'columns':'map'
 const columnView=createColumnView({viewport:$('folder-explorer'),query:()=>$('search').value,
   getData:()=>{
     const nodes=new Map([...S.entries].map(([id,n])=>[id,{id,name:n.path.at(-1)??S.root?.name,path:parts(S.root,n.path),parent:n.path.length?key(n.path.slice(0,-1)):null,children:n.children.map(key),files:n.files.map(h=>({id:key([...n.path,h.name]),name:h.name})),loaded:n.loaded,done:n.done,loading:!!n.task,error:n.denied?'이 위치의 접근 권한을 확인해 주세요.':''}]))
@@ -615,37 +617,27 @@ function queueExternal(files,path){
   tab(false);renderQueue()
   msg('탐색기에서 가져온 파일은 승인 후 복사해요. 원본은 그대로예요.')
 }
-function ready(){return S.queue.filter(q=>q.checked&&!!q.targetHandle&&q.target!==null&&S.lookup.has(key(q.target))&&!q.target.some(n=>isExcluded(n,'directory'))&&!isExcluded(q.name))}
+function eligible(q){return !!q.targetHandle&&q.target!==null&&S.lookup.has(key(q.target))&&!q.target.some(n=>isExcluded(n,'directory'))&&!isExcluded(q.name)}
+function ready(){return S.queue.filter(q=>q.checked&&eligible(q))}
 function counts(){
   const r=ready(), moves=r.filter(q=>q.kind==='move').length
   $('summary').textContent=r.length ? '승인 대상 '+r.length+'건 · 이동 '+moves+' / 복사 '+(r.length-moves) : '위치가 정해진 항목을 선택하세요.'
   $('approve').disabled=S.busy||!r.length
+  const hidden=reviewView.hiddenSelected();if(hidden)$('summary').textContent+=` · 숨겨진 선택 ${hidden}건`
+  $('approve').textContent=`확인한 ${r.length}개 `+(moves&&moves<r.length?'이동·복사':r.length&&!moves?'복사':'이동')
 }
-function renderQueue(){
-  $('q-count').textContent=S.queue.length
-  if(!S.queue.length){empty($('queue'),'아직 분류할 파일이 없어요. 지도 또는 연결한 폴더 목록에서 파일을 골라 주세요.');counts();return}
-  const frag=document.createDocumentFragment()
-  for(const q of S.queue){
-    const row=el('article',null,'qrow'), head=el('div',null,'qhead'), check=el('input')
-    check.type='checkbox';check.checked=q.checked;check.disabled=S.busy
-    check.setAttribute('aria-label',q.name+' 승인 대상')
-    check.onchange=()=>{q.checked=check.checked;counts()}
-    const remove=button('제외',()=>{S.queue=S.queue.filter(x=>x.id!==q.id);renderQueue()});remove.disabled=S.busy
-    head.append(check,el('b',q.name),el('small',q.kind==='move'?'원본 이동':'원본 유지'),remove)
-    const where=el('select');where.setAttribute('aria-label',q.name+' 저장 경로');where.disabled=S.busy
-    const prompt=el('option','저장 위치 선택');prompt.value='';where.append(prompt)
-    const choices=S.folders.slice(0,200)
-    if(q.target!==null&&!choices.some(p=>key(p)===key(q.target)))choices.push(q.target)
-    for(const p of choices){
-      if(q.kind==='move'&&key(q.parent)===key(p))continue
-      const option=el('option',parts(S.root,p));option.value=key(p);where.append(option)
-    }
-    where.value=q.target!==null?key(q.target):''
-    where.onchange=()=>{q.target=S.lookup.get(where.value)??null;q.targetHandle=q.target&&S.entries.get(key(q.target))?.handle;q.checked=!!q.target;q.auto=false;q.failed=false;q.reason='직접 선택한 위치예요.';renderQueue()}
-    row.append(head,where,el('small',q.reason,'reason'));frag.append(row)
-  }
-  $('queue').replaceChildren(frag);counts()
-}
+const reviewView=createReviewView({container:$('queue'),filters:$('review-filters'),readyLabel:'이동·복사 준비',isBusy:()=>S.busy,
+  onFilter:()=>counts(),
+  records:()=>S.queue.map(q=>{
+    const choices=S.folders.slice(0,200);if(q.target!==null&&!choices.some(p=>key(p)===key(q.target)))choices.push(q.target)
+    return {id:q.id,name:q.name,source:q.kind==='copy'?'탐색기에서 추가 · 원본 유지 / '+q.name:parts(S.root,q.parent??[])+' / '+q.name,operation:q.kind==='move'?'이동':'복사',checked:q.checked,target:q.target!==null?'folder:'+key(q.target):'',valid:eligible(q),failed:q.failed,reason:q.reason,
+      targets:choices.filter(p=>q.kind!=='move'||key(q.parent)!==key(p)).map(p=>({id:'folder:'+key(p),label:p.slice(-3).join(' / ')||S.root.name,path:parts(S.root,p)}))}
+  }),
+  onCheck:(id,value)=>{const q=S.queue.find(q=>q.id===id);if(q)q.checked=value;counts()},
+  onTarget:(id,value)=>{const q=S.queue.find(q=>q.id===id);if(q){q.target=value.startsWith('folder:')?S.lookup.get(value.slice(7))??null:null;q.targetHandle=q.target&&S.entries.get(key(q.target))?.handle;q.checked=q.target!==null;q.auto=false;q.failed=false;q.reason='직접 선택한 위치예요.';renderQueue()}},
+  onRemove:id=>{S.queue=S.queue.filter(q=>q.id!==id);renderQueue()}
+})
+function renderQueue(){reviewView.render();$('q-count').textContent=S.queue.length;counts()}
 function renderHistory(){
   if(!S.history.length){empty($('history'),'아직 저장한 파일이 없어요.');return}
   const frag=document.createDocumentFragment()
@@ -749,6 +741,7 @@ settings.addEventListener('click',e=>{
 })
 document.addEventListener('dragover',e=>{if(accepts(e))e.preventDefault()})
 document.addEventListener('drop',e=>{if(accepts(e))e.preventDefault()})
+setupWorkspaceLayout({workspace:document.querySelector('.board'),panes:document.querySelector('.right'),horizontal:$('resize-explorer'),vertical:$('resize-source'),fixedHeight:14})
 setBrowseMode(browseMode)
 render()
 void restoreWorkspace()

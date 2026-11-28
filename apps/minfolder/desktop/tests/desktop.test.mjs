@@ -7,14 +7,16 @@ import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 let server,browser,url
 before(async()=>{
-  server=await createServer({root:fileURLToPath(new URL('..',import.meta.url)),server:{host:'127.0.0.1',port:0}})
+  server=await createServer({configFile:fileURLToPath(new URL('../vite.config.js',import.meta.url)),root:fileURLToPath(new URL('..',import.meta.url)),server:{host:'127.0.0.1',port:0}})
   await server.listen();url=server.resolvedUrls.local[0]
+  for(const name of ['balanced.css','explorer.css'])assert.match((await fetch(url+name)).headers.get('content-type'),/^text\/css/)
   browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox']})
 })
 after(async()=>{await browser?.close();await server?.close()})
 async function pageWithBridge(){
   const page=await browser.newPage({viewport:{width:1320,height:950}})
   await page.addInitScript(()=>{
+    localStorage.setItem('minfolder.browse-view',JSON.stringify('map'))
     const dir=(id,name,path)=>({id,name,path,kind:'directory',size:0,modified:'0'})
     const file=(id,name,path)=>({id,name,path,kind:'file',size:2345,modified:'1'})
     const root=dir('root','업무자료','C:\\업무자료')
@@ -78,7 +80,7 @@ test('파일 열기는 기본 프로그램 요청으로 전달하고 이동은 �
   assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='open_entry').length),1)
   await waitForSuggestion(page)
   assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='move_file').length),0)
-  await page.getByRole('button',{name:'선택 파일 이동 승인',exact:true}).click()
+  await page.getByRole('button',{name:'확인한 1개 이동',exact:true}).click()
   await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('이동 완료 1건'))
   assert.equal(await page.locator('#queue .queue-item').count(),0)
   assert.match(await page.locator('#history').textContent(),/강남공사_작업절차서/)

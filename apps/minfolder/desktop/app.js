@@ -7,6 +7,8 @@ import {rememberFocus,restoreFocus} from './focus.js'
 import {setupWindowShell} from './window-shell.js'
 import {createColumnView} from '../column-view.js'
 import {createCloseHandler} from './lifecycle.js'
+import {createReviewView} from '../review-view.js'
+import {setupWorkspaceLayout} from '../workspace-layout.js'
 const $=id=>document.getElementById(id)
 const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
@@ -80,7 +82,7 @@ async function chooseRoot(){
 function select(id){const node=state.nodes.get(id);if(!node)return;state.selected=id;state.checked.clear();render();void load(node)}
 function empty(node,text){node.replaceChildren(element('p',text,'empty'))}
 const mapView=createMapView({state,load,select,onFileOpen:file=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)},onFileDrag:startDrag})
-let browseMode=read('minfolder.browse-view','map')==='columns'?'columns':'map'
+let browseMode=read('minfolder.browse-view','columns')==='columns'?'columns':'map'
 const columnView=createColumnView({viewport:$('folder-explorer'),query:()=>$('search').value,
   getData:()=>{
     const byPath=new Map(folderNodes().map(n=>[key(n.relative),n.id]))
@@ -161,25 +163,17 @@ async function importPaths(paths,target=''){
   try{const files=await invoke('import_files',{paths});addFiles(files,target)}catch(e){status('파일을 추가하지 못했어요. '+e)}
 }
 async function chooseFiles(){if(state.busy||state.closing||state.installing)return;try{const paths=await open({multiple:true,directory:false,title:'이동할 파일 선택'});if(paths)await importPaths(Array.isArray(paths)?paths:[paths])}catch(e){status(String(e))}}
-function renderQueue(){
-  const queue=$('queue'),focus=rememberFocus(queue);queue.replaceChildren();$('queue-count').textContent=state.queue.length+'건'
-  if(!state.queue.length)empty(queue,'분류할 파일을 선택하거나 끌어 놓으세요.')
-  const folders=folderNodes().sort((a,b)=>a.path.localeCompare(b.path,'ko',{numeric:true}))
-  for(const rec of state.queue){
-    const row=element('article',undefined,'queue-item'+(rec.failed?' failed':'')),head=element('div',undefined,'queue-head'),check=element('input');check.type='checkbox';check.dataset.focusKey='queue-check:'+rec.file.id;check.checked=rec.checked;check.setAttribute('aria-label',rec.file.name+' 승인 대상')
-    check.onchange=()=>{rec.checked=check.checked;updateSummary()}
-    const remove=button('제외',()=>{state.queue=state.queue.filter(r=>r!==rec);renderQueue()})
-    head.append(check,element('strong',rec.file.name),remove)
-    const select=element('select');select.dataset.focusKey='queue-target:'+rec.file.id;select.setAttribute('aria-label',rec.file.name+' 저장 위치');const placeholder=element('option','저장 위치 선택');placeholder.value='';select.append(placeholder)
-    for(const node of folders){if(parentPath(rec.file.path)===node.path)continue;const option=element('option',[state.root.name,...node.relative].join(' > '));option.value=node.id;select.append(option)}
-    select.value=rec.target
-    select.onchange=()=>{rec.target=select.value;rec.auto=false;rec.reason='직접 선택한 폴더예요.';rec.failed=false;updateSummary()}
-    row.append(head,element('p',rec.file.path,'source'),select,element('p',rec.reason,'reason'));queue.append(row)
-  }
-  updateSummary();applyBusy();restoreFocus(queue,focus)
-}
+const reviewView=createReviewView({container:$('queue'),filters:$('review-filters'),isBusy:()=>state.busy||state.closing||state.installing,
+  onFilter:()=>updateSummary(),
+  records:()=>{const folders=folderNodes().sort((a,b)=>a.path.localeCompare(b.path,'ko',{numeric:true}));return state.queue.map(rec=>({id:rec.file.id,name:rec.file.name,source:rec.file.path,operation:'이동',checked:rec.checked,target:rec.target,valid:!!rec.target&&state.nodes.has(rec.target),failed:rec.failed,reason:rec.reason,
+    targets:folders.filter(n=>parentPath(rec.file.path)!==n.path).map(n=>({id:n.id,label:n.relative.slice(-3).join(' / ')||n.name,path:n.path}))}))},
+  onCheck:(id,value)=>{const rec=state.queue.find(r=>r.file.id===id);if(rec)rec.checked=value;updateSummary()},
+  onTarget:(id,value)=>{const rec=state.queue.find(r=>r.file.id===id);if(rec){rec.target=value;rec.checked=!!value;rec.auto=false;rec.reason='직접 선택한 폴더예요.';rec.failed=false;renderQueue()}},
+  onRemove:id=>{state.queue=state.queue.filter(r=>r.file.id!==id);renderQueue()}
+})
+function renderQueue(){reviewView.render();$('queue-count').textContent=state.queue.length+'건';updateSummary();applyBusy()}
 function ready(){return state.queue.filter(r=>r.checked&&r.target&&state.nodes.has(r.target))}
-function updateSummary(){$('summary').textContent=`승인 대상 ${ready().length}건 · 전체 ${state.queue.length}건`;$('approve').disabled=state.busy||state.closing||state.installing||!ready().length}
+function updateSummary(){const n=ready().length,hidden=reviewView.hiddenSelected();$('summary').textContent=`이동 대상 ${n}건 · 전체 ${state.queue.length}건`+(hidden?` · 숨겨진 선택 ${hidden}건`:'');$('approve').textContent=`확인한 ${n}개 이동`;$('approve').disabled=state.busy||state.closing||state.installing||!n}
 function renderHistory(){
   const box=$('history');box.replaceChildren()
   if(!state.history.length){empty(box,'아직 이동한 파일이 없어요.');return}
@@ -241,6 +235,7 @@ $('view-map').onclick=()=>setBrowseMode('map')
 $('refresh').onclick=async()=>{if(state.busy||state.closing||state.installing)return;const node=state.nodes.get(state.selected);if(node)await load(node,true)}
 $('recommend-all').onclick=()=>{const node=state.nodes.get(state.selected);if(node)addFiles(node.entries.filter(e=>state.checked.has(e.id)))}
 $('clear-history').onclick=()=>{state.history=[];saveHistory();renderHistory()}
+setupWorkspaceLayout({workspace:document.querySelector('main'),panes:document.querySelector('.work-panels'),horizontal:$('resize-explorer'),vertical:$('resize-source')})
 setBrowseMode(browseMode)
 render()
 if(isTauri()){

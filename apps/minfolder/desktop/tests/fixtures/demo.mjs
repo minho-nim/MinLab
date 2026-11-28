@@ -1,5 +1,6 @@
 // Synthetic business folders for comparing the web and desktop layouts. No company files.
 export function installDemo(options={}) {
+  localStorage.setItem('minfolder.browse-view',JSON.stringify(options.view||'map'))
   const definitions={name:'업무자료',children:[
     {name:'계약별공사자료',children:[
       {name:'강남케이블공사',children:[{name:'견적및계약',children:[]},{name:'작업자료',children:[{name:'작업절차서',children:[]},{name:'작업심의',children:[]},{name:'선번장',children:[]}]},{name:'안전서류',children:[{name:'위험성평가',children:[]}]},{name:'완료및정산',children:[]}]},
@@ -43,7 +44,7 @@ export function installDemo(options={}) {
   window.isTauri=true
   window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback(fn){callbacks[++callback]=fn;return callback},unregisterCallback(){},invoke:async(cmd,args)=>{
     window.demo.calls.push({cmd,args})
-    if(cmd==='plugin:app|version')return '0.2.0'
+    if(cmd==='plugin:app|version')return '0.3.0'
       if(cmd==='plugin:window|is_maximized')return false
       if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
       if(cmd==='plugin:updater|check')return null

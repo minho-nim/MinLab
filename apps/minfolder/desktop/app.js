@@ -5,6 +5,7 @@ import {key, norm, predict, matchingProjects} from '../core.js'
 import {createMapView} from './map-view.js'
 import {rememberFocus,restoreFocus} from './focus.js'
 import {setupWindowShell} from './window-shell.js'
+import {createColumnView} from '../column-view.js'
 const $=id=>document.getElementById(id)
 const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
@@ -75,10 +76,27 @@ async function chooseRoot(){
   if(state.busy||state.installing)return
   try{const path=await open({directory:true,multiple:false,title:'MinFolder 기준 폴더'});if(path)await connect(path)}catch(e){status('폴더 연결 실패 · '+e)}
 }
-function select(id){state.selected=id;state.checked.clear();render();void load(state.nodes.get(id))}
+function select(id){const node=state.nodes.get(id);if(!node)return;state.selected=id;state.checked.clear();render();void load(node)}
 function empty(node,text){node.replaceChildren(element('p',text,'empty'))}
 const mapView=createMapView({state,load,select,onFileOpen:file=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)},onFileDrag:startDrag})
-function renderTree(){mapView.render()}
+let browseMode=read('minfolder.browse-view','map')==='columns'?'columns':'map'
+const columnView=createColumnView({viewport:$('folder-explorer'),query:()=>$('search').value,
+  getData:()=>{
+    const byPath=new Map(folderNodes().map(n=>[key(n.relative),n.id]))
+    const nodes=new Map(folderNodes().map(n=>[n.id,{...n,parent:n.relative.length?byPath.get(key(n.relative.slice(0,-1))):null,children:n.entries.filter(e=>e.kind==='directory').map(e=>e.id),files:n.entries.filter(e=>e.kind==='file')}]))
+    return {nodes,root:nodes.get(state.root?.id),selected:state.selected,busy:state.busy||state.installing}
+  },select,load:(id,reset)=>{const n=state.nodes.get(id);if(n)return load(n,reset)},
+  pickResult:({entry,parent,kind})=>{$('search').value='';select(kind==='directory'?entry.id:parent.id)}
+})
+function setBrowseMode(mode){
+  browseMode=mode;try{localStorage.setItem('minfolder.browse-view',JSON.stringify(mode))}catch{}
+  $('tree').hidden=mode==='columns';$('folder-explorer').hidden=mode!=='columns'
+  const panel=$('tree').closest('.map-panel');panel.dataset.view=mode
+  panel.querySelector('.map-toolbar').hidden=mode==='columns';panel.querySelector('.map-help').hidden=mode==='columns'
+  $('view-columns').setAttribute('aria-pressed',String(mode==='columns'));$('view-map').setAttribute('aria-pressed',String(mode==='map'))
+  renderTree()
+}
+function renderTree(){if(browseMode==='columns')columnView.render();else mapView.render()}
 function renderFiles(){
   const box=$('files'),node=state.nodes.get(state.selected)
   $('selected-path').textContent=node?.path??'지도에서 폴더를 선택하세요.'
@@ -217,9 +235,12 @@ async function openEntry(id,directory){if(state.busy||state.installing||!id)retu
 $('open-folder').onclick=()=>openEntry(state.selected,true)
 $('connect').onclick=chooseRoot;$('add-files').onclick=chooseFiles;$('approve').onclick=approve
 $('search').oninput=renderTree
+$('view-columns').onclick=()=>setBrowseMode('columns')
+$('view-map').onclick=()=>setBrowseMode('map')
 $('refresh').onclick=async()=>{if(state.busy||state.installing)return;const node=state.nodes.get(state.selected);if(node)await load(node,true)}
 $('recommend-all').onclick=()=>{const node=state.nodes.get(state.selected);if(node)addFiles(node.entries.filter(e=>state.checked.has(e.id)))}
 $('clear-history').onclick=()=>{state.history=[];saveHistory();renderHistory()}
+setBrowseMode(browseMode)
 render()
 if(isTauri()){
   shell=await setupWindowShell({isBusy:()=>state.busy,hasPendingWork:()=>state.queue.length>0,onError:status,onInstallState:value=>{state.installing=value;applyBusy()}})

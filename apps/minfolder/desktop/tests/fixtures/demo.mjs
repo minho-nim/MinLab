@@ -43,7 +43,7 @@ export function installDemo(options={}) {
   window.isTauri=true
   window.__TAURI_INTERNALS__={metadata:{currentWindow:{label:'main'}},transformCallback(fn){callbacks[++callback]=fn;return callback},unregisterCallback(){},invoke:async(cmd,args)=>{
     window.demo.calls.push({cmd,args})
-    if(cmd==='plugin:app|version')return '0.1.0'
+    if(cmd==='plugin:app|version')return '0.2.0'
       if(cmd==='plugin:window|is_maximized')return false
       if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
       if(cmd==='plugin:updater|check')return null

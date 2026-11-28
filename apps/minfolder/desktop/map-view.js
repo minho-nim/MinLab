@@ -1,5 +1,6 @@
 import {norm, key} from '../core.js'
 import {rememberFocus,restoreFocus} from './focus.js'
+import {matchesName} from '../name-search.js'
 const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node}
 const button=(text,action,cls)=>{const node=el('button',text,cls);node.type='button';node.onclick=action;return node}
 
@@ -28,10 +29,10 @@ export function createMapView({state,load,select,onFileOpen,onFileDrag}) {
     const focus=rememberFocus(viewport)
     controls()
     if(!state.root){viewport.replaceChildren(el('p','기준 폴더를 연결하면 실제 폴더 구조가 여기에 나타나요.','empty'));return}
-    const q=norm($('search').value),showFiles=$('show-files').checked,nodes=[...state.nodes.values()]
+    const q=$('search').value.trim(),showFiles=$('show-files').checked,nodes=[...state.nodes.values()]
     const visible=new Set(),byPath=new Map(nodes.map(n=>[key(n.relative),n.id]))
     if(q)for(const node of nodes){
-      if(norm(state.root.name).includes(q)||node.relative.some(name=>norm(name).includes(q))||(showFiles&&node.entries.some(e=>e.kind==='file'&&norm(e.name).includes(q)))){
+      if(matchesName(state.root.name,q)||node.relative.some(name=>matchesName(name,q))||(showFiles&&node.entries.some(e=>e.kind==='file'&&matchesName(e.name,q)))){
         for(let i=0;i<=node.relative.length;i++)visible.add(byPath.get(key(node.relative.slice(0,i))))
       }
     }
@@ -50,7 +51,7 @@ export function createMapView({state,load,select,onFileOpen,onFileDrag}) {
         for(const entry of folders){const next=state.nodes.get(entry.id);if(next&&(!q||visible.has(next.id))&&remaining>0)children.append(branch(next))}
         if(showFiles)for(const file of node.entries.filter(e=>e.kind==='file')){
           if(remaining<=0)break
-          if(q&&!norm(file.name).includes(q)&&!norm(state.root.name).includes(q)&&!node.relative.some(n=>norm(n).includes(q)))continue
+          if(q&&!matchesName(file.name,q)&&!matchesName(state.root.name,q)&&!node.relative.some(n=>matchesName(n,q)))continue
           remaining--
           const leaf=el('div',undefined,'map-node'),card=el('div',undefined,'map-file'),name=button(file.name,()=>onFileOpen(file),'map-file-name')
           name.dataset.focusKey='map-file:'+file.id;name.title=file.path+' · 클릭해서 열기 · 끌어서 이동';name.onpointerdown=e=>onFileDrag(e,file);card.append(name);leaf.append(card);children.append(leaf)

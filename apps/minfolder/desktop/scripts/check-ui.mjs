@@ -68,7 +68,7 @@ try{
     await report(page,errors,`${width}x${height}-single-screen`)
     await page.evaluate(()=>{document.activeElement?.blur();document.querySelector('#files').scrollTop=0})
     if(width===1366||width===900)await page.screenshot({path:`${output}/07-single-screen-${width}x${height}.png`,fullPage:true})
-    await page.locator('#window-version').click();await page.getByRole('dialog',{name:'MinFolder 0.1.0'}).waitFor()
+    await page.locator('#window-version').click();await page.getByRole('dialog',{name:/MinFolder \d+\.\d+\.\d+/}).waitFor()
     await page.locator('#update-check').click();await page.waitForFunction(()=>document.querySelector('#update-status').textContent==='최신 버전이에요.')
     await page.locator('#close-info').click();assert.equal(await page.evaluate(()=>document.activeElement.id),'window-version')
     await page.close()

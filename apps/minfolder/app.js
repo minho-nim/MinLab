@@ -1,11 +1,13 @@
 import {key,norm,predict,matchingProjects,openDir,transfer} from './core.js'
+import {createColumnView} from './column-view.js'
+import {matchesName} from './name-search.js'
 const $=s=>document.getElementById(s)
 const el=(t,text,cls)=>{const e=document.createElement(t);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
 const button=(text,fn)=>{const b=el('button',text);b.type='button';b.addEventListener('click',fn);return b}
 const empty=(container,message)=>container.replaceChildren(el('p',message,'empty'))
 const msg=t=>$('alert').textContent=t
 const parts=(root,p)=>[root?.name,...p].filter(Boolean).join(' > ')
-const busySet=b=>{S.busy=b;for(const id of ['workspace','refresh'])$(id).disabled=b;renderQueue();renderInbox()}
+const busySet=b=>{S.busy=b;for(const id of ['workspace','refresh','view-columns','view-map'])$(id).disabled=b;renderQueue();renderInbox();if(browseMode==='columns')columnView.render()}
 let sequence=0
 const S={root:null,scanId:0,scanning:false,entries:new Map(),folders:[],filesByDir:new Map(),mapStatus:null,lookup:new Map(),expanded:new Set(),selected:null,sub:[],inbox:[],queue:[],pins:[],history:[],skip:[],busy:false}
 const dragMime='application/x-minfolder-inbox'
@@ -15,6 +17,24 @@ let mapZoom=10, pan=null, wheelRemainder=0, wheelAt=0
 const localRead=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}
 const localWrite=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 const localKey=()=> 'minfolder.pages.v1:'+S.root?.name
+let browseMode=localRead('minfolder.browse-view','map')==='columns'?'columns':'map'
+const columnView=createColumnView({viewport:$('folder-explorer'),query:()=>$('search').value,
+  getData:()=>{
+    const nodes=new Map([...S.entries].map(([id,n])=>[id,{id,name:n.path.at(-1)??S.root?.name,path:parts(S.root,n.path),parent:n.path.length?key(n.path.slice(0,-1)):null,children:n.children.map(key),files:n.files.map(h=>({id:key([...n.path,h.name]),name:h.name})),loaded:n.loaded,done:n.done,loading:!!n.task,error:n.denied?'이 위치의 접근 권한을 확인해 주세요.':''}]))
+    return {nodes,root:nodes.get(key([])),selected:key(S.selected??[]),busy:S.busy}
+  },select:id=>{const n=S.entries.get(id);if(n){select(n.path);void loadInbox()}},
+  load:(id,reset)=>{const n=S.entries.get(id);if(n)return reset?refreshBranch(n.path):readFolder(n.path)},
+  decorateFolder:(b,n)=>bindDrop(b,S.entries.get(n.id).path),
+  pickResult:({entry,parent,kind})=>{$('search').value='';const n=S.entries.get(kind==='directory'?entry.id:parent.id);if(n){select(n.path);void loadInbox()}}
+})
+function setBrowseMode(mode){
+  browseMode=mode;localWrite('minfolder.browse-view',mode)
+  $('tree').hidden=mode==='columns';$('folder-explorer').hidden=mode!=='columns'
+  $('tree').closest('.panel').dataset.view=mode
+  for(const n of document.querySelectorAll('.map-controls,.map-gesture'))n.hidden=mode==='columns'
+  $('view-columns').setAttribute('aria-pressed',String(mode==='columns'));$('view-map').setAttribute('aria-pressed',String(mode==='map'))
+  renderTree()
+}
 function remember(){localWrite(localKey(),{pins:S.pins,history:S.history,skip:S.skip})}
 const protectedNames=new Set(['desktop.ini','thumbs.db','ehthumbs.db','.ds_store','$recycle.bin','system volume information'])
 const lower=name=>String(name).normalize('NFKC').toLowerCase().trim()
@@ -398,6 +418,7 @@ function bindCamera(){
 }
 function renderTree(){
   const ready=!!S.root && !!S.folders.length
+  if(browseMode==='columns'){columnView.render();renderPins();$('map-hint').textContent='열을 따라 폴더를 여세요. 검색은 불러온 이름만 대상으로 하며 초성·여러 낱말을 지원해요.';return}
   for(const id of ['map-expand','map-collapse','show-files'])$(id).disabled=!ready
   updateZoomControls(ready)
   if(!ready){
@@ -411,22 +432,22 @@ function renderTree(){
   $('map-hint').textContent='폴더 '+(S.folders.length-1)+'개 · 파일 '+m.fileCount+'개'+(m.limited?' · 큰 폴더는 더 보기로 추가 표시':'')+(m.excluded?' · 규칙으로 제외 '+m.excluded+'개':'')+(m.unreadable?' · 접근 불가 제외 '+m.unreadable+'개':'')+(S.scanning?' · 하위 폴더 읽는 중':'')+' · 파일을 폴더 상자에 놓으면 승인 목록으로 보내요.'
   const branches=new Map()
   for(const [id,n] of S.entries)if(!n.denied)branches.set(id,n.children.filter(p=>S.lookup.has(key(p))))
-  const fileMatch=name=>norm(name).includes(q)
+  const fileMatch=name=>matchesName(name,$('search').value)
   const inSearch=new Set()
   if(q){
     for(const p of S.folders){
-      if(p.some(n=>norm(n).includes(q)) || (showFiles&&(S.filesByDir.get(key(p))||[]).some(fileMatch))){
+      if(p.some(n=>matchesName(n,$('search').value)) || (showFiles&&(S.filesByDir.get(key(p))||[]).some(fileMatch))){
         for(let n=0;n<=p.length;n++)inSearch.add(key(p.slice(0,n)))
       }
     }
-    if(norm(S.root.name).includes(q))for(const p of S.folders)inSearch.add(key(p))
+    if(matchesName(S.root.name,$('search').value))for(const p of S.folders)inSearch.add(key(p))
   }
   let remaining=420
   function makeNode(p){
     remaining--
     const id=key(p)
     const nodes=(branches.get(id)||[]).filter(child=>!q||inSearch.has(key(child)))
-    const matchingFolder=!q||norm(S.root.name).includes(q)||p.some(n=>norm(n).includes(q))
+    const matchingFolder=!q||matchesName(S.root.name,$('search').value)||p.some(n=>matchesName(n,$('search').value))
     const files=showFiles?(S.filesByDir.get(id)||[]).filter(name=>matchingFolder||fileMatch(name)):[]
     const record=S.entries.get(id)
     const more=record&&!record.done&&!record.denied
@@ -671,6 +692,8 @@ async function approve(){
   finally{busySet(false)}
 }
 $('workspace').onclick=connect
+$('view-columns').onclick=()=>setBrowseMode('columns')
+$('view-map').onclick=()=>setBrowseMode('map')
 $('restore-workspace').onclick=requestSaved
 $('save-exclusions').onclick=()=>{
   if(!S.root||S.busy){msg('먼저 폴더를 연결해 주세요.');return}
@@ -725,6 +748,7 @@ settings.addEventListener('click',e=>{
 })
 document.addEventListener('dragover',e=>{if(accepts(e))e.preventDefault()})
 document.addEventListener('drop',e=>{if(accepts(e))e.preventDefault()})
+setBrowseMode(browseMode)
 render()
 void restoreWorkspace()
 if(!window.showDirectoryPicker)msg('폴더 연결을 지원하지 않는 환경이에요. HTTPS의 Edge 또는 Chrome에서 열어 주세요.')

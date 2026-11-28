@@ -208,3 +208,12 @@ footer { padding-block: 20px; color: var(--muted); font-size: 11px; }
 @media (max-width: 600px) {
   .desktop-titlebar { padding: 0 8px; gap: 4px; grid-template-columns: auto 1fr auto; }.window-title { text-align: center; font-size: 12px; }.window-title span { display: none; }.window-controls { gap: 0; }.window-controls button { width: 22px; }
 }
+.map-panel>.heading{flex-wrap:wrap}
+@media(min-width:900px){
+  .map-panel>.heading{flex-wrap:nowrap}
+  .map-panel[data-view=columns]{grid-template-rows:28px minmax(0,1fr)}
+  .map-panel #folder-explorer{height:100%;min-height:0}
+  .map-panel .view-mode button{min-height:22px;font-size:11px;padding:2px 6px}
+  .map-panel .heading-actions{margin-left:auto}
+  .map-panel input[type=search]{width:220px}
+}

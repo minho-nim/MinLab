@@ -426,6 +426,24 @@ mod tests {
         assert!(Path::new(&file.path).exists());
     }
     #[test]
+    fn interrupted_record_is_visible_without_replaying_or_undoing() {
+        let (dir, mut ws, file, folder) = setup();
+        let moved = ws.move_file(&file.id, &folder.id).unwrap();
+        let data = dir.path().join("app-data");
+        let path = data.join("moves-v1.json");
+        let mut records: Vec<MoveRecord> =
+            serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        records[0].status = "처리 중".into();
+        fs::write(path, serde_json::to_vec(&records).unwrap()).unwrap();
+        let mut restarted = Workspace::default();
+        restarted.configure_recovery(&data).unwrap();
+        assert!(!restarted.move_history().unwrap()[0].can_undo);
+        assert!(restarted.move_history().unwrap()[0].status.contains("중단"));
+        assert!(restarted.undo_move(&moved.undo_id).is_err());
+        assert!(Path::new(&moved.destination_path).exists());
+        assert!(!Path::new(&file.path).exists());
+    }
+    #[test]
     fn clearing_records_does_not_touch_files() {
         let (_dir, mut ws, file, folder) = setup();
         let moved = ws.move_file(&file.id, &folder.id).unwrap();

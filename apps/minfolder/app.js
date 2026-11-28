@@ -706,6 +706,7 @@ async function approve(){
         }
         learningControls()
         S.history=S.history.slice(0,40)
+        const kept=new Set(S.history.map(h=>h.id));for(const id of undoEntries.keys())if(!kept.has(id))undoEntries.delete(id)
         S.queue=S.queue.filter(x=>x!==q)
         remember();ok++
       }catch(e){if(e.code==='TARGET_CHANGED')invalidateTarget(q);else {q.reason=e.message;q.checked=false;q.failed=true}errors++}

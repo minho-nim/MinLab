@@ -1,8 +1,84 @@
 {
   "version": 1,
   "recordsSince": "2026-10-23T00:37:00.000Z",
-  "generatedAt": "2026-11-28T17:23:01+09:00",
+  "generatedAt": "2026-11-28T17:42:32+09:00",
   "drafts": [
+    {
+      "kind": "log",
+      "projectId": "proj-minfolder",
+      "record": {
+        "id": "codex:proj-minfolder:2026-11-28-minfolder-balanced-desktop",
+        "date": "2026-11-28",
+        "title": "한 화면 분류와 Windows 앱 안정성 개선",
+        "version": "0.3.0",
+        "content": "작업 목적\nMinFolder를 탐색·원본 파일·승인 검토를 한 화면에서 처리하는 균형 배치로 개선함. Windows 앱의 종료·최소화 오류를 고치고 0.3.0 설치 파일과 업데이트 피드를 공개함.\n\n주요 변경\n- 열 방식 폴더 탐색을 기본으로 제공하고 기존 지도 방식도 유지함. 영역 크기를 조절하고 목록 안에서 스크롤하도록 구성함.\n- 목적지 폴더를 둘러봐도 원본 파일 목록을 유지하며, 추천 결과와 드래그한 파일은 대기 목록에서 확인한 뒤 처리하도록 구성함.\n- 승인 검토를 준비됨·확인 필요 상태로 나누고 파일명과 목적지 중심으로 간결하게 표시함.\n- 창 제어 권한과 종료 처리를 보완하고 버전 안내가 열린 상태에서도 최소화·종료할 수 있도록 수정함.\n- 승인한 초록 폴더 M 아이콘을 웹·설치 파일·앱에 통일하고 웹 설정에서 Windows 앱을 다운로드하도록 연결함. 서명된 업데이트의 확인·다운로드와 사용자 승인 설치를 지원함.",
+        "reason": "스크롤 없이 주요 작업을 처리하고 원본과 목적지를 혼동하지 않도록 개선해 달라는 요청 및 창과 프로그램이 종료되지 않는다는 제보를 반영함.",
+        "testResult": "병합 전 동일 소스의 GitHub Actions에서 UI 단위 27개·브라우저 14개, Windows 파일 처리 13개, 실제 Windows 창 최소화·종료 자동화와 전체 사이트 CI가 통과함. 공개 0.3.0 설치 파일의 SHA256과 업데이트 서명을 확인함. 회사 공유폴더 실사용은 미확인임.",
+        "nextSteps": "회사 공유폴더에서 탐색·이동·종료와 기존 설치 앱의 업데이트를 실제 사용 환경에서 추가 확인할 필요가 있음.",
+        "createdAt": "2026-11-28T17:22:43+09:00",
+        "source": {
+          "repository": "minho-nim/MinLab/tree/main/apps/minfolder",
+          "fingerprint": "f075fa2dfdbf0adeebd57798a39ea6d9e99318ccdb647ce3af6179f6e58da640",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/pull/33",
+            "https://github.com/minho-nim/MinLab/releases/tag/minfolder-v0.3.0",
+            "https://github.com/minho-nim/MinLab/actions/runs/46124337533",
+            "https://github.com/minho-nim/MinLab/actions/runs/46124337504"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-28T17:22:43+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minfolder",
+      "record": {
+        "id": "codex:proj-minfolder:2026-11-28-minfolder-balanced-desktop:prompt:windows",
+        "date": "2026-11-28",
+        "title": "Windows 설치와 종료 안정성",
+        "prompt": "MinFolder를 Windows에서 설치해 사용하는 앱으로 제공하세요. 웹을 기본 진입점으로 두고 설정에서 앱 설치로 연결하며, 미니어리처럼 자동 업데이트를 지원하세요.\n\n창이 내려가지 않고 프로그램도 종료되지 않는 증상을 해결하세요. 최소화와 종료가 안내창이 열린 상태에서도 정상 동작하는지 확인하고, 승인한 초록 폴더 M 아이콘을 웹과 앱 전체에 동일하게 적용하세요.",
+        "outcome": "창 제어와 종료 처리를 보완하고 공통 아이콘·설정 다운로드·서명 업데이트를 적용한 Windows 0.3.0을 공개함.",
+        "source": {
+          "repository": "minho-nim/MinLab/tree/main/apps/minfolder",
+          "fingerprint": "787bbd43b20d82862f1ae77649cb4ad4491f6196de425e875f792213c0f95569",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/pull/33",
+            "https://github.com/minho-nim/MinLab/releases/tag/minfolder-v0.3.0",
+            "https://github.com/minho-nim/MinLab/actions/runs/46124337533",
+            "https://github.com/minho-nim/MinLab/actions/runs/46124337504"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-28T17:22:43+09:00"
+        }
+      }
+    },
+    {
+      "kind": "prompt",
+      "projectId": "proj-minfolder",
+      "record": {
+        "id": "codex:proj-minfolder:2026-11-28-minfolder-balanced-desktop:prompt:workspace",
+        "date": "2026-11-28",
+        "title": "MinFolder 한 화면 작업 배치",
+        "prompt": "MinFolder는 폴더 구조와 파일명을 보고 정리할 위치를 추천하는 파일 관리 앱입니다. 탐색과 원본 파일 확인, 추천 결과 검토를 한 화면에서 처리할 수 있도록 UI와 UX를 개선하세요.\n\n기존 배치와 개선안을 비교하고 시안을 제시한 뒤 선택한 균형 배치를 적용하세요. 목적지를 탐색할 때 원본 파일 목록을 유지하고, 파일명 기준 추천과 드래그로 정리할 파일을 모은 뒤 사용자가 승인하면 처리하세요. 기존 초록색과 크림색 분위기, 지도 방식 탐색도 유지하세요.",
+        "outcome": "열 탐색과 크기 조절이 가능한 균형 배치를 적용하고 원본·목적지와 승인 검토를 분리함.",
+        "source": {
+          "repository": "minho-nim/MinLab/tree/main/apps/minfolder",
+          "fingerprint": "39bcf68550f2e82b8b13d9590a2b7af7315eaf80d00d0d2e59279842f471cf91",
+          "urls": [
+            "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
+            "https://github.com/minho-nim/MinLab/pull/33",
+            "https://github.com/minho-nim/MinLab/releases/tag/minfolder-v0.3.0",
+            "https://github.com/minho-nim/MinLab/actions/runs/46124337533",
+            "https://github.com/minho-nim/MinLab/actions/runs/46124337504"
+          ],
+          "engine": "codex",
+          "generatedAt": "2026-11-28T17:22:43+09:00"
+        }
+      }
+    },
     {
       "kind": "log",
       "projectId": "proj-minially",
@@ -15,16 +91,16 @@
         "reason": "소유자가 구글·네이버 일정은 미니로그 기준으로 모으기로 정했기 때문임.",
         "testResult": "PR #97에 기록된 시험: 미니어리 타입 검사 통과, 사진 일정 6개·단위 103개·데스크톱 단위 20개 통과. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "코드를 지울지는 소유자가 정함.",
-        "createdAt": "2026-11-28T17:23:01+09:00",
+        "createdAt": "2026-11-28T17:42:32+09:00",
         "source": {
           "repository": "minho-nim/minially",
-          "fingerprint": "117c63898838350ae95b13f521254570230278bc68b2da8866d7bada5928d604",
+          "fingerprint": "01091eb6bf7a4791f7edb226f8505d52928446b02891643bc639df1f442328eb",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/97"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:23:01+09:00"
+          "generatedAt": "2026-11-28T17:42:32+09:00"
         }
       }
     },
@@ -45,7 +121,7 @@
             "https://github.com/minho-nim/minihub/pull/97"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:23:01+09:00"
+          "generatedAt": "2026-11-28T17:42:32+09:00"
         }
       }
     },
@@ -61,16 +137,16 @@
         "reason": "블로그 일정과 개인 일정을 한 달력에서 보고 겹치지 않게 잡기 위함.",
         "testResult": "PR #97에 기록된 시험: 미니로그 전체 141개 통과, 구글 일정 시험(반복 펼치기·주소 검사·주소 안 돌려줌·끊기). 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "추가로 확인한 남은 작업은 없음.",
-        "createdAt": "2026-11-28T17:22:58+09:00",
+        "createdAt": "2026-11-28T17:42:29+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "4e39b0a19fb2a7c74232570fe811794c08c32a6e7164e45034aac0506953f01a",
+          "fingerprint": "3b763ee18d7999172fe25642816469845b7d7ebed4b9a342a6336bf306458874",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/97"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:58+09:00"
+          "generatedAt": "2026-11-28T17:42:29+09:00"
         }
       }
     },
@@ -91,7 +167,7 @@
             "https://github.com/minho-nim/minihub/pull/97"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:58+09:00"
+          "generatedAt": "2026-11-28T17:42:29+09:00"
         }
       }
     },
@@ -107,16 +183,16 @@
         "reason": "네이버 캘린더를 쓰는 사람도 블로그 일정과 개인 일정을 한 화면에서 보기 위함.",
         "testResult": "PR #97에 기록된 시험: 미니로그 전체 141개·타입 검사·빌드 통과, 네이버 일정 시험(목록·기간·틀린 비밀번호·켜기·토글 기억·가족 숨기기·브리핑), 화면 1400·390px 확인. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 네이버 서버 연결은 가짜 CalDAV 서버로만 확인했음. 운영에서 켜 보고 확인이 필요함.",
-        "createdAt": "2026-11-28T17:22:59+09:00",
+        "createdAt": "2026-11-28T17:42:30+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "dcf92fb24bb54384338ed4e5bd52b93c2d1409519935747e90bfb0e35883c101",
+          "fingerprint": "242d74ce4c2dbec8e1845ba31bdda3bf81527b0c14a0ad351a2a894d4c1f2c80",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/97"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:59+09:00"
+          "generatedAt": "2026-11-28T17:42:30+09:00"
         }
       }
     },
@@ -137,7 +213,7 @@
             "https://github.com/minho-nim/minihub/pull/97"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:59+09:00"
+          "generatedAt": "2026-11-28T17:42:30+09:00"
         }
       }
     },
@@ -153,16 +229,16 @@
         "reason": "협찬이 들어온 뒤 정산까지 사람이 기억해야 하던 일을 줄이고, 화면만 봐도 다음 할 일이 보이게 하기 위함.",
         "testResult": "PR #98에 기록된 시험: 미니로그 전체 154개·타입 검사·빌드 통과, 미니허브 23개 통과, 화면 1400·390px 가로 넘침·콘솔 오류 없음. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 네이버 캘린더 연결 확인. 연결 안내 화면과 글 종류 설정은 다음 배포에서.",
-        "createdAt": "2026-11-28T17:23:00+09:00",
+        "createdAt": "2026-11-28T17:42:31+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "e3cd1e29bd32ed01a6936d4e18946f04a8750f886ccad6e40775b38a26313f9c",
+          "fingerprint": "939c06c59a92906ae6bd8ce3e234bc9270cba5e68d97c6bb10b000b57bbefcea",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/98"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:23:00+09:00"
+          "generatedAt": "2026-11-28T17:42:31+09:00"
         }
       }
     },
@@ -183,7 +259,7 @@
             "https://github.com/minho-nim/minihub/pull/98"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:23:00+09:00"
+          "generatedAt": "2026-11-28T17:42:31+09:00"
         }
       }
     },
@@ -245,16 +321,16 @@
         "reason": "각자 구글 캘린더에 있는 일정을 미니어리로 쉽게 옮기기 위함.",
         "testResult": "PR #96에 기록된 시험: 구글 iCal 단위 2개·사진 일정 6개·데스크톱 단위 20개 통과. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "한 번 가져오는 방식이며 자동으로 다시 맞추지는 않음.",
-        "createdAt": "2026-11-28T17:22:57+09:00",
+        "createdAt": "2026-11-28T17:42:28+09:00",
         "source": {
           "repository": "minho-nim/minially",
-          "fingerprint": "cd6b1c57cb0392843032b55e0fea7a9b28283fbfb2db4e863a80db0545442fba",
+          "fingerprint": "9883660e93c9e9b46b4269078f61edda4a102d32fba1f2b5bd441191d3efb2d3",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/96"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:57+09:00"
+          "generatedAt": "2026-11-28T17:42:28+09:00"
         }
       }
     },
@@ -275,7 +351,7 @@
             "https://github.com/minho-nim/minihub/pull/96"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:57+09:00"
+          "generatedAt": "2026-11-28T17:42:28+09:00"
         }
       }
     },
@@ -291,16 +367,16 @@
         "reason": "사진 읽기 실패를 줄인 모델 변경을 실제 사용자에게 내보내기 위함.",
         "testResult": "PR #95에 기록된 시험: 미니어리 데스크톱 단위 20개 통과. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "추가로 확인한 남은 작업은 없음.",
-        "createdAt": "2026-11-28T17:22:56+09:00",
+        "createdAt": "2026-11-28T17:42:27+09:00",
         "source": {
           "repository": "minho-nim/minially",
-          "fingerprint": "36a85598f9cbac6ae89b7aa6111ad3d492db8007350b2fb38105236a07e72c7f",
+          "fingerprint": "5149f150d89e9dfaa24458a1db0c7258e803307d6e0760421730804629691dd9",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/95"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:56+09:00"
+          "generatedAt": "2026-11-28T17:42:27+09:00"
         }
       }
     },
@@ -321,7 +397,7 @@
             "https://github.com/minho-nim/minihub/pull/95"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:56+09:00"
+          "generatedAt": "2026-11-28T17:42:27+09:00"
         }
       }
     },
@@ -567,16 +643,16 @@
         "reason": "두 사람의 AI 결과와 사용량을 같은 기준으로 맞추고, 매번 생기던 404 재호출을 없애기 위함.",
         "testResult": "PR #92에 기록된 시험: 타입 검사(mini-log·minially·hub) 통과, 미니어리 단위 101개·사진 일정 5개, 미니로그 메일·제안서 11개 통과. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 D 키의 호출 결과는 미니허브 AI 사용량에서 확인이 필요함.",
-        "createdAt": "2026-11-28T17:22:51+09:00",
+        "createdAt": "2026-11-28T17:42:22+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/hub",
-          "fingerprint": "a516d7ea1d54d759607b1ae89a1af8d669ae03b3936c8743654c7090a64cb8e0",
+          "fingerprint": "608073e3192db4bd37d931201ad88acd33e06ba416fd38e06d26f0d1f65d5a84",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/92"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:51+09:00"
+          "generatedAt": "2026-11-28T17:42:22+09:00"
         }
       }
     },
@@ -597,7 +673,7 @@
             "https://github.com/minho-nim/minihub/pull/92"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:51+09:00"
+          "generatedAt": "2026-11-28T17:42:22+09:00"
         }
       }
     },
@@ -1027,16 +1103,16 @@
         "reason": "협찬 메일이 네이버·Gmail로 나뉘어 와도 한곳에서 놓치지 않고 처리하기 위함.",
         "testResult": "PR #94에 기록된 시험: 타입 검사 통과, 미니로그 전체 135개 통과, 가짜 Gmail 서버로 메일 시험 6개, 화면 1400·390px 확인. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 Gmail 접속은 앱 비밀번호를 넣은 뒤 확인이 필요함.",
-        "createdAt": "2026-11-28T17:22:53+09:00",
+        "createdAt": "2026-11-28T17:42:24+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "ff6a331413e50634ee7af2ed7fec0569d3fff0c4fe1c7d8d4a6406a4953eddce",
+          "fingerprint": "5e4d6ca4c0acdd2499bdd3b6ae6a73be7d9d866e0e8aafcbbb6b997506596bde",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/94"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:53+09:00"
+          "generatedAt": "2026-11-28T17:42:24+09:00"
         }
       }
     },
@@ -1057,7 +1133,7 @@
             "https://github.com/minho-nim/minihub/pull/94"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:53+09:00"
+          "generatedAt": "2026-11-28T17:42:24+09:00"
         }
       }
     },
@@ -1257,16 +1333,16 @@
         "reason": "앱을 열지 않아도 오늘 놓치면 안 되는 일을 아침에 알기 위함.",
         "testResult": "PR #96에 기록된 시험: 미니로그 전체 137개 통과, 브리핑 시험(순서·열기·주소 거절·서명·하루 한 번·410 지움), 화면 1400·390px 확인. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 휴대폰 알림은 알림 키(VAPID)를 Cloudflare에 넣은 뒤 확인이 필요함.",
-        "createdAt": "2026-11-28T17:22:55+09:00",
+        "createdAt": "2026-11-28T17:42:26+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "d5ceb91b464ad322a0bfe1789cd3b3c0212c4d179495fac973a016c534236955",
+          "fingerprint": "95e5cf349d46e72fdcdf46015fa8e238524c0668694456fdb0da10a287fff65b",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/96"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:55+09:00"
+          "generatedAt": "2026-11-28T17:42:26+09:00"
         }
       }
     },
@@ -1287,7 +1363,7 @@
             "https://github.com/minho-nim/minihub/pull/96"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:55+09:00"
+          "generatedAt": "2026-11-28T17:42:26+09:00"
         }
       }
     },
@@ -1303,16 +1379,16 @@
         "reason": "답장 시간을 줄이되, 협찬 단계 같은 중요한 결정은 사람이 하기 위함.",
         "testResult": "PR #95에 기록된 시험: 타입 검사 통과, 미니로그 전체 135개 통과, 미니어리 데스크톱 단위 20개 통과. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 Gemini가 세 안을 얼마나 잘 쓰는지 확인이 필요함.",
-        "createdAt": "2026-11-28T17:22:54+09:00",
+        "createdAt": "2026-11-28T17:42:25+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "4bb5de2c29406f8336c6e9d27c201d524addd907d562fcd84aa11abd2d038c63",
+          "fingerprint": "210c45ca45798aa02f2118e32e619b0bd8c1f1913072182314c336ad447fc221",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/95"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:54+09:00"
+          "generatedAt": "2026-11-28T17:42:25+09:00"
         }
       }
     },
@@ -1333,7 +1409,7 @@
             "https://github.com/minho-nim/minihub/pull/95"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:54+09:00"
+          "generatedAt": "2026-11-28T17:42:25+09:00"
         }
       }
     },
@@ -1441,16 +1517,16 @@
         "reason": "사람 손을 덜 타고 협찬으로 이어지는 원고를 빨리 만들기 위함. AI가 낸 것은 사람이 눌러야 들어감.",
         "testResult": "PR #93에 기록된 시험: 타입 검사 통과, 글쓰기 시험 3개·미니허브 23개 통과, 화면 1400·390px 가로 넘침·콘솔 오류 없음. 미니로그 전체는 컨테이너 부하로 5~6개가 실패해(변경 전 코드도 같음) CI로 확인. 이번 정리에서는 다시 실행하지 않았음.",
         "nextSteps": "실제 Gemini의 개요·제목·다시 쓰기 품질 확인, 판 기록을 백업에 넣기.",
-        "createdAt": "2026-11-28T17:22:52+09:00",
+        "createdAt": "2026-11-28T17:42:23+09:00",
         "source": {
           "repository": "minho-nim/minihub/tree/main/mini-log",
-          "fingerprint": "8604e8be723918eb4a8abea96a42350d38478f22592cd4ad63af845dfcfdf99d",
+          "fingerprint": "33b696dc9aefa4f02dc18e066b11201e35a30ace1446ccf2c0854b663324c319",
           "urls": [
             "https://github.com/minho-nim/MinLab/blob/main/.minlab/records.json",
             "https://github.com/minho-nim/minihub/pull/93"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:52+09:00"
+          "generatedAt": "2026-11-28T17:42:23+09:00"
         }
       }
     },
@@ -1471,7 +1547,7 @@
             "https://github.com/minho-nim/minihub/pull/93"
           ],
           "engine": "codex",
-          "generatedAt": "2026-11-28T17:22:52+09:00"
+          "generatedAt": "2026-11-28T17:42:23+09:00"
         }
       }
     },

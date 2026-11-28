@@ -198,6 +198,21 @@
         "Supabase",
         "Cloudflare Pages"
       ]
+    },
+    {
+      "id": "proj-minfolder",
+      "repository": "minho-nim/MinLab/tree/main/apps/minfolder",
+      "name": "MinFolder",
+      "description": "폴더 트리와 파일명을 빠르게 살펴보고 추천 위치를 승인해 파일을 정리하는 Windows·웹 앱",
+      "category": "파일 관리",
+      "appUrl": "https://minho-nim.github.io/MinLab/apps/minfolder/",
+      "techStack": [
+        "JavaScript",
+        "Tauri",
+        "Rust",
+        "Windows",
+        "File System Access API"
+      ]
     }
   ]
 }

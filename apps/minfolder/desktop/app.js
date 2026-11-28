@@ -14,7 +14,7 @@ const element=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==und
 const button=(text,action,cls)=>{const n=element('button',text,cls);n.type='button';n.onclick=action;return n}
 const read=(k,fallback)=>{try{return JSON.parse(localStorage.getItem(k))??fallback}catch{return fallback}}
 let shell=null
-const state={root:null,nodes:new Map(),selected:null,queue:[],checked:new Set(),busy:false,closing:false,installing:false,suppressClickUntil:0,history:[],epoch:0,drag:null}
+const state={root:null,nodes:new Map(),selected:null,source:null,queue:[],checked:new Set(),busy:false,closing:false,installing:false,suppressClickUntil:0,history:[],epoch:0,drag:null}
 const excluded=new Set(['desktop.ini','thumbs.db','ehthumbs.db','.ds_store','$recycle.bin','system volume information'])
 const hidden=e=>excluded.has(e.name.toLowerCase())||e.name.startsWith('~$')
 const status=text=>{$('status').textContent=text;$('status').title=text}
@@ -60,7 +60,7 @@ async function connect(path){
   if(state.queue.length&&!await confirm('분류 대기 목록을 비우고 기준 폴더를 바꿀까요?',{title:'폴더 변경',kind:'warning'}))return
   const root=await invoke('connect_root',{path})
   state.epoch++;mapView.reset();columnView.reset();state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
-  const node=makeNode(root,[]);node.opened=true;state.nodes.set(root.id,node);state.selected=root.id
+  const node=makeNode(root,[]);node.opened=true;state.nodes.set(root.id,node);state.selected=root.id;state.source=root.id
   state.history=read(historyKey(),[]);if(!Array.isArray(state.history))state.history=[]
   try{localStorage.setItem('minfolder.desktop.root',JSON.stringify(path))}catch{}
   $('root-name').textContent=root.name;$('root-name').title=root.path;$('connect').textContent='폴더 변경'
@@ -79,7 +79,9 @@ async function chooseRoot(){
   if(state.busy||state.closing||state.installing)return
   try{const path=await open({directory:true,multiple:false,title:'MinFolder 기준 폴더'});if(path)await connect(path)}catch(e){status('폴더 연결 실패 · '+e)}
 }
-function select(id){const node=state.nodes.get(id);if(!node)return;state.selected=id;state.checked.clear();render();void load(node)}
+function select(id){const node=state.nodes.get(id);if(!node)return;state.selected=id;render();void load(node)}
+const sourceNode=()=>state.nodes.get(state.source)??state.nodes.get(state.root?.id)
+function useSelectedFolder(){if(state.busy||state.closing||state.installing)return;const node=state.nodes.get(state.selected);if(!node)return;state.source=node.id;state.checked.clear();render();void load(node)}
 function empty(node,text){node.replaceChildren(element('p',text,'empty'))}
 const mapView=createMapView({state,load,select,onFileOpen:file=>{if(Date.now()>state.suppressClickUntil)void openEntry(file.id,false)},onFileDrag:startDrag})
 let browseMode=read('minfolder.browse-view','columns')==='columns'?'columns':'map'
@@ -89,7 +91,7 @@ const columnView=createColumnView({viewport:$('folder-explorer'),query:()=>$('se
     const nodes=new Map(folderNodes().map(n=>[n.id,{...n,parent:n.relative.length?byPath.get(key(n.relative.slice(0,-1))):null,children:n.entries.filter(e=>e.kind==='directory').map(e=>e.id),files:n.entries.filter(e=>e.kind==='file')}]))
     return {nodes,root:nodes.get(state.root?.id),selected:state.selected,busy:state.busy||state.installing}
   },select,load:(id,reset)=>{const n=state.nodes.get(id);if(n)return load(n,reset)},
-  pickResult:({entry,parent,kind})=>{$('search').value='';select(kind==='directory'?entry.id:parent.id)}
+  pickResult:({entry,parent,kind})=>{$('search').value='';select(kind==='directory'?entry.id:parent.id);if(kind==='file')useSelectedFolder()}
 })
 function setBrowseMode(mode){
   browseMode=mode;try{localStorage.setItem('minfolder.browse-view',JSON.stringify(mode))}catch{}
@@ -101,10 +103,14 @@ function setBrowseMode(mode){
 }
 function renderTree(){if(browseMode==='columns')columnView.render();else mapView.render()}
 function renderFiles(){
-  const box=$('files'),node=state.nodes.get(state.selected)
+  const box=$('files'),node=sourceNode()
+  state.checked=new Set([...state.checked].filter(id=>node?.entries.some(e=>e.id===id&&e.kind==='file')))
   $('selected-path').textContent=node?.path??'지도에서 폴더를 선택하세요.'
   $('file-count').textContent=node?(node.error?'확인 필요':node.entries.filter(e=>e.kind==='file').length+'개'):''
   $('open-folder').dataset.unavailable=String(!node)
+  $('use-folder').dataset.unavailable=String(!state.selected)
+  $('use-folder').title='탐색 중인 폴더의 파일 목록 보기 · '+(state.nodes.get(state.selected)?.path??'')
+  $('selected-path').title=node?.path??''
   $('recommend-all').dataset.unavailable=String(!node||!state.checked.size)
   if(!node){empty(box,'폴더를 연결하고 파일을 선택하세요.');return}
   box.replaceChildren()
@@ -227,13 +233,14 @@ document.addEventListener('pointerup',event=>{
 })
 window.addEventListener('blur',()=>{state.drag=null;$('drag-label').hidden=true;clearHot()})
 async function openEntry(id,directory){if(state.busy||state.closing||state.installing||!id)return;try{await invoke('open_entry',{id,directory});status(directory?'Windows 탐색기로 폴더를 열었어요.':'기본 프로그램에 파일 열기를 요청했어요.')}catch(e){status(String(e))}}
-$('open-folder').onclick=()=>openEntry(state.selected,true)
+$('open-folder').onclick=()=>openEntry(sourceNode()?.id,true)
+$('use-folder').onclick=useSelectedFolder
 $('connect').onclick=chooseRoot;$('add-files').onclick=chooseFiles;$('approve').onclick=approve
 $('search').oninput=renderTree
 $('view-columns').onclick=()=>setBrowseMode('columns')
 $('view-map').onclick=()=>setBrowseMode('map')
 $('refresh').onclick=async()=>{if(state.busy||state.closing||state.installing)return;const node=state.nodes.get(state.selected);if(node)await load(node,true)}
-$('recommend-all').onclick=()=>{const node=state.nodes.get(state.selected);if(node)addFiles(node.entries.filter(e=>state.checked.has(e.id)))}
+$('recommend-all').onclick=()=>{const node=sourceNode();if(node)addFiles(node.entries.filter(e=>state.checked.has(e.id)))}
 $('clear-history').onclick=()=>{state.history=[];saveHistory();renderHistory()}
 setupWorkspaceLayout({workspace:document.querySelector('main'),panes:document.querySelector('.work-panels'),horizontal:$('resize-explorer'),vertical:$('resize-source')})
 setBrowseMode(browseMode)

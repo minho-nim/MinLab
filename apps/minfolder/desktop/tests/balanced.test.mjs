@@ -25,6 +25,12 @@ async function make(mode){
 for(const mode of ['web','native'])test(`${mode}: 승인 상태·대상 변경·영역 조절·배치 복원`,async()=>{
   const page=await make(mode),errors=[];page.on('pageerror',e=>errors.push(e.message))
   try{
+    await page.locator('.column-folder').filter({hasText:'계약별공사자료'}).click()
+    const count=mode==='web'?'#in-count':'#file-count'
+    assert.equal(await page.locator(count).textContent(),mode==='web'?'48':'48개','목적지 탐색은 원본 파일 목록을 바꾸지 않음')
+    await page.locator('#use-folder').click();await page.waitForFunction(id=>document.querySelector(id).textContent.startsWith('0'),count)
+    await page.locator('.folder-crumbs').getByRole('button',{name:'업무자료',exact:true}).click();await page.locator('#use-folder').click()
+    await page.waitForFunction(id=>document.querySelector(id).textContent.startsWith('48'),count)
     const rows=mode==='web'?'#inbox .entry':'#files .file-row'
     for(const name of ['강남케이블공사_작업절차서','송도케이블공사_위험성평가','평택설비공사_견적서','추가자료_01'])await page.locator(rows).filter({hasText:name}).getByRole('button',{name:'분류',exact:true}).click()
     await page.waitForFunction(()=>document.querySelector('[data-review-filter=ready]')?.textContent.endsWith('3'))

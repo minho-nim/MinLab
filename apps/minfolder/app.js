@@ -9,7 +9,7 @@ const button=(text,fn)=>{const b=el('button',text);b.type='button';b.addEventLis
 const empty=(container,message)=>container.replaceChildren(el('p',message,'empty'))
 const msg=t=>$('alert').textContent=t
 const parts=(root,p)=>[root?.name,...p].filter(Boolean).join(' > ')
-const busySet=b=>{S.busy=b;for(const id of ['workspace','refresh','view-columns','view-map'])$(id).disabled=b;renderQueue();renderInbox();if(browseMode==='columns')columnView.render()}
+const busySet=b=>{S.busy=b;for(const id of ['workspace','refresh','view-columns','view-map','use-folder'])$(id).disabled=b;renderQueue();renderInbox();if(browseMode==='columns')columnView.render()}
 let sequence=0
 const S={root:null,scanId:0,scanning:false,entries:new Map(),folders:[],filesByDir:new Map(),mapStatus:null,lookup:new Map(),expanded:new Set(),selected:null,sub:[],inbox:[],queue:[],pins:[],history:[],skip:[],busy:false}
 const dragMime='application/x-minfolder-inbox'
@@ -24,10 +24,10 @@ const columnView=createColumnView({viewport:$('folder-explorer'),query:()=>$('se
   getData:()=>{
     const nodes=new Map([...S.entries].map(([id,n])=>[id,{id,name:n.path.at(-1)??S.root?.name,path:parts(S.root,n.path),parent:n.path.length?key(n.path.slice(0,-1)):null,children:n.children.map(key),files:n.files.map(h=>({id:key([...n.path,h.name]),name:h.name})),loaded:n.loaded,done:n.done,loading:!!n.task,error:n.denied?'이 위치의 접근 권한을 확인해 주세요.':''}]))
     return {nodes,root:nodes.get(key([])),selected:key(S.selected??[]),busy:S.busy}
-  },select:id=>{const n=S.entries.get(id);if(n){select(n.path);void loadInbox()}},
+  },select:id=>{const n=S.entries.get(id);if(n)select(n.path)},
   load:(id,reset)=>{const n=S.entries.get(id);if(n)return reset?refreshBranch(n.path):readFolder(n.path)},
   decorateFolder:(b,n)=>bindDrop(b,S.entries.get(n.id).path),
-  pickResult:({entry,parent,kind})=>{$('search').value='';const n=S.entries.get(kind==='directory'?entry.id:parent.id);if(n){select(n.path);void loadInbox()}}
+  pickResult:({entry,parent,kind})=>{$('search').value='';const n=S.entries.get(kind==='directory'?entry.id:parent.id);if(n){select(n.path);if(kind==='file')useSource(n.path)}}
 })
 function setBrowseMode(mode){
   browseMode=mode;localWrite('minfolder.browse-view',mode)
@@ -420,6 +420,7 @@ function bindCamera(){
   for(const type of ['pointerup','pointercancel','lostpointercapture'])viewport.addEventListener(type,endPan)
 }
 function renderTree(){
+  $('use-folder').disabled=!S.root||S.busy
   const ready=!!S.root && !!S.folders.length
   if(browseMode==='columns'){columnView.render();renderPins();$('map-hint').textContent='열을 따라 폴더를 여세요. 검색은 불러온 이름만 대상으로 하며 초성·여러 낱말을 지원해요.';return}
   for(const id of ['map-expand','map-collapse','show-files'])$(id).disabled=!ready
@@ -522,8 +523,9 @@ function select(p){
   S.selected=p
   for(let i=0;i<p.length;i++)S.expanded.add(key(p.slice(0,i)))
   renderTree()
-  if(key(p)!==key(S.sub)){S.sub=[...p];S.inbox=[];renderInbox();void loadInbox()}
+  const n=S.entries.get(key(p));if(n&&!n.loaded)void readFolder(p)
 }
+function useSource(p){if(!S.root||S.busy)return;S.sub=[...p];S.inbox=[];renderInbox();void loadInbox()}
 function renderPins(){
   $('pins').replaceChildren()
   for(const p of S.pins.filter(Array.isArray)){
@@ -553,7 +555,7 @@ function renderInbox(){
   for(const item of inboxPage()){
     const row=el('div',null,'entry')
     if(item.kind==='directory'){
-      const b=button('열기',()=>{select(item.path);expand(item.path)})
+      const b=button('열기',()=>useSource(item.path))
       b.disabled=S.busy;row.append(el('span',item.path.at(-1)),b)
     }else{
       const path=[...S.sub],b=button('분류',()=>queueInternal(item,path,null));b.disabled=S.busy
@@ -685,6 +687,7 @@ async function approve(){
   finally{busySet(false)}
 }
 $('workspace').onclick=connect
+$('use-folder').onclick=()=>useSource(S.selected??[])
 $('view-columns').onclick=()=>setBrowseMode('columns')
 $('view-map').onclick=()=>setBrowseMode('map')
 $('restore-workspace').onclick=requestSaved

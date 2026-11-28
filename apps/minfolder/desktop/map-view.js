@@ -1,4 +1,4 @@
-import {norm, key} from '../core.js'
+import {key} from '../core.js'
 import {rememberFocus,restoreFocus} from './focus.js'
 import {matchesName} from '../name-search.js'
 const el=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node}

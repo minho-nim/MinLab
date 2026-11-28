@@ -77,6 +77,7 @@ async function readHandle(){
   }finally{db.close()}
 }
 function activate(h){
+  columnView.reset()
   S.root=h;mapZoom=10;S.sub=[];S.inbox=[];S.selected=null;S.queue=[];dragItem=null
   S.expanded=new Set([key([])]);S.folders=[];S.lookup.clear();S.filesByDir.clear();S.mapStatus=null
   const state=localRead(localKey(),{})
@@ -426,7 +427,7 @@ function renderTree(){
     $('map-hint').textContent=hint
     empty($('tree'),hint);$('target').textContent='';renderPins();return
   }
-  const q=norm($('search').value)
+  const q=$('search').value.trim()
   const showFiles=$('show-files').checked
   const m=S.mapStatus
   $('map-hint').textContent='폴더 '+(S.folders.length-1)+'개 · 파일 '+m.fileCount+'개'+(m.limited?' · 큰 폴더는 더 보기로 추가 표시':'')+(m.excluded?' · 규칙으로 제외 '+m.excluded+'개':'')+(m.unreadable?' · 접근 불가 제외 '+m.unreadable+'개':'')+(S.scanning?' · 하위 폴더 읽는 중':'')+' · 파일을 폴더 상자에 놓으면 승인 목록으로 보내요.'

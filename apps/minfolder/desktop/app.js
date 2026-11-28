@@ -56,7 +56,7 @@ async function connect(path){
   if(state.busy||state.installing)return
   if(state.queue.length&&!await confirm('분류 대기 목록을 비우고 기준 폴더를 바꿀까요?',{title:'폴더 변경',kind:'warning'}))return
   const root=await invoke('connect_root',{path})
-  state.epoch++;mapView.reset();state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
+  state.epoch++;mapView.reset();columnView.reset();state.root=root;state.nodes.clear();state.queue=[];state.checked.clear()
   const node=makeNode(root,[]);node.opened=true;state.nodes.set(root.id,node);state.selected=root.id
   state.history=read(historyKey(),[]);if(!Array.isArray(state.history))state.history=[]
   try{localStorage.setItem('minfolder.desktop.root',JSON.stringify(path))}catch{}

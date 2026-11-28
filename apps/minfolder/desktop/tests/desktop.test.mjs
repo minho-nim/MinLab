@@ -150,6 +150,9 @@ test('업데이트는 대기 분류와 진행 중인 이동을 보존하고 완�
 })
 test('실제 창 닫기 이벤트는 빈 창 종료·대기 목록 취소·승인을 구분',async()=>{
   const empty=await pageWithBridge()
+  await empty.locator('#window-version').click()
+  await empty.locator('#window-minimize').click()
+  assert.equal(await empty.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='plugin:window|minimize').length),1)
   await empty.locator('#window-close').click()
   await empty.waitForFunction(()=>testBridge.calls.some(c=>c.cmd==='plugin:window|destroy'))
   assert.equal(await empty.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='plugin:window|destroy').length),1)

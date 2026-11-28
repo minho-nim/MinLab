@@ -34,6 +34,11 @@ try {
     Start-Sleep -Milliseconds 500
   }
   if (-not $close -or -not $close.Current.IsEnabled) { throw '앱의 실제 닫기 버튼을 찾지 못했습니다. 화면 초기화를 확인하세요.' }
+  $condition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, '버전 및 업데이트 열기')
+  $version = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
+  if (-not $version) { throw '앱 버전 버튼을 찾지 못했습니다.' }
+  $version.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
+  Start-Sleep -Milliseconds 500
   $condition = [System.Windows.Automation.PropertyCondition]::new([System.Windows.Automation.AutomationElement]::NameProperty, '창 최소화')
   $minimize = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $condition)
   if (-not $minimize) { throw '앱의 최소화 버튼을 찾지 못했습니다.' }

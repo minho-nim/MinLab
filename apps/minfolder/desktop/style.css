@@ -167,7 +167,7 @@ footer { padding-block: 20px; color: var(--muted); font-size: 11px; }
 .window-title span { margin-left: 8px; font-size: 11px; font-weight: 400; color: var(--muted); }
 #window-version { justify-self: end; min-height: 28px; padding: 2px 8px; border: 0; background: transparent; font-size: 11px; white-space: nowrap; }
 #window-version[data-update=ready] { color: var(--green); background: var(--mint); }
-#app-info { width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 48px); overflow: auto; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
+#app-info { position:fixed; top:44px; right:12px; left:auto; margin:0; z-index:100; width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 56px); overflow: auto; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
 #app-info::backdrop { background: #20342d40; }
 .dialog-heading, .update-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .dialog-heading h2 { font-size: 17px; }.dialog-heading h2 span { font-size: 12px; font-weight: 400; color: var(--muted); }.dialog-heading button { padding: 0; width: 32px; min-height: 32px; }

@@ -9,9 +9,12 @@ export async function setupWindowShell({isBusy,hasPendingWork=()=>false,onError,
   const dialog=$('app-info'),toggle=$('window-version'),auto=$('auto-updates')
   try{auto.checked=localStorage.getItem('minfolder.auto-updates')!=='false'}catch{}
   auto.onchange=()=>{try{localStorage.setItem('minfolder.auto-updates',String(auto.checked))}catch{auto.checked=!auto.checked;$('update-status').textContent='자동 업데이트 설정을 저장하지 못했어요. 다시 시도해 주세요.'}}
-  function openInfo(){if(!dialog.open){dialog.showModal();$('close-info').focus()}}
+  // A modal HTML dialog makes the custom titlebar inert as well. Keep version
+  // information non-modal so minimize/close still work while it is open.
+  function openInfo(){if(!dialog.open){dialog.show();$('close-info').focus()}}
   toggle.onclick=openInfo;$('close-info').onclick=()=>dialog.close()
-  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()})
+  document.addEventListener('pointerdown',event=>{if(dialog.open&&!dialog.contains(event.target)&&!toggle.contains(event.target)&&!event.target.closest('.window-controls'))dialog.close()})
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&dialog.open){event.preventDefault();dialog.close()}})
   dialog.addEventListener('close',()=>toggle.focus())
   const native=isTauri(),win=native?getCurrentWindow():null
   let maximized=false

@@ -14,7 +14,13 @@ try {
   }
   if (-not $ready) { throw 'MinFolder 네이티브 창 시작을 확인하지 못했습니다.' }
   Write-Output "Windows 네이티브 창 시작 확인: $($process.MainWindowTitle)"
-  # A fresh CI profile has no connected folder and no file move; only this test process is stopped.
+  # Let the WebView install its close-request listener. A fresh CI profile has
+  # no connected folder or pending file move, so a normal close must exit.
+  Start-Sleep -Seconds 3
+  if (-not $process.CloseMainWindow()) { throw 'Windows 창 닫기 요청을 전달하지 못했습니다.' }
+  if (-not $process.WaitForExit(15000)) { throw '창 닫기 요청 후 MinFolder 프로세스가 종료되지 않았습니다.' }
+  if ($process.ExitCode -ne 0) { throw "MinFolder 비정상 종료: $($process.ExitCode)" }
+  Write-Output 'Windows 창 닫기 및 프로세스 정상 종료 확인'
 } finally {
   $process.Refresh()
   if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force }

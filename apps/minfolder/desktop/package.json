@@ -1,14 +1,14 @@
 {
   "name": "minfolder-desktop",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 1420 --strictPort",
     "build": "vite build",
     "tauri": "cd .. && tauri",
     "desktop:dev": "cd .. && tauri dev",
-    "test": "node --test ../tests/*.test.js tests/updater.test.mjs",
+    "test": "node --test ../tests/*.test.js tests/updater.test.mjs tests/lifecycle.test.mjs",
     "desktop:build": "cd .. && tauri build",
     "test:browser": "node --test tests/desktop.test.mjs tests/explorer.test.mjs",
     "test:ui": "node scripts/check-ui.mjs",

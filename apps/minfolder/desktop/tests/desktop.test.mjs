@@ -32,6 +32,8 @@ async function pageWithBridge(){
       window.testBridge.calls.push({cmd,args})
       if(cmd==='plugin:app|version')return '0.1.0'
       if(cmd==='plugin:window|is_maximized')return false
+      if(cmd==='plugin:window|close')return window.testBridge.emit('tauri://close-requested',null)
+      if(cmd==='plugin:window|destroy')return
       if(['plugin:window|minimize','plugin:window|toggle_maximize','plugin:window|close','plugin:process|restart','prepare_update'].includes(cmd))return
       if(cmd==='plugin:updater|check')return window.testBridge.newVersion?{rid:71,currentVersion:'0.1.0',version:'0.2.0'}:null
       if(cmd==='plugin:updater|download')return 42
@@ -144,5 +146,20 @@ test('업데이트는 대기 분류와 진행 중인 이동을 보존하고 완�
   assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='plugin:updater|install').length),0)
   await page.locator('#update-install').click();await page.waitForFunction(()=>testBridge.calls.some(c=>c.cmd==='plugin:process|restart'))
   assert.deepEqual(await page.evaluate(()=>testBridge.calls.filter(c=>['prepare_update','plugin:updater|install','plugin:process|restart'].includes(c.cmd)).map(c=>c.cmd)),['prepare_update','plugin:updater|install','plugin:process|restart'])
+  await page.close()
+})
+test('실제 창 닫기 이벤트는 빈 창 종료·대기 목록 취소·승인을 구분',async()=>{
+  const empty=await pageWithBridge()
+  await empty.locator('#window-close').click()
+  await empty.waitForFunction(()=>testBridge.calls.some(c=>c.cmd==='plugin:window|destroy'))
+  assert.equal(await empty.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='plugin:window|destroy').length),1)
+  await empty.close()
+  const page=await pageWithBridge();await waitForSuggestion(page);await page.evaluate(()=>testBridge.accept=false)
+  await page.locator('#window-close').click();await page.waitForFunction(()=>!document.querySelector('#approve').disabled)
+  assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='plugin:window|destroy').length),0)
+  assert.equal(await page.locator('#queue select').count(),1)
+  await page.evaluate(()=>testBridge.accept=true);await page.locator('#window-close').click()
+  await page.waitForFunction(()=>testBridge.calls.some(c=>c.cmd==='plugin:window|destroy'))
+  assert.equal(await page.evaluate(()=>testBridge.calls.filter(c=>c.cmd==='move_file').length),0)
   await page.close()
 })
